@@ -1,3 +1,0 @@
-src/Serialization/ISerializerFactory.cs
-src/Serialization/IDeserializerFactory.cs
-src/Serialization/ConfluentSerializerFactory.cs
