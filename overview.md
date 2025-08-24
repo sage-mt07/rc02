@@ -2,11 +2,12 @@
 
 ## OSS全体構造・現場ガイド
 
-- プロジェクトの目的・理念
+- プロジェクトの目的・理念は [AGENTS.md](./AGENTS.md#プロジェクト憲章) を参照
 - 主要ディレクトリ・ドキュメント早見表
 - それぞれのフォルダで「誰が何を見るか」「参照・編集担当は誰か」
 - 新規メンバー向けガイドとして [docs/new_member_reference.md](./docs/new_member_reference.md) を参照
 - [詳細運用ルール・AIプロンプトなどは AGENTS.md 参照](./AGENTS.md)
+- 日次進捗ログの記録ルールと改定履歴は [docs/progress_management.md](./docs/progress_management.md) を参照
 
 ## 注意事項・運用ルール
 
