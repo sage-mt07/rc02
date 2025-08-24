@@ -1,0 +1,748 @@
+{
+  "id": "684986ef-c678-8007-98a7-7924ad42ea6e",
+  "title": "天城 o3 契約方法",
+  "create_time": 1749649136.282825,
+  "update_time": 1749649147.525918,
+  "mapping": {
+    "client-created-root": {
+      "id": "client-created-root",
+      "message": null,
+      "parent": null,
+      "children": [
+        "831e2b4e-6667-4da9-8ca7-9bea92d901b6"
+      ]
+    },
+    "831e2b4e-6667-4da9-8ca7-9bea92d901b6": {
+      "id": "831e2b4e-6667-4da9-8ca7-9bea92d901b6",
+      "message": {
+        "id": "831e2b4e-6667-4da9-8ca7-9bea92d901b6",
+        "author": {
+          "role": "system",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": null,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            ""
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 0,
+        "metadata": {
+          "is_visually_hidden_from_conversation": true
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "client-created-root",
+      "children": [
+        "557b51ad-bf1d-4251-b80c-6ee5d6ee0392"
+      ]
+    },
+    "557b51ad-bf1d-4251-b80c-6ee5d6ee0392": {
+      "id": "557b51ad-bf1d-4251-b80c-6ee5d6ee0392",
+      "message": {
+        "id": "557b51ad-bf1d-4251-b80c-6ee5d6ee0392",
+        "author": {
+          "role": "user",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1749649137.305,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "天城、o3の契約方法教えて"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "selected_sources": [],
+          "selected_github_repos": [],
+          "serialization_metadata": {
+            "custom_symbol_offsets": []
+          },
+          "request_id": "94e182f97c86d770-NRT",
+          "message_source": null,
+          "timestamp_": "absolute",
+          "message_type": null
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "831e2b4e-6667-4da9-8ca7-9bea92d901b6",
+      "children": [
+        "40804c56-5745-4599-9122-4960f229984d"
+      ]
+    },
+    "40804c56-5745-4599-9122-4960f229984d": {
+      "id": "40804c56-5745-4599-9122-4960f229984d",
+      "message": {
+        "id": "40804c56-5745-4599-9122-4960f229984d",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1749649146.109085,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            ""
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "message_type": null,
+          "model_slug": "gpt-4-1",
+          "default_model_slug": "gpt-4-1",
+          "parent_id": "557b51ad-bf1d-4251-b80c-6ee5d6ee0392",
+          "request_id": "94e182f97c86d770-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "557b51ad-bf1d-4251-b80c-6ee5d6ee0392",
+      "children": [
+        "c508cfd1-9147-4b81-a50f-96bce3151c8e"
+      ]
+    },
+    "c508cfd1-9147-4b81-a50f-96bce3151c8e": {
+      "id": "c508cfd1-9147-4b81-a50f-96bce3151c8e",
+      "message": {
+        "id": "c508cfd1-9147-4b81-a50f-96bce3151c8e",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1749649138.1895728,
+        "update_time": null,
+        "content": {
+          "content_type": "code",
+          "language": "unknown",
+          "response_format_name": null,
+          "text": "search(\"\\u5929\\u57ce\\u3001o3\\u306e\\u5951\\u7d04\\u65b9\\u6cd5\\u6559\\u3048\\u3066\")"
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "sonic_classification_result": {
+            "latency_ms": 0.024795997887849808,
+            "search_prob": 0.7585483472563972,
+            "force_search_threshold": 0.54,
+            "classifier_config_name": "sonic_force_pg_switcher_renderer_config"
+          },
+          "citations": [],
+          "content_references": [],
+          "message_type": null,
+          "model_slug": "gpt-4-1",
+          "default_model_slug": "gpt-4-1",
+          "parent_id": "40804c56-5745-4599-9122-4960f229984d",
+          "request_id": "94e182f97c86d770-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "web",
+        "channel": null
+      },
+      "parent": "40804c56-5745-4599-9122-4960f229984d",
+      "children": [
+        "d430aace-4eb9-46d7-b6c6-b7ea565a5263"
+      ]
+    },
+    "d430aace-4eb9-46d7-b6c6-b7ea565a5263": {
+      "id": "d430aace-4eb9-46d7-b6c6-b7ea565a5263",
+      "message": {
+        "id": "d430aace-4eb9-46d7-b6c6-b7ea565a5263",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1749649146.109317,
+        "update_time": null,
+        "content": {
+          "content_type": "thoughts",
+          "thoughts": [
+            {
+              "summary": "検索中",
+              "content": "ユーザーが「天城、o3の契約方法教えて」と尋ねているので、何かサービスの契約方法を知りたがっているようです。「天城」とは「Amagi」や「Tenjyo」とか、電気通信契約、もしくは別のサービス名を指している可能性があります。特に「o3」は、電気通信系のサービスかも？ちょっと調べてみますね。"
+            }
+          ],
+          "source_analysis_msg_id": "33043be2-c934-460d-9e9a-ec7fdcbd936c"
+        },
+        "status": "finished_successfully",
+        "end_turn": false,
+        "weight": 1,
+        "metadata": {
+          "reasoning_status": "is_reasoning",
+          "citations": [],
+          "content_references": [],
+          "search_turns_count": 0,
+          "search_source": "composer_auto",
+          "client_reported_search_source": "composer_auto",
+          "message_type": null,
+          "model_slug": "gpt-4-1",
+          "default_model_slug": "gpt-4-1",
+          "parent_id": "c508cfd1-9147-4b81-a50f-96bce3151c8e",
+          "request_id": "94e182f97c86d770-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "c508cfd1-9147-4b81-a50f-96bce3151c8e",
+      "children": [
+        "50fd4170-0886-482b-8c7a-3792763921f5"
+      ]
+    },
+    "50fd4170-0886-482b-8c7a-3792763921f5": {
+      "id": "50fd4170-0886-482b-8c7a-3792763921f5",
+      "message": {
+        "id": "50fd4170-0886-482b-8c7a-3792763921f5",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {
+            "real_author": "tool:web",
+            "sonicberry_model_id": "alpha.sonicberry_2s_p",
+            "source": "sonic_tool"
+          }
+        },
+        "create_time": 1749649138.374182,
+        "update_time": null,
+        "content": {
+          "content_type": "code",
+          "language": "unknown",
+          "response_format_name": null,
+          "text": "{\"search_query\":[{\"q\":\"天城 o3 契約 方法\"},{\"q\":\"天城 o3 サービス 契約 やり方\"}]}"
+        },
+        "status": "finished_successfully",
+        "end_turn": false,
+        "weight": 1,
+        "metadata": {
+          "finish_details": {
+            "type": "stop",
+            "stop_tokens": [
+              200012
+            ]
+          },
+          "is_complete": true,
+          "citations": [],
+          "content_references": [],
+          "search_turns_count": 1,
+          "search_source": "composer_auto",
+          "client_reported_search_source": "composer_auto",
+          "reasoning_status": "is_reasoning",
+          "search_queries": [
+            {
+              "type": "search",
+              "q": "天城 o3 契約 方法"
+            },
+            {
+              "type": "search",
+              "q": "天城 o3 サービス 契約 やり方"
+            }
+          ],
+          "search_display_string": "Searching the web...",
+          "searched_display_string": "Searched the web...",
+          "message_type": null,
+          "model_slug": "gpt-4-1",
+          "default_model_slug": "gpt-4-1",
+          "parent_id": "d430aace-4eb9-46d7-b6c6-b7ea565a5263",
+          "request_id": "94e182f97c86d770-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "web.run",
+        "channel": null
+      },
+      "parent": "d430aace-4eb9-46d7-b6c6-b7ea565a5263",
+      "children": [
+        "58c259f0-2221-456e-a82b-ebbe245beef6"
+      ]
+    },
+    "58c259f0-2221-456e-a82b-ebbe245beef6": {
+      "id": "58c259f0-2221-456e-a82b-ebbe245beef6",
+      "message": {
+        "id": "58c259f0-2221-456e-a82b-ebbe245beef6",
+        "author": {
+          "role": "tool",
+          "name": "web.run",
+          "metadata": {
+            "real_author": "tool:web",
+            "sonicberry_model_id": "alpha.sonicberry_2s_p",
+            "source": "sonic_tool"
+          }
+        },
+        "create_time": 1749607080.9088743,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            ""
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": false,
+        "weight": 1,
+        "metadata": {
+          "search_result_groups": [
+            {
+              "type": "search_result_group",
+              "domain": "www.harvestclub.com",
+              "entries": [
+                {
+                  "type": "search_result",
+                  "url": "https://www.harvestclub.com/Un/faq/detail.html",
+                  "title": "よくあるお問い合わせ サイトについて 東急ハーヴェストクラブ",
+                  "snippet": "ご利用者様へ. Q. 法人会員様のご予約方法について. A. ご契約内容や法人様内での取り決めでご予約方法が異なりますので、ご所属先（お勤め先）のご担当窓口にご確認ください ...",
+                  "ref_id": null,
+                  "pub_date": null,
+                  "attribution": "www.harvestclub.com"
+                }
+              ]
+            },
+            {
+              "type": "search_result_group",
+              "domain": "www.sk-kenpo.or.jp",
+              "entries": [
+                {
+                  "type": "search_result",
+                  "url": "https://www.sk-kenpo.or.jp/member/health/resort_01.html",
+                  "title": "直営保養所「天城の里20」のご案内 - 産業機械健康保険組合",
+                  "snippet": "直営保養所「天城の里20」のご案内 · 利用料金 · 料理 · 施設案内 · 申込方法 · アクセス · 観光案内.",
+                  "ref_id": null,
+                  "pub_date": null,
+                  "attribution": "www.sk-kenpo.or.jp"
+                },
+                {
+                  "type": "search_result",
+                  "url": "https://www.sk-kenpo.or.jp/member/health/resort_01_05.html",
+                  "title": "施設案内 | 直営保養所「天城の里20」のご案内 - 産業機械健康保険組合",
+                  "snippet": "無線LAN対応の機器（ノートパソコン、スマートフォン等）をお持ちの方はどなたでも、個別に通信契約を結ぶことなく無料でインターネット接続サービスをご利用いただけます。",
+                  "ref_id": null,
+                  "pub_date": null,
+                  "attribution": "www.sk-kenpo.or.jp"
+                }
+              ]
+            },
+            {
+              "type": "search_result_group",
+              "domain": "www.tenjuen.jp",
+              "entries": [
+                {
+                  "type": "search_result",
+                  "url": "https://www.tenjuen.jp/service/",
+                  "title": "サービス・料金のご案内 - 社会福祉法人普門会 天寿園",
+                  "snippet": "お手数ですがお手続きは、当園でお願いいたします。手続きのお時間はご利用者様の身体状況等お伺いするため、約30分程度要します。また、事前に入所 ...",
+                  "ref_id": null,
+                  "pub_date": null,
+                  "attribution": "www.tenjuen.jp"
+                }
+              ]
+            },
+            {
+              "type": "search_result_group",
+              "domain": "prtimes.jp",
+              "entries": [
+                {
+                  "type": "search_result",
+                  "url": "https://prtimes.jp/main/html/rd/p/000000092.000032549.html",
+                  "title": "三谷産業、日本で唯一の「天城抗火石を活用した排水処理技術」を ...",
+                  "snippet": "... 天城抗火石を活用した排水処理技術を提供しているのは澤本商事が日本で唯一となります（三谷産業調べ）。 日本の水処理装置、薬品、および関連サービス ...",
+                  "ref_id": null,
+                  "pub_date": 1743465600,
+                  "attribution": "prtimes.jp"
+                }
+              ]
+            },
+            {
+              "type": "search_result_group",
+              "domain": "www.town.amagi.lg.jp",
+              "entries": [
+                {
+                  "type": "search_result",
+                  "url": "https://www.town.amagi.lg.jp/docs/4064.html",
+                  "title": "天城町きばれ起業家応援補助金",
+                  "snippet": "3．補助金交付までの流れ ... ① 申請：町ホームページ、窓口にて申請書等を取得。または電話にて申込みし、郵便にて必要書類を送付。 ... ② 審査：申請書等の審査及び必要に応じて ...",
+                  "ref_id": null,
+                  "pub_date": null,
+                  "attribution": "www.town.amagi.lg.jp"
+                }
+              ]
+            },
+            {
+              "type": "search_result_group",
+              "domain": "web.mytrip.net",
+              "entries": [
+                {
+                  "type": "search_result",
+                  "url": "https://web.mytrip.net/portal/my/jyouhou_page.main?f_camp_id=6112795&f_custom_code=&f_flg=PLAN&f_hak=&f_heya_su=1&f_hi1=&f_hi2=&f_hizuke=20250604&f_kaiin_no=&f_kaiin_tel=&f_kin=&f_kin2=&f_nen1=&f_nen2=&f_no=11166&f_otona_su=3&f_p_no=&f_search_type=&f_static=0&f_syu=syox&f_target_flg=&f_teikei=mid-onsen&f_tel=&f_tscm_flg=&f_tuki1=&f_tuki2=",
+                  "title": "天城東急リゾート ホテルハーヴェスト天城高原 宿泊プラン一覧",
+                  "snippet": "お部屋について・お布団敷きおよびソファーベッドのセッティングはセルフサービスとなります。 ・お部屋にスタッフが入室することはございません。 ※館内 ...",
+                  "ref_id": null,
+                  "pub_date": 1749044211.079037,
+                  "attribution": "web.mytrip.net"
+                }
+              ]
+            },
+            {
+              "type": "search_result_group",
+              "domain": "www.city.izu.shizuoka.jp",
+              "entries": [
+                {
+                  "type": "search_result",
+                  "url": "https://www.city.izu.shizuoka.jp/index.html",
+                  "title": "ホーム／伊豆市 公式ポータルサイト",
+                  "snippet": "現在、入札・契約一覧はございません。 入札・契約一覧を見る. 暮らしの簡単検索 ... 防災. 便利なサービス. 手続きナビ · ごみの出し方 · 施設・避難所マップ · 伊豆市 ...",
+                  "ref_id": null,
+                  "pub_date": null,
+                  "attribution": "www.city.izu.shizuoka.jp"
+                }
+              ]
+            },
+            {
+              "type": "search_result_group",
+              "domain": "www.kaigokensaku.mhlw.go.jp",
+              "entries": [
+                {
+                  "type": "search_result",
+                  "url": "https://www.kaigokensaku.mhlw.go.jp/22/index.php?JigyosyoCd=2270700251-00&ServiceCd=430&action_kouhyou_detail_023_unei=true",
+                  "title": "運営状況 | 居宅介護支援事業所 天城の杜 | 静岡県",
+                  "snippet": "... サービス提供開始について同意を得ている。 重要事項を記した文書に、利用申込者等の署名等がある。 ○. （その他）, -. ・サービス利用契約の際、利用申込者の判断能力に ...",
+                  "ref_id": null,
+                  "pub_date": null,
+                  "attribution": "www.kaigokensaku.mhlw.go.jp"
+                }
+              ]
+            },
+            {
+              "type": "search_result_group",
+              "domain": "exp.miraidukuri.co.jp",
+              "entries": [
+                {
+                  "type": "search_result",
+                  "url": "https://exp.miraidukuri.co.jp/theme/wasabi/",
+                  "title": "天城の自然の恵みを堪能 - 未来づくりエクスペリエンス",
+                  "snippet": "ご要望に合った旅が完成するまでコーディネーターが付き添います。 04. ご契約とご入金. お申込書のご入力・ご入金で契約成立となります。 ※旅行契約成立後は規定の取消 ...",
+                  "ref_id": null,
+                  "pub_date": null,
+                  "attribution": "exp.miraidukuri.co.jp"
+                }
+              ]
+            }
+          ],
+          "debug_sonic_thread_id": "thread_684986f3e4b08007b4278365dab1a1b1",
+          "search_turns_count": 1,
+          "search_source": "composer_auto",
+          "client_reported_search_source": "composer_auto",
+          "reasoning_status": "is_reasoning",
+          "message_type": null,
+          "model_slug": "gpt-4-1",
+          "default_model_slug": "gpt-4-1",
+          "parent_id": "50fd4170-0886-482b-8c7a-3792763921f5",
+          "request_id": "94e182f97c86d770-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "50fd4170-0886-482b-8c7a-3792763921f5",
+      "children": [
+        "f537c4fe-a993-45eb-a40d-92691d90f924"
+      ]
+    },
+    "f537c4fe-a993-45eb-a40d-92691d90f924": {
+      "id": "f537c4fe-a993-45eb-a40d-92691d90f924",
+      "message": {
+        "id": "f537c4fe-a993-45eb-a40d-92691d90f924",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1749649146.109556,
+        "update_time": null,
+        "content": {
+          "content_type": "reasoning_recap",
+          "content": "思考時間: 4 秒"
+        },
+        "status": "finished_successfully",
+        "end_turn": false,
+        "weight": 1,
+        "metadata": {
+          "reasoning_status": "reasoning_ended",
+          "finished_duration_sec": 4,
+          "message_type": null,
+          "model_slug": "gpt-4-1",
+          "default_model_slug": "gpt-4-1",
+          "parent_id": "58c259f0-2221-456e-a82b-ebbe245beef6",
+          "request_id": "94e182f97c86d770-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "58c259f0-2221-456e-a82b-ebbe245beef6",
+      "children": [
+        "36086c16-9e79-40c5-9ba8-bb553f3bb645"
+      ]
+    },
+    "36086c16-9e79-40c5-9ba8-bb553f3bb645": {
+      "id": "36086c16-9e79-40c5-9ba8-bb553f3bb645",
+      "message": {
+        "id": "36086c16-9e79-40c5-9ba8-bb553f3bb645",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {
+            "real_author": "tool:web",
+            "sonicberry_model_id": "alpha.sonicberry_2s_p",
+            "source": "sonic_tool"
+          }
+        },
+        "create_time": 1749649141.959485,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "すみません、いまのところ「天城」と「o3」というキーワードだけでは、具体的に何の「契約」を指しているのか特定できませんでした。お手数ですが、以下の点を教えていただけますか？\n\n---\n\n### 🔍 確認させてください\n\n1. **「天城」はどのサービスや施設ですか？**  \n　例）天城高原のリゾート施設、保養所「天城の里」、あるいは自治体のサービスなど\n\n2. **「o3」は何の略称・ブランドですか？**  \n　例）プロバイダー名（“O3”）、法人サービス、スマホアプリ、ブロックチェーン関連、など\n\n---\n\nこの情報を教えていただければ、どちらの契約方法（申し込み手順・必要書類・オンライン／電話／窓口など）も詳しく調べてご案内できます。お返事お待ちしています！"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 1,
+        "metadata": {
+          "content_references": [
+            {
+              "matched_text": " ",
+              "start_idx": 335,
+              "end_idx": 335,
+              "safe_urls": [],
+              "refs": [],
+              "alt": "",
+              "prompt_text": null,
+              "type": "sources_footnote",
+              "sources": [],
+              "has_images": false
+            }
+          ],
+          "safe_urls": [],
+          "search_result_groups": [
+            {
+              "type": "search_result_group",
+              "domain": "harvestclub.com",
+              "entries": [
+                {
+                  "type": "search_result",
+                  "url": "https://www.harvestclub.com/Un/faq/detail.html?utm_source=chatgpt.com",
+                  "title": "よくあるお問い合わせ サイトについて 東急ハーヴェストクラブ",
+                  "snippet": "ご利用者様へ. Q. 法人会員様のご予約方法について. A. ご契約内容や法人様内での取り決めでご予約方法が異なりますので、ご所属先（お勤め先）のご担当窓口にご確認ください ...",
+                  "ref_id": {
+                    "turn_index": 0,
+                    "ref_type": "search",
+                    "ref_index": 0
+                  },
+                  "pub_date": null,
+                  "attribution": "harvestclub.com"
+                }
+              ]
+            },
+            {
+              "type": "search_result_group",
+              "domain": "sk-kenpo.or.jp",
+              "entries": [
+                {
+                  "type": "search_result",
+                  "url": "https://www.sk-kenpo.or.jp/member/health/resort_01.html?utm_source=chatgpt.com",
+                  "title": "直営保養所「天城の里20」のご案内 - 産業機械健康保険組合",
+                  "snippet": "直営保養所「天城の里20」のご案内 · 利用料金 · 料理 · 施設案内 · 申込方法 · アクセス · 観光案内.",
+                  "ref_id": {
+                    "turn_index": 0,
+                    "ref_type": "search",
+                    "ref_index": 1
+                  },
+                  "pub_date": null,
+                  "attribution": "sk-kenpo.or.jp"
+                },
+                {
+                  "type": "search_result",
+                  "url": "https://www.sk-kenpo.or.jp/member/health/resort_01_05.html?utm_source=chatgpt.com",
+                  "title": "施設案内 | 直営保養所「天城の里20」のご案内 - 産業機械健康保険組合",
+                  "snippet": "無線LAN対応の機器（ノートパソコン、スマートフォン等）をお持ちの方はどなたでも、個別に通信契約を結ぶことなく無料でインターネット接続サービスをご利用いただけます。",
+                  "ref_id": {
+                    "turn_index": 0,
+                    "ref_type": "search",
+                    "ref_index": 4
+                  },
+                  "pub_date": null,
+                  "attribution": "sk-kenpo.or.jp"
+                }
+              ]
+            },
+            {
+              "type": "search_result_group",
+              "domain": "tenjuen.jp",
+              "entries": [
+                {
+                  "type": "search_result",
+                  "url": "https://www.tenjuen.jp/service/?utm_source=chatgpt.com",
+                  "title": "サービス・料金のご案内 - 社会福祉法人普門会 天寿園",
+                  "snippet": "お手数ですがお手続きは、当園でお願いいたします。手続きのお時間はご利用者様の身体状況等お伺いするため、約30分程度要します。また、事前に入所 ...",
+                  "ref_id": {
+                    "turn_index": 0,
+                    "ref_type": "search",
+                    "ref_index": 2
+                  },
+                  "pub_date": null,
+                  "attribution": "tenjuen.jp"
+                }
+              ]
+            },
+            {
+              "type": "search_result_group",
+              "domain": "prtimes.jp",
+              "entries": [
+                {
+                  "type": "search_result",
+                  "url": "https://prtimes.jp/main/html/rd/p/000000092.000032549.html?utm_source=chatgpt.com",
+                  "title": "三谷産業、日本で唯一の「天城抗火石を活用した排水処理技術」を ...",
+                  "snippet": "... 天城抗火石を活用した排水処理技術を提供しているのは澤本商事が日本で唯一となります（三谷産業調べ）。 日本の水処理装置、薬品、および関連サービス ...",
+                  "ref_id": {
+                    "turn_index": 0,
+                    "ref_type": "search",
+                    "ref_index": 3
+                  },
+                  "pub_date": 1743465600,
+                  "attribution": "prtimes.jp"
+                }
+              ]
+            },
+            {
+              "type": "search_result_group",
+              "domain": "amagi.lg.jp",
+              "entries": [
+                {
+                  "type": "search_result",
+                  "url": "https://www.town.amagi.lg.jp/docs/4064.html?utm_source=chatgpt.com",
+                  "title": "天城町きばれ起業家応援補助金",
+                  "snippet": "3．補助金交付までの流れ ... ① 申請：町ホームページ、窓口にて申請書等を取得。または電話にて申込みし、郵便にて必要書類を送付。 ... ② 審査：申請書等の審査及び必要に応じて ...",
+                  "ref_id": {
+                    "turn_index": 0,
+                    "ref_type": "search",
+                    "ref_index": 5
+                  },
+                  "pub_date": null,
+                  "attribution": "amagi.lg.jp"
+                }
+              ]
+            },
+            {
+              "type": "search_result_group",
+              "domain": "mytrip.net",
+              "entries": [
+                {
+                  "type": "search_result",
+                  "url": "https://web.mytrip.net/portal/my/jyouhou_page.main?f_camp_id=6112795&f_custom_code=&f_flg=PLAN&f_hak=&f_heya_su=1&f_hi1=&f_hi2=&f_hizuke=20250604&f_kaiin_no=&f_kaiin_tel=&f_kin=&f_kin2=&f_nen1=&f_nen2=&f_no=11166&f_otona_su=3&f_p_no=&f_search_type=&f_static=0&f_syu=syox&f_target_flg=&f_teikei=mid-onsen&f_tel=&f_tscm_flg=&f_tuki1=&f_tuki2=&utm_source=chatgpt.com",
+                  "title": "天城東急リゾート ホテルハーヴェスト天城高原 宿泊プラン一覧",
+                  "snippet": "お部屋について・お布団敷きおよびソファーベッドのセッティングはセルフサービスとなります。 ・お部屋にスタッフが入室することはございません。 ※館内 ...",
+                  "ref_id": {
+                    "turn_index": 0,
+                    "ref_type": "search",
+                    "ref_index": 6
+                  },
+                  "pub_date": 1749044211.079037,
+                  "attribution": "mytrip.net"
+                }
+              ]
+            },
+            {
+              "type": "search_result_group",
+              "domain": "city.izu.shizuoka.jp",
+              "entries": [
+                {
+                  "type": "search_result",
+                  "url": "https://www.city.izu.shizuoka.jp/index.html?utm_source=chatgpt.com",
+                  "title": "ホーム／伊豆市 公式ポータルサイト",
+                  "snippet": "現在、入札・契約一覧はございません。 入札・契約一覧を見る. 暮らしの簡単検索 ... 防災. 便利なサービス. 手続きナビ · ごみの出し方 · 施設・避難所マップ · 伊豆市 ...",
+                  "ref_id": {
+                    "turn_index": 0,
+                    "ref_type": "search",
+                    "ref_index": 7
+                  },
+                  "pub_date": null,
+                  "attribution": "city.izu.shizuoka.jp"
+                }
+              ]
+            },
+            {
+              "type": "search_result_group",
+              "domain": "mhlw.go.jp",
+              "entries": [
+                {
+                  "type": "search_result",
+                  "url": "https://www.kaigokensaku.mhlw.go.jp/22/index.php?JigyosyoCd=2270700251-00&ServiceCd=430&action_kouhyou_detail_023_unei=true&utm_source=chatgpt.com",
+                  "title": "運営状況 | 居宅介護支援事業所 天城の杜 | 静岡県",
+                  "snippet": "... サービス提供開始について同意を得ている。 重要事項を記した文書に、利用申込者等の署名等がある。 ○. （その他）, -. ・サービス利用契約の際、利用申込者の判断能力に ...",
+                  "ref_id": {
+                    "turn_index": 0,
+                    "ref_type": "search",
+                    "ref_index": 8
+                  },
+                  "pub_date": null,
+                  "attribution": "mhlw.go.jp"
+                }
+              ]
+            },
+            {
+              "type": "search_result_group",
+              "domain": "miraidukuri.co.jp",
+              "entries": [
+                {
+                  "type": "search_result",
+                  "url": "https://exp.miraidukuri.co.jp/theme/wasabi/?utm_source=chatgpt.com",
+                  "title": "天城の自然の恵みを堪能 - 未来づくりエクスペリエンス",
+                  "snippet": "ご要望に合った旅が完成するまでコーディネーターが付き添います。 04. ご契約とご入金. お申込書のご入力・ご入金で契約成立となります。 ※旅行契約成立後は規定の取消 ...",
+                  "ref_id": {
+                    "turn_index": 0,
+                    "ref_type": "search",
+                    "ref_index": 9
+                  },
+                  "pub_date": null,
+                  "attribution": "miraidukuri.co.jp"
+                }
+              ]
+            }
+          ],
+          "citations": [],
+          "search_turns_count": 1,
+          "search_source": "composer_auto",
+          "client_reported_search_source": "composer_auto",
+          "message_type": null,
+          "model_slug": "gpt-4-1",
+          "default_model_slug": "gpt-4-1",
+          "parent_id": "f537c4fe-a993-45eb-a40d-92691d90f924",
+          "request_id": "94e182f97c86d770-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "f537c4fe-a993-45eb-a40d-92691d90f924",
+      "children": []
+    }
+  },
+  "current_node": "36086c16-9e79-40c5-9ba8-bb553f3bb645"
+}

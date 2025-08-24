@@ -1,0 +1,10 @@
+4. Producer/Consumer層
+ AddAsync, ForEachAsync, Subscribe等のProducer/Consumer APIが仕様通り動作するか
+
+ 型安全な送受信（Key/Valueスキーマ一致、スキーマ未一致時のFail-Safe等）テストが揃っているか
+
+ CancellationToken/Timeout等の制御系パラメータが正しく作用するか
+
+ メッセージID, CorrelationId等のメタ情報伝播も検証されているか
+
+ エラー・例外・リトライ・DLQ等の異常/運用パターンをカバーできているか

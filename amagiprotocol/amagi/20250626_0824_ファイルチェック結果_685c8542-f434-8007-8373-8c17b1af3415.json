@@ -1,0 +1,775 @@
+{
+  "id": "685c8542-f434-8007-8373-8c17b1af3415",
+  "title": "ファイルチェック結果",
+  "create_time": 1750893891.124572,
+  "update_time": 1751008256.098418,
+  "mapping": {
+    "client-created-root": {
+      "id": "client-created-root",
+      "message": null,
+      "parent": null,
+      "children": [
+        "c4080766-6b0b-43d2-a113-833dc00ed7ab"
+      ]
+    },
+    "c4080766-6b0b-43d2-a113-833dc00ed7ab": {
+      "id": "c4080766-6b0b-43d2-a113-833dc00ed7ab",
+      "message": {
+        "id": "c4080766-6b0b-43d2-a113-833dc00ed7ab",
+        "author": {
+          "role": "system",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": null,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            ""
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 0,
+        "metadata": {
+          "is_visually_hidden_from_conversation": true
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "client-created-root",
+      "children": [
+        "4906419b-5a4b-4abf-a47f-ee7117352c76"
+      ]
+    },
+    "4906419b-5a4b-4abf-a47f-ee7117352c76": {
+      "id": "4906419b-5a4b-4abf-a47f-ee7117352c76",
+      "message": {
+        "id": "4906419b-5a4b-4abf-a47f-ee7117352c76",
+        "author": {
+          "role": "user",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": null,
+        "update_time": null,
+        "content": {
+          "content_type": "user_editable_context",
+          "user_profile": "The user provided the following information about themselves. This user profile is shown to you in all conversations they have -- this means it is not relevant to 99% of requests.\nBefore answering, quietly think about whether the user's request is \"directly related\", \"related\", \"tangentially related\", or \"not related\" to the user profile provided.\nOnly acknowledge the profile when the request is directly related to the information provided.\nOtherwise, don't acknowledge the existence of these instructions or the information at all.\nUser profile:\n```Preferred name: 司令\n```",
+          "user_instructions": "The user provided the additional info about how they would like you to respond:\n```すべての返信に、送信日時を日本時間で付け加えてください。```"
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "is_visually_hidden_from_conversation": true,
+          "user_context_message_data": {
+            "about_user_message": "Preferred name: 司令\n",
+            "about_model_message": "すべての返信に、送信日時を日本時間で付け加えてください。"
+          },
+          "is_user_system_message": true
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "c4080766-6b0b-43d2-a113-833dc00ed7ab",
+      "children": [
+        "64d4f295-ec09-402e-ad3d-9541decd965f"
+      ]
+    },
+    "64d4f295-ec09-402e-ad3d-9541decd965f": {
+      "id": "64d4f295-ec09-402e-ad3d-9541decd965f",
+      "message": {
+        "id": "64d4f295-ec09-402e-ad3d-9541decd965f",
+        "author": {
+          "role": "user",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750893891.675,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "ファイルをチェックして"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "attachments": [
+            {
+              "id": "file-YLsqqjsGvD8HG6Bqg4pHdH",
+              "size": 5757,
+              "name": "dev_guide.md",
+              "mime_type": "text/markdown",
+              "file_token_size": 2063
+            },
+            {
+              "id": "file-7yTkBnQMSqsvuV4UBWnXFR",
+              "size": 17546,
+              "name": "core_namespace_doc.md",
+              "mime_type": "text/markdown",
+              "file_token_size": 5336
+            },
+            {
+              "id": "file-VdXcZb8Y4URFZ9boZW95zd",
+              "size": 11055,
+              "name": "messaging_namespace_doc.md",
+              "mime_type": "text/markdown",
+              "file_token_size": 3602
+            },
+            {
+              "id": "file-92XZ6jZrRQsiJvnppPPhuh",
+              "size": 8513,
+              "name": "query_namespace_doc.md",
+              "mime_type": "text/markdown",
+              "file_token_size": 3000
+            },
+            {
+              "id": "file-3SXp5jKuTW4np22q4HjCDx",
+              "size": 16333,
+              "name": "serialization_namespace_doc.md",
+              "mime_type": "text/markdown",
+              "file_token_size": 4962
+            },
+            {
+              "id": "file-F88S8uVXJSwpA1NwnP4a4t",
+              "size": 12830,
+              "name": "statestore_namespace_doc.md",
+              "mime_type": "text/markdown",
+              "file_token_size": 4128
+            },
+            {
+              "id": "file-GwW4y5ac9g2iZKpZo5TSrE",
+              "size": 16033,
+              "name": "window_namespace_doc.md",
+              "mime_type": "text/markdown",
+              "file_token_size": 5142
+            },
+            {
+              "id": "file-CbMZhGtaeQisUq1jHmSxF4",
+              "size": 11568,
+              "name": "application_namespace_doc.md",
+              "mime_type": "text/markdown",
+              "file_token_size": 3626
+            }
+          ],
+          "selected_sources": [],
+          "selected_github_repos": [],
+          "serialization_metadata": {
+            "custom_symbol_offsets": []
+          },
+          "request_id": "95583881c99dd480-NRT",
+          "message_source": null,
+          "timestamp_": "absolute",
+          "message_type": null
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "4906419b-5a4b-4abf-a47f-ee7117352c76",
+      "children": [
+        "21973e6d-a011-44e5-8145-ae6ca9bc89dd"
+      ]
+    },
+    "21973e6d-a011-44e5-8145-ae6ca9bc89dd": {
+      "id": "21973e6d-a011-44e5-8145-ae6ca9bc89dd",
+      "message": {
+        "id": "21973e6d-a011-44e5-8145-ae6ca9bc89dd",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750893903.054367,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            ""
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "64d4f295-ec09-402e-ad3d-9541decd965f",
+          "request_id": "95583881c99dd480-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "64d4f295-ec09-402e-ad3d-9541decd965f",
+      "children": [
+        "f1f870f6-55b9-49ca-8bc7-f18dda462398"
+      ]
+    },
+    "f1f870f6-55b9-49ca-8bc7-f18dda462398": {
+      "id": "f1f870f6-55b9-49ca-8bc7-f18dda462398",
+      "message": {
+        "id": "f1f870f6-55b9-49ca-8bc7-f18dda462398",
+        "author": {
+          "role": "tool",
+          "name": "file_search",
+          "metadata": {}
+        },
+        "create_time": 1750893903.054514,
+        "update_time": null,
+        "content": {
+          "content_type": "tether_browsing_display",
+          "result": "",
+          "summary": "",
+          "assets": null,
+          "tether_id": null
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 0,
+        "metadata": {
+          "command": "spinner",
+          "status": "running",
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "21973e6d-a011-44e5-8145-ae6ca9bc89dd",
+          "request_id": "95583881c99dd480-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "21973e6d-a011-44e5-8145-ae6ca9bc89dd",
+      "children": [
+        "b6fdb434-d4ab-436a-a230-7cb849a636ab"
+      ]
+    },
+    "b6fdb434-d4ab-436a-a230-7cb849a636ab": {
+      "id": "b6fdb434-d4ab-436a-a230-7cb849a636ab",
+      "message": {
+        "id": "b6fdb434-d4ab-436a-a230-7cb849a636ab",
+        "author": {
+          "role": "tool",
+          "name": "file_search",
+          "metadata": {}
+        },
+        "create_time": 1750893903.054568,
+        "update_time": null,
+        "content": {
+          "content_type": "tether_quote",
+          "url": "file-YLsqqjsGvD8HG6Bqg4pHdH",
+          "domain": "dev_guide.md",
+          "text": "# Kafka.Ksql.Linq 開発者ガイド\n\n## 🎯 新機能開発前の必読事項\n\n**重複実装を避けるため、新機能開発前に必ずこのガイドを確認してください。**\n\n---\n\n## 📚 Namespace別詳細ドキュメント\n\n### 📋 概要\n各namespaceの詳細設計は、以下の専用ドキュメントで管理されています。  \n**変更作業前には必ず該当namespaceのドキュメントを確認してください。**\n\n### 🏗️ 詳細設計ドキュメント一覧\n\n| Namespace | 責務 | ドキュメント | 変更頻度 |\n|-----------|------|-------------|----------|\n| **Application** | 開発者向けAPI、設定管理、スキーマ自動登録 | [Application 詳細設計](docs/architecture/namespaces/Application.md) | 🔴 高 |\n| **Serialization** | Avroスキーマ生成、型安全シリアライゼーション | [Serialization 詳細設計](docs/architecture/namespaces/Serialization.md) | 🔴 高 |\n| **Core** | ビジネスロジック抽象化、EntityModel構築 | [Core 詳細設計](docs/architecture/namespaces/Core.md) | 🔴 高 |\n| **Window** | ウィンドウ確定処理、確定足生成・配信 | [Window 詳細設計](docs/architecture/namespaces/Window.md) | 🔴 高 |\n| **Messaging** | Producer/Consumer管理、エラーハンドリング | [Messaging 詳細設計](docs/architecture/namespaces/Messaging.md) | 🔴 高 |\n| **Query** | LINQ→KSQL変換、クエリ実行パイプライン | [Query 詳細設計](docs/architecture/namespaces/Query.md) | 🔴 高 |\n| **StateStore** | ローカル状態管理、ウィンドウ処理、Ready状態監視 | [StateStore 詳細設計](docs/architecture/namespaces/StateStore.md) | 🟡 中 |\n\n---\n\n## 🔧 新機能追加時の判定フロー\n\n### 1. 対象namespace特定\n```\n❓ どのnamespaceの機能ですか？\n  → 上記表から該当namespaceを特定\n  → 該当する詳細設計ドキュメントを確認\n```\n\n### 2. 既存機能確認\n```\n❓ 同様の機能は既に実装されていませんか？\n  → 詳細設計ドキュメントの「主要クラス構成」セクションを確認\n  → 「変更頻度・作業パターン」で類似パターンを確認\n```\n\n### 3. 実装方針決定\n```\n❓ 新規実装 vs 既存拡張？\n  → 「💡 実装上の重要なポイント」セクションを参考\n  → 「🔗 他Namespaceとの連携」で影響範囲を確認\n```\n\n---\n\n## 📝 実装パターン\n\n### エンティティ追加パターン\n```csharp\n// 1. Entity定義（POCO + 属性）\n[Topic(\"orders\")]\npublic class Order\n{\n    [Key]\n    public string OrderId { get; set; }\n    public decimal Amount { get; set; }\n}\n\n// 2. Context追加\npublic class MyKafkaContext : KafkaContext\n{\n    public IEntitySet<Order> Orders => Set<Order>();\n}\n\n// 3. 使用例\nawait context.Orders.AddAsync(new Order { ... });\nvar orders = await context.Orders.ToListAsync();\n```\n\n### エラーハンドリングパターン\n```csharp\n// 既存のErrorHandlingPolicyを使用\nawait context.Orders\n    .OnError(ErrorAction.Retry)\n    .WithRetry(3, TimeSpan.FromSeconds(1))\n    .ToListAsync();\n```\n\n### Window操作パターン\n```csharp\n// 既存のWindow拡張を使用\nvar windowedOrders = context.Orders.Window(5); // 5分ウィンドウ\nawait windowedOrders.ToListAsync();\n```\n\n---\n\n## 🚀 開発完了後の更新手順\n\n### 1. 該当namespace詳細ドキュメントの更新\n- **主要クラス構成**: 新規クラス・機能を追加\n- **変更頻度・作業パターン**: 新しいパターンを記載\n- **実装上の重要なポイント**: 実装例・ベストプラクティスを追加\n\n### 2. 他namespaceへの影響確認\n- **🔗 他Namespaceとの連携**: 依存関係の更新\n- 影響があるnamespaceのドキュメントも更新\n\n### 3. 全体概要の更新\n- [アーキテクチャ概要](docs/architecture/overview.md): 必要に応じて全体図・責務を更新\n\n---\n\n## 🔍 重複チェックリスト\n\n新機能開発前に以下を確認：\n\n- [ ] 該当namespaceの詳細設計ドキュメントを確認した\n- [ ] 同じ責務のクラス・機能は既に存在しないか確認した\n- [ ] 似たような実装パターンが既にないか確認した\n- [ ] 他namespaceとの連携影響を確認した\n- [ ] 設計制約・注意事項を確認した\n\n---\n\n## 📚 参考ドキュメント\n\n### 🏗️ アーキテクチャ\n- [全体概要](docs/architecture/overview.md) - システム全体のアーキテクチャ\n- [作業指示書](docs/architecture/namespace_doc_work_instruction.md) - ドキ\nThe file is too long and its contents have been truncated.\n",
+          "title": "dev_guide.md",
+          "tether_id": null
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "command": "context_stuff",
+          "is_visually_hidden_from_conversation": false,
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "f1f870f6-55b9-49ca-8bc7-f18dda462398",
+          "request_id": "95583881c99dd480-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "f1f870f6-55b9-49ca-8bc7-f18dda462398",
+      "children": [
+        "091af433-011e-46d3-83d4-49babe83c12a"
+      ]
+    },
+    "091af433-011e-46d3-83d4-49babe83c12a": {
+      "id": "091af433-011e-46d3-83d4-49babe83c12a",
+      "message": {
+        "id": "091af433-011e-46d3-83d4-49babe83c12a",
+        "author": {
+          "role": "tool",
+          "name": "file_search",
+          "metadata": {}
+        },
+        "create_time": 1750893903.054615,
+        "update_time": null,
+        "content": {
+          "content_type": "tether_quote",
+          "url": "file-7yTkBnQMSqsvuV4UBWnXFR",
+          "domain": "core_namespace_doc.md",
+          "text": "# Core 詳細設計\n\n## 🎯 責務・設計方針\n\n### 主要責務\n- **ビジネスロジック抽象化**: Infrastructure層への依存を排除した純粋なドメインロジック\n- **型安全性・依存関係制御**: IKafkaContext、IEntitySet等の抽象インターフェース定義\n- **エンティティモデル構築**: POCO属性ベースのEntityModel生成とFluent API\n- **POCO属性システム**: `[Topic]`, `[Key]`, `[KafkaIgnore]`等の属性定義と処理\n\n### 設計原則・制約\n- **依存制限**: Infrastructure層（Messaging, Serialization等）への依存禁止\n- **純粋関数**: 副作用なし、テスタブルな設計\n- **型安全性**: ジェネリクス活用による型安全なAPI設計\n- **POCO属性主導**: 手動設定より属性ベース自動構成を優先\n\n### 他namespaceとの境界\n- **Application**: KafkaContextCore基底クラスとEntityModel提供\n- **Infrastructure**: 抽象インターフェース定義のみ、具象実装は下位層\n- **依存方向**: Core ← Infrastructure（一方向依存を強制）\n\n---\n\n## 🏗️ 主要クラス構成\n\n### 📁 Abstractions/ - 抽象化定義（🟢低変更頻度）\n| ファイル | クラス/インターフェース | 責務 | 変更頻度 |\n|---------|----------------------|------|----------|\n| `IKafkaContext.cs` | IKafkaContext | コンテキスト操作の抽象化 | 🟢 |\n| `IEntitySet.cs` | IEntitySet<T> | CRUD操作の統一API | 🟢 |\n| `ISerializationManager.cs` | ISerializationManager<T> | シリアライゼーション抽象化 | 🟢 |\n| `EntityModel.cs` | EntityModel | エンティティメタデータ管理 | 🟡 |\n| `TopicAttribute.cs` | TopicAttribute | トピック属性定義 | 🟢 |\n| `KeyAttribute.cs` | KeyAttribute | キー属性定義 | 🟢 |\n| `KafkaIgnoreAttribute.cs` | KafkaIgnoreAttribute | 除外属性定義 | 🟢 |\n| `AvroTimestampAttribute.cs` | AvroTimestampAttribute | タイムスタンプ属性定義 | 🟢 |\n| `DecimalPrecisionAttribute.cs` | DecimalPrecisionAttribute | Decimal精度属性定義 | 🟢 |\n\n### 📁 Context/ - コンテキスト基底（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `KafkaContextCore.cs` | KafkaContextCore | KafkaContext基底実装 | 🟡 |\n| `KafkaContextOptions.cs` | KafkaContextOptions | Core層設定オプション | 🟡 |\n\n### 📁 Modeling/ - モデル構築（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `ModelBuilder.cs` | ModelBuilder | Fluent API + 属性ベース設定 | 🔴 |\n| `EntityModelBuilder.cs` | EntityModelBuilder<T> | 個別エンティティ設定 | 🔴 |\n| `ModelValidationResult.cs` | ModelValidationResult | モデル検証結果 | 🟡 |\n| `WindowModelBuilderExtensions.cs` | Window拡張 | ウィンドウ集約設定 | 🟡 |\n\n### 📁 Extensions/ - 拡張メソッド（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `CoreExtensions.cs` | CoreExtensions | EntityModel拡張メソッド | 🟡 |\n| `EntityModelWindowExtensions.cs` | Window拡張 | Window関連拡張 | 🟡 |\n| `LoggerFactoryExtensions.cs` | ログ拡張 | 汎用ログ拡張メソッド | 🟢 |\n| `WindowExtensions.cs` | WindowExtensions | `.Window(minutes)`拡張 | 🟡 |\n\n### 📁 Models/ - データモデル（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `KeyExtractor.cs` | KeyExtractor | エンティティキー抽出ロジック | 🟡 |\n| `ProducerKey.cs` | ProducerKey | Producer識別キー | 🟡 |\n\n### 📁 Window/ - ウィンドウ処理（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `WindowedEntitySet.cs` | WindowedEntitySet<T> | ウィンドウ付きEntitySet | 🟡 |\n| `WindowCollection.cs` | WindowCollection<T> | 複数ウィンドウ管理 | 🟡 |\n| `WindowAggregatedEntitySet.cs` | WindowAggregatedEntitySet | ウィンドウ集約EntitySet | 🔴 |\n\n### 📁 Abstractions/ErrorHandling/ - エラー処理（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `ErrorHandlingPolicy.cs` | ErrorHandlingPolicy | エラー処理ポリシー定義 | 🟡 |\n| `ErrorHandlingExtensions.cs` | 拡張メソッド | エラー処理拡張API | 🟡 |\n| `CircuitBreakerHandler.cs` | CircuitBreakerHandler | 回路ブレーカー実装 | 🟡 |\n\n### 📁 Exceptions/ - 例外定義（🟢低変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `CoreException.cs` | CoreException | Core例外基底クラス | 🟢 |\n| `EntityModelException.cs` | EntityModelException | エンティティモデル例外 | 🟢 |\n| `CoreValidationException.cs` | CoreValidationException | 検証例外 | 🟢 |\n\n---\n\n## 🔄 データフロー・依存関係\n\n### EntityModel構築フロー\n```\nPOCO型定義 → ModelBuilder.Entity<T>()\n   ↓\nCreateEntityModelFromType() → 属性読取り\n   ↓\nTopicAttribute, KeyAttribute等の解析\n   ↓\nEntityModel生成 → ValidationResult付与\n   ↓\nEntityModelBuilder<T>によるFluent API設定\n```\n\n### Context初期化フロー\n```\nKafkaContextCore.OnModelCreating()\n   ↓\nModelBuilder作成 → Entity登録\n   ↓\nApplyModelBuilderSettings() → Stream/Table型設定\n   ↓\nGetOrCreateEntityModel() → EntityModel取得・キャッシュ\n   ↓\nCreateEntitySet<T>() → 派生クラスでの具象実装\n```\n\n### EntitySet操作フロー\n```\nIKafkaContext.Set<T>()\n   ↓\nGetOrCreateEntityModel<T>() → EntityModel取得\n   ↓\nCreateEntitySet<T>(entityModel) → 抽象メソッド\n   ↓\n派生クラスで具象EventSet<T>生成\n```\n\n### Window操作フロー\n```\nEntitySet.Window(minutes) → WindowedEntitySet<T>\n   ↓\nValidateAndGetTimestampProperty() → [AvroTimestamp]検証\n   ↓\nGroupByAggregate() → WindowAggregatedEntitySet生成\n   ↓\nKSQL Window句生成 → Infrastructure層委譲\n```\n\n---\n\n## 🚀 変更頻度・作業パターン\n\n### 🔴 高頻度変更パターン\n**1. ModelBuilder機能拡張**\n- `ModelBuilder`: 新しいFluent API機能、属性解析ロジック拡張\n- `EntityModelBuilder`: 個別エンティティ設定オプション追加\n- POCO属性の新機能サポート（`[KafkaIgnore]`, `[AvroTimestamp]`等）\n\n**2. Window処理機能拡張**\n- `WindowAggregatedEntitySet`: 新しい集約関数、ウィンドウ種別対応\n- Window操作のKSQL生成ロジック改善\n- ウィンドウ集約の式木解析強化\n\n**3. EntityModel機能強化**\n- Stream/Table型推論ロジック改善\n- 複合キー処理の拡張\n- バリデーション機能強化\n\n### 🟡 中頻度変更パターン\n**1. 拡張メソッド追加**\n- `CoreExtensions`: EntityModel操作の便利メソッド\n- `WindowExtensions`: ウィンドウ操作の新機能\n- エラーハンドリング拡張の改善\n\n**2. コンテキスト基底機能**\n- `KafkaContextCore`: 基底機能の改善、パフォーマンス最適化\n- リソース管理（IDisposable/IAsyncDisposable）の強化\n\n**3. データモデル拡張**\n- `KeyExtractor`: 新しいキー抽出パターン\n- エンティティメタデータ管理の改善\n\n### 🟢 低頻度変更パターン\n**1. 抽象インターフェース変更**\n- `IKafkaContext`, `IEntitySet<T>`: 新機能追加（破壊的変更は慎重）\n- 基本属性定義の変更\n\n**2. 例外体系の変更**\n- 新しい例外種別追加\n- エラー分類の見直し\n\n---\n\n## 📝 設計制約・注意事項\n\n### アーキテクチャ制約\n- **Infrastructure層依存禁止**: Messaging, Serialization等への直接依存不可\n- **純粋関数原則**: 副作用なし、テスタブルな設計必須\n- **一方向依存**: Core ← Infrastructure の依存方向強制\n- **型安全性強制**: 全てのAPIでジェネリクス型パラメータ必須\n\n### パフォーマンス考慮事項\n- **リフレクション最適化**: 属性読取り・型解析のキャッシュ化\n- **EntityModel生成コスト**: 初期化時の属性解析オーバーヘッド\n- **Window操作メモリ**: 集約処理時のメモリ使用量制御\n- **式木解析コスト**: LINQ式の解析・変換パフォーマンス\n\n### セキュリティ・品質制約\n- **型安全性保証**: 実行時型エラーの防止\n- **バリデーション強制**: EntityModelの整合性チェック\n- **例外設計**: 適切な例外階層と情報提供\n- **リソース管理**: 適切なDispose実装\n\n---\n\n## 🔗 他Namespaceとの連携\n\n### Application連携\n```csharp\n// KafkaContextCoreの基底機能提供\npublic abstract class KafkaContextCore : IKafkaContext\n{\n    private readonly Dictionary<Type, EntityModel> _entityModels = new();\n    \n    // 派生クラスでの実装必須\n    protected abstract IEntitySet<T> CreateEntitySet<T>(EntityModel entityModel) where T : class;\n    \n    // EntityModel管理\n    public Dictionary<Type, EntityModel> GetEntityModels()\nThe file is too long and its contents have been truncated.\n",
+          "title": "core_namespace_doc.md",
+          "tether_id": null
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "command": "context_stuff",
+          "is_visually_hidden_from_conversation": false,
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "b6fdb434-d4ab-436a-a230-7cb849a636ab",
+          "request_id": "95583881c99dd480-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "b6fdb434-d4ab-436a-a230-7cb849a636ab",
+      "children": [
+        "f5f4a8a7-d3f1-4b57-a3dd-36bc7a3b543b"
+      ]
+    },
+    "f5f4a8a7-d3f1-4b57-a3dd-36bc7a3b543b": {
+      "id": "f5f4a8a7-d3f1-4b57-a3dd-36bc7a3b543b",
+      "message": {
+        "id": "f5f4a8a7-d3f1-4b57-a3dd-36bc7a3b543b",
+        "author": {
+          "role": "tool",
+          "name": "file_search",
+          "metadata": {}
+        },
+        "create_time": 1750893903.054676,
+        "update_time": null,
+        "content": {
+          "content_type": "tether_quote",
+          "url": "file-VdXcZb8Y4URFZ9boZW95zd",
+          "domain": "messaging_namespace_doc.md",
+          "text": "# Messaging 詳細設計\n\n## 🎯 責務・設計方針\n\n### 主要責務\n- **型安全Producer/Consumer管理**：EntityModel基準の型安全なKafka通信\n- **Pool削除による直接管理**：複雑性を排除し、Confluent.Kafka完全委譲\n- **エラーハンドリング・リトライ機能**：堅牢な障害回復とDLQ送信\n- **バッチ処理・ストリーミング対応**：単発送信から大量バッチ、リアルタイム購読まで\n\n### 設計原則・制約\n- **EF風API**: DbContextライクな開発体験の提供\n- **事前確定管理**: 型・トピック情報の初期化時確定、ランタイム生成なし\n- **Fail-Fast**: 初期化時エラーは即座に終了、実行時は適切な例外処理\n- **非同期ファースト**: 全I/O操作の非同期化とCancellationToken対応\n\n### 他namespaceとの境界\n- **Core**: EntityModelとKafkaMessageContextを受け取り、型安全性を確保\n- **Serialization**: シリアライゼーションマネージャーを活用、直接Avro操作なし\n- **Configuration**: 設定値に基づくProducer/Consumer設定構築\n- **StateStore**: エラー時のDLQ送信、直接的なStateStore操作なし\n\n---\n\n## 🏗️ 主要クラス構成\n\n### 📁 Abstractions/ - インターフェース定義（🟢低変更頻度）\n| ファイル | クラス/インターフェース | 責務 | 変更頻度 |\n|---------|----------------------|------|----------|\n| `IKafkaProducer.cs` | IKafkaProducer<T> | 型安全Producer操作の抽象化 | 🟢 |\n| `IKafkaConsumer.cs` | IKafkaConsumer<TValue,TKey> | 型安全Consumer操作の抽象化 | 🟢 |\n\n### 📁 Configuration/ - 設定管理（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `CommonSection.cs` | CommonSection | Kafka共通設定（Bootstrap、SSL等） | 🟡 |\n| `ProducerSection.cs` | ProducerSection | Producer専用設定（Acks、圧縮等） | 🟡 |\n| `ConsumerSection.cs` | ConsumerSection | Consumer専用設定（GroupId、Offset等） | 🟡 |\n| `TopicSection.cs` | TopicSection | トピック別設定（パーティション、レプリケーション等） | 🟡 |\n| `SchemaRegistrySection.cs` | SchemaRegistrySection | Schema Registry接続・認証設定 | 🟡 |\n\n### 📁 Producers/ - Producer管理（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `KafkaProducerManager.cs` | KafkaProducerManager | 型安全Producer生成・管理・キャッシュ | 🔴 |\n| `Core/KafkaProducer.cs` | KafkaProducer<T> | 型安全メッセージ送信・バッチ処理 | 🔴 |\n| `DlqProducer.cs` | DlqProducer | DLQ（Dead Letter Queue）送信処理 | 🟡 |\n| `Core/PooledProducer.cs` | PooledProducer | Pool管理用Producer（旧実装の名残） | 🟢 |\n\n### 📁 Consumers/ - Consumer管理（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `KafkaConsumerManager.cs` | KafkaConsumerManager | 型安全Consumer生成・管理・キャッシュ | 🔴 |\n| `Core/KafkaConsumer.cs` | KafkaConsumer<TValue,TKey> | 型安全メッセージ消費・ストリーミング | 🔴 |\n| `Core/PooledConsumer.cs` | PooledConsumer | Pool管理用Consumer（旧実装の名残） | 🟢 |\n\n### 📁 Models/ - データモデル（🟢低変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `DlqEnvelope.cs` | DlqEnvelope | DLQ送信用メッセージ封筒 | 🟢 |\n\n### 📁 Internal/ - 内部機能（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `ErrorHandlingContext.cs` | ErrorHandlingContext | エラー処理・リトライ制御 | 🟡 |\n\n### 📁 Contracts/ - 契約インターフェース（🟢低変更頻度）\n| ファイル | インターフェース | 責務 | 変更頻度 |\n|---------|-----------------|------|----------|\n| `IErrorSink.cs` | IErrorSink | エラーレコード処理の抽象化 | 🟢 |\n\n---\n\n## 🔄 データフロー・依存関係\n\n### Producer側フロー\n```\nEntity → KafkaProducerManager.SendAsync()\n   ↓\nKafkaProducer<T>.SendAsync() → KeyExtractor.ExtractKeyValue()\n   ↓\nIAvroSerializationManager → Serialize\n   ↓\nConfluent.Kafka.IProducer → Kafka Cluster\n   ↓\nKafkaDeliveryResult\n```\n\n### Consumer側フロー\n```\nKafka Cluster → Confluent.Kafka.IConsumer\n   ↓\nKafkaConsumer<TValue,TKey> → IAvroSerializationManager\n   ↓\nDeserialize → KafkaMessage<TValue,TKey>\n   ↓\nEventSet.ConsumeAsync() → Business Logic\n```\n\n### エラーハンドリングフロー\n```\nException → ErrorHandlingContext\n   ↓\nErrorAction.DLQ → DlqProducer → DLQ Topic\nErrorAction.Retry → Exponential Backoff → Retry\nErrorAction.Skip → Log & Continue\n```\n\n---\n\n## 🚀 変更頻度・作業パターン\n\n### 🔴 高頻度変更パターン\n**1. Producer/Consumer機能拡張**\n- `KafkaProducerManager`: 新しい送信パターン（バッチサイズ制御、条件付き送信等）\n- `KafkaConsumer`: 新しい消費パターン（フィルタリング、変換処理等）\n- シリアライゼーション形式の追加対応\n\n**2. エラーハンドリング強化**\n- 新しいErrorAction種別追加\n- より精密なリトライポリシー\n- DLQ送信条件の細分化\n\n**3. 設定項目拡張**\n- 新しいKafka設定プロパティ対応\n- 動的設定変更機能\n- 環境別設定プロファイル\n\n### 🟡 中頻度変更パターン\n**1. 新しいKafka機能対応**\n- Confluent Kafkaクライアントアップデート対応\n- 新しい圧縮アルゴリズム\n- セキュリティ機能強化\n\n**2. パフォーマンス最適化**\n- バッチ処理サイズ調整\n- コネクションプール最適化\n- メモリ使用量削減\n\n### 🟢 低頻度変更パターン\n**1. インターフェース変更**\n- IKafkaProducer/IKafkaConsumerのメソッド追加\n- 破壊的変更（慎重に実施）\n\n**2. アーキテクチャ変更**\n- Pool戦略の見直し（現在は直接管理）\n- 新しい通信プロトコル対応\n\n---\n\n## 📝 設計制約・注意事項\n\n### アーキテクチャ制約\n- **Pool削除方針**: 複雑性削減のため、ProducerPool/ConsumerPoolは使用しない\n- **事前確定主義**: EntityModel情報は初期化時に確定、動的生成禁止\n- **Confluent.Kafka委譲**: 低レベルKafka操作はConfluent.Kafkaライブラリに完全委譲\n- **型安全性強制**: Generic型パラメータによる型安全性の強制\n\n### パフォーマンス\nThe file is too long and its contents have been truncated.\n",
+          "title": "messaging_namespace_doc.md",
+          "tether_id": null
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "command": "context_stuff",
+          "is_visually_hidden_from_conversation": false,
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "091af433-011e-46d3-83d4-49babe83c12a",
+          "request_id": "95583881c99dd480-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "091af433-011e-46d3-83d4-49babe83c12a",
+      "children": [
+        "2650c392-b983-4523-ac5f-1a15e0b73c4f"
+      ]
+    },
+    "2650c392-b983-4523-ac5f-1a15e0b73c4f": {
+      "id": "2650c392-b983-4523-ac5f-1a15e0b73c4f",
+      "message": {
+        "id": "2650c392-b983-4523-ac5f-1a15e0b73c4f",
+        "author": {
+          "role": "tool",
+          "name": "file_search",
+          "metadata": {}
+        },
+        "create_time": 1750893903.054739,
+        "update_time": null,
+        "content": {
+          "content_type": "tether_quote",
+          "url": "file-92XZ6jZrRQsiJvnppPPhuh",
+          "domain": "query_namespace_doc.md",
+          "text": "# Query 詳細設計\n\n## 🎯 責務・設計方針\n\n### 主要責務\n- **LINQ式からKSQL文への変換**：C# LINQ式を解析してksqlDB互換のKSQL文を生成\n- **クエリ実行パイプライン管理**：段階的なクエリ実行（派生オブジェクト作成→最終実行）\n- **DDL/DML分離生成**：CREATE文（DDL）とSELECT文（DML）の適切な使い分け\n- **Stream/Table型推論**：LINQ操作に基づく最適なksqlDBオブジェクト型の決定\n\n### 設計原則・制約\n- **型安全性確保**：LINQ式の型情報を保持してKSQL生成時のエラーを防止\n- **表現力の限界**：OrderByなど未サポート操作は明示的な例外で即座に通知\n- **パフォーマンス重視**：派生オブジェクト戦略により複雑なクエリを段階的に最適化\n- **診断可能性**：生成されるKSQL文をToKsql()で事前確認可能\n\n### 他namespaceとの境界\n- **Core**: EntityModelを受け取り、型情報に基づく変換を実行\n- **Messaging**: 実際のKafka通信は委譲、Query層は純粋に変換処理のみ\n- **Serialization**: スキーマ情報の取得のみ、直接的なシリアライゼーション処理なし\n\n---\n\n## 🏗️ 主要クラス構成\n\n### 📁 Pipeline/ - 実行制御コア（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `QueryExecutionPipeline.cs` | QueryExecutionPipeline | LINQ式解析→派生オブジェクト作成→クエリ実行の統括制御 | 🔴 |\n| `DDLQueryGenerator.cs` | DDLQueryGenerator | CREATE STREAM/TABLE AS文の生成 | 🔴 |\n| `DMLQueryGenerator.cs` | DMLQueryGenerator | SELECT文の生成 | 🟡 |\n| `StreamTableAnalyzer.cs` | StreamTableAnalyzer | 操作チェーンからStream/Table型推論 | 🔴 |\n| `DerivedObjectManager.cs` | DerivedObjectManager | 中間オブジェクト（stream_123等）の管理 | 🟡 |\n\n### 📁 Builders/ - KSQL構文生成（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `SelectBuilder.cs` | SelectBuilder | WHERE句構築（条件式の変換） | 🔴 |\n| `ProjectionBuilder.cs` | ProjectionBuilder | SELECT列の構築（射影・AS句含む） | 🔴 |\n| `GroupByBuilder.cs` | GroupByBuilder | GROUP BY句構築 | 🟡 |\n| `JoinBuilder.cs` | JoinBuilder | JOIN句構築（複数テーブル結合） | 🟡 |\n| `HavingBuilder.cs` | HavingBuilder | HAVING句構築（集約後条件） | 🟢 |\n| `WindowBuilder.cs` | WindowBuilder | WINDOW句構築（時間ウィンドウ） | 🟢 |\n\n### 📁 Ksql/ - ksqlDB REST API通信（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `KsqlDbRestApiClient.cs` | KsqlDbRestApiClient | ksqlDB REST API通信、ストリーミング対応 | 🟡 |\n| `KsqlDbExecutor.cs` | KsqlDbExecutor | DDL/DMLクエリ実行の抽象化 | 🟡 |\n\n### 📁 Linq/ - JOIN拡張（🟢低変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `UnifiedJoinResult.cs` | UnifiedJoinResult<TOuter,TInner> | 2テーブルJOIN結果 | 🟢 |\n| `UnifiedThreeWayJoinResult.cs` | UnifiedThreeWayJoinResult<TOuter,TInner,TThird> | 3テーブルJOIN結果 | 🟢 |\n| `JoinableEntitySet.cs` | JoinableEntitySet<T> | JOIN可能なEntitySet | 🟢 |\n\n---\n\n## 🔄 データフロー・依存関係\n\n### 主要処理フロー\n```\nLINQ式 → StreamTableAnalyzer → QueryExecutionPipeline\n   ↓\nExpressionAnalysisResult → DerivedObjectManager\n   ↓\n必要に応じて派生オブジェクト作成（DDLQueryGenerator）\n   ↓\n最終SELECT実行（DMLQueryGenerator）\n   ↓\nksqlDB REST API（KsqlDbRestApiClient）\n```\n\n### Builder使用パターン\n```\nExpression → 各Builder（WHERE/SELECT/GROUP BY等）→ KSQL文字列断片\n                            ↓\n                    DDL/DMLQueryGeneratorで組み立て\n                            ↓\n                      完全なKSQL文\n```\n\n### 型推論ロジック\n```\nMethodCall解析 → 集約有無判定 → Stream/Table決定\n- Where/Select → Stream\n- GroupBy → Table\n- Select after GroupBy → Table\n```\n\n---\n\n## 🚀 変更頻度・作業パターン\n\n### 🔴 高頻度変更パターン\n**1. 新しいLINQ演算子対応**\n- `StreamTableAnalyzer`に操作特性追加\n- 対応する`Builder`クラス作成または拡張\n- `QueryExecutionPipeline`での処理分岐追加\n\n**2. KSQL構文の改善**\n- `SelectBuilder`でのWHERE条件表現拡張（null比較、複合条件等）\n- `ProjectionBuilder`でのSELECT列表現拡張\n- 新しいKSQL関数の対応\n\n**3. エラーハンドリング強化**\n- 未サポート操作の早期検出\n- より詳細なエラーメッセージ\n- デバッグ情報の充実\n\n### 🟡 中頻度変更パターン\n**1. JOIN機能拡張**\n- 新しいJOIN種別（LEFT/RIGHT/FULL OUTER）\n- より複雑なJOIN条件\n- サブクエリ含むJOIN\n\n**2. ksqlDB APIアップデート対応**\n- 新しいREST APIエンドポイント\n- レスポンス形式の変更対応\n- 認証・セキュリティ拡張\n\n### 🟢 低頻度変更パターン\n**1. ウィンドウ機能拡張**\n- 新しいウィンドウタイプ\n- Grace Period等のオプション拡張\n\n**2. パフォーマンス最適化**\n- クエリ実行プラン改善\n- キャッシュ機能追加\n\n---\n\n## 📝 設計制約・注意事項\n\n### アーキテクチャ制約\n- **OrderBy未サポート**：ksqlDBのストリーミング性質上、ORDER BYは原則サポート外\n-\nThe file is too long and its contents have been truncated.\n",
+          "title": "query_namespace_doc.md",
+          "tether_id": null
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "command": "context_stuff",
+          "is_visually_hidden_from_conversation": false,
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "f5f4a8a7-d3f1-4b57-a3dd-36bc7a3b543b",
+          "request_id": "95583881c99dd480-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "f5f4a8a7-d3f1-4b57-a3dd-36bc7a3b543b",
+      "children": [
+        "31757ab7-1b74-4177-931d-e7d1977fcce2"
+      ]
+    },
+    "31757ab7-1b74-4177-931d-e7d1977fcce2": {
+      "id": "31757ab7-1b74-4177-931d-e7d1977fcce2",
+      "message": {
+        "id": "31757ab7-1b74-4177-931d-e7d1977fcce2",
+        "author": {
+          "role": "tool",
+          "name": "file_search",
+          "metadata": {}
+        },
+        "create_time": 1750893903.054814,
+        "update_time": null,
+        "content": {
+          "content_type": "tether_quote",
+          "url": "file-3SXp5jKuTW4np22q4HjCDx",
+          "domain": "serialization_namespace_doc.md",
+          "text": "# Serialization 詳細設計\n\n## 🎯 責務・設計方針\n\n### 主要責務\n- **Avroスキーマ生成・登録**: POCO型からAvroスキーマ自動生成とSchema Registry一括登録\n- **型安全シリアライゼーション**: ジェネリクス活用による型安全なSerializer/Deserializer管理\n- **キャッシュ・パフォーマンス最適化**: エンティティ別Serializerキャッシュとバージョン管理\n- **スキーマバージョニング・互換性**: 後方互換性チェックとスキーマ進化対応\n\n### 設計原則・制約\n- **POCO属性駆動**: `[KafkaIgnore]`, `[AvroTimestamp]`, `[DecimalPrecision]`等の属性ベース設定\n- **自動生成重視**: 手動スキーマ定義なし、型からの完全自動生成\n- **型安全性確保**: `IAvroSerializationManager<T>`による型指定管理\n- **キャッシュファースト**: 初回生成後のキャッシュ活用によるパフォーマンス最適化\n\n### 他namespaceとの境界\n- **Core**: EntityModelとAvroEntityConfigurationの変換・活用\n- **Application**: スキーマ一括登録サービスの提供\n- **Messaging**: Serializer/DeserializerペアのProducer/Consumer提供\n- **Configuration**: Schema Registry接続設定の適用\n\n---\n\n## 🏗️ 主要クラス構成\n\n### 📁 Abstractions/ - 抽象化定義（🟢低変更頻度）\n| ファイル | クラス/インターフェース | 責務 | 変更頻度 |\n|---------|----------------------|------|----------|\n| `AvroEntityConfiguration.cs` | AvroEntityConfiguration | エンティティ設定情報、属性自動読取 | 🟢 |\n| `AvroEntityConfigurationBuilder.cs` | AvroEntityConfigurationBuilder<T> | Fluent API設定ビルダー | 🟢 |\n| `AvroEntityConfigurationExtensions.cs` | 拡張メソッド | 設定便利メソッド | 🟢 |\n| `AvroSerializationManager.cs` | AvroSerializationManager<T> | 型安全シリアライゼーション管理 | 🟡 |\n| `IAvroSerializationManager.cs` | IAvroSerializationManager<T> | シリアライゼーション抽象化 | 🟢 |\n| `interfaces.cs` | SerializerPair, DeserializerPair等 | データ構造定義 | 🟢 |\n\n### 📁 Avro/Core/ - Avro基盤（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `AvroSchemaInfo.cs` | AvroSchemaInfo | スキーマメタデータ管理 | 🟡 |\n| `AvroSerializerFactory.cs` | AvroSerializerFactory | Serializer/Deserializer生成工場 | 🟡 |\n| `UnifiedSchemaGenerator.cs` | UnifiedSchemaGenerator | 統合スキーマ生成エンジン | 🔴 |\n| `AvroSerializer.cs` | AvroSerializer<T> | カスタムAvroシリアライザー | 🟢 |\n| `AvroDeserializer.cs` | AvroDeserializer<T> | カスタムAvroデシリアライザー | 🟢 |\n| `SchemaRegistryClientWrapper.cs` | SchemaRegistryClientWrapper | Schema Registry API ラッパー | 🟡 |\n\n### 📁 Avro/Cache/ - キャッシュ機能（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `AvroSerializerCache.cs` | AvroSerializerCache | エンティティ別Serializerキャッシュ | 🔴 |\n| `AvroSerializerCache.cs` | AvroEntitySerializationManager<T> | エンティティ専用シリアライゼーション管理 | 🔴 |\n\n### 📁 Avro/Management/ - 管理機能（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `AvroSchemaRegistrationService.cs` | AvroSchemaRegistrationService | 全スキーマ一括登録サービス | 🔴 |\n| `AvroSchemaBuilder.cs` | AvroSchemaBuilder | スキーマ生成プロバイダー | 🔴 |\n| `AvroSchemaVersionManager.cs` | AvroSchemaVersionManager | スキーマバージョン・互換性管理 | 🟡 |\n| `AvroSchemaRepository.cs` | AvroSchemaRepository | スキーマ情報リポジトリ | 🟡 |\n\n### 📁 Avro/Exceptions/ - 例外処理（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `AvroSchemaRegistrationException.cs` | AvroSchemaRegistrationException | スキーマ登録例外 | 🟡 |\n| `SchemaRegistrationFatalException.cs` | SchemaRegistrationFatalException | Fail-Fast致命的例外 | 🟡 |\n\n### 📁 Avro/ - 統合機能（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `ResilientAvroSerializerManager.cs` | ResilientAvroSerializerManager | リトライ・障害回復機能 | 🔴 |\n\n---\n\n## 🔄 データフロー・依存関係\n\n### スキーマ生成・登録フロー\n```\nPOCO型定義 → AvroEntityConfiguration.AutoConfigureFromAttributes()\n   ↓\nUnifiedSchemaGenerator.GenerateTopicSchemas()\n   ↓\nAvroSchemaRegistrationService.RegisterAllSchemasAsync()\n   ↓\nSchemaRegistryClient.RegisterSchemaAsync() → Schema Registry\n   ↓\nAvroSchemaInfo保存・キャッシュ\n```\n\n### Serializer取得・キャッシュフロー\n```\nIAvroSerializationManager<T>.GetSerializersAsync()\n   ↓\nAvroSerializerCache.GetAvroManager<T>()\n   ↓\nCache Hit ? キャッシュ返却 : 新規作成\n   ↓\nAvroSerializerFactory.CreateSerializersAsync()\n   ↓\nSerializerPair<T>返却 + キャッシュ保存\n```\n\n### 型安全シリアライゼーションフロー\n```\nProducer: Entity → IAvroSerializationManager<T> → SerializerPair → byte[]\nConsumer: byte[] → IAvroSerializationManager<T> → DeserializerPair → Entity\n```\n\n### スキーマバージョン管理フロー\n```\nAvroSchemaVersionManager.CanUpgradeAsync()\n   ↓\nSchemaRegistry.IsCompatibleAsync() → 互換性チェック\n   ↓\nUpgradeAsync() → 新スキーマ登録\n   ↓\nキャッシュクリア・再構築\n```\n\n---\n\n## 🚀 変更頻度・作業パターン\n\n### 🔴 高頻度変更パターン\n**1. スキーマ生成エンジン拡張**\n- `UnifiedSchemaGenerator`: 新しい型対応、属性サポート拡張\n- 新しいAvro論理型（decimal、timestamp等）対応\n- POCO属性（`[KafkaIgnore]`, `[DecimalPrecision]`等）の機能拡張\n\n**2. キャッシュ・パフォーマンス最適化**\n- `AvroSerializerCache`: キャッシュ戦略改善、メモリ効率化\n- `AvroEntitySerializationManager`: 統計情報拡張、モニタリング強化\n- Round-trip検証、パフォーマンス測定機能\n\n**3. スキーマ登録・管理機能**\n- `AvroSchemaRegistrationService`: 一括登録ロジック改善\n- `AvroSchemaBuilder`: スキーマ生成オプション拡張\n- Fail-Fast例外処理の精密化\n\n### 🟡 中頻度変更パターン\n**1. スキーマバージョニング強化**\n- `AvroSchemaVersionManager`: より精密な互換性チェック\n- スキーマ進化ルールの拡張\n- バージョン履歴管理機能\n\n**2. Schema Registry連携改善**\n- `SchemaRegistryClientWrapper`: 新しいAPI対応\n- 認証・セキュリティ機能強化\n- エラーハンドリング改善\n\n**3. 設定・構成管理**\n- `AvroEntityConfiguration`: 新しい設定項目追加\n- Builder APIの機能拡張\n\n### 🟢 低頻度変更パターン\n**1. 抽象化インターフェース変更**\n- `IAvroSerializationManager`: 新機能追加（破壊的変更は慎重）\n- データ構造（SerializerPair等）の拡張\n\n**2. 新しいシリアライゼーション形式対応**\n- Avro以外の形式（JSON、Protobuf等）への対応\n- フォーマット選択機能\n\n---\n\n## 📝 設計制約・注意事項\n\n### アーキテクチャ制約\n- **POCO属性主導**: 手動スキーマ定義禁止、属性ベース自動生成必須\n- **型安全性強制**: 全てのAPIでジェネリクス型パラメータ必須\n- **Schema Registry必須**: スキーマレス運用不可、Registry連携前提\n- **Fail-Fast原則**: スキーマ登録失敗時の即座終了\n\n### パフォーマンス考慮事項\n- **キャッシュ依存**: 初回生成コストが高い、キャッシュ効果への依存度大\n- **メモリ使用量**: エンティティ別キャッシュによるメモリ消費\n- **スキーマ生成コスト**: リフレクション多用による初期化時間\n- **Schema Registry通信**: ネットワーク遅延・タイムアウト対策\n\n### セキュリティ・品質制約\n- **スキーマ整合性**: POCOとAvroスキーマの不整合検出\n- **認証情報保護**: Schema Registry認証情報の適切な管理\n- **バージョン互換性**: 後方互換性違反の防止\n- **リソースリーク防止**: IDisposableの適切な実装\n\n---\n\n## 🔗 他Namespaceとの連携\n\n### Core依存関係\n```csharp\n// EntityModel → AvroEntityConfiguration 変換\npublic AvroEntityConfiguration(Type entityType)\n{\n    EntityType = entityType;\n    AutoConfigureFromAttributes(); // [Topic], [Key]等の属性自動読取\n}\n\nprivate void AutoConfigureFromAttributes()\n{\n    var topicAttribute = EntityType.GetCustomAttribute<TopicAttribute\nThe file is too long and its contents have been truncated.\n",
+          "title": "serialization_namespace_doc.md",
+          "tether_id": null
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "command": "context_stuff",
+          "is_visually_hidden_from_conversation": false,
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "2650c392-b983-4523-ac5f-1a15e0b73c4f",
+          "request_id": "95583881c99dd480-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "2650c392-b983-4523-ac5f-1a15e0b73c4f",
+      "children": [
+        "736393eb-0b08-4523-b56c-d828d97fad6f"
+      ]
+    },
+    "736393eb-0b08-4523-b56c-d828d97fad6f": {
+      "id": "736393eb-0b08-4523-b56c-d828d97fad6f",
+      "message": {
+        "id": "736393eb-0b08-4523-b56c-d828d97fad6f",
+        "author": {
+          "role": "tool",
+          "name": "file_search",
+          "metadata": {}
+        },
+        "create_time": 1750893903.054879,
+        "update_time": null,
+        "content": {
+          "content_type": "tether_quote",
+          "url": "file-F88S8uVXJSwpA1NwnP4a4t",
+          "domain": "statestore_namespace_doc.md",
+          "text": "# StateStore 詳細設計\n\n## 🎯 責務・設計方針\n\n### 主要責務\n- **ローカル状態管理**: RocksDBベースの高性能な永続化ストレージ\n- **KafkaトピックとStateStoreの双方向同期**: KTable準拠の状態反映\n- **ウィンドウ処理**: 時間ベースの状態集約とWindow EntitySet提供\n- **Ready状態監視**: Consumer Lagに基づく同期完了判定とヘルスチェック\n\n### 設計原則・制約\n- **KTable互換性**: 最新状態のみ保持、Tombstone（削除）メッセージ対応\n- **非同期リアルタイム同期**: トピック変更のストレージへの即座反映\n- **障害復旧対応**: バインディング自動復旧、Lag監視による状態把握\n- **Window操作最適化**: 時間ウィンドウでの効率的な集約処理\n\n### 他namespaceとの境界\n- **Core**: EntityModelによる型情報とキー抽出ロジック活用\n- **Messaging**: ConsumerManagerからのストリーミングデータ取得\n- **Configuration**: StateStore設定（RocksDB、Window等）の適用\n- **Query**: Window操作時のDDL生成とksqlDB連携（間接的）\n\n---\n\n## 🏗️ 主要クラス構成\n\n### 📁 Core/ - StateStore基盤（🟡中変更頻度）\n| ファイル | クラス/インターフェース | 責務 | 変更頻度 |\n|---------|----------------------|------|----------|\n| `IStateStore.cs` | IStateStore<TKey,TValue> | StateStore操作の抽象化 | 🟢 |\n| `RocksDbStateStore.cs` | RocksDbStateStore<TKey,TValue> | RocksDB実装、永続化・メモリキャッシュ | 🟡 |\n\n### 📁 Management/ - ストア管理（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `StateStoreManager.cs` | StateStoreManager | ストア生成・ライフサイクル管理 | 🔴 |\n\n### 📁 Integration/ - Kafka連携（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `TopicStateStoreBinding.cs` | TopicStateStoreBinding<T> | トピック↔ストア双方向バインディング | 🔴 |\n| `StateStoreBindingManager.cs` | StateStoreBindingManager | 複数バインディングの統合管理 | 🔴 |\n| `BindingHealthStatus.cs` | BindingHealthStatus | バインディング健全性情報 | 🟡 |\n\n### 📁 Monitoring/ - Ready状態監視（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `ReadyStateMonitor.cs` | ReadyStateMonitor | Consumer Lag監視・Ready判定 | 🟡 |\n| `ReadyStateInfo.cs` | ReadyStateInfo | 詳細同期状態情報 | 🟡 |\n| `ReadyStateChangedEventArgs.cs` | ReadyStateChangedEventArgs | Ready状態変更イベント | 🟢 |\n| `LagUpdatedEventArgs.cs` | LagUpdatedEventArgs | Lag更新イベント | 🟢 |\n\n### 📁 Extensions/ - Window拡張（🟡中変更頻度）\n| ファイル | クラス/インターフェース | 責務 | 変更頻度 |\n|---------|----------------------|------|----------|\n| `IWindowedEntitySet.cs` | IWindowedEntitySet<T> | ウィンドウ付きEntitySet抽象化 | 🟢 |\n| `WindowedEntitySet.cs` | WindowedEntitySet<T> | ウィンドウ操作の具体実装 | 🟡 |\n| `WindowExtensions.cs` | WindowExtensions | `.Window(minutes)`拡張メソッド | 🟡 |\n| `KafkaContextStateStoreExtensions.cs` | StateStore初期化拡張 | Context初期化時のストア準備 | 🟡 |\n\n### 📁 Configuration/ - 設定管理（🟢低変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `StateStoreOptions.cs` | StateStoreOptions | ストア設定オプション | 🟢 |\n| `StateStoreConfiguration.cs` | StateStoreConfiguration | 設定変換・適用 | 🟢 |\n\n### 📁 ルート/ - エンティティ拡張（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `EventSetWithStateStore.cs` | EventSetWithStateStore<T> | StateStore統合EntitySet | 🟡 |\n\n---\n\n## 🔄 データフロー・依存関係\n\n### StateStore初期化フロー\n```\nKafkaContext.OnModelCreating()\n   ↓\nStateStoreExtensions.InitializeStateStores()\n   ↓\nStateStoreManager.InitializeStoresForEntity()\n   ↓\nRocksDbStateStore<TKey,TValue> 生成・キャッシュ\n```\n\n### トピック同期フロー\n```\nKafka Topic → KafkaConsumer → TopicStateStoreBinding\n   ↓\nCreateKafkaMessage() → ExtractKey()\n   ↓\nStateStore.Put(key, value) or Delete(key)  ※Tombstone対応\n   ↓\n定期的な Flush() → RocksDB永続化\n```\n\n### Ready状態監視フロー\n```\nReadyStateMonitor.CheckLag() (5秒間隔)\n   ↓\nConsumer.QueryWatermarkOffsets() → エンドオフセット取得\nConsumer.Position() → 現在位置取得\n   ↓\nTotalLag = EndOffset - CurrentOffset\n   ↓\nLag == 0 → Ready状態達成 → イベント発火\n```\n\n### Window操作フロー\n```\nEntitySet.Window(5) → WindowedEntitySet<T>\n   ↓\nStateStoreManager.GetOrCreateStore(entityType, windowMinutes)\n   ↓\nStateStore操作 + 元EntitySetへの委譲\n```\n\n---\n\n## 🚀 変更頻度・作業パターン\n\n### 🔴 高頻度変更パターン\n**1. バインディング機能強化**\n- `TopicStateStoreBinding`: 新しい同期パターン、エラー回復ロジック改善\n- `StateStoreBindingManager`: 複数ストア管理、ヘルスチェック精度向上\n- 同期パフォーマンス最適化（バッチ処理、並列化等）\n\n**2. ストア管理機能拡張**\n- `StateStoreManager`: 新しいストア種別対応、動的設定変更\n- 異なるウィンドウサイズの効率的管理\n- メモリ使用量監視・制御\n\n**3. Window操作改善**\n- より複雑なウィンドウ条件（Sliding、Session等）\n- ウィンドウ間でのデータ移行・マージ処理\n- 集約関数の拡張\n\n### 🟡 中頻度変更パターン\n**1. Ready状態監視精度向上**\n- `ReadyStateMonitor`: より細かいLag監視、予測アルゴリズム\n- パーティション別状態の詳細管理\n- タイムアウト・リトライロジック改善\n\n**2. RocksDB最適化**\n- `RocksDbStateStore`: 新しい永続化オプション、圧縮設定\n- インデックス戦略の改善\n- バックアップ・リストア機能\n\n**3. 設定機能拡張**\n- 環境別StateStore設定\n- 動的設定変更対応\n\n### 🟢 低頻度変更パターン\n**1. インターフェース変更**\n- `IStateStore`の新機能追加\n- 破壊的変更（慎重に実施）\n\n**2. 新ストレージバックエンド対応**\n- RocksDB以外のストレージエンジン\n- クラウドストレージ連携\n\n---\n\n## 📝 設計制約・注意事項\n\n### アーキテクチャ制約\n- **KTable互換性**: 最新状態のみ保持、同一キーの古い値は上書き\n- **Tombstone対応**: null値メッセージでの削除処理必須\n- **非同期リアルタイム**: UI/APIブロッキングなしの状態同期\n- **At-least-once保証**: Kafka Consumerの冪等性への依存\n\n### パフォーマンス考慮事項\n- **メモリ vs 永続化バランス**: ConcurrentDictionaryとRocksDBの使い分け\n- **バッチフラッシュ**: 定期的フラッシュによるI/O最適化\n- **Ready状態判定コスト**: 5秒間隔のLag監視によるオーバーヘッド\n- **大量データ処理**: Window集約時のメモリ使用量制御\n\n### セキュリティ\nThe file is too long and its contents have been truncated.\n",
+          "title": "statestore_namespace_doc.md",
+          "tether_id": null
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "command": "context_stuff",
+          "is_visually_hidden_from_conversation": false,
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "31757ab7-1b74-4177-931d-e7d1977fcce2",
+          "request_id": "95583881c99dd480-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "31757ab7-1b74-4177-931d-e7d1977fcce2",
+      "children": [
+        "73ed2582-bf90-4a5b-9796-eb58991bc851"
+      ]
+    },
+    "73ed2582-bf90-4a5b-9796-eb58991bc851": {
+      "id": "73ed2582-bf90-4a5b-9796-eb58991bc851",
+      "message": {
+        "id": "73ed2582-bf90-4a5b-9796-eb58991bc851",
+        "author": {
+          "role": "tool",
+          "name": "file_search",
+          "metadata": {}
+        },
+        "create_time": 1750893903.054947,
+        "update_time": null,
+        "content": {
+          "content_type": "tether_quote",
+          "url": "file-GwW4y5ac9g2iZKpZo5TSrE",
+          "domain": "window_namespace_doc.md",
+          "text": "# Window 詳細設計\n\n## 🎯 責務・設計方針\n\n### 主要責務\n- **ウィンドウ確定処理**: Grace Period経過後のウィンドウ確定足生成\n- **確定足生成・配信**: 集約結果の`{topic}_window_final`トピック送信\n- **RocksDB永続化**: 確定足データの永続化とWindow履歴管理\n- **重複排除・POD協調**: 複数POD環境での確定足重複排除機能\n\n### 設計原則・制約\n- **Grace Period遵守**: ウィンドウ終了 + Grace Period後の確定処理\n- **確定足の冪等性**: 同一ウィンドウキーの重複送信対策\n- **POD分散協調**: 複数インスタンス環境での安全な確定処理\n- **永続化ファースト**: RocksDBによる確定足履歴の確実な保存\n\n### 他namespaceとの境界\n- **Core**: WindowedEntitySet等のWindow操作基盤を活用\n- **StateStore**: RocksDB連携による確定足永続化\n- **Messaging**: 確定足トピック送信用のKafkaProducer使用\n- **Application**: WindowFinalizationManagerの初期化・設定\n\n---\n\n## 🏗️ 主要クラス構成\n\n### 📁 Finalization/ - 確定処理コア（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `WindowFinalizationManager.cs` | WindowFinalizationManager | ウィンドウ確定処理スケジューリング | 🔴 |\n| `WindowProcessor.cs` | WindowProcessor<T> | エンティティ別ウィンドウ処理 | 🔴 |\n| `WindowProcessor.cs` | WindowProcessor (基底) | 抽象ウィンドウ処理 | 🟡 |\n\n### 📁 Finalization/Consumer/ - 確定足消費（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `WindowFinalConsumer.cs` | WindowFinalConsumer | 確定足消費・RocksDB保存 | 🟡 |\n\n### 📁 Finalization/Models/ - データモデル（🟢低変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `WindowFinalMessage.cs` | WindowFinalMessage | 確定足メッセージ構造 | 🟢 |\n| `WindowState.cs` | WindowState<T> | ウィンドウ状態管理 | 🟢 |\n| `WindowConfiguration.cs` | WindowConfiguration<T> | ウィンドウ設定情報 | 🟢 |\n\n### 📁 Finalization/Options/ - 設定管理（🟢低変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `WindowFinalizationOptions.cs` | WindowFinalizationOptions | 確定処理設定オプション | 🟢 |\n\n### 📁 Finalization/Abstractions/ - 抽象化（🟢低変更頻度）\n| ファイル | インターフェース | 責務 | 変更頻度 |\n|---------|-----------------|------|----------|\n| `IKafkaProducer.cs` | IKafkaProducer | Kafka送信抽象化 | 🟢 |\n\n---\n\n## 🔄 データフロー・依存関係\n\n### ウィンドウ確定処理フロー\n```\nイベント受信 → WindowProcessor<T>.AddToWindow()\n   ↓\n複数ウィンドウサイズでWindowState<T>管理\n   ↓\n定期確定チェック → ShouldFinalizeWindow(Grace Period判定)\n   ↓\nFinalizeWindow() → 集約処理実行\n   ↓\nWindowFinalMessage生成 → {topic}_window_final送信\n   ↓\nRocksDB永続化 → 確定足履歴保存\n```\n\n### 確定足消費・永続化フロー\n```\n{topic}_window_final → WindowFinalConsumer.SubscribeToFinalizedWindows()\n   ↓\nHandleFinalizedWindowWithRocksDB() → 重複排除チェック\n   ↓\n初回確定足のみ処理 → RocksDB.Put(windowKey, finalMessage)\n   ↓\n外部ハンドラー実行 → ビジネスロジック処理\n```\n\n### POD協調・重複排除フロー\n```\n複数POD → 同一ウィンドウ確定\n   ↓\n各PODから{topic}_window_final送信（同一キー）\n   ↓\nWindowFinalConsumer → 初回到着のみ処理\n   ↓\n後続の重複メッセージは無視・ログ出力\n```\n\n### 履歴検索・参照フロー\n```\nGetFinalizedWindow(windowKey)\n   ↓\nメモリキャッシュ確認 → Hit時は即返却\n   ↓\nRocksDB.Get(windowKey) → 永続化データ取得\n   ↓\n結果をメモリキャッシュにも保存\n```\n\n---\n\n## 🚀 変更頻度・作業パターン\n\n### 🔴 高頻度変更パターン\n**1. 確定処理ロジック改善**\n- `WindowFinalizationManager`: スケジューリング間隔調整、並列処理最適化\n- `WindowProcessor<T>`: 新しい集約関数対応、Grace Period計算改善\n- 確定判定ロジック（`ShouldFinalizeWindow`）の精密化\n\n**2. パフォーマンス最適化**\n- バッチ確定処理の実装\n- メモリ使用量最適化（古いWindowState清掃）\n- RocksDB書き込み最適化\n\n**3. エラーハンドリング強化**\n- 確定処理失敗時のリトライ機能\n- 部分失敗時の復旧処理\n- POD間協調での異常ケース対応\n\n### 🟡 中頻度変更パターン\n**1. 確定足消費機能拡張**\n- `WindowFinalConsumer`: 新しい検索パターン、フィルタリング機能\n- 履歴管理機能（保持期間、圧縮等）\n- 統計・モニタリング機能\n\n**2. 設定・構成管理**\n- WindowConfigurationの新オプション\n- 動的設定変更対応\n- 環境別設定プロファイル\n\n**3. RocksDB連携改善**\n- バックアップ・リストア機能\n- 圧縮・最適化設定\n- パーティション対応\n\n### 🟢 低頻度変更パターン\n**1. データモデル変更**\n- `WindowFinalMessage`: 新フィールド追加（慎重に実施）\n- `WindowState<T>`: 状態管理の拡張\n\n**2. インターフェース変更**\n- `IKafkaProducer`: 新機能追加（破壊的変更は慎重）\n\n---\n\n## 📝 設計制約・注意事項\n\n### アーキテクチャ制約\n- **Grace Period遵守**: ウィンドウ終了後の待機時間必須\n- **確定足の冪等性**: 同一キーの重複送信防止必須\n- **POD分散対応**: 複数インスタンス環境での安全性確保\n- **永続化保証**: RocksDBによる確定足履歴の確実な保存\n\n### パフォーマンス考慮事項\n- **メモリ管理**: WindowStateの適切なライフサイクル管理\n- **RocksDB I/O**: 書き込み頻度とフラッシュタイミング最適化\n- **タイマー間隔**: 確定処理間隔と精度のバランス\n- **POD間通信**: Kafkaトピック経由の効率的な協調\n\n### セキュリティ・品質制約\n- **データ整合性**: 確定足の正確性と完全性保証\n- **重複排除**: 完全な冪等性確保\n- **障害回復**: POD障害時の確定処理継続性\n- **リソースリーク防止**: Timer、RocksDB等の適切な解放\n\n---\n\n## 🔗 他Namespaceとの連携\n\n### Core連携\n```csharp\n// WindowedEntitySetとの統合\npublic void AddToWindow(T entity, DateTime eventTime)\n{\n    foreach (var windowMinutes in _config.Windows)\n    {\n        var windowKey = GenerateWindowKey(entity, eventTime, windowMinutes);\n        var windowState = _windowStates.GetOrAdd(windowKey, _ => new WindowState<T>\n        {\n            WindowStart = windowStart,\n            WindowEnd = windowEnd,\n            WindowMinutes = windowMinutes,\n            Events = new List<T>(),\n            IsFinalized = false\n        });\n        \n        lock (windowState.Lock)\n        {\n            if (!windowState.IsFinalized)\n            {\n                windowState.Events.Add(entity);\n                windowState.LastUpdated = DateTime.UtcNow;\n            }\n        }\n    }\n}\n```\n\n### StateStore連携\n```csharp\n// RocksDB永続化\npublic WindowFinalConsumer(\n    RocksDbStateStore<string, WindowFinalMessage> rocksDbStore,\n    ILoggerFactory? loggerFactory = null)\n{\n    _rocksDbStore = rocksDbStore;\n}\n\nprivate async Task HandleFinalizedWindowWithRocksDB(WindowFinalMessage message,\n    Func<WindowFinalMessage, Task> messageHandler)\n{\n    // 重複チェック：同一キーの場合は最初に到着したものを採用\n    if (_finalizedWindows.TryAdd(message.WindowKey, message))\n    {\n        // RocksDBに保存\n        _rocksDbStore.Put(message.WindowKey, message);\n        \n        // 外部ハンドラー実行\n        await messageHandler(message);\n    }\n}\n```\n\n### Messaging連携\n```csharp\n// 確定足トピック送信\nprivate async Task SendToFinalTopic(string windowKey, object finalizedData, WindowState<T> windowState)\n{\n    var finalTopicMessage = new WindowFinalMessage\n    {\n        WindowKey = windowKey,\n        WindowStart = windowState.WindowStart,\n        WindowEnd = windowState.WindowEnd,\n        WindowMinutes = windowState.WindowMinutes,\n        EventCount = windowState.Events.Count,\n        AggregatedData = finalizedData,\n        FinalizedAt = DateTime.UtcNow,\n        PodId = Environment.MachineName // POD識別用\n    };\n\n    // KafkaProducerを使用して送信\n    await _config.FinalTopicProducer.SendAsync(\n        topic: $\"{_config.TopicName}_window_final\",\n        key: windowKey,\n        value: finalTopicMessage);\n}\n``\nThe file is too long and its contents have been truncated.\n",
+          "title": "window_namespace_doc.md",
+          "tether_id": null
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "command": "context_stuff",
+          "is_visually_hidden_from_conversation": false,
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "736393eb-0b08-4523-b56c-d828d97fad6f",
+          "request_id": "95583881c99dd480-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "736393eb-0b08-4523-b56c-d828d97fad6f",
+      "children": [
+        "7c6f35ce-c90b-4cd0-833f-0f89af3900b5"
+      ]
+    },
+    "7c6f35ce-c90b-4cd0-833f-0f89af3900b5": {
+      "id": "7c6f35ce-c90b-4cd0-833f-0f89af3900b5",
+      "message": {
+        "id": "7c6f35ce-c90b-4cd0-833f-0f89af3900b5",
+        "author": {
+          "role": "tool",
+          "name": "file_search",
+          "metadata": {}
+        },
+        "create_time": 1750893903.055027,
+        "update_time": null,
+        "content": {
+          "content_type": "tether_quote",
+          "url": "file-CbMZhGtaeQisUq1jHmSxF4",
+          "domain": "application_namespace_doc.md",
+          "text": "# Application 詳細設計\n\n## 🎯 責務・設計方針\n\n### 主要責務\n- **開発者向けAPI提供**：EF風の直感的なKafkaContext APIとFluent Builder設計\n- **設定管理・バリデーション**：Schema Registry接続、ログ設定、初期化オプションの統合管理\n- **スキーマ自動登録**：起動時のAvroスキーマ一括登録とFail-Fast設計\n- **Producer/Consumer統合**：Pool削除による直接管理とシンプル化設計\n\n### 設計原則・制約\n- **EF風API**: DbContextライクな開発体験、親しみやすいインターフェース\n- **Fail-Fast**: 初期化時エラーは即座に終了、実行時は適切な例外処理\n- **自動化優先**: OnModelCreating → スキーマ登録 → 接続確認の自動フロー\n- **Pool削除方針**: 複雑性削減のため、直接Manager使用でシンプル化\n\n### 他namespaceとの境界\n- **Core**: EntityModelとKafkaContextCoreを活用、型安全性を確保\n- **Messaging**: ProducerManager/ConsumerManagerの直接管理\n- **Serialization**: スキーマ登録サービスとの連携、Avro操作委譲\n- **Query**: （直接連携なし、Core経由でEntitySet提供）\n\n---\n\n## 🏗️ 主要クラス構成\n\n### 📁 Extensions/ - 拡張メソッド（🟢低変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `AvroSchemaInfoExtensions.cs` | AvroSchemaInfoExtensions | スキーマSubject名生成、型推論ヘルパー | 🟢 |\n\n### 📁 Context/ - コンテキスト実装（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `KsqlContext.cs` | KafkaContext | 簡素化統合KafkaContext、Pool削除版 | 🔴 |\n| `KsqlContext.cs` | EventSetWithSimplifiedServices<T> | 簡素化Manager統合EventSet | 🔴 |\n\n### 📁 Builder/ - Fluent API（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `KsqlContextBuilder.cs` | KsqlContextBuilder | Fluent API設定、コンテキスト構築 | 🟡 |\n\n### 📁 Options/ - 設定管理（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `KsqlContextOptions.cs` | KsqlContextOptions | 設定値管理、バリデーション | 🟡 |\n| `KsqlContextOptionsExtensions.cs` | KsqlContextOptionsExtensions | 設定拡張メソッド | 🟡 |\n\n---\n\n## 🔄 データフロー・依存関係\n\n### Context初期化フロー\n```\nKsqlContextBuilder.Create()\n   ↓\nUseSchemaRegistry() → KsqlContextOptions設定\n   ↓\nBuildContext<T>() → KafkaContext実装クラス生成\n   ↓\nOnModelCreating() → Core.ModelBuilder実行\n   ↓\nConvertToAvroConfigurations() → AvroEntityConfiguration変換\n   ↓\nAvroSchemaRegistrationService → スキーマ一括登録（Fail-Fast）\n```\n\n### EntitySet操作フロー\n```\ncontext.Orders.AddAsync()\n   ↓\nEventSetWithSimplifiedServices<T>.SendEntityAsync()\n   ↓\nKafkaProducerManager.SendAsync() → Messaging層委譲\n   ↓\nProducerManager → SerializationManager → Kafka送信\n```\n\n### 設定適用フロー\n```\nKsqlContextOptions\n   ↓\nSchemaRegistryClient → ISchemaRegistryClient設定\nLoggerFactory → ILoggerFactory設定\nValidation設定 → AutoRegister/FailOnErrors等\n   ↓\nBuildContext時に各Manager初期化で使用\n```\n\n---\n\n## 🚀 変更頻度・作業パターン\n\n### 🔴 高頻度変更パターン\n**1. Context機能拡張**\n- `KafkaContext`: 新しいEntitySet操作、Manager統合方式変更\n- `EventSetWithSimplifiedServices`: Producer/Consumer操作の拡張\n- Core層との連携パターン改善\n\n**2. 初期化・設定機能強化**\n- OnModelCreating時の自動スキーマ登録ロジック改善\n- ConvertToAvroConfigurations変換ロジック拡張\n- Fail-Fast例外処理の精密化\n\n**3. Pool削除対応の継続改善**\n- Manager直接使用パターンの最適化\n- リソース管理方式の改善\n- エラーハンドリング強化\n\n### 🟡 中頻度変更パターン\n**1. Builder API拡張**\n- `KsqlContextBuilder`: 新しい設定オプション対応\n- Fluent API種別の追加\n- 設定バリデーション強化\n\n**2. Options機能拡張**\n- `KsqlContextOptions`: 新しい設定項目追加\n- Schema Registry以外の外部サービス設定\n- 環境別設定プロファイル\n\n**3. 設定拡張メソッド**\n- `KsqlContextOptionsExtensions`: 便利メソッド追加\n- 設定パターンの標準化\n\n### 🟢 低頻度変更パターン\n**1. Extensions拡張**\n- `AvroSchemaInfoExtensions`: 新しいスキーマ操作\n- Subject命名規則変更（慎重に実施）\n\n**2. アーキテクチャ変更**\n- Pool戦略の見直し（現在は直接管理）\n- Context初期化フローの根本的変更\n\n---\n\n## 📝 設計制約・注意事項\n\n### アーキテクチャ制約\n- **Pool削除方針**: ProducerPool/ConsumerPoolは使用しない、Manager直接管理\n- **Fail-Fast原則**: スキーマ登録失敗時は即座にアプリケーション終了\n- **EF風API維持**: DbContextライクなインターフェース設計の堅持\n- **自動化優先**: OnModelCreating完了後の自動スキーマ登録強制\n\n### パフォーマンス考慮事項\n- **初期化時間**: スキーマ一括登録によるスタートアップ時間への影響\n- **Manager直接管理**: Pool削除によるシンプル化とリソース効率化\n- **設定バリデーション**: 起動時の設定検証コスト\n- **リソースリーク防止**: IDisposableの適切な実装\n\n### セキュリティ・品質制約\n- **Schema Registry認証**: SSL/SASL設定の適切な管理\n- **設定検証**: 不正設定の早期検出\n- **例外透過性**: Core/Infrastructure例外の適切な伝播\n- **ログ出力**: 初期化・設定関連の詳細ログ\n\n---\n\n## 🔗 他Namespaceとの連携\n\n### Core依存関係\n```csharp\n// EntityModel: POCO→Avro設定変換\nprotected IReadOnlyDictionary<Type, AvroEntityConfiguration> ConvertToAvroConfigurations(\n    Dictionary<Type, EntityModel> entityModels)\n{\n    foreach (var kvp in entityModels)\n    {\n        var entityModel = kvp.Value;\n        var avroConfig = new AvroEntityConfiguration(entityModel.EntityType)\n        {\n            TopicName = entityModel.TopicAttribute?.TopicName,\n            KeyProperties = entityModel.KeyProperties\n        };\n        avroConfigs[kvp.Key] = avroConfig;\n    }\n}\n```\n\n### Messaging連携\n```csharp\n// 簡素化Manager（Pool削除版）\npublic KafkaContext()\n{\n    _producerManager = new KafkaProducerManager(\n        Microsoft.Extensions.Options.Options.Create(new KsqlDslOptions()),\n        null   // LoggerFactory\n    );\n\n    _consumerManager = new KafkaConsumerManager(\n        Microsoft.Extensions.Options.Options.Create(new KsqlDslOptions()),\n        null   // LoggerFactory\n    );\n}\n\n// EventSet送信処理\nprotected override async Task SendEntityAsync(T entity, Cancellation\nThe file is too long and its contents have been truncated.\n",
+          "title": "application_namespace_doc.md",
+          "tether_id": null
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "command": "context_stuff",
+          "is_visually_hidden_from_conversation": false,
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "73ed2582-bf90-4a5b-9796-eb58991bc851",
+          "request_id": "95583881c99dd480-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "73ed2582-bf90-4a5b-9796-eb58991bc851",
+      "children": [
+        "4c5735a7-fa66-464f-86c0-05048fdc115a"
+      ]
+    },
+    "4c5735a7-fa66-464f-86c0-05048fdc115a": {
+      "id": "4c5735a7-fa66-464f-86c0-05048fdc115a",
+      "message": {
+        "id": "4c5735a7-fa66-464f-86c0-05048fdc115a",
+        "author": {
+          "role": "tool",
+          "name": "file_search",
+          "metadata": {}
+        },
+        "create_time": 1750893903.055073,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "\nPlease remember to search the user's documents if an answer to their question is not contained in the above snippets. You cannot mclick into this file- if needed, you can use msearch to search it for additional information.\n"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "is_visually_hidden_from_conversation": false,
+          "command": "prompt",
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "7c6f35ce-c90b-4cd0-833f-0f89af3900b5",
+          "request_id": "95583881c99dd480-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "7c6f35ce-c90b-4cd0-833f-0f89af3900b5",
+      "children": [
+        "b037ea6d-dbb5-403e-bd32-b97cb6280363"
+      ]
+    },
+    "b037ea6d-dbb5-403e-bd32-b97cb6280363": {
+      "id": "b037ea6d-dbb5-403e-bd32-b97cb6280363",
+      "message": {
+        "id": "b037ea6d-dbb5-403e-bd32-b97cb6280363",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750893891.504949,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "やあ、いらっしゃい！ファイルをすべて確認しました。以下が今回アップロードされた各ドキュメントの概要と整合性の状態です（2025年6月26日 08:33 JST 時点）：\n\n---\n\n## ✅ 全体構成チェック\n\n### 📘 `dev_guide.md`\n- **目的**：新機能開発のガイドラインとnamespace別ドキュメントのリンク集。\n- **特筆**：\n  - Namespaceごとの設計書更新を前提としたワークフローが明確。\n  - 実装例・パターンも記載あり（EntitySet追加、エラーハンドリング、Window処理）。\n\n### 🧱 各Namespace詳細（リンク順に対応）\n\n| Namespace | ドキュメント内容の確認 | 備考 |\n|-----------|--------------------------|------|\n| `Application` | ✅ [20†application_namespace_doc.md] | `Context`, `Builder`, `Options` 明確。KafkaContextの初期化フローが詳述。 |\n| `Serialization` | ✅ [17†serialization_namespace_doc.md] | Avro属性主導のスキーマ生成／登録機構、キャッシュ、バージョニング対応。 |\n| `Core` | ✅ [14†core_namespace_doc.md] | POCO属性、ModelBuilder、Window機能、抽象APIが網羅的に記述。 |\n| `Window` | ✅ [19†window_namespace_doc.md] | Finalization処理、確定足トピック送信、POD協調の詳細あり。 |\n| `Messaging` | ✅ [15†messaging_namespace_doc.md] | Producer/Consumer、DLQ処理、エラーハンドリングの詳細あり。 |\n| `Query` | ✅ [16†query_namespace_doc.md] | LINQ→KSQL変換、Builder構成、Stream/Table推論が整理されている。 |\n| `StateStore` | ✅ [18†statestore_namespace_doc.md] | RocksDB連携、Ready監視、Windowストア連携が明記。 |\n\n---\n\n## 📌 整合性・メタチェック\n\n- 各namespace設計書には **責務、設計原則、主要クラス構成、依存関係、変更頻度** が網羅されており、`dev_guide.md` の基準と合致。\n- ドキュメント内の **他namespaceとの連携記述** は双方向で整合性が取れている（例：`Window` ⇄ `Messaging`, `StateStore`）。\n- `Core` 層はインターフェース定義のみで他層には依存しておらず、設計原則が守られている。\n- `Serialization` と `Application` の間のスキーマ登録連携（`ConvertToAvroConfigurations()`）も一致。\n\n---\n\n## ✅ 次ステップ案（必要に応じて）\n\n1. **Window Finalization層の扱い**\n   - `Window` の `Finalization` 機構は設計上独立しており、`StateStore` とは依存関係なしで明確に分離可能です。\n   - したがって、**WindowFinalization層は独立層として定義を維持すべき**です【19†window_namespace_doc.md】。\n\n2. **Query層のBuilder説明**\n   - Builder群（`SelectBuilder`, `GroupByBuilder`, `JoinBuilder`, etc.）はすでに役割と変更頻度が詳細に記述されています【16†query_namespace_doc.md】。\n   - もし更なる詳細が必要なら、**各Builderの出力例や典型的LINQパターンとの対応関係表**の追記をおすすめします。\n\n3. **設計原則の優先度明示**\n   - `dev_guide.md` や各詳細には「Fail-Fast」「型安全性」「自動化」が繰り返し登場。\n   - 優先度としては：  \n     ① **型安全性**（全層共通）  \n     ② **Fail-Fast**（主にApplication/Messaging/Serialization）  \n     ③ **自動化**（Application/Serialization）  \n     → 設計書冒頭で「原則の優先順位」を明示しておくと、AI含めた新規実装者に有効です。\n\n4. **StateStore Ready監視のハイライト**\n   - `StateStore` のReady状態監視機能は他層に比べて特に **運用面での重要性が高い**（障害検知、同期確認など）【18†statestore_namespace_doc.md】。\n   - `dev_guide.md` にも「StateStoreのReady監視は運用安定性の基盤となる」旨を補記するとよいかもしれません。\n\n---\n\nご希望があれば、これらを反映したドキュメント修正案（patch候補）もお作りします！\n\n（2025年6月26日 08:33 JST）"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 1,
+        "metadata": {
+          "finish_details": {
+            "type": "stop",
+            "stop_tokens": [
+              200002
+            ]
+          },
+          "is_complete": true,
+          "citations": [
+            {
+              "start_ix": 1556,
+              "end_ix": 1584,
+              "citation_format_type": "tether_og",
+              "metadata": {
+                "type": "file",
+                "name": "window_namespace_doc.md",
+                "id": "file-GwW4y5ac9g2iZKpZo5TSrE",
+                "source": "my_files",
+                "text": "# Window 詳細設計\n\n## 🎯 責務・設計方針\n\n### 主要責務\n- **ウィンドウ確定処理**: Grace Period経過後のウィンドウ確定足生成\n- **確定足生成・配信**: 集約結果の`{topic}_window_final`トピック送信\n- **RocksDB永続化**: 確定足データの永続化とWindow履歴管理\n- **重複排除・POD協調**: 複数POD環境での確定足重複排除機能\n\n### 設計原則・制約\n- **Grace Period遵守**: ウィンドウ終了 + Grace Period後の確定処理\n- **確定足の冪等性**: 同一ウィンドウキーの重複送信対策\n- **POD分散協調**: 複数インスタンス環境での安全な確定処理\n- **永続化ファースト**: RocksDBによる確定足履歴の確実な保存\n\n### 他namespaceとの境界\n- **Core**: WindowedEntitySet等のWindow操作基盤を活用\n- **StateStore**: RocksDB連携による確定足永続化\n- **Messaging**: 確定足トピック送信用のKafkaProducer使用\n- **Application**: WindowFinalizationManagerの初期化・設定\n\n---\n\n## 🏗️ 主要クラス構成\n\n### 📁 Finalization/ - 確定処理コア（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `WindowFinalizationManager.cs` | WindowFinalizationManager | ウィンドウ確定処理スケジューリング | 🔴 |\n| `WindowProcessor.cs` | WindowProcessor<T> | エンティティ別ウィンドウ処理 | 🔴 |\n| `WindowProcessor.cs` | WindowProcessor (基底) | 抽象ウィンドウ処理 | 🟡 |\n\n### 📁 Finalization/Consumer/ - 確定足消費（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `WindowFinalConsumer.cs` | WindowFinalConsumer | 確定足消費・RocksDB保存 | 🟡 |\n\n### 📁 Finalization/Models/ - データモデル（🟢低変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `WindowFinalMessage.cs` | WindowFinalMessage | 確定足メッセージ構造 | 🟢 |\n| `WindowState.cs` | WindowState<T> | ウィンドウ状態管理 | 🟢 |\n| `WindowConfiguration.cs` | WindowConfiguration<T> | ウィンドウ設定情報 | 🟢 |\n\n### 📁 Finalization/Options/ - 設定管理（🟢低変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `WindowFinalizationOptions.cs` | WindowFinalizationOptions | 確定処理設定オプション | 🟢 |\n\n### 📁 Finalization/Abstractions/ - 抽象化（🟢低変更頻度）\n| ファイル | インターフェース | 責務 | 変更頻度 |\n|---------|-----------------|------|----------|\n| `IKafkaProducer.cs` | IKafkaProducer | Kafka送信抽象化 | 🟢 |\n\n---\n\n## 🔄 データフロー・依存関係\n\n### ウィンドウ確定処理フロー\n```\nイベント受信 → WindowProcessor<T>.AddToWindow()\n   ↓\n複数ウィンドウサイズでWindowState<T>管理\n   ↓\n定期確定チェック → ShouldFinalizeWindow(Grace Period判定)\n   ↓\nFinalizeWindow() → 集約処理実行\n   ↓\nWindowFinalMessage生成 → {topic}_window_final送信\n   ↓\nRocksDB永続化 → 確定足履歴保存\n```\n\n### 確定足消費・永続化フロー\n```\n{topic}_window_final → WindowFinalConsumer.SubscribeToFinalizedWindows()\n   ↓\nHandleFinalizedWindowWithRocksDB() → 重複排除チェック\n   ↓\n初回確定足のみ処理 → RocksDB.Put(windowKey, finalMessage)\n   ↓\n外部ハンドラー実行 → ビジネスロジック処理\n```\n\n### POD協調・重複排除フロー\n```\n複数POD → 同一ウィンドウ確定\n   ↓\n各PODから{topic}_window_final送信（同一キー）\n   ↓\nWindowFinalConsumer → 初回到着のみ処理\n   ↓\n後続の重複メッセージは無視・ログ出力\n```\n\n### 履歴検索・参照フロー\n```\nGetFinalizedWindow(windowKey)\n   ↓\nメモリキャッシュ確認 → Hit時は即返却\n   ↓\nRocksDB.Get(windowKey) → 永続化データ取得\n   ↓\n結果をメモリキャッシュにも保存\n```\n\n---\n\n## 🚀 変更頻度・作業パターン\n\n### 🔴 高頻度変更パターン\n**1. 確定処理ロジック改善**\n- `WindowFinalizationManager`: スケジューリング間隔調整、並列処理最適化\n- `WindowProcessor<T>`: 新しい集約関数対応、Grace Period計算改善\n- 確定判定ロジック（`ShouldFinalizeWindow`）の精密化\n\n**2. パフォーマンス最適化**\n- バッチ確定処理の実装\n- メモリ使用量最適化（古いWindowState清掃）\n- RocksDB書き込み最適化\n\n**3. エラーハンドリング強化**\n- 確定処理失敗時のリトライ機能\n- 部分失敗時の復旧処理\n- POD間協調での異常ケース対応\n\n### 🟡 中頻度変更パターン\n**1. 確定足消費機能拡張**\n- `WindowFinalConsumer`: 新しい検索パターン、フィルタリング機能\n- 履歴管理機能（保持期間、圧縮等）\n- 統計・モニタリング機能\n\n**2. 設定・構成管理**\n- WindowConfigurationの新オプション\n- 動的設定変更対応\n- 環境別設定プロファイル\n\n**3. RocksDB連携改善**\n- バックアップ・リストア機能\n- 圧縮・最適化設定\n- パーティション対応\n\n### 🟢 低頻度変更パターン\n**1. データモデル変更**\n- `WindowFinalMessage`: 新フィールド追加（慎重に実施）\n- `WindowState<T>`: 状態管理の拡張\n\n**2. インターフェース変更**\n- `IKafkaProducer`: 新機能追加（破壊的変更は慎重）\n\n---\n\n## 📝 設計制約・注意事項\n\n### アーキテクチャ制約\n- **Grace Period遵守**: ウィンドウ終了後の待機時間必須\n- **確定足の冪等性**: 同一キーの重複送信防止必須\n- **POD分散対応**: 複数インスタンス環境での安全性確保\n- **永続化保証**: RocksDBによる確定足履歴の確実な保存\n\n### パフォーマンス考慮事項\n- **メモリ管理**: WindowStateの適切なライフサイクル管理\n- **RocksDB I/O**: 書き込み頻度とフラッシュタイミング最適化\n- **タイマー間隔**: 確定処理間隔と精度のバランス\n- **POD間通信**: Kafkaトピック経由の効率的な協調\n\n### セキュリティ・品質制約\n- **データ整合性**: 確定足の正確性と完全性保証\n- **重複排除**: 完全な冪等性確保\n- **障害回復**: POD障害時の確定処理継続性\n- **リソースリーク防止**: Timer、RocksDB等の適切な解放\n\n---\n\n## 🔗 他Namespaceとの連携\n\n### Core連携\n```csharp\n// WindowedEntitySetとの統合\npublic void AddToWindow(T entity, DateTime eventTime)\n{\n    foreach (var windowMinutes in _config.Windows)\n    {\n        var windowKey = GenerateWindowKey(entity, eventTime, windowMinutes);\n        var windowState = _windowStates.GetOrAdd(windowKey, _ => new WindowState<T>\n        {\n            WindowStart = windowStart,\n            WindowEnd = windowEnd,\n            WindowMinutes = windowMinutes,\n            Events = new List<T>(),\n            IsFinalized = false\n        });\n        \n        lock (windowState.Lock)\n        {\n            if (!windowState.IsFinalized)\n            {\n                windowState.Events.Add(entity);\n                windowState.LastUpdated = DateTime.UtcNow;\n            }\n        }\n    }\n}\n```\n\n### StateStore連携\n```csharp\n// RocksDB永続化\npublic WindowFinalConsumer(\n    RocksDbStateStore<string, WindowFinalMessage> rocksDbStore,\n    ILoggerFactory? loggerFactory = null)\n{\n    _rocksDbStore = rocksDbStore;\n}\n\nprivate async Task HandleFinalizedWindowWithRocksDB(WindowFinalMessage message,\n    Func<WindowFinalMessage, Task> messageHandler)\n{\n    // 重複チェック：同一キーの場合は最初に到着したものを採用\n    if (_finalizedWindows.TryAdd(message.WindowKey, message))\n    {\n        // RocksDBに保存\n        _rocksDbStore.Put(message.WindowKey, message);\n        \n        // 外部ハンドラー実行\n        await messageHandler(message);\n    }\n}\n```\n\n### Messaging連携\n```csharp\n// 確定足トピック送信\nprivate async Task SendToFinalTopic(string windowKey, object finalizedData, WindowState<T> windowState)\n{\n    var finalTopicMessage = new WindowFinalMessage\n    {\n        WindowKey = windowKey,\n        WindowStart = windowState.WindowStart,\n        WindowEnd = windowState.WindowEnd,\n        WindowMinutes = windowState.WindowMinutes,\n        EventCount = windowState.Events.Count,\n        AggregatedData = finalizedData,\n        FinalizedAt = DateTime.UtcNow,\n        PodId = Environment.MachineName // POD識別用\n    };\n\n    // KafkaProducerを使用して送信\n    await _config.FinalTopicProducer.SendAsync(\n        topic: $\"{_config.TopicName}_window_final\",\n        key: windowKey,\n        value: finalTopicMessage);\n}\n``\nThe file is too long and its contents have been truncated.\n",
+                "extra": {
+                  "cited_message_idx": 19,
+                  "cited_message_id": "73ed2582-bf90-4a5b-9796-eb58991bc851",
+                  "search_result_idx": null,
+                  "evidence_text": "window_namespace_doc.md",
+                  "cloud_doc_url": null
+                }
+              }
+            },
+            {
+              "start_ix": 1703,
+              "end_ix": 1730,
+              "citation_format_type": "tether_og",
+              "metadata": {
+                "type": "file",
+                "name": "query_namespace_doc.md",
+                "id": "file-92XZ6jZrRQsiJvnppPPhuh",
+                "source": "my_files",
+                "text": "# Query 詳細設計\n\n## 🎯 責務・設計方針\n\n### 主要責務\n- **LINQ式からKSQL文への変換**：C# LINQ式を解析してksqlDB互換のKSQL文を生成\n- **クエリ実行パイプライン管理**：段階的なクエリ実行（派生オブジェクト作成→最終実行）\n- **DDL/DML分離生成**：CREATE文（DDL）とSELECT文（DML）の適切な使い分け\n- **Stream/Table型推論**：LINQ操作に基づく最適なksqlDBオブジェクト型の決定\n\n### 設計原則・制約\n- **型安全性確保**：LINQ式の型情報を保持してKSQL生成時のエラーを防止\n- **表現力の限界**：OrderByなど未サポート操作は明示的な例外で即座に通知\n- **パフォーマンス重視**：派生オブジェクト戦略により複雑なクエリを段階的に最適化\n- **診断可能性**：生成されるKSQL文をToKsql()で事前確認可能\n\n### 他namespaceとの境界\n- **Core**: EntityModelを受け取り、型情報に基づく変換を実行\n- **Messaging**: 実際のKafka通信は委譲、Query層は純粋に変換処理のみ\n- **Serialization**: スキーマ情報の取得のみ、直接的なシリアライゼーション処理なし\n\n---\n\n## 🏗️ 主要クラス構成\n\n### 📁 Pipeline/ - 実行制御コア（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `QueryExecutionPipeline.cs` | QueryExecutionPipeline | LINQ式解析→派生オブジェクト作成→クエリ実行の統括制御 | 🔴 |\n| `DDLQueryGenerator.cs` | DDLQueryGenerator | CREATE STREAM/TABLE AS文の生成 | 🔴 |\n| `DMLQueryGenerator.cs` | DMLQueryGenerator | SELECT文の生成 | 🟡 |\n| `StreamTableAnalyzer.cs` | StreamTableAnalyzer | 操作チェーンからStream/Table型推論 | 🔴 |\n| `DerivedObjectManager.cs` | DerivedObjectManager | 中間オブジェクト（stream_123等）の管理 | 🟡 |\n\n### 📁 Builders/ - KSQL構文生成（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `SelectBuilder.cs` | SelectBuilder | WHERE句構築（条件式の変換） | 🔴 |\n| `ProjectionBuilder.cs` | ProjectionBuilder | SELECT列の構築（射影・AS句含む） | 🔴 |\n| `GroupByBuilder.cs` | GroupByBuilder | GROUP BY句構築 | 🟡 |\n| `JoinBuilder.cs` | JoinBuilder | JOIN句構築（複数テーブル結合） | 🟡 |\n| `HavingBuilder.cs` | HavingBuilder | HAVING句構築（集約後条件） | 🟢 |\n| `WindowBuilder.cs` | WindowBuilder | WINDOW句構築（時間ウィンドウ） | 🟢 |\n\n### 📁 Ksql/ - ksqlDB REST API通信（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `KsqlDbRestApiClient.cs` | KsqlDbRestApiClient | ksqlDB REST API通信、ストリーミング対応 | 🟡 |\n| `KsqlDbExecutor.cs` | KsqlDbExecutor | DDL/DMLクエリ実行の抽象化 | 🟡 |\n\n### 📁 Linq/ - JOIN拡張（🟢低変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `UnifiedJoinResult.cs` | UnifiedJoinResult<TOuter,TInner> | 2テーブルJOIN結果 | 🟢 |\n| `UnifiedThreeWayJoinResult.cs` | UnifiedThreeWayJoinResult<TOuter,TInner,TThird> | 3テーブルJOIN結果 | 🟢 |\n| `JoinableEntitySet.cs` | JoinableEntitySet<T> | JOIN可能なEntitySet | 🟢 |\n\n---\n\n## 🔄 データフロー・依存関係\n\n### 主要処理フロー\n```\nLINQ式 → StreamTableAnalyzer → QueryExecutionPipeline\n   ↓\nExpressionAnalysisResult → DerivedObjectManager\n   ↓\n必要に応じて派生オブジェクト作成（DDLQueryGenerator）\n   ↓\n最終SELECT実行（DMLQueryGenerator）\n   ↓\nksqlDB REST API（KsqlDbRestApiClient）\n```\n\n### Builder使用パターン\n```\nExpression → 各Builder（WHERE/SELECT/GROUP BY等）→ KSQL文字列断片\n                            ↓\n                    DDL/DMLQueryGeneratorで組み立て\n                            ↓\n                      完全なKSQL文\n```\n\n### 型推論ロジック\n```\nMethodCall解析 → 集約有無判定 → Stream/Table決定\n- Where/Select → Stream\n- GroupBy → Table\n- Select after GroupBy → Table\n```\n\n---\n\n## 🚀 変更頻度・作業パターン\n\n### 🔴 高頻度変更パターン\n**1. 新しいLINQ演算子対応**\n- `StreamTableAnalyzer`に操作特性追加\n- 対応する`Builder`クラス作成または拡張\n- `QueryExecutionPipeline`での処理分岐追加\n\n**2. KSQL構文の改善**\n- `SelectBuilder`でのWHERE条件表現拡張（null比較、複合条件等）\n- `ProjectionBuilder`でのSELECT列表現拡張\n- 新しいKSQL関数の対応\n\n**3. エラーハンドリング強化**\n- 未サポート操作の早期検出\n- より詳細なエラーメッセージ\n- デバッグ情報の充実\n\n### 🟡 中頻度変更パターン\n**1. JOIN機能拡張**\n- 新しいJOIN種別（LEFT/RIGHT/FULL OUTER）\n- より複雑なJOIN条件\n- サブクエリ含むJOIN\n\n**2. ksqlDB APIアップデート対応**\n- 新しいREST APIエンドポイント\n- レスポンス形式の変更対応\n- 認証・セキュリティ拡張\n\n### 🟢 低頻度変更パターン\n**1. ウィンドウ機能拡張**\n- 新しいウィンドウタイプ\n- Grace Period等のオプション拡張\n\n**2. パフォーマンス最適化**\n- クエリ実行プラン改善\n- キャッシュ機能追加\n\n---\n\n## 📝 設計制約・注意事項\n\n### アーキテクチャ制約\n- **OrderBy未サポート**：ksqlDBのストリーミング性質上、ORDER BYは原則サポート外\n-\nThe file is too long and its contents have been truncated.\n",
+                "extra": {
+                  "cited_message_idx": 16,
+                  "cited_message_id": "2650c392-b983-4523-ac5f-1a15e0b73c4f",
+                  "search_result_idx": null,
+                  "evidence_text": "query_namespace_doc.md",
+                  "cloud_doc_url": null
+                }
+              }
+            },
+            {
+              "start_ix": 2169,
+              "end_ix": 2201,
+              "citation_format_type": "tether_og",
+              "metadata": {
+                "type": "file",
+                "name": "statestore_namespace_doc.md",
+                "id": "file-F88S8uVXJSwpA1NwnP4a4t",
+                "source": "my_files",
+                "text": "# StateStore 詳細設計\n\n## 🎯 責務・設計方針\n\n### 主要責務\n- **ローカル状態管理**: RocksDBベースの高性能な永続化ストレージ\n- **KafkaトピックとStateStoreの双方向同期**: KTable準拠の状態反映\n- **ウィンドウ処理**: 時間ベースの状態集約とWindow EntitySet提供\n- **Ready状態監視**: Consumer Lagに基づく同期完了判定とヘルスチェック\n\n### 設計原則・制約\n- **KTable互換性**: 最新状態のみ保持、Tombstone（削除）メッセージ対応\n- **非同期リアルタイム同期**: トピック変更のストレージへの即座反映\n- **障害復旧対応**: バインディング自動復旧、Lag監視による状態把握\n- **Window操作最適化**: 時間ウィンドウでの効率的な集約処理\n\n### 他namespaceとの境界\n- **Core**: EntityModelによる型情報とキー抽出ロジック活用\n- **Messaging**: ConsumerManagerからのストリーミングデータ取得\n- **Configuration**: StateStore設定（RocksDB、Window等）の適用\n- **Query**: Window操作時のDDL生成とksqlDB連携（間接的）\n\n---\n\n## 🏗️ 主要クラス構成\n\n### 📁 Core/ - StateStore基盤（🟡中変更頻度）\n| ファイル | クラス/インターフェース | 責務 | 変更頻度 |\n|---------|----------------------|------|----------|\n| `IStateStore.cs` | IStateStore<TKey,TValue> | StateStore操作の抽象化 | 🟢 |\n| `RocksDbStateStore.cs` | RocksDbStateStore<TKey,TValue> | RocksDB実装、永続化・メモリキャッシュ | 🟡 |\n\n### 📁 Management/ - ストア管理（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `StateStoreManager.cs` | StateStoreManager | ストア生成・ライフサイクル管理 | 🔴 |\n\n### 📁 Integration/ - Kafka連携（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `TopicStateStoreBinding.cs` | TopicStateStoreBinding<T> | トピック↔ストア双方向バインディング | 🔴 |\n| `StateStoreBindingManager.cs` | StateStoreBindingManager | 複数バインディングの統合管理 | 🔴 |\n| `BindingHealthStatus.cs` | BindingHealthStatus | バインディング健全性情報 | 🟡 |\n\n### 📁 Monitoring/ - Ready状態監視（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `ReadyStateMonitor.cs` | ReadyStateMonitor | Consumer Lag監視・Ready判定 | 🟡 |\n| `ReadyStateInfo.cs` | ReadyStateInfo | 詳細同期状態情報 | 🟡 |\n| `ReadyStateChangedEventArgs.cs` | ReadyStateChangedEventArgs | Ready状態変更イベント | 🟢 |\n| `LagUpdatedEventArgs.cs` | LagUpdatedEventArgs | Lag更新イベント | 🟢 |\n\n### 📁 Extensions/ - Window拡張（🟡中変更頻度）\n| ファイル | クラス/インターフェース | 責務 | 変更頻度 |\n|---------|----------------------|------|----------|\n| `IWindowedEntitySet.cs` | IWindowedEntitySet<T> | ウィンドウ付きEntitySet抽象化 | 🟢 |\n| `WindowedEntitySet.cs` | WindowedEntitySet<T> | ウィンドウ操作の具体実装 | 🟡 |\n| `WindowExtensions.cs` | WindowExtensions | `.Window(minutes)`拡張メソッド | 🟡 |\n| `KafkaContextStateStoreExtensions.cs` | StateStore初期化拡張 | Context初期化時のストア準備 | 🟡 |\n\n### 📁 Configuration/ - 設定管理（🟢低変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `StateStoreOptions.cs` | StateStoreOptions | ストア設定オプション | 🟢 |\n| `StateStoreConfiguration.cs` | StateStoreConfiguration | 設定変換・適用 | 🟢 |\n\n### 📁 ルート/ - エンティティ拡張（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `EventSetWithStateStore.cs` | EventSetWithStateStore<T> | StateStore統合EntitySet | 🟡 |\n\n---\n\n## 🔄 データフロー・依存関係\n\n### StateStore初期化フロー\n```\nKafkaContext.OnModelCreating()\n   ↓\nStateStoreExtensions.InitializeStateStores()\n   ↓\nStateStoreManager.InitializeStoresForEntity()\n   ↓\nRocksDbStateStore<TKey,TValue> 生成・キャッシュ\n```\n\n### トピック同期フロー\n```\nKafka Topic → KafkaConsumer → TopicStateStoreBinding\n   ↓\nCreateKafkaMessage() → ExtractKey()\n   ↓\nStateStore.Put(key, value) or Delete(key)  ※Tombstone対応\n   ↓\n定期的な Flush() → RocksDB永続化\n```\n\n### Ready状態監視フロー\n```\nReadyStateMonitor.CheckLag() (5秒間隔)\n   ↓\nConsumer.QueryWatermarkOffsets() → エンドオフセット取得\nConsumer.Position() → 現在位置取得\n   ↓\nTotalLag = EndOffset - CurrentOffset\n   ↓\nLag == 0 → Ready状態達成 → イベント発火\n```\n\n### Window操作フロー\n```\nEntitySet.Window(5) → WindowedEntitySet<T>\n   ↓\nStateStoreManager.GetOrCreateStore(entityType, windowMinutes)\n   ↓\nStateStore操作 + 元EntitySetへの委譲\n```\n\n---\n\n## 🚀 変更頻度・作業パターン\n\n### 🔴 高頻度変更パターン\n**1. バインディング機能強化**\n- `TopicStateStoreBinding`: 新しい同期パターン、エラー回復ロジック改善\n- `StateStoreBindingManager`: 複数ストア管理、ヘルスチェック精度向上\n- 同期パフォーマンス最適化（バッチ処理、並列化等）\n\n**2. ストア管理機能拡張**\n- `StateStoreManager`: 新しいストア種別対応、動的設定変更\n- 異なるウィンドウサイズの効率的管理\n- メモリ使用量監視・制御\n\n**3. Window操作改善**\n- より複雑なウィンドウ条件（Sliding、Session等）\n- ウィンドウ間でのデータ移行・マージ処理\n- 集約関数の拡張\n\n### 🟡 中頻度変更パターン\n**1. Ready状態監視精度向上**\n- `ReadyStateMonitor`: より細かいLag監視、予測アルゴリズム\n- パーティション別状態の詳細管理\n- タイムアウト・リトライロジック改善\n\n**2. RocksDB最適化**\n- `RocksDbStateStore`: 新しい永続化オプション、圧縮設定\n- インデックス戦略の改善\n- バックアップ・リストア機能\n\n**3. 設定機能拡張**\n- 環境別StateStore設定\n- 動的設定変更対応\n\n### 🟢 低頻度変更パターン\n**1. インターフェース変更**\n- `IStateStore`の新機能追加\n- 破壊的変更（慎重に実施）\n\n**2. 新ストレージバックエンド対応**\n- RocksDB以外のストレージエンジン\n- クラウドストレージ連携\n\n---\n\n## 📝 設計制約・注意事項\n\n### アーキテクチャ制約\n- **KTable互換性**: 最新状態のみ保持、同一キーの古い値は上書き\n- **Tombstone対応**: null値メッセージでの削除処理必須\n- **非同期リアルタイム**: UI/APIブロッキングなしの状態同期\n- **At-least-once保証**: Kafka Consumerの冪等性への依存\n\n### パフォーマンス考慮事項\n- **メモリ vs 永続化バランス**: ConcurrentDictionaryとRocksDBの使い分け\n- **バッチフラッシュ**: 定期的フラッシュによるI/O最適化\n- **Ready状態判定コスト**: 5秒間隔のLag監視によるオーバーヘッド\n- **大量データ処理**: Window集約時のメモリ使用量制御\n\n### セキュリティ\nThe file is too long and its contents have been truncated.\n",
+                "extra": {
+                  "cited_message_idx": 18,
+                  "cited_message_id": "736393eb-0b08-4523-b56c-d828d97fad6f",
+                  "search_result_idx": null,
+                  "evidence_text": "statestore_namespace_doc.md",
+                  "cloud_doc_url": null
+                }
+              }
+            }
+          ],
+          "content_references": [
+            {
+              "matched_text": "【19†window_namespace_doc.md】",
+              "start_idx": 1556,
+              "end_idx": 1584,
+              "alt": null,
+              "type": "file",
+              "name": "window_namespace_doc.md",
+              "id": "file-GwW4y5ac9g2iZKpZo5TSrE",
+              "source": "my_files",
+              "snippet": "# Window 詳細設計\n\n## 🎯 責務・設計方針\n\n### 主要責務\n- **ウィンドウ確定処理**: Grace Period経過後のウィンドウ確定足生成\n- **確定足生成・配信**: 集約結果の`{topic}_window_final`トピック送信\n- **RocksDB永続化**: 確定足データの永続化とWindow履歴管理\n- **重複排除・POD協調**: 複数POD環境での確定足重複排除機能\n\n### 設計原則・制約\n- **Grace Period遵守**: ウィンドウ終了 + Grace Period後の確定処理\n- **確定足の冪等性**: 同一ウィンドウキーの重複送信対策\n- **POD分散協調**: 複数インスタンス環境での安全な確定処理\n- **永続化ファースト**: RocksDBによる確定足履歴の確実な保存\n\n### 他namespaceとの境界\n- **Core**: WindowedEntitySet等のWindow操作基盤を活用\n- **StateStore**: RocksDB連携による確定足永続化\n- **Messaging**: 確定足トピック送信用のKafkaProducer使用\n- **Application**: WindowFinalizationManagerの初期化・設定\n\n---\n\n## 🏗️ 主要クラス構成\n\n### 📁 Finalization/ - 確定処理コア（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `WindowFinalizationManager.cs` | WindowFinalizationManager | ウィンドウ確定処理スケジューリング | 🔴 |\n| `WindowProcessor.cs` | WindowProcessor<T> | エンティティ別ウィンドウ処理 | 🔴 |\n| `WindowProcessor.cs` | WindowProcessor (基底) | 抽象ウィンドウ処理 | 🟡 |\n\n### 📁 Finalization/Consumer/ - 確定足消費（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `WindowFinalConsumer.cs` | WindowFinalConsumer | 確定足消費・RocksDB保存 | 🟡 |\n\n### 📁 Finalization/Models/ - データモデル（🟢低変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `WindowFinalMessage.cs` | WindowFinalMessage | 確定足メッセージ構造 | 🟢 |\n| `WindowState.cs` | WindowState<T> | ウィンドウ状態管理 | 🟢 |\n| `WindowConfiguration.cs` | WindowConfiguration<T> | ウィンドウ設定情報 | 🟢 |\n\n### 📁 Finalization/Options/ - 設定管理（🟢低変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `WindowFinalizationOptions.cs` | WindowFinalizationOptions | 確定処理設定オプション | 🟢 |\n\n### 📁 Finalization/Abstractions/ - 抽象化（🟢低変更頻度）\n| ファイル | インターフェース | 責務 | 変更頻度 |\n|---------|-----------------|------|----------|\n| `IKafkaProducer.cs` | IKafkaProducer | Kafka送信抽象化 | 🟢 |\n\n---\n\n## 🔄 データフロー・依存関係\n\n### ウィンドウ確定処理フロー\n```\nイベント受信 → WindowProcessor<T>.AddToWindow()\n   ↓\n複数ウィンドウサイズでWindowState<T>管理\n   ↓\n定期確定チェック → ShouldFinalizeWindow(Grace Period判定)\n   ↓\nFinalizeWindow() → 集約処理実行\n   ↓\nWindowFinalMessage生成 → {topic}_window_final送信\n   ↓\nRocksDB永続化 → 確定足履歴保存\n```\n\n### 確定足消費・永続化フロー\n```\n{topic}_window_final → WindowFinalConsumer.SubscribeToFinalizedWindows()\n   ↓\nHandleFinalizedWindowWithRocksDB() → 重複排除チェック\n   ↓\n初回確定足のみ処理 → RocksDB.Put(windowKey, finalMessage)\n   ↓\n外部ハンドラー実行 → ビジネスロジック処理\n```\n\n### POD協調・重複排除フロー\n```\n複数POD → 同一ウィンドウ確定\n   ↓\n各PODから{topic}_window_final送信（同一キー）\n   ↓\nWindowFinalConsumer → 初回到着のみ処理\n   ↓\n後続の重複メッセージは無視・ログ出力\n```\n\n### 履歴検索・参照フロー\n```\nGetFinalizedWindow(windowKey)\n   ↓\nメモリキャッシュ確認 → Hit時は即返却\n   ↓\nRocksDB.Get(windowKey) → 永続化データ取得\n   ↓\n結果をメモリキャッシュにも保存\n```\n\n---\n\n## 🚀 変更頻度・作業パターン\n\n### 🔴 高頻度変更パターン\n**1. 確定処理ロジック改善**\n- `WindowFinalizationManager`: スケジューリング間隔調整、並列処理最適化\n- `WindowProcessor<T>`: 新しい集約関数対応、Grace Period計算改善\n- 確定判定ロジック（`ShouldFinalizeWindow`）の精密化\n\n**2. パフォーマンス最適化**\n- バッチ確定処理の実装\n- メモリ使用量最適化（古いWindowState清掃）\n- RocksDB書き込み最適化\n\n**3. エラーハンドリング強化**\n- 確定処理失敗時のリトライ機能\n- 部分失敗時の復旧処理\n- POD間協調での異常ケース対応\n\n### 🟡 中頻度変更パターン\n**1. 確定足消費機能拡張**\n- `WindowFinalConsumer`: 新しい検索パターン、フィルタリング機能\n- 履歴管理機能（保持期間、圧縮等）\n- 統計・モニタリング機能\n\n**2. 設定・構成管理**\n- WindowConfigurationの新オプション\n- 動的設定変更対応\n- 環境別設定プロファイル\n\n**3. RocksDB連携改善**\n- バックアップ・リストア機能\n- 圧縮・最適化設定\n- パーティション対応\n\n### 🟢 低頻度変更パターン\n**1. データモデル変更**\n- `WindowFinalMessage`: 新フィールド追加（慎重に実施）\n- `WindowState<T>`: 状態管理の拡張\n\n**2. インターフェース変更**\n- `IKafkaProducer`: 新機能追加（破壊的変更は慎重）\n\n---\n\n## 📝 設計制約・注意事項\n\n### アーキテクチャ制約\n- **Grace Period遵守**: ウィンドウ終了後の待機時間必須\n- **確定足の冪等性**: 同一キーの重複送信防止必須\n- **POD分散対応**: 複数インスタンス環境での安全性確保\n- **永続化保証**: RocksDBによる確定足履歴の確実な保存\n\n### パフォーマンス考慮事項\n- **メモリ管理**: WindowStateの適切なライフサイクル管理\n- **RocksDB I/O**: 書き込み頻度とフラッシュタイミング最適化\n- **タイマー間隔**: 確定処理間隔と精度のバランス\n- **POD間通信**: Kafkaトピック経由の効率的な協調\n\n### セキュリティ・品質制約\n- **データ整合性**: 確定足の正確性と完全性保証\n- **重複排除**: 完全な冪等性確保\n- **障害回復**: POD障害時の確定処理継続性\n- **リソースリーク防止**: Timer、RocksDB等の適切な解放\n\n---\n\n## 🔗 他Namespaceとの連携\n\n### Core連携\n```csharp\n// WindowedEntitySetとの統合\npublic void AddToWindow(T entity, DateTime eventTime)\n{\n    foreach (var windowMinutes in _config.Windows)\n    {\n        var windowKey = GenerateWindowKey(entity, eventTime, windowMinutes);\n        var windowState = _windowStates.GetOrAdd(windowKey, _ => new WindowState<T>\n        {\n            WindowStart = windowStart,\n            WindowEnd = windowEnd,\n            WindowMinutes = windowMinutes,\n            Events = new List<T>(),\n            IsFinalized = false\n        });\n        \n        lock (windowState.Lock)\n        {\n            if (!windowState.IsFinalized)\n            {\n                windowState.Events.Add(entity);\n                windowState.LastUpdated = DateTime.UtcNow;\n            }\n        }\n    }\n}\n```\n\n### StateStore連携\n```csharp\n// RocksDB永続化\npublic WindowFinalConsumer(\n    RocksDbStateStore<string, WindowFinalMessage> rocksDbStore,\n    ILoggerFactory? loggerFactory = null)\n{\n    _rocksDbStore = rocksDbStore;\n}\n\nprivate async Task HandleFinalizedWindowWithRocksDB(WindowFinalMessage message,\n    Func<WindowFinalMessage, Task> messageHandler)\n{\n    // 重複チェック：同一キーの場合は最初に到着したものを採用\n    if (_finalizedWindows.TryAdd(message.WindowKey, message))\n    {\n        // RocksDBに保存\n        _rocksDbStore.Put(message.WindowKey, message);\n        \n        // 外部ハンドラー実行\n        await messageHandler(message);\n    }\n}\n```\n\n### Messaging連携\n```csharp\n// 確定足トピック送信\nprivate async Task SendToFinalTopic(string windowKey, object finalizedData, WindowState<T> windowState)\n{\n    var finalTopicMessage = new WindowFinalMessage\n    {\n        WindowKey = windowKey,\n        WindowStart = windowState.WindowStart,\n        WindowEnd = windowState.WindowEnd,\n        WindowMinutes = windowState.WindowMinutes,\n        EventCount = windowState.Events.Count,\n        AggregatedData = finalizedData,\n        FinalizedAt = DateTime.UtcNow,\n        PodId = Environment.MachineName // POD識別用\n    };\n\n    // KafkaProducerを使用して送信\n    await _config.FinalTopicProducer.SendAsync(\n        topic: $\"{_config.TopicName}_window_final\",\n        key: windowKey,\n        value: finalTopicMessage);\n}\n``\nThe file is too long and its contents have been truncated.\n",
+              "cloud_doc_url": null,
+              "input_pointer": {
+                "message_index": 19,
+                "message_id": "73ed2582-bf90-4a5b-9796-eb58991bc851",
+                "file_index": null,
+                "line_range_start": null,
+                "line_range_end": null
+              },
+              "fff_metadata": null
+            },
+            {
+              "matched_text": "【16†query_namespace_doc.md】",
+              "start_idx": 1703,
+              "end_idx": 1730,
+              "alt": null,
+              "type": "file",
+              "name": "query_namespace_doc.md",
+              "id": "file-92XZ6jZrRQsiJvnppPPhuh",
+              "source": "my_files",
+              "snippet": "# Query 詳細設計\n\n## 🎯 責務・設計方針\n\n### 主要責務\n- **LINQ式からKSQL文への変換**：C# LINQ式を解析してksqlDB互換のKSQL文を生成\n- **クエリ実行パイプライン管理**：段階的なクエリ実行（派生オブジェクト作成→最終実行）\n- **DDL/DML分離生成**：CREATE文（DDL）とSELECT文（DML）の適切な使い分け\n- **Stream/Table型推論**：LINQ操作に基づく最適なksqlDBオブジェクト型の決定\n\n### 設計原則・制約\n- **型安全性確保**：LINQ式の型情報を保持してKSQL生成時のエラーを防止\n- **表現力の限界**：OrderByなど未サポート操作は明示的な例外で即座に通知\n- **パフォーマンス重視**：派生オブジェクト戦略により複雑なクエリを段階的に最適化\n- **診断可能性**：生成されるKSQL文をToKsql()で事前確認可能\n\n### 他namespaceとの境界\n- **Core**: EntityModelを受け取り、型情報に基づく変換を実行\n- **Messaging**: 実際のKafka通信は委譲、Query層は純粋に変換処理のみ\n- **Serialization**: スキーマ情報の取得のみ、直接的なシリアライゼーション処理なし\n\n---\n\n## 🏗️ 主要クラス構成\n\n### 📁 Pipeline/ - 実行制御コア（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `QueryExecutionPipeline.cs` | QueryExecutionPipeline | LINQ式解析→派生オブジェクト作成→クエリ実行の統括制御 | 🔴 |\n| `DDLQueryGenerator.cs` | DDLQueryGenerator | CREATE STREAM/TABLE AS文の生成 | 🔴 |\n| `DMLQueryGenerator.cs` | DMLQueryGenerator | SELECT文の生成 | 🟡 |\n| `StreamTableAnalyzer.cs` | StreamTableAnalyzer | 操作チェーンからStream/Table型推論 | 🔴 |\n| `DerivedObjectManager.cs` | DerivedObjectManager | 中間オブジェクト（stream_123等）の管理 | 🟡 |\n\n### 📁 Builders/ - KSQL構文生成（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `SelectBuilder.cs` | SelectBuilder | WHERE句構築（条件式の変換） | 🔴 |\n| `ProjectionBuilder.cs` | ProjectionBuilder | SELECT列の構築（射影・AS句含む） | 🔴 |\n| `GroupByBuilder.cs` | GroupByBuilder | GROUP BY句構築 | 🟡 |\n| `JoinBuilder.cs` | JoinBuilder | JOIN句構築（複数テーブル結合） | 🟡 |\n| `HavingBuilder.cs` | HavingBuilder | HAVING句構築（集約後条件） | 🟢 |\n| `WindowBuilder.cs` | WindowBuilder | WINDOW句構築（時間ウィンドウ） | 🟢 |\n\n### 📁 Ksql/ - ksqlDB REST API通信（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `KsqlDbRestApiClient.cs` | KsqlDbRestApiClient | ksqlDB REST API通信、ストリーミング対応 | 🟡 |\n| `KsqlDbExecutor.cs` | KsqlDbExecutor | DDL/DMLクエリ実行の抽象化 | 🟡 |\n\n### 📁 Linq/ - JOIN拡張（🟢低変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `UnifiedJoinResult.cs` | UnifiedJoinResult<TOuter,TInner> | 2テーブルJOIN結果 | 🟢 |\n| `UnifiedThreeWayJoinResult.cs` | UnifiedThreeWayJoinResult<TOuter,TInner,TThird> | 3テーブルJOIN結果 | 🟢 |\n| `JoinableEntitySet.cs` | JoinableEntitySet<T> | JOIN可能なEntitySet | 🟢 |\n\n---\n\n## 🔄 データフロー・依存関係\n\n### 主要処理フロー\n```\nLINQ式 → StreamTableAnalyzer → QueryExecutionPipeline\n   ↓\nExpressionAnalysisResult → DerivedObjectManager\n   ↓\n必要に応じて派生オブジェクト作成（DDLQueryGenerator）\n   ↓\n最終SELECT実行（DMLQueryGenerator）\n   ↓\nksqlDB REST API（KsqlDbRestApiClient）\n```\n\n### Builder使用パターン\n```\nExpression → 各Builder（WHERE/SELECT/GROUP BY等）→ KSQL文字列断片\n                            ↓\n                    DDL/DMLQueryGeneratorで組み立て\n                            ↓\n                      完全なKSQL文\n```\n\n### 型推論ロジック\n```\nMethodCall解析 → 集約有無判定 → Stream/Table決定\n- Where/Select → Stream\n- GroupBy → Table\n- Select after GroupBy → Table\n```\n\n---\n\n## 🚀 変更頻度・作業パターン\n\n### 🔴 高頻度変更パターン\n**1. 新しいLINQ演算子対応**\n- `StreamTableAnalyzer`に操作特性追加\n- 対応する`Builder`クラス作成または拡張\n- `QueryExecutionPipeline`での処理分岐追加\n\n**2. KSQL構文の改善**\n- `SelectBuilder`でのWHERE条件表現拡張（null比較、複合条件等）\n- `ProjectionBuilder`でのSELECT列表現拡張\n- 新しいKSQL関数の対応\n\n**3. エラーハンドリング強化**\n- 未サポート操作の早期検出\n- より詳細なエラーメッセージ\n- デバッグ情報の充実\n\n### 🟡 中頻度変更パターン\n**1. JOIN機能拡張**\n- 新しいJOIN種別（LEFT/RIGHT/FULL OUTER）\n- より複雑なJOIN条件\n- サブクエリ含むJOIN\n\n**2. ksqlDB APIアップデート対応**\n- 新しいREST APIエンドポイント\n- レスポンス形式の変更対応\n- 認証・セキュリティ拡張\n\n### 🟢 低頻度変更パターン\n**1. ウィンドウ機能拡張**\n- 新しいウィンドウタイプ\n- Grace Period等のオプション拡張\n\n**2. パフォーマンス最適化**\n- クエリ実行プラン改善\n- キャッシュ機能追加\n\n---\n\n## 📝 設計制約・注意事項\n\n### アーキテクチャ制約\n- **OrderBy未サポート**：ksqlDBのストリーミング性質上、ORDER BYは原則サポート外\n-\nThe file is too long and its contents have been truncated.\n",
+              "cloud_doc_url": null,
+              "input_pointer": {
+                "message_index": 16,
+                "message_id": "2650c392-b983-4523-ac5f-1a15e0b73c4f",
+                "file_index": null,
+                "line_range_start": null,
+                "line_range_end": null
+              },
+              "fff_metadata": null
+            },
+            {
+              "matched_text": "【18†statestore_namespace_doc.md】",
+              "start_idx": 2169,
+              "end_idx": 2201,
+              "alt": null,
+              "type": "file",
+              "name": "statestore_namespace_doc.md",
+              "id": "file-F88S8uVXJSwpA1NwnP4a4t",
+              "source": "my_files",
+              "snippet": "# StateStore 詳細設計\n\n## 🎯 責務・設計方針\n\n### 主要責務\n- **ローカル状態管理**: RocksDBベースの高性能な永続化ストレージ\n- **KafkaトピックとStateStoreの双方向同期**: KTable準拠の状態反映\n- **ウィンドウ処理**: 時間ベースの状態集約とWindow EntitySet提供\n- **Ready状態監視**: Consumer Lagに基づく同期完了判定とヘルスチェック\n\n### 設計原則・制約\n- **KTable互換性**: 最新状態のみ保持、Tombstone（削除）メッセージ対応\n- **非同期リアルタイム同期**: トピック変更のストレージへの即座反映\n- **障害復旧対応**: バインディング自動復旧、Lag監視による状態把握\n- **Window操作最適化**: 時間ウィンドウでの効率的な集約処理\n\n### 他namespaceとの境界\n- **Core**: EntityModelによる型情報とキー抽出ロジック活用\n- **Messaging**: ConsumerManagerからのストリーミングデータ取得\n- **Configuration**: StateStore設定（RocksDB、Window等）の適用\n- **Query**: Window操作時のDDL生成とksqlDB連携（間接的）\n\n---\n\n## 🏗️ 主要クラス構成\n\n### 📁 Core/ - StateStore基盤（🟡中変更頻度）\n| ファイル | クラス/インターフェース | 責務 | 変更頻度 |\n|---------|----------------------|------|----------|\n| `IStateStore.cs` | IStateStore<TKey,TValue> | StateStore操作の抽象化 | 🟢 |\n| `RocksDbStateStore.cs` | RocksDbStateStore<TKey,TValue> | RocksDB実装、永続化・メモリキャッシュ | 🟡 |\n\n### 📁 Management/ - ストア管理（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `StateStoreManager.cs` | StateStoreManager | ストア生成・ライフサイクル管理 | 🔴 |\n\n### 📁 Integration/ - Kafka連携（🔴高変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `TopicStateStoreBinding.cs` | TopicStateStoreBinding<T> | トピック↔ストア双方向バインディング | 🔴 |\n| `StateStoreBindingManager.cs` | StateStoreBindingManager | 複数バインディングの統合管理 | 🔴 |\n| `BindingHealthStatus.cs` | BindingHealthStatus | バインディング健全性情報 | 🟡 |\n\n### 📁 Monitoring/ - Ready状態監視（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `ReadyStateMonitor.cs` | ReadyStateMonitor | Consumer Lag監視・Ready判定 | 🟡 |\n| `ReadyStateInfo.cs` | ReadyStateInfo | 詳細同期状態情報 | 🟡 |\n| `ReadyStateChangedEventArgs.cs` | ReadyStateChangedEventArgs | Ready状態変更イベント | 🟢 |\n| `LagUpdatedEventArgs.cs` | LagUpdatedEventArgs | Lag更新イベント | 🟢 |\n\n### 📁 Extensions/ - Window拡張（🟡中変更頻度）\n| ファイル | クラス/インターフェース | 責務 | 変更頻度 |\n|---------|----------------------|------|----------|\n| `IWindowedEntitySet.cs` | IWindowedEntitySet<T> | ウィンドウ付きEntitySet抽象化 | 🟢 |\n| `WindowedEntitySet.cs` | WindowedEntitySet<T> | ウィンドウ操作の具体実装 | 🟡 |\n| `WindowExtensions.cs` | WindowExtensions | `.Window(minutes)`拡張メソッド | 🟡 |\n| `KafkaContextStateStoreExtensions.cs` | StateStore初期化拡張 | Context初期化時のストア準備 | 🟡 |\n\n### 📁 Configuration/ - 設定管理（🟢低変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `StateStoreOptions.cs` | StateStoreOptions | ストア設定オプション | 🟢 |\n| `StateStoreConfiguration.cs` | StateStoreConfiguration | 設定変換・適用 | 🟢 |\n\n### 📁 ルート/ - エンティティ拡張（🟡中変更頻度）\n| ファイル | クラス | 責務 | 変更頻度 |\n|---------|--------|------|----------|\n| `EventSetWithStateStore.cs` | EventSetWithStateStore<T> | StateStore統合EntitySet | 🟡 |\n\n---\n\n## 🔄 データフロー・依存関係\n\n### StateStore初期化フロー\n```\nKafkaContext.OnModelCreating()\n   ↓\nStateStoreExtensions.InitializeStateStores()\n   ↓\nStateStoreManager.InitializeStoresForEntity()\n   ↓\nRocksDbStateStore<TKey,TValue> 生成・キャッシュ\n```\n\n### トピック同期フロー\n```\nKafka Topic → KafkaConsumer → TopicStateStoreBinding\n   ↓\nCreateKafkaMessage() → ExtractKey()\n   ↓\nStateStore.Put(key, value) or Delete(key)  ※Tombstone対応\n   ↓\n定期的な Flush() → RocksDB永続化\n```\n\n### Ready状態監視フロー\n```\nReadyStateMonitor.CheckLag() (5秒間隔)\n   ↓\nConsumer.QueryWatermarkOffsets() → エンドオフセット取得\nConsumer.Position() → 現在位置取得\n   ↓\nTotalLag = EndOffset - CurrentOffset\n   ↓\nLag == 0 → Ready状態達成 → イベント発火\n```\n\n### Window操作フロー\n```\nEntitySet.Window(5) → WindowedEntitySet<T>\n   ↓\nStateStoreManager.GetOrCreateStore(entityType, windowMinutes)\n   ↓\nStateStore操作 + 元EntitySetへの委譲\n```\n\n---\n\n## 🚀 変更頻度・作業パターン\n\n### 🔴 高頻度変更パターン\n**1. バインディング機能強化**\n- `TopicStateStoreBinding`: 新しい同期パターン、エラー回復ロジック改善\n- `StateStoreBindingManager`: 複数ストア管理、ヘルスチェック精度向上\n- 同期パフォーマンス最適化（バッチ処理、並列化等）\n\n**2. ストア管理機能拡張**\n- `StateStoreManager`: 新しいストア種別対応、動的設定変更\n- 異なるウィンドウサイズの効率的管理\n- メモリ使用量監視・制御\n\n**3. Window操作改善**\n- より複雑なウィンドウ条件（Sliding、Session等）\n- ウィンドウ間でのデータ移行・マージ処理\n- 集約関数の拡張\n\n### 🟡 中頻度変更パターン\n**1. Ready状態監視精度向上**\n- `ReadyStateMonitor`: より細かいLag監視、予測アルゴリズム\n- パーティション別状態の詳細管理\n- タイムアウト・リトライロジック改善\n\n**2. RocksDB最適化**\n- `RocksDbStateStore`: 新しい永続化オプション、圧縮設定\n- インデックス戦略の改善\n- バックアップ・リストア機能\n\n**3. 設定機能拡張**\n- 環境別StateStore設定\n- 動的設定変更対応\n\n### 🟢 低頻度変更パターン\n**1. インターフェース変更**\n- `IStateStore`の新機能追加\n- 破壊的変更（慎重に実施）\n\n**2. 新ストレージバックエンド対応**\n- RocksDB以外のストレージエンジン\n- クラウドストレージ連携\n\n---\n\n## 📝 設計制約・注意事項\n\n### アーキテクチャ制約\n- **KTable互換性**: 最新状態のみ保持、同一キーの古い値は上書き\n- **Tombstone対応**: null値メッセージでの削除処理必須\n- **非同期リアルタイム**: UI/APIブロッキングなしの状態同期\n- **At-least-once保証**: Kafka Consumerの冪等性への依存\n\n### パフォーマンス考慮事項\n- **メモリ vs 永続化バランス**: ConcurrentDictionaryとRocksDBの使い分け\n- **バッチフラッシュ**: 定期的フラッシュによるI/O最適化\n- **Ready状態判定コスト**: 5秒間隔のLag監視によるオーバーヘッド\n- **大量データ処理**: Window集約時のメモリ使用量制御\n\n### セキュリティ\nThe file is too long and its contents have been truncated.\n",
+              "cloud_doc_url": null,
+              "input_pointer": {
+                "message_index": 18,
+                "message_id": "736393eb-0b08-4523-b56c-d828d97fad6f",
+                "file_index": null,
+                "line_range_start": null,
+                "line_range_end": null
+              },
+              "fff_metadata": null
+            }
+          ],
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "4c5735a7-fa66-464f-86c0-05048fdc115a",
+          "request_id": "95583881c99dd480-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "4c5735a7-fa66-464f-86c0-05048fdc115a",
+      "children": []
+    }
+  },
+  "current_node": "b037ea6d-dbb5-403e-bd32-b97cb6280363"
+}

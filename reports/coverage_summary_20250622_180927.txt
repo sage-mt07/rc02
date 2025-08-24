@@ -1,0 +1,7 @@
+鏡花レポート 20250622_180927 UTC
+
+coverage.cobertura.xml から取得したコードカバレッジ概要:
+- line-rate: 0.6678 (66.78%)
+- branch-rate: 0.4888 (48.88%)
+- lines covered: 2835 / 4245
+- branches covered: 1055 / 2158

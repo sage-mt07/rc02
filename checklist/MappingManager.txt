@@ -1,0 +1,8 @@
+9. MappingManager / KeyExtractor
+- API 仕様がドキュメントと一致しているか
+- Register で null チェックや重複登録の扱いが明確か
+- ExtractKeyValue の Fail-Fast 条件をテストで網羅しているか
+- 複合キー辞書の順序保証・型検証を行っているか
+- KeyExtractor のサポート型 (int/long/string/Guid) に限定されているか
+- 拡張用インターフェースや DI 設定が検討されているか
+- マルチスレッド環境での登録/抽出の排他制御を確認したか

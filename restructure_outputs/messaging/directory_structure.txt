@@ -1,0 +1,17 @@
+src/Messaging/Abstractions/IKafkaConsumer.cs
+src/Messaging/Abstractions/IKafkaConsumerFactory.cs
+src/Messaging/Abstractions/IKafkaProducer.cs
+src/Messaging/Abstractions/IKafkaProducerFactory.cs
+src/Messaging/Configuration/CommonSection.cs
+src/Messaging/Configuration/ConsumerSection.cs
+src/Messaging/Configuration/ProducerSection.cs
+src/Messaging/Configuration/SchemaRegistrySection.cs
+src/Messaging/Configuration/TopicSection.cs
+src/Messaging/Consumers/KafkaConsumerFactory.cs
+src/Messaging/Consumers/KafkaConsumerManager.cs
+src/Messaging/Contracts/IErrorSink.cs
+src/Messaging/Internal/ErrorHandlingContext.cs
+src/Messaging/Models/DlqEnvelope.cs
+src/Messaging/Producers/DlqProducer.cs
+src/Messaging/Producers/KafkaProducerFactory.cs
+src/Messaging/Producers/KafkaProducerManager.cs

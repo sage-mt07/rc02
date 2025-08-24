@@ -1,0 +1,9 @@
+鏡花レビュー 2025-06-22 00:36:01
+
+対象: tests フォルダのコード品質確認
+
+## 指摘事項
+- `tests/Serialization/AvroSchemaBuilderTests.cs` の `ValidateSchemaAsync_InvalidSchema_ReturnsFalse` では非同期メソッドの結果取得に `.Result` を使用しており、テストメソッド名に `Async` が含まれるものの `async`/`await` を用いていない。デッドロックの原因となる可能性があるため `await` を用いた実装へ変更を推奨。
+
+## コメント
+その他のテストコードは命名規則やアサーションも整っており、全体的に読みやすい状態でした。

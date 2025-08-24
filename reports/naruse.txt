@@ -1,0 +1,1228 @@
+Kafka.Ksql.Linq.Serialization 設計仕様書
+1. 概要
+本設計は、Kafka.Ksql.Linq.Serialization名前空間における serialize/deserialize処理について、Confluent公式Avroシリアライザを内部利用するラッパー方式で実装する仕様を定義します。
+
+1.1 設計方針
+Confluent公式シリアライザの完全利用: 独自変換処理は行わず、Confluent.SchemaRegistry.Serdes.AvroSerializer<T>/AvroDeserializer<T>を内部で利用
+ラッパーアーキテクチャ: 既存のIAvroSerializer<T>等インターフェースはラッパーとして実装
+プロパティ配置ルール: 全プロパティをvalue部に格納、key/value重複格納対応
+型安全性とエラーハンドリング: 公式シリアライザの例外を適切にラップして統一的なエラー処理を提供
+2. アーキテクチャ設計
+2.1 レイヤー構造
+Application Layer
+    ↓
+Kafka.Ksql.Linq.Serialization (Wrapper Layer)
+    ↓
+Confluent.SchemaRegistry.Serdes (Official Serializers)
+    ↓
+Schema Registry
+2.2 主要コンポーネント
+2.2.1 ラッパーシリアライザ
+ConfluentAvroSerializerWrapper<T>
+
+目的: Confluent公式AvroSerializer<T>のラッパー
+責務:
+公式シリアライザのインスタンス管理
+例外の統一的ハンドリング
+メトリクス収集（オプション）
+ライフサイクル管理
+ConfluentAvroDeserializerWrapper<T>
+
+目的: Confluent公式AvroDeserializer<T>のラッパー
+責務:
+公式デシリアライザのインスタンス管理
+型安全性の確保
+null値ハンドリング
+エラーリカバリ機能
+2.2.2 複合キー対応
+CompositeKeySerializer
+
+目的: 複数[Key]プロパティを組み合わせたキー部シリアライゼーション
+方式: Dictionary<string, object>形式でキー値を構成し、公式シリアライザでシリアライズ
+制約: キープロパティは必ずvalue部にも重複格納
+CompositeKeyDeserializer
+
+目的: 複合キーのデシリアライゼーション
+方式: Dictionary形式からPOCOキープロパティへの復元
+3. API設計
+3.1 ラッパーインターフェース
+3.1.1 IAvroSerializer<T>（ラッパー版）
+csharp
+public interface IAvroSerializer<T> : IDisposable where T : class
+{
+    // 公式シリアライザへの委譲
+    byte[] Serialize(T value, SerializationContext context);
+    
+    // 追加機能
+    SerializationMetrics GetMetrics();
+    bool IsHealthy { get; }
+    
+    // 設定情報
+    SerializerConfiguration Configuration { get; }
+}
+3.1.2 IAvroDeserializer<T>（ラッパー版）
+csharp
+public interface IAvroDeserializer<T> : IDisposable where T : class
+{
+    // 公式デシリアライザへの委譲
+    T Deserialize(ReadOnlySpan<byte> data, bool isNull, SerializationContext context);
+    
+    // 追加機能
+    DeserializationMetrics GetMetrics();
+    bool IsHealthy { get; }
+    
+    // 設定情報
+    DeserializerConfiguration Configuration { get; }
+}
+3.2 ファクトリーパターン
+3.2.1 ConfluentSerializerFactory
+csharp
+public class ConfluentSerializerFactory
+{
+    // シリアライザ作成
+    IAvroSerializer<T> CreateSerializer<T>(
+        ISchemaRegistryClient schemaRegistryClient,
+        AvroSerializerConfig config) where T : class;
+    
+    // デシリアライザ作成
+    IAvroDeserializer<T> CreateDeserializer<T>(
+        ISchemaRegistryClient schemaRegistryClient,
+        AvroDeserializerConfig config) where T : class;
+    
+    // 複合キー対応
+    IAvroSerializer<CompositeKey> CreateCompositeKeySerializer(
+        PropertyInfo[] keyProperties,
+        ISchemaRegistryClient schemaRegistryClient);
+    
+    IAvroDeserializer<CompositeKey> CreateCompositeKeyDeserializer(
+        PropertyInfo[] keyProperties,
+        ISchemaRegistryClient schemaRegistryClient);
+}
+4. プロパティ配置仕様
+4.1 Key-Value配置ルール
+4.1.1 基本原則
+全プロパティをvalue部に格納: アプリケーションがForEachAsync等でPOCO形式でデータ取得可能
+キープロパティの重複格納: [Key]属性付きプロパティもvalue部に含める
+Key部の構成: キープロパティのみを抽出してKey部を構成
+4.1.2 配置例
+POCO定義:
+
+csharp
+public class OrderEntity
+{
+    [Key(Order = 0)]
+    public string CustomerId { get; set; }
+    
+    [Key(Order = 1)]
+    public int OrderId { get; set; }
+    
+    public decimal Amount { get; set; }
+    public DateTime OrderDate { get; set; }
+}
+Kafka配置結果:
+
+Key部: {CustomerId: "CUST001", OrderId: 12345} （複合キー）
+Value部: {CustomerId: "CUST001", OrderId: 12345, Amount: 100.50, OrderDate: "2024-01-01T10:00:00Z"} （全プロパティ）
+4.2 複合キー処理
+4.2.1 CompositeKey型定義
+csharp
+public class CompositeKey
+{
+    public Dictionary<string, object> KeyValues { get; set; }
+    public Type EntityType { get; set; }
+    public PropertyInfo[] KeyProperties { get; set; }
+}
+4.2.2 キー抽出ロジック
+[Key]属性付きプロパティをOrder順でソート
+プロパティ値をDictionary<string, object>に格納
+公式シリアライザでシリアライズ
+5. サポート型仕様
+5.1 サポート対象型（Value部）
+5.1.1 基本型
+bool → Avro boolean
+int → Avro int
+long → Avro long
+float → Avro float
+double → Avro double
+string → Avro string
+byte[] → Avro bytes
+5.1.2 特殊型
+decimal → Avro bytes (logical type: decimal)
+精度要件: precision=18, scale=4 デフォルト
+互換性検証: 物理テストで往復変換精度を確認
+DateTime → Avro long (logical type: timestamp-millis)
+精度要件: ミリ秒精度
+タイムゾーン: UTC変換必須
+DateTimeOffset → Avro long (logical type: timestamp-millis)
+変換仕様: UTC変換後にミリ秒タイムスタンプ
+Guid → Avro string (logical type: uuid)
+5.1.3 Nullable型
+Nullable<T> → Avro union [null, T]
+null値の適切なハンドリング
+5.1.4 制限付きサポート型
+short → Avro int（キー利用禁止）
+char → Avro string（キー利用禁止）
+5.2 非サポート型・制約
+5.2.1 非サポート型
+配列・コレクション型: T[], List<T>, Dictionary<K,V>等
+理由: Confluent Avroシリアライザの制約
+代替案: 単一オブジェクトでの設計推奨
+入れ子クラス: ネストしたPOCOオブジェクト
+理由: スキーマ複雑性とパフォーマンス
+代替案: フラット化設計推奨
+5.2.2 エラー時挙動
+型不一致: SerializationExceptionをスロー
+スキーマ互換性エラー: SchemaCompatibilityExceptionをスロー
+null処理エラー: NullReferenceExceptionをラップしてDeserializationException
+6. エラーハンドリング設計
+6.1 例外階層
+csharp
+// 基底例外
+public abstract class AvroSerializationException : Exception
+
+// 具体例外
+public class SerializationException : AvroSerializationException
+public class DeserializationException : AvroSerializationException  
+public class SchemaCompatibilityException : AvroSerializationException
+public class UnsupportedTypeException : AvroSerializationException
+6.2 例外マッピング
+Confluent例外	ラッパー例外	対処方法
+InvalidDataException	SerializationException	データ構造修正
+SchemaParseException	SchemaCompatibilityException	スキーマ見直し
+SerializationException	SerializationException	型・値の検証
+7. スキーマ管理統合
+7.1 既存連携
+既存のAvroSchemaBuilder、AvroSchemaRegistrationServiceとの統合:
+
+7.1.1 スキーマ生成連携
+UnifiedSchemaGeneratorで生成されたスキーマを公式シリアライザ設定に利用
+key/valueスキーマを分離して公式シリアライザに渡す
+7.1.2 Schema Registry連携
+既存のAvroSchemaRegistrationServiceでスキーマ登録
+登録されたスキーマIDを公式シリアライザの設定に利用
+7.2 設定統合
+csharp
+public class ConfluentSerializerConfig
+{
+    // Schema Registry設定
+    public ISchemaRegistryClient SchemaRegistryClient { get; set; }
+    
+    // 既存設定からの変換
+    public static ConfluentSerializerConfig FromAvroConfiguration(
+        AvroEntityConfiguration configuration);
+    
+    // 公式設定への変換
+    public AvroSerializerConfig ToConfluentSerializerConfig();
+    public AvroDeserializerConfig ToConfluentDeserializerConfig();
+}
+8. テスト設計
+8.1 物理テスト要件
+8.1.1 精度検証テスト
+decimal型: 往復変換での精度保持確認
+DateTime/DateTimeOffset: タイムゾーン変換とミリ秒精度確認
+Guid: 文字列変換での完全性確認
+8.1.2 互換性テスト
+登録スキーマと生成スキーマの一致検証
+スキーマアップグレード時の互換性確認
+異なるバージョン間での相互運用性
+8.2 単体テスト設計
+8.2.1 ラッパー機能テスト
+公式シリアライザの正常呼び出し確認
+例外変換の正確性確認
+メトリクス収集機能テスト
+8.2.2 複合キーテスト
+複数キープロパティの正しい抽出・結合
+key/value重複格納の確認
+キーの順序性確認
+8.2.3 エラーハンドリングテスト
+各種例外シナリオの網羅
+null値ハンドリングの確認
+型不一致時の適切なエラー
+8.3 統合テスト
+8.3.1 Schema Registry統合
+実際のSchema Registryとの連携確認
+スキーマ登録・取得・互換性確認
+ネットワークエラー時の回復性テスト
+8.3.2 Kafka統合
+実際のKafkaクラスターでの送受信確認
+大量データでのパフォーマンス確認
+障害時の動作確認
+9. パフォーマンス設計
+9.1 最適化方針
+9.1.1 インスタンス管理
+公式シリアライザのインスタンス再利用
+接続プールの活用
+適切なライフサイクル管理
+9.1.2 メモリ効率
+不要なオブジェクト生成の回避
+バッファリングの最適化
+GC圧迫の軽減
+9.2 メトリクス設計
+csharp
+public class SerializationMetrics
+{
+    public long TotalSerializations { get; set; }
+    public long FailedSerializations { get; set; }
+    public TimeSpan AverageLatency { get; set; }
+    public long BytesSerialized { get; set; }
+}
+10. 移行設計
+10.1 既存実装からの移行
+10.1.1 段階的移行
+Phase 1: ラッパー実装完了、既存API互換性維持
+Phase 2: 複合キー対応完了
+Phase 3: 既存実装の完全置き換え
+10.1.2 互換性保証
+既存IAvroSerializer<T>インターフェース互換性維持
+設定方法の下位互換性確保
+データ形式の互換性確保
+10.2 検証計画
+10.2.1 並行運用期間
+既存実装と新実装の並行稼働
+結果比較による動作確認
+パフォーマンス比較
+10.2.2 切り替え基準
+全テストケースの完全パス
+パフォーマンス低下なし
+運用安定性の確認
+11. 運用考慮事項
+11.1 監視・ログ
+11.1.1 監視項目
+シリアライゼーション成功率
+平均レイテンシ
+エラー発生率・種別
+Schema Registry接続状態
+11.1.2 ログ設計
+構造化ログ形式
+トレーサビリティ確保
+デバッグ情報の適切な出力
+11.2 障害対応
+11.2.1 障害パターン
+Schema Registry接続障害
+スキーマ互換性エラー
+データ破損検出
+パフォーマンス劣化
+11.2.2 回復手順
+自動リトライ機能
+代替スキーマ利用
+緊急停止機能
+データ修復手順
+この設計仕様に基づき、Confluent公式Avroシリアライザを活用した堅牢で効率的なシリアライゼーション機能を実現し、既存システムとの互換性を保ちながら段階的な移行を可能にします。
+
+
+
+
+エンタープライズにこだわらず、簡素にしてください
+
+編集
+Kafka.Ksql.Linq.Serialization 設計仕様書（簡素版）
+1. 概要
+Confluent公式Avroシリアライザ（AvroSerializer<T>/AvroDeserializer<T>）をラップして、既存インターフェースとの互換性を保つシンプルな設計。
+
+2. 基本設計
+2.1 ラッパー方式
+既存 IAvroSerializer<T> → ConfluentAvroSerializerWrapper → Confluent.AvroSerializer<T>
+内部で公式シリアライザを直接利用
+独自変換処理は一切行わない
+例外とメトリクスのみラップで追加
+2.2 プロパティ配置ルール
+Value部: 全プロパティを格納（ForEachAsync対応）
+Key部: [Key]プロパティのみ抽出
+重複格納: キープロパティはKey部とValue部の両方に含める
+3. API設計
+3.1 ラッパークラス
+csharp
+// シリアライザラッパー
+public class ConfluentAvroSerializerWrapper<T> : IAvroSerializer<T>
+{
+    private readonly AvroSerializer<T> _innerSerializer;
+    
+    byte[] Serialize(T value, SerializationContext context)
+    {
+        return _innerSerializer.Serialize(value, context);
+    }
+}
+
+// デシリアライザラッパー  
+public class ConfluentAvroDeserializerWrapper<T> : IAvroDeserializer<T>
+{
+    private readonly AvroDeserializer<T> _innerDeserializer;
+    
+    T Deserialize(ReadOnlySpan<byte> data, bool isNull, SerializationContext context)
+    {
+        return _innerDeserializer.Deserialize(data, isNull, context);
+    }
+}
+3.2 ファクトリー
+csharp
+public class ConfluentSerializerFactory
+{
+    IAvroSerializer<T> CreateSerializer<T>(ISchemaRegistryClient client);
+    IAvroDeserializer<T> CreateDeserializer<T>(ISchemaRegistryClient client);
+}
+4. 複合キー対応
+4.1 キー抽出
+[Key]属性のプロパティをOrder順で取得
+Dictionary<string, object>に値を格納
+公式シリアライザでシリアライズ
+4.2 実装例
+csharp
+// POCO
+public class OrderEntity
+{
+    [Key(Order = 0)] public string CustomerId { get; set; }
+    [Key(Order = 1)] public int OrderId { get; set; }
+    public decimal Amount { get; set; }
+}
+
+// 結果
+Key部:   {CustomerId: "C001", OrderId: 123}
+Value部: {CustomerId: "C001", OrderId: 123, Amount: 100.0}
+5. サポート型
+5.1 対応型
+基本型: bool, int, long, float, double, string, byte[]
+特殊型: decimal, DateTime, DateTimeOffset, Guid
+Nullable: 上記すべてのNullable版
+制限付き: short, char（Key利用禁止）
+5.2 非対応型
+配列・コレクション: T[], List<T>等
+入れ子クラス: ネストしたPOCO
+5.3 精度要件
+decimal: precision=18, scale=4
+DateTime: ミリ秒精度、UTC変換
+Guid: UUID文字列形式
+6. エラーハンドリング
+6.1 例外変換
+csharp
+Confluent例外 → ラッパー例外
+InvalidDataException → SerializationException
+SchemaParseException → SchemaCompatibilityException
+6.2 基本例外
+csharp
+public class SerializationException : Exception
+public class DeserializationException : Exception
+public class UnsupportedTypeException : Exception
+7. 既存連携
+7.1 スキーマ生成
+既存UnifiedSchemaGeneratorの結果を公式シリアライザ設定に利用
+Key/Valueスキーマを分離して設定
+7.2 Schema Registry
+既存AvroSchemaRegistrationServiceでスキーマ登録
+登録IDを公式シリアライザに渡す
+8. テスト要件
+8.1 物理テスト
+精度検証: decimal/DateTime/Guidの往復変換
+互換性: 登録スキーマと生成スキーマの一致
+複合キー: Key/Value重複格納の確認
+8.2 単体テスト
+公式シリアライザの呼び出し確認
+例外変換の正確性
+null値ハンドリング
+9. 実装手順
+9.1 段階的実装
+Step1: 基本ラッパークラス作成
+Step2: 複合キー対応追加
+Step3: 既存実装置き換え
+9.2 検証方法
+既存テストケースでの動作確認
+パフォーマンス比較
+結果データの一致確認
+10. 設定例
+10.1 基本設定
+csharp
+var factory = new ConfluentSerializerFactory();
+var serializer = factory.CreateSerializer<OrderEntity>(schemaRegistryClient);
+var deserializer = factory.CreateDeserializer<OrderEntity>(schemaRegistryClient);
+10.2 複合キー設定
+csharp
+// 自動検出（[Key]属性から）
+var keySerializer = factory.CreateCompositeKeySerializer<OrderEntity>();
+シンプルなラッパー設計により、公式シリアライザの安定性を活用しつつ、既存APIとの互換性を保ちます。
+
+
+
+
+5.3 精度要件はdecimalのみDecimalPrecisionAttributeに従うこと
+
+編集
+Kafka.Ksql.Linq.Serialization 設計仕様書（簡素版）
+1. 概要
+Confluent公式Avroシリアライザ（AvroSerializer<T>/AvroDeserializer<T>）をラップして、既存インターフェースとの互換性を保つシンプルな設計。
+
+2. 基本設計
+2.1 ラッパー方式
+既存 IAvroSerializer<T> → ConfluentAvroSerializerWrapper → Confluent.AvroSerializer<T>
+内部で公式シリアライザを直接利用
+独自変換処理は一切行わない
+例外とメトリクスのみラップで追加
+2.2 プロパティ配置ルール
+Value部: 全プロパティを格納（ForEachAsync対応）
+Key部: [Key]プロパティのみ抽出
+重複格納: キープロパティはKey部とValue部の両方に含める
+3. API設計
+3.1 ラッパークラス
+csharp
+// シリアライザラッパー
+public class ConfluentAvroSerializerWrapper<T> : IAvroSerializer<T>
+{
+    private readonly AvroSerializer<T> _innerSerializer;
+    
+    byte[] Serialize(T value, SerializationContext context)
+    {
+        return _innerSerializer.Serialize(value, context);
+    }
+}
+
+// デシリアライザラッパー  
+public class ConfluentAvroDeserializerWrapper<T> : IAvroDeserializer<T>
+{
+    private readonly AvroDeserializer<T> _innerDeserializer;
+    
+    T Deserialize(ReadOnlySpan<byte> data, bool isNull, SerializationContext context)
+    {
+        return _innerDeserializer.Deserialize(data, isNull, context);
+    }
+}
+3.2 ファクトリー
+csharp
+public class ConfluentSerializerFactory
+{
+    IAvroSerializer<T> CreateSerializer<T>(ISchemaRegistryClient client);
+    IAvroDeserializer<T> CreateDeserializer<T>(ISchemaRegistryClient client);
+}
+4. 複合キー対応
+4.1 キー抽出
+[Key]属性のプロパティをOrder順で取得
+Dictionary<string, object>に値を格納
+公式シリアライザでシリアライズ
+4.2 実装例
+csharp
+// POCO
+public class OrderEntity
+{
+    [Key(Order = 0)] public string CustomerId { get; set; }
+    [Key(Order = 1)] public int OrderId { get; set; }
+    public decimal Amount { get; set; }
+}
+
+// 結果
+Key部:   {CustomerId: "C001", OrderId: 123}
+Value部: {CustomerId: "C001", OrderId: 123, Amount: 100.0}
+5. サポート型
+5.1 対応型
+基本型: bool, int, long, float, double, string, byte[]
+特殊型: decimal, DateTime, DateTimeOffset, Guid
+Nullable: 上記すべてのNullable版
+制限付き: short, char（Key利用禁止）
+5.2 非対応型
+配列・コレクション: T[], List<T>等
+入れ子クラス: ネストしたPOCO
+5.3 精度要件
+decimal: DecimalPrecisionAttributeに従う（属性なしの場合はprecision=18, scale=4デフォルト）
+DateTime/DateTimeOffset: ミリ秒精度固定、UTC変換
+Guid: UUID文字列形式固定
+6. エラーハンドリング
+6.1 例外変換
+csharp
+Confluent例外 → ラッパー例外
+InvalidDataException → SerializationException
+SchemaParseException → SchemaCompatibilityException
+6.2 基本例外
+csharp
+public class SerializationException : Exception
+public class DeserializationException : Exception
+public class UnsupportedTypeException : Exception
+7. 既存連携
+7.1 スキーマ生成
+既存UnifiedSchemaGeneratorの結果を公式シリアライザ設定に利用
+Key/Valueスキーマを分離して設定
+7.2 Schema Registry
+既存AvroSchemaRegistrationServiceでスキーマ登録
+登録IDを公式シリアライザに渡す
+8. テスト要件
+8.1 物理テスト
+精度検証: decimal/DateTime/Guidの往復変換
+互換性: 登録スキーマと生成スキーマの一致
+複合キー: Key/Value重複格納の確認
+8.2 単体テスト
+公式シリアライザの呼び出し確認
+例外変換の正確性
+null値ハンドリング
+9. 実装手順
+9.1 段階的実装
+Step1: 基本ラッパークラス作成
+Step2: 複合キー対応追加
+Step3: 既存実装置き換え
+9.2 検証方法
+既存テストケースでの動作確認
+パフォーマンス比較
+結果データの一致確認
+10. 設定例
+10.1 基本設定
+csharp
+var factory = new ConfluentSerializerFactory();
+var serializer = factory.CreateSerializer<OrderEntity>(schemaRegistryClient);
+var deserializer = factory.CreateDeserializer<OrderEntity>(schemaRegistryClient);
+10.2 複合キー設定
+csharp
+// 自動検出（[Key]属性から）
+var keySerializer = factory.CreateCompositeKeySerializer<OrderEntity>();
+シンプルなラッパー設計により、公式シリアライザの安定性を活用しつつ、既存APIとの互換性を保ちます。
+
+
+
+
+設計仕様書（簡素版）に基づき、「Kafka.Ksql.Linq.Serialization」名前空間のリファクタリング設計のみ行ってください。
+* 実装例やコード出力は禁止です（クラス名やメソッド名の列挙まではOK）。
+* 指定の各項目（ラッパー構造、複合キー対応、プロパティ配置ルール、サポート型の仕様、エラーハンドリング、既存連携、テスト観点）を“設計の根拠”と“選択理由”を明記しながら設計仕様書の形でまとめてください。
+* 設計不明点や懸念事項があれば必ず質問リストとして提示してください（不明点はそのままにせず全て列挙）。
+* コンテキストサイズ上限に達した場合は、構造設計・型設計・I/F設計を優先し、詳細は後回しとしてください。
+* 必ず「複合キー対応」「全プロパティValue部格納」「公式Avroシリアライザのラップ」という前提で設計を進めてください。
+【具体的成果物イメージ】
+* 設計仕様書のアウトライン（大見出しだけでも可）
+* 設計思想の要点箇条書き
+* 「設計として未確定・要検討事項」のリスト
+* クラス・インターフェースの構造図（UMLテキストや一覧でもOK）
+
+編集
+Kafka.Ksql.Linq.Serialization リファクタリング設計仕様書
+1. 設計思想・要点
+1.1 核心設計方針
+Confluent公式Avroシリアライザの完全委譲: 独自変換を排除し、安定性と互換性を重視
+ラッパーパターンによる既存API互換性保持: 最小限の変更で移行可能
+Value部への全プロパティ格納: ForEachAsync等のPOCO操作との完全互換性確保
+複合キーの透明な処理: アプリケーション層から複雑性を隠蔽
+1.2 設計選択理由
+なぜConfluent公式ラッパー方式か？
+
+独自実装による互換性問題・バグリスクを回避
+Confluentの継続的なメンテナンス・アップデートの恩恵
+Schema Registry標準仕様との完全準拠
+なぜ全プロパティValue部格納か？
+
+既存ForEachAsync(entity => ...)パターンの完全互換性
+キー分散によるPOCO不完全性の回避
+アプリケーション開発者の認知負荷軽減
+2. 構造設計
+2.1 レイヤー構造
+Application Layer (ForEachAsync, etc.)
+    ↓
+Kafka.Ksql.Linq.Serialization (Wrapper Layer)
+    ↓ [委譲]
+Confluent.SchemaRegistry.Serdes (Official)
+    ↓
+Schema Registry / Kafka
+2.2 クラス構造設計
+2.2.1 主要ラッパークラス
+ConfluentAvroSerializerWrapper<T> : IAvroSerializer<T>実装
+ConfluentAvroDeserializerWrapper<T> : IAvroDeserializer<T>実装
+ConfluentSerializerFactory : ファクトリーパターン
+CompositeKeyHandler : 複合キー処理専用
+設計根拠: 既存インターフェースとの完全互換性を保ちつつ、内部実装を公式ライブラリに委譲
+
+2.2.2 複合キー処理設計
+CompositeKeyExtractor : [Key]属性からのキー抽出
+CompositeKeySerializer : Dictionary形式での複合キーシリアライズ
+KeyValueSeparator : Key部/Value部の分離・結合処理
+設計根拠: 複合キーの複雑性をアプリケーション層から隠蔽し、単一責任原則に基づく分離
+
+3. インターフェース設計
+3.1 既存インターフェース保持
+IAvroSerializer<T> : 既存シグネチャ完全保持
+IAvroDeserializer<T> : 既存シグネチャ完全保持
+ISerializationManager<T> : 既存API互換性維持
+設計根拠: 破壊的変更の回避、段階的移行の実現
+
+3.2 新規内部インターフェース
+IKeyExtractor : キー抽出処理の抽象化
+IPropertyMapper : プロパティ→Avroマッピング
+ISchemaValidator : スキーマ検証処理
+設計根拠: テスタビリティ向上と責任分離
+
+4. 複合キー対応設計
+4.1 キー抽出仕様
+抽出ルール:
+
+[Key(Order=n)]属性付きプロパティをOrder昇順で取得
+プロパティ値をDictionary<string, object>に格納
+Dictionary全体を公式シリアライザでシリアライズ
+設計根拠:
+
+Order属性による明示的順序制御
+Dictionary形式によるスキーマ柔軟性
+公式シリアライザ利用による標準準拠
+4.2 Key-Value重複格納仕様
+配置ルール:
+
+Key部: [Key]プロパティのみ（Dictionary形式）
+Value部: 全プロパティ（POCO完全形式）
+設計根拠: ForEachAsyncでのPOCO完全性確保とKafkaキー機能の両立
+
+5. プロパティ配置ルール設計
+5.1 Value部格納戦略
+全プロパティValue部格納の理由:
+
+ForEachAsync(entity => entity.KeyProperty)の動作保証
+POCOとしての完全性維持
+既存コードの無修正動作
+5.2 スキーマ生成への影響
+既存UnifiedSchemaGeneratorとの連携維持
+Key/Valueスキーマの適切な分離
+重複プロパティのスキーマ整合性確保
+設計根拠: 既存スキーマ生成ロジックとの互換性保持
+
+6. サポート型仕様設計
+6.1 対応型選択基準
+基準: Confluent公式シリアライザの対応範囲内
+
+基本型（bool, int, long, float, double, string, byte[]）
+特殊型（decimal, DateTime, DateTimeOffset, Guid）
+Nullable型
+設計根拠: 公式ライブラリ制約に従い、安定性を重視
+
+6.2 精度仕様設計
+decimal: DecimalPrecisionAttribute優先、未指定時は(18,4)
+DateTime/DateTimeOffset: ミリ秒精度固定、UTC変換
+Guid: UUID文字列形式固定
+設計根拠:
+
+decimalのみ属性制御（業務要件対応）
+他は固定仕様（簡素性重視）
+6.3 非対応型の明確化
+非対応: 配列、コレクション、入れ子クラス 理由: Confluent制約、複雑性回避
+
+7. エラーハンドリング設計
+7.1 例外変換戦略
+Confluent例外 → ラッパー例外:
+
+InvalidDataException → SerializationException
+SchemaParseException → SchemaCompatibilityException
+設計根拠: 既存例外体系との整合性、デバッグ容易性
+
+7.2 例外階層設計
+AvroSerializationException (基底)
+├── SerializationException
+├── DeserializationException
+├── SchemaCompatibilityException
+└── UnsupportedTypeException
+設計根拠: 既存例外階層との整合性、段階的エラー処理
+
+8. 既存連携設計
+8.1 スキーマ生成連携
+UnifiedSchemaGenerator結果の公式シリアライザ設定流用
+Key/Valueスキーマの自動分離
+DecimalPrecisionAttributeの適切な反映
+設計根拠: 既存スキーマ生成ロジックの最大活用
+
+8.2 Schema Registry連携
+AvroSchemaRegistrationService経由での登録維持
+登録済みスキーマIDの公式シリアライザ設定
+互換性チェック機能の保持
+設計根拠: 既存Registration Serviceとの完全互換性
+
+9. テスト観点設計
+9.1 物理テスト要件
+精度検証: decimal往復変換（DecimalPrecisionAttribute各パターン）
+複合キー: Key/Value重複格納の完全性確認
+互換性: 既存生成スキーマとの一致検証
+9.2 単体テスト設計
+公式シリアライザ呼び出し検証（モック使用）
+例外変換の正確性確認
+複合キー抽出ロジックの境界値テスト
+設計根拠: 委譲先の動作確認と独自ロジックの徹底検証
+
+10. 設計として未確定・要検討事項
+10.1 技術的未確定事項
+Confluent公式シリアライザの設定方法詳細
+AvroSerializerConfigの具体的パラメータ
+ISpecificRecord実装の必要性有無
+Generic vs Specific Recordの選択
+複合キー時のスキーマ生成
+Dictionary<string,object>のAvroスキーマ表現
+キー順序のスキーマ反映方法
+型安全性の確保方法
+DecimalPrecisionAttribute反映タイミング
+スキーマ生成時 vs シリアライズ時
+動的精度変更の対応可否
+既存スキーマとの互換性影響
+10.2 アーキテクチャ未確定事項
+ファクトリー設計の詳細
+シングルトン vs インスタンス管理
+ISchemaRegistryClient の依存注入方法
+ライフサイクル管理（Dispose等）
+既存キャッシュ機能との統合
+AvroSerializerCacheとの関係
+パフォーマンス最適化の継承方法
+メモリ効率の確保
+10.3 運用・移行未確定事項
+段階的移行戦略
+既存実装と新実装の並行運用期間
+切り替えタイミングの判断基準
+ロールバック手順
+監視・メトリクス設計
+既存メトリクス収集との統合方法
+パフォーマンス監視項目
+エラー率監視の実装
+10.4 仕様確認が必要な事項
+ForEachAsyncでの複合キー取得
+entity.Key1, entity.Key2の個別アクセス可否確認
+複合キー全体の取得API必要性
+既存アプリケーションでの使用パターン調査
+スキーマ進化時の対応
+プロパティ追加時のKey/Value分離への影響
+スキーマバージョン管理との整合性
+後方互換性の保証範囲
+次ステップ: 上記未確定事項の解決後、詳細実装設計に進む
+
+
+
+
+この設計仕様書を設計レビューの出発点とせよ
+「設計として未確定・要検討事項」（10章）については疑問・案・選択肢を必ず列挙し、設計の論点を深掘りせよ
+今後一切、設計検討なしで実装には移らないこと（設計フェーズ終了の明示承認まで着手禁止）
+設計案・選択肢ごとに「推奨理由・採用判断」まで書き、司令に必ず最終決裁を仰ぐこと
+不明点・司令判断待ちは、「質問リスト」形式で明確に提示せよ
+編集
+Kafka.Ksql.Linq.Serialization リファクタリング設計レビュー
+設計レビュー対象範囲
+前回設計仕様書（1-9章）を基盤とし、未確定事項（10章）を深掘りして設計を完成させる。
+
+【設計レビュー】10.1 技術的未確定事項の深掘り
+問題1: Confluent公式シリアライザの設定方法詳細
+疑問・論点
+AvroSerializerConfigの必須パラメータは何か？
+ISpecificRecord実装は必要か、それともGeneric Recordで対応可能か？
+POCOクラスを直接シリアライズできるのか？
+設計案・選択肢
+【選択肢A】Generic Record方式
+
+利点: POCOクラスを直接利用可能、コード生成不要
+欠点: ランタイム型チェック、パフォーマンス劣化の可能性
+推奨度: ★★★☆☆
+【選択肢B】Specific Record方式
+
+利点: コンパイル時型安全性、最適化されたパフォーマンス
+欠点: コード生成必須、既存POCOとの分離が必要
+推奨度: ★★☆☆☆
+【選択肢C】Reflection-based Generic方式（推奨）
+
+利点: 既存POCOそのまま利用、型安全性確保、設定簡単
+欠点: リフレクションコスト
+推奨度: ★★★★★
+推奨理由: 既存アーキテクチャとの互換性最優先、移行コスト最小
+設計判断案
+採用推奨: 選択肢C（Reflection-based Generic）
+
+既存POCOクラスをそのまま利用
+AvroSerializerConfig設定: AutoRegisterSchemas=true, UseLatestVersion=true
+司令判断待ち事項: Generic Record方式で既存機能の完全互換性は保証されるか？
+
+問題2: 複合キー時のスキーマ生成
+疑問・論点
+Dictionary<string,object>をAvroでどう表現するか？
+キー順序をスキーマで保証する方法は？
+異なるエンティティ間でのキータイプ一貫性をどう確保するか？
+設計案・選択肢
+【選択肢A】Union型スキーマ
+
+json
+{"type": "record", "fields": [
+  {"name": "key1", "type": ["null", "string"]},
+  {"name": "key2", "type": ["null", "int"]}
+]}
+利点: 型安全性確保、スキーマ進化対応
+欠点: スキーマ複雑化、動的キー追加不可
+推奨度: ★★★★☆
+【選択肢B】Map型スキーマ
+
+json
+{"type": "map", "values": "string"}
+利点: 動的キー対応、スキーマ簡素
+欠点: 型安全性欠如、順序保証なし
+推奨度: ★★☆☆☆
+【選択肢C】固定Record型スキーマ（推奨）
+
+エンティティごとに専用CompositeKeyスキーマ生成
+利点: 完全な型安全性、順序保証、パフォーマンス最適
+欠点: スキーマ数増加
+推奨度: ★★★★★
+推奨理由: 型安全性とパフォーマンスの両立、既存スキーマ生成との整合性
+設計判断案
+採用推奨: 選択肢C（固定Record型）
+
+各エンティティの[Key]プロパティから専用CompositeKeyRecordスキーマ生成
+UnifiedSchemaGeneratorを拡張してCompositeKey専用スキーマ生成機能追加
+司令判断待ち事項: CompositeKeyのスキーマ命名規則（例: {EntityName}CompositeKey）でよいか？
+
+問題3: DecimalPrecisionAttribute反映タイミング
+疑問・論点
+スキーマ生成時に反映するか、シリアライズ時に動的変換するか？
+異なる精度のdecimalが混在した場合の処理は？
+既存スキーマとの互換性はどう保つか？
+設計案・選択肢
+【選択肢A】スキーマ生成時反映（推奨）
+
+DecimalPrecisionAttributeをスキーマのlogicalType定義に含める
+利点: スキーマレベルでの型安全性、互換性チェック可能
+欠点: スキーマ変更時の影響範囲大
+推奨度: ★★★★★
+推奨理由: Schema Registry連携の一貫性、型安全性確保
+【選択肢B】シリアライズ時動的変換
+
+スキーマは固定精度、シリアライズ時に属性値で変換
+利点: スキーマ変更なし、柔軟性確保
+欠点: ランタイムエラーリスク、デバッグ困難
+推奨度: ★★☆☆☆
+設計判断案
+採用推奨: 選択肢A（スキーマ生成時反映）
+
+UnifiedSchemaGeneratorでDecimalPrecisionAttribute検出
+logical type: decimal with precision/scale設定
+既存スキーマとの互換性はSchema Registry互換性設定で制御
+司令判断待ち事項: 既存本番環境でDecimalPrecisionAttributeなしのdecimalフィールドは存在するか？
+
+【設計レビュー】10.2 アーキテクチャ未確定事項の深掘り
+問題4: ファクトリー設計の詳細
+疑問・論点
+シングルトンで管理するか、インスタンス毎に作成するか？
+ISchemaRegistryClientの依存注入方法は？
+Disposeタイミングとリソース管理は？
+設計案・選択肢
+【選択肢A】シングルトンファクトリー
+
+csharp
+ConfluentSerializerFactory.Instance.CreateSerializer<T>(client)
+利点: インスタンス管理簡単、メモリ効率
+欠点: テスタビリティ低下、設定変更困難
+推奨度: ★★☆☆☆
+【選択肢B】DI管理インスタンス（推奨）
+
+csharp
+services.AddSingleton<ConfluentSerializerFactory>()
+利点: テスタビリティ、設定柔軟性、DIコンテナ統合
+欠点: DI設定必要
+推奨度: ★★★★★
+推奨理由: 既存アーキテクチャとの整合性、テスト容易性
+【選択肢C】スタティックファクトリーメソッド
+
+利点: 使用簡単、設定不要
+欠点: テスト困難、柔軟性なし
+推奨度: ★★☆☆☆
+設計判断案
+採用推奨: 選択肢B（DI管理）
+
+IServiceCollection拡張でファクトリー登録
+ISchemaRegistryClientも同様にDI管理
+IDisposableパターンでリソース管理
+司令判断待ち事項: 既存のDIコンテナ設定（KsqlContextBuilder等）との統合方法はどうするか？
+
+問題5: 既存キャッシュ機能との統合
+疑問・論点
+既存AvroSerializerCacheは維持するか廃止するか？
+Confluent公式シリアライザの内部キャッシュとの関係は？
+パフォーマンス最適化の責任範囲は？
+設計案・選択肢
+【選択肢A】既存キャッシュ廃止
+
+Confluent公式の内部最適化に完全委譲
+利点: 実装簡素化、責任分離明確
+欠点: パフォーマンス劣化リスク
+推奨度: ★★★☆☆
+【選択肢B】ラッパーレベルキャッシュ（推奨）
+
+シリアライザインスタンスをキャッシュ
+利点: インスタンス作成コスト削減、制御可能
+欠点: メモリ管理複雑化
+推奨度: ★★★★★
+推奨理由: 既存パフォーマンス水準維持、段階的最適化可能
+【選択肢C】ハイブリッド方式
+
+重要度に応じてキャッシュ戦略変更
+利点: 最適化柔軟性
+欠点: 複雑性増大
+推奨度: ★★☆☆☆
+設計判断案
+採用推奨: 選択肢B（ラッパーレベル）
+
+ConfluentSerializerFactoryでインスタンスキャッシュ
+ConcurrentDictionary<Type, IAvroSerializer<T>>で管理
+既存AvroSerializerCacheは段階的廃止
+司令判断待ち事項: 既存システムでのシリアライザ作成頻度・パフォーマンス要件は？
+
+【設計レビュー】10.3 運用・移行未確定事項の深掘り
+問題6: 段階的移行戦略
+疑問・論点
+並行運用期間はどの程度必要か？
+切り替え判断基準の具体的指標は？
+ロールバックが必要になる条件は？
+設計案・選択肢
+【選択肢A】Feature Flag方式（推奨）
+
+設定でラッパー実装vs既存実装を切り替え
+利点: 即座切り替え・ロールバック、段階的移行
+欠点: 両実装の維持期間長期化
+推奨度: ★★★★★
+推奨理由: リスク最小化、運用柔軟性最大
+【選択肢B】Blue-Green Deployment
+
+環境単位での切り替え
+利点: 影響範囲明確、テスト完全性
+欠点: リソースコスト、部分ロールバック困難
+推奨度: ★★★☆☆
+【選択肢C】段階的エンティティ移行
+
+エンティティ単位で順次移行
+利点: 影響局所化、段階的検証
+欠点: 管理複雑性、一貫性確保困難
+推奨度: ★★☆☆☆
+設計判断案
+採用推奨: 選択肢A（Feature Flag）
+
+環境変数 KAFKA_SERIALIZATION_MODE=CONFLUENT_WRAPPER
+移行判断基準: エラー率<0.1%, レイテンシ劣化<10%, 2週間安定稼働
+自動ロールバック条件: エラー率>1% または レイテンシ>2倍
+司令判断待ち事項: Feature Flag管理の責任者・承認プロセスはどうするか？
+
+【設計レビュー】10.4 仕様確認が必要な事項の深掘り
+問題8: ForEachAsyncでの複合キー取得
+疑問・論点
+現在のアプリケーションコードではどう複合キーにアクセスしているか？
+entity.Key1, entity.Key2の個別アクセスが必要か？
+複合キー全体を取得するAPIは必要か？
+調査が必要な項目
+既存アプリケーションでの使用パターン調査
+ForEachAsync内でのキープロパティアクセス頻度
+キープロパティの加工・変換処理の有無
+ログ出力・デバッグでのキー値利用状況
+API拡張の必要性
+複合キー全体取得: entity.GetCompositeKey()
+キー文字列化: entity.GetKeyString()
+キー比較: entity.KeyEquals(other)
+設計案・選択肢
+【選択肢A】現状維持（推奨）
+
+Value部に全プロパティ格納により、既存アクセスパターンそのまま利用
+利点: 破壊的変更なし、移行コストゼロ
+欠点: 複合キー操作の専用APIなし
+推奨度: ★★★★★
+推奨理由: 既存アプリケーションへの影響最小化
+【選択肢B】複合キーAPI追加
+
+Value部格納 + 専用キー操作API提供
+利点: 複合キー操作の利便性向上
+欠点: API拡張によるメンテナンス負荷
+推奨度: ★★★☆☆
+司令判断待ち事項: 既存アプリケーションでの複合キー利用実態調査結果はどうか？
+
+問題9: スキーマ進化時の対応
+疑問・論点
+プロパティ追加時のKey/Value分離への影響は？
+新プロパティに[Key]を付けた場合の互換性は？
+スキーマバージョン管理との整合性をどう保つか？
+設計案・選択肢
+【選択肢A】厳格互換性モード（推奨）
+
+キープロパティ変更時は新トピック作成を強制
+利点: データ整合性保証、予期しない動作回避
+欠点: 運用コスト増加、移行作業必要
+推奨度: ★★★★★
+推奨理由: データ破損リスク回避最優先
+【選択肢B】柔軟互換性モード
+
+キープロパティ追加は許可、削除は禁止
+利点: 運用柔軟性確保
+欠点: データ不整合リスク
+推奨度: ★★☆☆☆
+設計判断案
+採用推奨: 選択肢A（厳格互換性）
+
+スキーマ進化チェック: キープロパティ変更検出時はエラー
+運用ガイド: キー構造変更時の移行手順明文化
+自動検証: CI/CDでのスキーマ互換性チェック組み込み
+司令判断待ち事項: キープロパティ変更時の運用承認プロセスはどうするか？
+
+【質問リスト】司令判断待ち事項
+【優先度：高】技術選択判断待ち
+Confluent Generic Record方式で既存機能の完全互換性は保証されるか？
+CompositeKeyのスキーマ命名規則は {EntityName}CompositeKey でよいか？
+既存本番環境でDecimalPrecisionAttributeなしのdecimalフィールドは存在するか？
+【優先度：中】アーキテクチャ判断待ち
+既存DIコンテナ設定（KsqlContextBuilder等）との統合方法はどうするか？
+既存システムでのシリアライザ作成頻度・パフォーマンス要件は？
+Feature Flag管理の責任者・承認プロセスはどうするか？
+【優先度：中】運用方針判断待ち
+既存アプリケーションでの複合キー利用実態調査結果はどうか？
+キープロパティ変更時の運用承認プロセスはどうするか？
+【優先度：低】詳細仕様判断待ち
+監視メトリクスの具体的項目（レイテンシ、エラー率、等）はどうするか？
+テスト環境での性能評価基準（何倍まで劣化許容等）はどうするか？
+⚠️ 重要: 上記質問リストの回答完了まで、実装作業は一切開始しません。設計フェーズの完全完了・司令承認後に実装移行します。
+
+
+
+
+POCO直列化で落ちるパターン
+現状の「基本型のみ／コレクション非対応」設計なら、型不一致による直列化エラーは原則「発生しない」認識でOK
+万一「基本型／Nullable型」の型変換エラー等あれば、それは型宣言・コード定義のミスに帰着（想定外の事故ではない）
+CompositeKeyスキーマ名のバッティング防止
+{Namespace}.{EntityName}CompositeKey という命名規則で、スキーマの一意性を担保
+例：MyApp.OrderEntityCompositeKey
+Entity名だけだと名前衝突リスクあり、namespace込みで安全運用
+decimal未指定フィールドの精度
+デフォルト (18,4) で確定 → 全スキーマに「未指定なら(18,4)」の注記を明記
+Feature Flag切り替えの扱い
+段階的移行ではなく、「完全再構築」方針
+移行用Feature Flag管理・切替承認の運用ドキュメント化は「不要」
+新実装で一括切替。旧実装は不要になり次第廃止
+ForEachAsyncでの複合キー操作
+ForEachAsyncでは「最新メッセージ取得のみ」
+複合キーのAPI拡張や個別キー取得ニーズは現時点「不要」
+Value部に全プロパティが入る設計で現状維持
+スキーマ進化の承認プロセス
+「移行」ではなく「再構築」なので、現行の承認フローは不要
+新規ルールを別途定義（またはドキュメントで後追い）
+監視・テストKPIについて
+監視に必要なメトリック実装は行わない（Confluent/Kafka側の既存機能に委譲）
+アプリ側でメトリック・監視を持つ必要なし
+CI/CD・物理テストにおける「遅延・失敗率」基準
+特に上限値／許容値の明文化は不要
+実装後に問題があれば都度調整でOK
+編集
+設計決定事項反映・最終設計確定
+司令決定事項の設計への反映
+決定事項1: POCO直列化エラー対応
+設計確定: 基本型・Nullable型のみサポートにより、型不一致エラーは「設計想定外」として扱う
+
+型変換エラー = コード定義ミス（想定外事故ではない）
+エラーハンドリングは最小限（UnsupportedTypeExceptionのみ）
+決定事項2: CompositeKeyスキーマ命名
+設計確定: {Namespace}.{EntityName}CompositeKey
+
+例: MyApp.Domain.OrderEntityCompositeKey
+UnifiedSchemaGenerator拡張時に名前空間込みで生成
+決定事項3: Decimal精度デフォルト
+設計確定: DecimalPrecisionAttribute未指定時は(18,4)固定
+
+スキーマ生成時に注記追加: // Default precision: 18, scale: 4
+決定事項4: 完全再構築方針
+設計確定: Feature Flag段階移行を廃止、一括切替方式
+
+移行用運用ドキュメント作成不要
+新実装完成後、旧実装は即座廃止
+決定事項5: ForEachAsync現状維持
+設計確定: 複合キーAPI拡張不要
+
+Value部全プロパティ格納により既存アクセスパターン維持
+専用キー操作APIは実装しない
+決定事項6: スキーマ進化承認プロセス
+設計確定: 現行承認フロー適用せず
+
+新規ルール定義は後追いドキュメントで対応
+設計段階では承認プロセス定義不要
+決定事項7: 監視メトリクス委譲
+設計確定: アプリ側監視実装なし
+
+Confluent/Kafka既存機能に完全委譲
+ラッパー側でのメトリクス収集機能削除
+決定事項8: 性能基準明文化不要
+設計確定: 遅延・失敗率上限値の事前定義なし
+
+実装後の問題発生時に都度調整
+最終設計仕様（司令決定反映版）
+1. 簡素化されたラッパー構造
+1.1 主要クラス（最終版）
+ConfluentAvroSerializerWrapper<T>
+ConfluentAvroDeserializerWrapper<T>  
+ConfluentSerializerFactory
+CompositeKeyExtractor
+1.2 削除対象機能
+メトリクス収集機能
+Feature Flag切替機能
+段階移行対応機能
+複合キー専用API
+2. CompositeKey処理（最終仕様）
+2.1 スキーマ命名規則
+Key部スキーマ名: {Namespace}.{EntityName}CompositeKey
+Value部スキーマ名: {Namespace}.{EntityName} (既存通り)
+2.2 プロパティ配置（確定）
+Key部:   Dictionary<string, object> → CompositeKeyスキーマ
+Value部: 全プロパティ → 既存エンティティスキーマ
+3. サポート型（最終確定）
+3.1 対応型リスト
+基本型: bool, int, long, float, double, string, byte[]
+特殊型: decimal, DateTime, DateTimeOffset, Guid
+Nullable型: 上記すべて
+制限型: short, char（Key利用禁止）
+3.2 精度仕様（確定）
+decimal: DecimalPrecisionAttribute優先、未指定時(18,4)
+DateTime/DateTimeOffset: ミリ秒精度固定
+Guid: UUID文字列固定
+4. エラーハンドリング（簡素化）
+4.1 例外階層（最小限）
+SerializationException
+DeserializationException  
+UnsupportedTypeException
+4.2 エラー方針
+型不一致 = コード定義ミス（想定外事故扱いしない）
+複雑なエラー回復機能は実装しない
+5. 既存連携（確定仕様）
+5.1 スキーマ生成連携
+UnifiedSchemaGenerator拡張
+CompositeKey専用スキーマ生成追加
+namespace込み命名対応
+5.2 DI統合
+ConfluentSerializerFactoryをDI管理
+既存KsqlContextBuilderとの統合
+ISchemaRegistryClient依存注入
+実装優先順位（確定）
+Phase 1: 基本ラッパー実装
+ConfluentAvroSerializerWrapper<T>
+ConfluentAvroDeserializerWrapper<T>
+ConfluentSerializerFactory（DI対応）
+Phase 2: 複合キー対応
+CompositeKeyExtractor実装
+UnifiedSchemaGenerator拡張（namespace込み命名）
+スキーマ分離機能
+Phase 3: 統合・置換
+既存インターフェース実装
+既存実装の完全置換
+旧実装削除
+残存する設計課題（実装時解決）
+技術実装詳細（実装時確認事項）
+Confluent AvroSerializer<T>の具体的設定パラメータ
+Generic Record vs Specific Recordの最終選択
+ISchemaRegistryClient設定の詳細
+統合テスト観点（実装時設計）
+既存テストケースとの互換性確認
+decimal精度の物理テスト実装
+複合キー往復変換テスト実装
+【設計フェーズ完了確認】
+設計完了要件チェック
+✅ ラッパー構造設計: 完了（Confluent公式委譲方式確定）
+✅ 複合キー対応設計: 完了（namespace込み命名、Key/Value分離確定）
+✅ プロパティ配置ルール: 完了（全プロパティValue部格納確定）
+✅ サポート型仕様: 完了（基本型・特殊型・制限事項確定）
+✅ 精度要件: 完了（decimal属性対応、その他固定仕様確定）
+✅ エラーハンドリング: 完了（簡素化・最小限実装確定）
+✅ 既存連携方式: 完了（UnifiedSchemaGenerator拡張、DI統合確定）
+✅ 司令決定事項反映: 完了（全8項目設計反映済み）
+
+実装移行可否判定
+🔵 設計仕様確定: 完了
+🔵 アーキテクチャ決定: 完了
+🔵 司令承認取得: 完了
+🔵 実装課題整理: 完了
+
+【司令への最終確認】
+設計フェーズ完了・実装移行許可申請
+
+上記最終設計仕様（司令決定事項完全反映版）にて、実装フェーズへの移行許可をお願いします。
+
+実装開始予定内容:
+
+Phase 1: 基本ラッパークラス実装
+実装時詳細課題の技術的解決
+段階的統合テスト実施
+実装移行可否: 司令判断待ち
+
+⚠️ 重要: 司令の明示的実装許可まで、コード作成は一切開始しません。

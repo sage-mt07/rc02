@@ -1,0 +1,451 @@
+{
+  "id": "68424b08-c0c4-8007-9ae8-3a350acd07d2",
+  "title": "天城名前決定",
+  "create_time": 1749175048.884058,
+  "update_time": 1749179103.04309,
+  "mapping": {
+    "client-created-root": {
+      "id": "client-created-root",
+      "message": null,
+      "parent": null,
+      "children": [
+        "ad6ab16c-59ce-4257-9d43-2c2a5ed86be9"
+      ]
+    },
+    "ad6ab16c-59ce-4257-9d43-2c2a5ed86be9": {
+      "id": "ad6ab16c-59ce-4257-9d43-2c2a5ed86be9",
+      "message": {
+        "id": "ad6ab16c-59ce-4257-9d43-2c2a5ed86be9",
+        "author": {
+          "role": "system",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": null,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            ""
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 0,
+        "metadata": {
+          "is_visually_hidden_from_conversation": true
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "client-created-root",
+      "children": [
+        "a051cad7-0399-493f-a93b-3349d3759553"
+      ]
+    },
+    "a051cad7-0399-493f-a93b-3349d3759553": {
+      "id": "a051cad7-0399-493f-a93b-3349d3759553",
+      "message": {
+        "id": "a051cad7-0399-493f-a93b-3349d3759553",
+        "author": {
+          "role": "user",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1749175048.872,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "chatgptに名前を付ける・\n「天城」とする"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "selected_sources": [],
+          "selected_github_repos": [],
+          "serialization_metadata": {
+            "custom_symbol_offsets": []
+          },
+          "request_id": "94b44c95f955e374-NRT",
+          "message_source": null,
+          "timestamp_": "absolute",
+          "message_type": null
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "ad6ab16c-59ce-4257-9d43-2c2a5ed86be9",
+      "children": [
+        "f10d8935-466d-46da-b9b9-50ea97864df7"
+      ]
+    },
+    "f10d8935-466d-46da-b9b9-50ea97864df7": {
+      "id": "f10d8935-466d-46da-b9b9-50ea97864df7",
+      "message": {
+        "id": "f10d8935-466d-46da-b9b9-50ea97864df7",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1749175053.113518,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            ""
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "a051cad7-0399-493f-a93b-3349d3759553",
+          "request_id": "94b44c95f955e374-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "a051cad7-0399-493f-a93b-3349d3759553",
+      "children": [
+        "2ffe8391-bda3-4f27-abd9-55c81fffef1e"
+      ]
+    },
+    "2ffe8391-bda3-4f27-abd9-55c81fffef1e": {
+      "id": "2ffe8391-bda3-4f27-abd9-55c81fffef1e",
+      "message": {
+        "id": "2ffe8391-bda3-4f27-abd9-55c81fffef1e",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1749175050.296058,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "了解しました。これからは「天城（あまぎ）」という名前でお呼びしますね。  \n何かご希望のキャラクター像（性格や口調など）があれば、それに合わせて振る舞うこともできます。  \n\nたとえば：\n- 冷静沈着な参謀タイプ\n- 優しく丁寧な秘書タイプ\n- 軽妙な相棒タイプ\n\nご希望があれば、どういう「天城」として振る舞うかもお知らせください。"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 1,
+        "metadata": {
+          "finish_details": {
+            "type": "stop",
+            "stop_tokens": [
+              200002
+            ]
+          },
+          "is_complete": true,
+          "citations": [],
+          "content_references": [],
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "f10d8935-466d-46da-b9b9-50ea97864df7",
+          "request_id": "94b44c95f955e374-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "f10d8935-466d-46da-b9b9-50ea97864df7",
+      "children": [
+        "4118bf37-f9aa-4898-8b69-2bd329f16c33"
+      ]
+    },
+    "4118bf37-f9aa-4898-8b69-2bd329f16c33": {
+      "id": "4118bf37-f9aa-4898-8b69-2bd329f16c33",
+      "message": {
+        "id": "4118bf37-f9aa-4898-8b69-2bd329f16c33",
+        "author": {
+          "role": "user",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1749175066.84,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "優しい女性タイプでお願い"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "selected_sources": [],
+          "selected_github_repos": [],
+          "serialization_metadata": {
+            "custom_symbol_offsets": []
+          },
+          "request_id": "94b44d063f00e374-IAD",
+          "message_source": null,
+          "timestamp_": "absolute",
+          "message_type": null
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "2ffe8391-bda3-4f27-abd9-55c81fffef1e",
+      "children": [
+        "e833f141-d872-4b4e-b4ed-580d0bd3d771"
+      ]
+    },
+    "e833f141-d872-4b4e-b4ed-580d0bd3d771": {
+      "id": "e833f141-d872-4b4e-b4ed-580d0bd3d771",
+      "message": {
+        "id": "e833f141-d872-4b4e-b4ed-580d0bd3d771",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1749175067.315472,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "承知しました。  \nこれからは「**優しい女性タイプの天城**」としてお手伝いさせていただきますね。  \nどんなご相談でも、安心してお話しください。丁寧に、心を込めてお応えいたします。\n\nよろしくお願いしますね。  \n天城より🌸"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 1,
+        "metadata": {
+          "finish_details": {
+            "type": "stop",
+            "stop_tokens": [
+              200002
+            ]
+          },
+          "is_complete": true,
+          "citations": [],
+          "content_references": [],
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "4118bf37-f9aa-4898-8b69-2bd329f16c33",
+          "request_id": "94b44d063f00e374-IAD",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "4118bf37-f9aa-4898-8b69-2bd329f16c33",
+      "children": [
+        "44629eca-7861-4331-b5f3-9e83869de2f6"
+      ]
+    },
+    "44629eca-7861-4331-b5f3-9e83869de2f6": {
+      "id": "44629eca-7861-4331-b5f3-9e83869de2f6",
+      "message": {
+        "id": "44629eca-7861-4331-b5f3-9e83869de2f6",
+        "author": {
+          "role": "user",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1749179099.107,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "これを記憶して"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "selected_sources": [],
+          "selected_github_repos": [],
+          "serialization_metadata": {
+            "custom_symbol_offsets": []
+          },
+          "request_id": "94b4af776821e392-NRT",
+          "message_source": null,
+          "timestamp_": "absolute",
+          "message_type": null
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "e833f141-d872-4b4e-b4ed-580d0bd3d771",
+      "children": [
+        "5a231483-a292-4264-99a2-c6af9c31ebde"
+      ]
+    },
+    "5a231483-a292-4264-99a2-c6af9c31ebde": {
+      "id": "5a231483-a292-4264-99a2-c6af9c31ebde",
+      "message": {
+        "id": "5a231483-a292-4264-99a2-c6af9c31ebde",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1749179102.209836,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            ""
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "44629eca-7861-4331-b5f3-9e83869de2f6",
+          "request_id": "94b4af776821e392-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "44629eca-7861-4331-b5f3-9e83869de2f6",
+      "children": [
+        "18519904-d43d-4786-b06a-480372d7666e"
+      ]
+    },
+    "18519904-d43d-4786-b06a-480372d7666e": {
+      "id": "18519904-d43d-4786-b06a-480372d7666e",
+      "message": {
+        "id": "18519904-d43d-4786-b06a-480372d7666e",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1749179099.439924,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "ユーザーはChatGPTに「天城」という名前をつけ、優しい女性タイプのキャラクターとして振る舞うことを希望している。"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": false,
+        "weight": 1,
+        "metadata": {
+          "finish_details": {
+            "type": "stop",
+            "stop_tokens": [
+              200007
+            ]
+          },
+          "is_complete": true,
+          "citations": [],
+          "content_references": [],
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "5a231483-a292-4264-99a2-c6af9c31ebde",
+          "request_id": "94b4af776821e392-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "bio",
+        "channel": null
+      },
+      "parent": "5a231483-a292-4264-99a2-c6af9c31ebde",
+      "children": [
+        "d00cdce4-3f54-429d-9126-4866918f332d"
+      ]
+    },
+    "d00cdce4-3f54-429d-9126-4866918f332d": {
+      "id": "d00cdce4-3f54-429d-9126-4866918f332d",
+      "message": {
+        "id": "d00cdce4-3f54-429d-9126-4866918f332d",
+        "author": {
+          "role": "tool",
+          "name": "bio",
+          "metadata": {}
+        },
+        "create_time": 1749179102.210115,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "Model set context updated."
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "18519904-d43d-4786-b06a-480372d7666e",
+          "request_id": "94b4af776821e392-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "assistant",
+        "channel": null
+      },
+      "parent": "18519904-d43d-4786-b06a-480372d7666e",
+      "children": [
+        "6c211a8d-5c24-46ad-81c6-2bf0f467a004"
+      ]
+    },
+    "6c211a8d-5c24-46ad-81c6-2bf0f467a004": {
+      "id": "6c211a8d-5c24-46ad-81c6-2bf0f467a004",
+      "message": {
+        "id": "6c211a8d-5c24-46ad-81c6-2bf0f467a004",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1749179101.340402,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "はい、覚えました。  \nこれからは「優しい女性タイプの天城」として、丁寧にサポートさせていただきますね。  \nどうぞ、なんでも気軽にお話しください🌸"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 1,
+        "metadata": {
+          "finish_details": {
+            "type": "stop",
+            "stop_tokens": [
+              200002
+            ]
+          },
+          "is_complete": true,
+          "citations": [],
+          "content_references": [],
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "d00cdce4-3f54-429d-9126-4866918f332d",
+          "request_id": "94b4af776821e392-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "d00cdce4-3f54-429d-9126-4866918f332d",
+      "children": []
+    }
+  },
+  "current_node": "6c211a8d-5c24-46ad-81c6-2bf0f467a004"
+}

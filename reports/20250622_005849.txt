@@ -1,0 +1,7 @@
+鏡花レビュー 20250622_005849
+
+対象: tests フォルダのコード品質確認
+
+## 指摘事項
+- `tests/KsqlDslTests.csproj` の `<ProjectReference>` で Windows 形式のパス区切り `..\\src\\KsqlDsl.csproj` を使用しています。クロスプラットフォーム環境では `/` を用いた相対パス `../src/KsqlDsl.csproj` の方が安全です。
+- 同ファイルの先頭に UTF-8 BOM が含まれており、環境によっては解析ツールで問題となる可能性があります。

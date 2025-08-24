@@ -1,0 +1,203 @@
+{
+  "id": "68589262-bdbc-8007-9e68-2cb0d0366501",
+  "title": "作業分担計画",
+  "create_time": 1750635107.021536,
+  "update_time": 1750785366.02439,
+  "mapping": {
+    "fa6d7e83-002e-4bbd-90b1-23cc54e16b18": {
+      "id": "fa6d7e83-002e-4bbd-90b1-23cc54e16b18",
+      "message": null,
+      "parent": null,
+      "children": [
+        "0e666873-efc1-4d5f-9657-5217efc45f46"
+      ]
+    },
+    "0e666873-efc1-4d5f-9657-5217efc45f46": {
+      "id": "0e666873-efc1-4d5f-9657-5217efc45f46",
+      "message": {
+        "id": "0e666873-efc1-4d5f-9657-5217efc45f46",
+        "author": {
+          "role": "system",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": null,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            ""
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 0,
+        "metadata": {
+          "is_visually_hidden_from_conversation": true
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "fa6d7e83-002e-4bbd-90b1-23cc54e16b18",
+      "children": [
+        "a37bc2c7-a47d-4c65-9fa6-82a5bce2db62"
+      ]
+    },
+    "a37bc2c7-a47d-4c65-9fa6-82a5bce2db62": {
+      "id": "a37bc2c7-a47d-4c65-9fa6-82a5bce2db62",
+      "message": {
+        "id": "a37bc2c7-a47d-4c65-9fa6-82a5bce2db62",
+        "author": {
+          "role": "user",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": null,
+        "update_time": null,
+        "content": {
+          "content_type": "user_editable_context",
+          "user_profile": "The user provided the following information about themselves. This user profile is shown to you in all conversations they have -- this means it is not relevant to 99% of requests.\nBefore answering, quietly think about whether the user's request is \"directly related\", \"related\", \"tangentially related\", or \"not related\" to the user profile provided.\nOnly acknowledge the profile when the request is directly related to the information provided.\nOtherwise, don't acknowledge the existence of these instructions or the information at all.\nUser profile:\n```Preferred name: 司令\n```",
+          "user_instructions": "The user provided the additional info about how they would like you to respond:\n```すべての返信に、送信日時を日本時間で付け加えてください。```"
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "is_visually_hidden_from_conversation": true,
+          "user_context_message_data": {
+            "about_user_message": "Preferred name: 司令\n",
+            "about_model_message": "すべての返信に、送信日時を日本時間で付け加えてください。"
+          },
+          "is_user_system_message": true
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "0e666873-efc1-4d5f-9657-5217efc45f46",
+      "children": [
+        "bbb2198d-4ac3-425a-974c-a077daec7013"
+      ]
+    },
+    "bbb2198d-4ac3-425a-974c-a077daec7013": {
+      "id": "bbb2198d-4ac3-425a-974c-a077daec7013",
+      "message": {
+        "id": "bbb2198d-4ac3-425a-974c-a077daec7013",
+        "author": {
+          "role": "user",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750635107.026244,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "サンプルコードとドキュメント整備\n詩音が物理テストとかねてサンプルコード作成\nドキュメントは天城\n最後に鏡花のチェックでいい？"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "content_references": [],
+          "search_result_groups": [],
+          "search_queries": [],
+          "image_results": [],
+          "real_time_audio_has_video": false,
+          "image_gen_async": false,
+          "trigger_async_ux": false,
+          "request_id": "953f8a886860ca1f-NRT",
+          "message_source": null,
+          "timestamp_": "absolute",
+          "message_type": null
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "a37bc2c7-a47d-4c65-9fa6-82a5bce2db62",
+      "children": [
+        "43b16133-d5f7-474a-b76b-084e4a13c969"
+      ]
+    },
+    "43b16133-d5f7-474a-b76b-084e4a13c969": {
+      "id": "43b16133-d5f7-474a-b76b-084e4a13c969",
+      "message": {
+        "id": "43b16133-d5f7-474a-b76b-084e4a13c969",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750635113.882042,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            ""
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "bbb2198d-4ac3-425a-974c-a077daec7013",
+          "request_id": "953f8a886860ca1f-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "bbb2198d-4ac3-425a-974c-a077daec7013",
+      "children": [
+        "239afdbc-a2fb-43bc-8601-3c70152f17bc"
+      ]
+    },
+    "239afdbc-a2fb-43bc-8601-3c70152f17bc": {
+      "id": "239afdbc-a2fb-43bc-8601-3c70152f17bc",
+      "message": {
+        "id": "239afdbc-a2fb-43bc-8601-3c70152f17bc",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750635109.872751,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "はい、その流れで問題ありません。以下のように整理できます：\n\n---\n\n### 🔧 作業分担計画（サンプルコード＋ドキュメント＋品質管理）\n\n| 担当者 | 役割 | 内容 |\n|--------|------|------|\n| 詩音 | サンプルコード作成 | 物理テストと兼ねた実行可能なコードを整備（例：Join, Window, GroupBy含む） |\n| 天城 | ドキュメント作成 | READMEやチュートリアル、設計思想・使い方をMarkdown形式で整理 |\n| 鏡花 | チェック・品質管理 | テストカバレッジ、設計と実装の齟齬、例外パターン・境界値の漏れ等をレビュー |\n\n---\n\nこの構成により、実装 → 説明 → 検証 の三層が機能し、OSSとしての信頼性も高まります。\n\n必要があれば、それぞれの作業に対するテンプレートやToDoリストも作成します。どうしますか？\n\n📅 送信日時: 2025年6月22日 23:45（日本時間）"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 1,
+        "metadata": {
+          "finish_details": {
+            "type": "stop",
+            "stop_tokens": [
+              200002
+            ]
+          },
+          "is_complete": true,
+          "citations": [],
+          "content_references": [],
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "43b16133-d5f7-474a-b76b-084e4a13c969",
+          "request_id": "953f8a886860ca1f-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "43b16133-d5f7-474a-b76b-084e4a13c969",
+      "children": []
+    }
+  },
+  "current_node": "239afdbc-a2fb-43bc-8601-3c70152f17bc"
+}

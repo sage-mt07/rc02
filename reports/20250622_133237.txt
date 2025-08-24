@@ -1,0 +1,13 @@
+鏡花レビュー 2025-06-22 13:32:37
+
+対象: testlog/testlog_20250622_133237.txt テスト失敗レビュー
+
+## 失敗理由
+- QueryExecutionPipelineTests.GenerateKsqlQuery_WhereSelect_PullQuery: 生成クエリが期待正規表現 `^SELECT * FROM Base_stream_\d+_stream_\d+$` に一致しない (`SELECT * FROM Base_stream_1750566762629_stream_1750566762630`)。
+- QueryExecutionPipelineTests.GenerateKsqlQuery_GroupBySelect_PushQuery: 生成クエリが正規表現 `^SELECT * FROM Base_table_\d+_table_\d+ EMIT CHANGES$` に一致しない (`SELECT * FROM Base_table_1750566762648_table_1750566762648 EMIT CHANGES`)。
+- KsqlDbRestApiClientTests.ExecuteQueryAsync_ParsesResponse: API から戻る数値が `1` (Double) と解釈され、期待している `1` (Int32) と一致しない。
+
+## 修正ポイント・改善案
+- クエリ生成処理の ID 付与および形式を再確認し、テストに定義された正規表現と整合させる。
+- RestApiClient の戻り値変換ロジックを見直し、整数として扱う場面では型変換を明示する。
+- テストケース側でも期待形式を変動しないよう、例示IDや型を固定するなどの仕組みを検討する。

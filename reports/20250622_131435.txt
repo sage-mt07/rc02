@@ -1,0 +1,19 @@
+鏡花レビュー 2025-06-22 13:14:35
+
+対象: testlog/testlog_20250622_131435.txt テスト失敗レビュー
+
+## 失敗理由
+- StreamTableAnalyzerTests.Analyze_SimpleWhereSelect_ReturnsStreamOutput: Where と Select の順序が逆転している。
+- QueryExecutionPipelineTests.GenerateKsqlQuery_WhereSelect_PullQuery: 生成クエリが期待正規表現に一致しない。
+- KsqlDbRestApiClientTests.ExecuteQueryAsync_ParsesResponse: 数値が int ではなく double として解釈されている。
+- QueryExecutionPipelineTests.GenerateKsqlQuery_GroupBySelect_PushQuery: クエリ文字列の正規表現マッチに失敗。
+- KsqlContextBuilderTests.BuildContext_CreatesInstance: DummyContext に引数なしコンストラクタが存在せず生成に失敗。
+
+## 修正ポイント・改善案
+- StreamTableAnalyzer の処理順序を Where → Select とする。
+- QueryExecutionPipeline の ID 付与ロジックと出力形式を正規表現に合わせて修正。
+- KsqlDbRestApiClient で数値型変換を明示し、期待型に合わせる。
+- Push/Pull クエリの生成部で ID 重複や空白の扱いを統一する。
+- DummyContext にパラメータレスコンストラクタを追加するか、ビルダー側で適切なコンストラクタを指定する。
+
+ビルド警告 (CS8618, CS8619) も併せて確認し、null 注釈を整理すること。

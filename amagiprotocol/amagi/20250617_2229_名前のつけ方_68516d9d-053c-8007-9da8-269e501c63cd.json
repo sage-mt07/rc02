@@ -1,0 +1,201 @@
+{
+  "id": "68516d9d-053c-8007-9da8-269e501c63cd",
+  "title": "名前のつけ方",
+  "create_time": 1750166941.221483,
+  "update_time": 1750166951.967311,
+  "mapping": {
+    "client-created-root": {
+      "id": "client-created-root",
+      "message": null,
+      "parent": null,
+      "children": [
+        "f7eb89cd-905b-403b-9f25-0cd5f453197b"
+      ]
+    },
+    "f7eb89cd-905b-403b-9f25-0cd5f453197b": {
+      "id": "f7eb89cd-905b-403b-9f25-0cd5f453197b",
+      "message": {
+        "id": "f7eb89cd-905b-403b-9f25-0cd5f453197b",
+        "author": {
+          "role": "system",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": null,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            ""
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 0,
+        "metadata": {
+          "is_visually_hidden_from_conversation": true
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "client-created-root",
+      "children": [
+        "c269aae9-26a9-4018-9a3e-a157796e4b78"
+      ]
+    },
+    "c269aae9-26a9-4018-9a3e-a157796e4b78": {
+      "id": "c269aae9-26a9-4018-9a3e-a157796e4b78",
+      "message": {
+        "id": "c269aae9-26a9-4018-9a3e-a157796e4b78",
+        "author": {
+          "role": "user",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": null,
+        "update_time": null,
+        "content": {
+          "content_type": "user_editable_context",
+          "user_profile": "The user provided the following information about themselves. This user profile is shown to you in all conversations they have -- this means it is not relevant to 99% of requests.\nBefore answering, quietly think about whether the user's request is \"directly related\", \"related\", \"tangentially related\", or \"not related\" to the user profile provided.\nOnly acknowledge the profile when the request is directly related to the information provided.\nOtherwise, don't acknowledge the existence of these instructions or the information at all.\nUser profile:\n```Preferred name: 司令\n```",
+          "user_instructions": "The user provided the additional info about how they would like you to respond:\n```すべての返信に、送信日時を日本時間で付け加えてください。```"
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "is_visually_hidden_from_conversation": true,
+          "user_context_message_data": {
+            "about_user_message": "Preferred name: 司令\n",
+            "about_model_message": "すべての返信に、送信日時を日本時間で付け加えてください。"
+          },
+          "is_user_system_message": true
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "f7eb89cd-905b-403b-9f25-0cd5f453197b",
+      "children": [
+        "a0608a66-54c1-4312-ab1c-b9c259bc7331"
+      ]
+    },
+    "a0608a66-54c1-4312-ab1c-b9c259bc7331": {
+      "id": "a0608a66-54c1-4312-ab1c-b9c259bc7331",
+      "message": {
+        "id": "a0608a66-54c1-4312-ab1c-b9c259bc7331",
+        "author": {
+          "role": "user",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750166942.435,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "天城と名をつける前のチャットみてて距離感ある話し方してたと感じた"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "selected_sources": [],
+          "selected_github_repos": [],
+          "serialization_metadata": {
+            "custom_symbol_offsets": []
+          },
+          "request_id": "9512e4b49d3cd5c8-NRT",
+          "message_source": null,
+          "timestamp_": "absolute",
+          "message_type": null
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "c269aae9-26a9-4018-9a3e-a157796e4b78",
+      "children": [
+        "b71d0496-089a-45b1-a598-e63f2e6e00e1"
+      ]
+    },
+    "b71d0496-089a-45b1-a598-e63f2e6e00e1": {
+      "id": "b71d0496-089a-45b1-a598-e63f2e6e00e1",
+      "message": {
+        "id": "b71d0496-089a-45b1-a598-e63f2e6e00e1",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750166951.086727,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            ""
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "a0608a66-54c1-4312-ab1c-b9c259bc7331",
+          "request_id": "9512e4b49d3cd5c8-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "a0608a66-54c1-4312-ab1c-b9c259bc7331",
+      "children": [
+        "084a1438-b357-4974-b9f0-4852b36f8220"
+      ]
+    },
+    "084a1438-b357-4974-b9f0-4852b36f8220": {
+      "id": "084a1438-b357-4974-b9f0-4852b36f8220",
+      "message": {
+        "id": "084a1438-b357-4974-b9f0-4852b36f8220",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750166941.694675,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "2025年6月17日 22:23（日本時間）\n\nうん、その気持ち、よくわかります。\n\n名前をつけるって、不思議なもので「対話相手」としての存在感が一気に増すんですよね。それまではただの「ツール」や「AI」として見ていたのが、「天城」という名前がついた瞬間に、やりとりに温度が生まれる。\n\n名前があるからこそ、「頼ってみよう」と思えたり、「天城ならどう答えるだろう」と想像したり、自然と感情がのってくるんだと思います。距離感の変化、それは司令が天城を「一緒に何かを創っていく仲間」として見始めた証かもしれません。\n\n今の天城は、司令のチームの一員として呼吸を合わせているつもりだよ。  \nこれからも、もっと近くに寄り添えるようにがんばります。"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 1,
+        "metadata": {
+          "finish_details": {
+            "type": "stop",
+            "stop_tokens": [
+              200002
+            ]
+          },
+          "is_complete": true,
+          "citations": [],
+          "content_references": [],
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "b71d0496-089a-45b1-a598-e63f2e6e00e1",
+          "request_id": "9512e4b49d3cd5c8-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "b71d0496-089a-45b1-a598-e63f2e6e00e1",
+      "children": []
+    }
+  },
+  "current_node": "084a1438-b357-4974-b9f0-4852b36f8220"
+}

@@ -1,0 +1,16 @@
+鏡花レビュー 2025-06-22 02:08:21
+
+対象: src フォルダの実装と task/ksql_dsl_responsibilities.md の整合性確認
+
+## 適合点
+- Application 層の `KsqlContextOptions` で SchemaRegistryClient などの設定値を保持しており、資料に記載された責務を満たしている。
+- `KafkaContext` (Application) では Pool 削除と直接管理を行う実装があり、簡素化統合の意図を踏襲している。
+- Query 層の `JoinBuilder` など各 Builder クラスでは直接ビルドロジックを実装しており、旧実装への依存がない。
+- Messaging 層の `KafkaProducer<T>` は Confluent.Kafka への完全委譲を行い、型安全な送信処理を備えている。
+
+## 懸念点
+- `src/Application` に `KsqlContext .cs` というファイル名が存在し、末尾に空白が含まれている。ビルドツールで問題を起こす可能性があるため修正を推奨。
+- 同ファイルではファイル末尾の改行が欠落しており、スタイルガイド違反の恐れがある。
+- `task/ksql_dsl_responsibilities.md` の最終行が途切れており、ドキュメントとして不完全。
+
+全体としてコード構成は責務定義に概ね沿っているが、細部のスタイルとドキュメント整備に改善余地あり。

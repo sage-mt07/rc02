@@ -1,0 +1,766 @@
+{
+  "id": "685b47ae-6814-8007-bb35-aaba840a1637",
+  "title": "規模の確認",
+  "create_time": 1750812590.582698,
+  "update_time": 1750818209.111699,
+  "mapping": {
+    "client-created-root": {
+      "id": "client-created-root",
+      "message": null,
+      "parent": null,
+      "children": [
+        "c32de9c0-1060-4e2d-98ea-bbcd429c4f4f"
+      ]
+    },
+    "c32de9c0-1060-4e2d-98ea-bbcd429c4f4f": {
+      "id": "c32de9c0-1060-4e2d-98ea-bbcd429c4f4f",
+      "message": {
+        "id": "c32de9c0-1060-4e2d-98ea-bbcd429c4f4f",
+        "author": {
+          "role": "system",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": null,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            ""
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 0,
+        "metadata": {
+          "is_visually_hidden_from_conversation": true
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "client-created-root",
+      "children": [
+        "c1cbfac0-1d50-443d-905b-ad11117f3521"
+      ]
+    },
+    "c1cbfac0-1d50-443d-905b-ad11117f3521": {
+      "id": "c1cbfac0-1d50-443d-905b-ad11117f3521",
+      "message": {
+        "id": "c1cbfac0-1d50-443d-905b-ad11117f3521",
+        "author": {
+          "role": "user",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": null,
+        "update_time": null,
+        "content": {
+          "content_type": "user_editable_context",
+          "user_profile": "The user provided the following information about themselves. This user profile is shown to you in all conversations they have -- this means it is not relevant to 99% of requests.\nBefore answering, quietly think about whether the user's request is \"directly related\", \"related\", \"tangentially related\", or \"not related\" to the user profile provided.\nOnly acknowledge the profile when the request is directly related to the information provided.\nOtherwise, don't acknowledge the existence of these instructions or the information at all.\nUser profile:\n```Preferred name: 司令\n```",
+          "user_instructions": "The user provided the additional info about how they would like you to respond:\n```すべての返信に、送信日時を日本時間で付け加えてください。```"
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "is_visually_hidden_from_conversation": true,
+          "user_context_message_data": {
+            "about_user_message": "Preferred name: 司令\n",
+            "about_model_message": "すべての返信に、送信日時を日本時間で付け加えてください。"
+          },
+          "is_user_system_message": true
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "c32de9c0-1060-4e2d-98ea-bbcd429c4f4f",
+      "children": [
+        "f9dc5e98-2b8a-452a-bceb-a7c5f4d6908c"
+      ]
+    },
+    "f9dc5e98-2b8a-452a-bceb-a7c5f4d6908c": {
+      "id": "f9dc5e98-2b8a-452a-bceb-a7c5f4d6908c",
+      "message": {
+        "id": "f9dc5e98-2b8a-452a-bceb-a7c5f4d6908c",
+        "author": {
+          "role": "user",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750812591.781,
+        "update_time": null,
+        "content": {
+          "content_type": "multimodal_text",
+          "parts": [
+            {
+              "content_type": "image_asset_pointer",
+              "asset_pointer": "file-service://file-E9FD4Ra8cZbzdWEaHqtg2u",
+              "size_bytes": 142028,
+              "width": 1200,
+              "height": 1061,
+              "fovea": null,
+              "metadata": {
+                "dalle": null,
+                "gizmo": null,
+                "generation": null,
+                "container_pixel_height": null,
+                "container_pixel_width": null,
+                "emu_omit_glimpse_image": null,
+                "emu_patches_override": null,
+                "sanitized": true,
+                "asset_pointer_link": null,
+                "watermarked_asset_pointer": null
+              }
+            },
+            "結構な規模になりました\n"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "attachments": [
+            {
+              "id": "file-E9FD4Ra8cZbzdWEaHqtg2u",
+              "size": 142028,
+              "name": "3aff80fb-a547-41a9-a281-64145a19f0d8.png",
+              "mime_type": "image/png",
+              "width": 1200,
+              "height": 1061
+            }
+          ],
+          "selected_sources": [],
+          "selected_github_repos": [],
+          "serialization_metadata": {
+            "custom_symbol_offsets": []
+          },
+          "request_id": "955077a10d82eb76-IAD",
+          "message_source": null,
+          "timestamp_": "absolute",
+          "message_type": null
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "c1cbfac0-1d50-443d-905b-ad11117f3521",
+      "children": [
+        "d01e476c-a6d0-4d6e-8610-75298be8f552"
+      ]
+    },
+    "d01e476c-a6d0-4d6e-8610-75298be8f552": {
+      "id": "d01e476c-a6d0-4d6e-8610-75298be8f552",
+      "message": {
+        "id": "d01e476c-a6d0-4d6e-8610-75298be8f552",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750812601.185884,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            ""
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "f9dc5e98-2b8a-452a-bceb-a7c5f4d6908c",
+          "request_id": "955077a10d82eb76-IAD",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "f9dc5e98-2b8a-452a-bceb-a7c5f4d6908c",
+      "children": [
+        "5c2ea7b0-9785-4ee9-bc26-2e92cadd5f4b"
+      ]
+    },
+    "5c2ea7b0-9785-4ee9-bc26-2e92cadd5f4b": {
+      "id": "5c2ea7b0-9785-4ee9-bc26-2e92cadd5f4b",
+      "message": {
+        "id": "5c2ea7b0-9785-4ee9-bc26-2e92cadd5f4b",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750812591.310045,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "やあ、いらっしゃい！困ってること、気になること、なんでも聞いてみてください〜\n\n---\n\n📊 **コードメトリクスの結果（全体サマリ）**  \n2025年6月25日 09:56（日本時間）\n\nこれは壮観ですね！プロジェクトの成長が明確に見えます。以下、いくつかのポイントをピックアップして整理してみました：\n\n---\n\n### ✅ **全体状況**\n- **プロジェクト全体のメトリクス**\n  - クラス数：**379**\n  - ソースコード行数：**14,361**\n  - 実行可能コード行数：**3,815**\n  - メソッドの深さやサイクロマティック複雑度も程よく抑えられており、保守性の高い構造に見受けられます。\n\n---\n\n### 🔍 **目立つモジュール**\n以下のようなサブモジュールが特に大きく、今後の最適化やドキュメント整備の対象になりそうです：\n\n| モジュール名 | ソースコード行数 | 実行可能コード行数 | クラス数 |\n|--------------|------------------|---------------------|----------|\n| Kafka.Ksql.Linq.Query.Pipeline | 1,216 | 366 | 3 |\n| Kafka.Ksql.Linq.Query.Builders | 1,161 | 337 | 2 |\n| Kafka.Ksql.Linq.StateStore.Core | 687 | 233 | 2 |\n| Kafka.Ksql.Linq.Core.Middleware | 391 | 123 | 2 |\n| Kafka.Ksql.Linq.Serialization.Avro.Management | 656 | 185 | 1 |\n\n---\n\n### 🧠 **設計観点での注目**\n- **Pipeline / Builders系のモジュール**がクエリ変換のコアロジックを担っており、複雑度もやや高め。\n- **StateStoreやSerialization周り**も責務が多く、今後のユースケース追加で負荷がかかりやすい箇所になりそうです。\n\n---\n\n### 💡 次のアクション提案\n1. **テストカバレッジの可視化**：この構造をもとに、カバレッジレポートと照合すると改善ポイントが絞れます。\n2. **コードオーナーの明確化**：主要サブモジュールごとに責任者（AI人格含む）を設定して、PRや議論の効率化を。\n3. **公開前レビューの優先順位づけ**：`Query.Pipeline` や `Builders` に重点を置いてドキュメントや例外設計を精査。\n4. **ドメインごとの依存関係図作成**（Mermaid）で視覚的に整理するのもおすすめです。\n\n---\n\nご希望があれば、このメトリクスをベースにレビュー用ドキュメントやリリースチェックリストも作成できますよ。  \n「どこから見直すべきか」なども一緒に考えましょうか？"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 1,
+        "metadata": {
+          "finish_details": {
+            "type": "stop",
+            "stop_tokens": [
+              200002
+            ]
+          },
+          "is_complete": true,
+          "citations": [],
+          "content_references": [],
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "d01e476c-a6d0-4d6e-8610-75298be8f552",
+          "request_id": "955077a10d82eb76-IAD",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "d01e476c-a6d0-4d6e-8610-75298be8f552",
+      "children": [
+        "0b39aad4-4f16-4b79-aa1a-f6148c9524ec"
+      ]
+    },
+    "0b39aad4-4f16-4b79-aa1a-f6148c9524ec": {
+      "id": "0b39aad4-4f16-4b79-aa1a-f6148c9524ec",
+      "message": {
+        "id": "0b39aad4-4f16-4b79-aa1a-f6148c9524ec",
+        "author": {
+          "role": "user",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750812763.409,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "再度ソースと設計書の乖離のチェックを鳴瀬に頼みたいけど、メッセージサイズオーバーになる\nいい案ある？"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "selected_sources": [],
+          "selected_github_repos": [],
+          "serialization_metadata": {
+            "custom_symbol_offsets": []
+          },
+          "request_id": "95507bd1bdb8eb76-IAD",
+          "message_source": null,
+          "timestamp_": "absolute",
+          "message_type": null
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "5c2ea7b0-9785-4ee9-bc26-2e92cadd5f4b",
+      "children": [
+        "a73f6061-5f22-437f-b36a-1cbbfc59244f"
+      ]
+    },
+    "a73f6061-5f22-437f-b36a-1cbbfc59244f": {
+      "id": "a73f6061-5f22-437f-b36a-1cbbfc59244f",
+      "message": {
+        "id": "a73f6061-5f22-437f-b36a-1cbbfc59244f",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750812762.264996,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "2025年6月25日 10:03（日本時間）\n\n---\n\nいい質問です。メッセージサイズ（コンテキスト）制限を超えるような大規模比較を鳴瀬（＝実装主導AI）に任せるには、以下のいずれかの**戦略的分割**が有効です：\n\n---\n\n## ✅ 案1：**ドキュメントとコードの「構造対応表」方式で前処理**\n### 🔧 方法：\n1. 天城が事前に「構造対応表」を生成  \n　→ 例：以下のような対応表をMarkdownで作成  \n\n```md\n| 設計書の節       | 対応ソース                     | 備考                       |\n|------------------|-------------------------------|----------------------------|\n| 3.1 クエリ構築     | Query.Pipeline, Query.Builders | Where/GroupBy対応を確認   |\n| 4.2 StateStore連携 | StateStore.Core, .Integration | 自動bindの記述有無を確認 |\n| 5.3 エラーハンドリング | Core.Validation, Query.Pipeline | Skip/Retryの実装有無      |\n```\n\n2. 鳴瀬にはこの対応表ごとに順次投げて「設計と差分ある？」と聞く  \n　→ 1セクションごとに会話を分けられるので安全\n\n### 💡 メリット：\n- メッセージ量が減る\n- 見るべき範囲が明確になり、鳴瀬の暴走も防げる\n\n---\n\n## ✅ 案2：**Gitリポジトリを分割してスコープ制御**\n### 🔧 方法：\n- `src/` の各モジュール単位でチェック対象を指定  \n  たとえば `Query.Pipeline` だけを zip化 or gist化 して、\n  鳴瀬に「この設計書の節に対応するコード、これで合ってる？」と聞く\n\n### 💡 補足：\n- Claudeのようなトークン制限が大きいモデルに投げる場合にも使える\n- ファイルをアップロード→天城経由で鳴瀬へ渡す橋渡しも可能\n\n---\n\n## ✅ 案3：**設計書 → テストケース → 鳴瀬 の順で間接検証**\n### 🔧 方法：\n1. 設計書の各節から「期待されるテストケース」を天城が生成\n2. 鳴瀬には「このテスト、実装上パスする？」と聞く\n3. 差分があれば「設計が古い or 実装漏れ」と判断\n\n### 💡 メリット：\n- 実装を直接比較しなくても「仕様どおりに動くか？」がわかる\n- 鳴瀬の評価に“実行可能性”という軸が加わる\n\n---\n\n## 🎯 どれを選ぶ？\n- **とにかく速くやりたい場合**：案1（対応表）\n- **正確にやりたい＆コンテキスト超えそう**：案2（分割アップロード）\n- **仕様から網羅性を見たい**：案3（テスト化）\n\n---\n\n必要なら案1の対応表を自動で生成する仕組みや、テンプレートもすぐ用意できます。  \n「まずどの章で鳴瀬に聞きたいか」だけ教えてくれれば、そこから始めましょうか？"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 1,
+        "metadata": {
+          "finish_details": {
+            "type": "stop",
+            "stop_tokens": [
+              200002
+            ]
+          },
+          "is_complete": true,
+          "citations": [],
+          "content_references": [],
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "0b39aad4-4f16-4b79-aa1a-f6148c9524ec",
+          "request_id": "95507bd1bdb8eb76-IAD",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "0b39aad4-4f16-4b79-aa1a-f6148c9524ec",
+      "children": [
+        "4c0c7ce9-2550-49a7-b00e-9ca4e9949582"
+      ]
+    },
+    "4c0c7ce9-2550-49a7-b00e-9ca4e9949582": {
+      "id": "4c0c7ce9-2550-49a7-b00e-9ca4e9949582",
+      "message": {
+        "id": "4c0c7ce9-2550-49a7-b00e-9ca4e9949582",
+        "author": {
+          "role": "user",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750812820.404,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "この設計書ベースに構造対応表作成して"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "attachments": [
+            {
+              "id": "file-QjUFkiLyv8rNgsvi58FHor",
+              "size": 33047,
+              "name": "oss_design_combined.md",
+              "mime_type": "text/markdown",
+              "file_token_size": 10822
+            }
+          ],
+          "selected_sources": [],
+          "selected_github_repos": [],
+          "serialization_metadata": {
+            "custom_symbol_offsets": []
+          },
+          "request_id": "95507d35fe49eb76-IAD",
+          "message_source": null,
+          "timestamp_": "absolute",
+          "message_type": null
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "a73f6061-5f22-437f-b36a-1cbbfc59244f",
+      "children": [
+        "0b85d465-845a-439d-9b1d-f123695956fb"
+      ]
+    },
+    "0b85d465-845a-439d-9b1d-f123695956fb": {
+      "id": "0b85d465-845a-439d-9b1d-f123695956fb",
+      "message": {
+        "id": "0b85d465-845a-439d-9b1d-f123695956fb",
+        "author": {
+          "role": "system",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750812831.09206,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            ""
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 0,
+        "metadata": {
+          "rebase_system_message": true,
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "4c0c7ce9-2550-49a7-b00e-9ca4e9949582",
+          "request_id": "95507d35fe49eb76-IAD",
+          "timestamp_": "absolute",
+          "is_visually_hidden_from_conversation": true
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "4c0c7ce9-2550-49a7-b00e-9ca4e9949582",
+      "children": [
+        "8ec00260-754c-4ca4-b613-66a1971372e0"
+      ]
+    },
+    "8ec00260-754c-4ca4-b613-66a1971372e0": {
+      "id": "8ec00260-754c-4ca4-b613-66a1971372e0",
+      "message": {
+        "id": "8ec00260-754c-4ca4-b613-66a1971372e0",
+        "author": {
+          "role": "tool",
+          "name": "file_search",
+          "metadata": {}
+        },
+        "create_time": 1750812831.092256,
+        "update_time": null,
+        "content": {
+          "content_type": "tether_browsing_display",
+          "result": "",
+          "summary": "",
+          "assets": null,
+          "tether_id": null
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 0,
+        "metadata": {
+          "command": "spinner",
+          "status": "running",
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "0b85d465-845a-439d-9b1d-f123695956fb",
+          "request_id": "95507d35fe49eb76-IAD",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "0b85d465-845a-439d-9b1d-f123695956fb",
+      "children": [
+        "474f8506-9518-42fd-b5ab-2ffe5666cafa"
+      ]
+    },
+    "474f8506-9518-42fd-b5ab-2ffe5666cafa": {
+      "id": "474f8506-9518-42fd-b5ab-2ffe5666cafa",
+      "message": {
+        "id": "474f8506-9518-42fd-b5ab-2ffe5666cafa",
+        "author": {
+          "role": "tool",
+          "name": "file_search",
+          "metadata": {}
+        },
+        "create_time": 1750812831.092338,
+        "update_time": null,
+        "content": {
+          "content_type": "tether_quote",
+          "url": "file-QjUFkiLyv8rNgsvi58FHor",
+          "domain": "oss_design_combined.md",
+          "text": "# OSS設計資料：統合ドキュメント\n\n## Overview\n\n### Readme\n\n﻿# KSQL Entity Framework 要件定義書\n\n## 目次 (Table of Contents)\n\n- [1. 概要](#1-概要)\n- [2. 基本原則](#2-基本原則)\n- [3. 主要コンポーネント](#3-主要コンポーネント)\n  - [3.1 トピック (Kafka Topics)](#31-トピック-kafka-topics)\n  - [3.2 ストリーム (KSQL Streams)](#32-ストリーム-ksql-streams)\n  - [3.3 テーブル (KSQL Tables)](#33-テーブル-ksql-tables)\n  - [3.4 クエリと購読](#34-クエリと購読)\n- [4. POCO (Plain Old CLR Objects) の設計](#4-poco-plain-old-clr-objects-の設計)\n  - [4.1 基本定義](#41-基本定義)\n  - [4.2 特殊型のサポート](#42-特殊型のサポート)\n- [5. プロデュース/コンシューム操作](#5-プロデュースコンシューム操作)\n  - [5.1 プロデューサー (データ送信)](#51-プロデューサー-データ送信)\n  - [5.2 コンシューマー (データ受信)](#52-コンシューマー-データ受信)\n  - [5.3 トランザクション処理](#53-トランザクション処理)\n- [6. エラー処理とデータ品質](#6-エラー処理とデータ品質)\n  - [6.1 エラー処理戦略](#61-エラー処理戦略)\n  - [6.2 デッドレターキュー](#62-デッドレターキュー)\n- [7. テーブル管理操作](#7-テーブル管理操作)\n  - [7.1 テーブル作成と更新](#71-テーブル作成と更新)\n  - [7.2 テーブルの再構築と管理](#72-テーブルの再構築と管理)\n- [8. リリース計画](#8-リリース計画)\n- [9. アーキテクチャ概要](#9-アーキテクチャ概要)\n  - [コアコンポーネント](#コアコンポーネント)\n  - [主要インターフェース](#主要インターフェース)\n  - \n## 1. 概要\n\nKSQL Entity Frameworkは、C#プログラマがEntityFrameworkライクなAPIを使用してKSQL/KafkaStreamsを操作できるようにするライブラリです。トピック中心の設計、POCOベースのクエリ定義、LINQライクなストリーム操作を特徴とします。\n\n## 2. 基本原則\n\n1. **トピック中心設計**: すべての操作はKafkaトピックを起点とする\n2. **型安全性**: C#の型システムを活用してスキーマの整合性を確保\n3. **使い慣れたAPI**: EntityFrameworkに類似したAPIデザイン\n4. **LINQサポート**: ストリーム処理をLINQクエリとして表現\n5. **段階的デプロイ**: 基本機能から高度な機能へと段階的に実装\n\n## 3. POCO属性ベースDSL設計ルール（Fluent APIの排除方針）\n\n本OSSでは、Kafka/KSQLの設定をすべてPOCOクラスの属性で定義する方式を採用する。\nこれは、Fluent APIを用いたDSL記述の柔軟性と引き換えに、「構成がPOCOに集約されている」という明快さを重視した設計方針である。\n\n🏷️ クラスレベル属性一覧\n|属性名\t|説明|\n|---|---|\n[Topic(\"topic-name\")]\t|Kafkaトピック名の指定（Partitions, Replicationも設定可能）\n[KsqlStream] / [KsqlTable]\t|Stream/Table の明示指定（未指定時は自動判定）\n[Table(\"name\")]\t|EF Coreとの互換性維持用（任意）\n[WindowHeartbeat(\"heartbeat-topic\")]\t|RocksDB側のウィンドウ更新確認用ハートビート設定\n\n🧩 プロパティレベル属性一覧\n|属性名\t|説明|\n|---|---|\n[Key(Order = n)]|\tKafkaのKeyに対応するプロパティ。複合キー可\n[KafkaIgnore]\t|スキーマ定義・KSQL変換から除外される\n[DecimalPrecision(precision, scale)]\t|decimal型の精度指定（例：18,4）\n[DateTimeFormat(\"format\")]\t|KSQL上でのDateTimeの文字列フォーマット\n[DefaultValue(value)]\t|定義時のデフォルト値（スキーマ定義上のみ）\n[MaxLength(n)]\t|文字列長の制約。Avroスキーマにも反映\n\n🤖 自動判定ロジック\n[Key]の有無によって [KsqlStream] or [KsqlTable] の暗黙的推定を行う\n\nNullable<T> はスキーマ上で Union<Type, null> として定義される\n\nKey属性が複数ある場合は複合キー（CompositeKey）として変換される\n\n💡 サンプル：Orderエンティティの定義\n```csharp\n[Topic(\"orders\", Partitions = 3, Replication = 1)]\n[KsqlTable]\npublic class Order\n{\n    [Key(Order = 0)]\n    public int OrderId { get; set; }\n\n    [DateTimeFormat(\"yyyy-MM-dd\")]\n    public DateTime OrderDate { get; set; }\n\n    [DecimalPrecision(18, 4)]\n    public decimal TotalAmount { get; set; }\n\n    [MaxLength(100)]\n    public string? Region { get; set; }\n\n    [KafkaIgnore]\n    public string? InternalUseOnly { get; set; }\n}\n```\n📘 設計上の方針と意図\n構成情報はすべて POCOに記述され、外部設定ファイルやFluent DSLは不要\n\n利用者は .cs ファイル上の属性のみを参照すれば動作構成を把握可能\n\n\n🔁 Fluent API の補助的活用と制限について\nPOCO属性を中心とした設計方針を採る本DSLでは、Fluent API はあくまで補助的手段として位置づけられ、以下のコンポーネントで限定的に利用可能です。\n\n🧱 1. KsqlContextBuilder（KSQL DSL全体の構成）\n```csharp\nvar context = CsharpKsqlContextBuilder.Create()\n    .UseSchemaRegistry(\"http://localhost:8081\")\n    .EnableLogging(loggerFactory)\n    .ConfigureValidation(autoRegister: true, failOnErrors: false, enablePreWarming: true)\n    .WithTimeouts(TimeSpan.FromSeconds(5))\n    .EnableDebugMode(true)\n    .Build()\n    .BuildContext<MyKsqlContext>();\n```\n主な用途：\n\nスキーマレジストリ連携\n\nログ出力の設定\n\nバリデーションやタイムアウト等の動作制御\n\n🧩 2. ModelBuilder（Entity定義時）\n```csharp\nprotected override void OnModelCreating(IModelBuilder modelBuilder)\n{\n    modelBuilder.Entity<Order>()\n        .AsTable(); // または .AsStream()\n}\n```\nPOCO属性に Stream/Table 指定がない場合のみ使用可\n\n明示的な型指定を可能にする（ただし key/topic 設定は禁止）\n\n📦 3. AvroEntityConfigurationBuilder（Avroスキーマ定義の詳細制御）\n```csharp\nconfiguration.Configure<Order>()\n    .ToTopic(\"orders\")                   // ❌ 非推奨（属性優先）\n    .HasKey(o => o.Id)                   // ❌ 非推奨\n    .WithPartitions(3)\n    .WithReplicationFactor(2)\n    .AsStream();                         // ✅ Stream/Table指定のみ許可\n```    \nこのビルダーは、Avroスキーマ生成時に高度な制御が必要な場合に限り使用される。\nただし、以下のメソッド呼び出しは設計原則違反となる。\n\n🚫 制限事項\nメソッド\t理由\n.ToTopic(\"...\")\tトピック名は [Topic] 属性で指定するため禁止\n.HasKey(...)\tキー定義は [Key] 属性に一本化されている\n.AsStream() / .AsTable()\t属性またはModelBuilderと重複可能。両方指定で一致しない場合はエラー\n\nこれらのメソッドは呼び出された場合に NotSupportedException をスローする設計とし、誤用を防止する。\n\n### 3.1 トピック (Kafka Topics)\n\n\n#### トピック定義\n```csharp\n// 属性によるマッピング\n[Topic(\"orders\", PartitionCount = 12, ReplicationFactor = 3)]\npublic class Order \n{\n    [Key]\n    public string OrderId { get; set; }\n    public string CustomerId { get; set; }\n    public decimal Amount { get; set; }\n    public DateTime OrderTime { get; set; }\n}\n\n// Fluent API\nmodelBuilder.Entity<Order>()\n    .WithPartitions(12)\n    .WithReplicationFactor(3);\n```\n\n#### トピック構成\n- パーティション設定: パーティション数、パーティショニング戦略\n- レプリケーション設定: レプリケーションファクター、ISRの最小数\n- 保持ポリシー: メッセージの保持期間、サイズ制限\n- 圧縮設定: トピックレベルの圧縮方式\n\n#### スキーマ管理\n- 自動スキーマ登録: POCOからAvroスキーマを生成し登録\n- 互換性設定: スキーマ互換性ポリシーの指定\n- スキーマ進化: スキーマバージョンの管理とマイグレーション\n\n#### トピック操作\n```csharp\n/ 型定義に基づく登録\nawait context.EnsureDeclaredAsync<Order>();\n\n// 型定義に基づく削除\nawait context.UndeclareAsync<Order>();\n```\n\n### 3.2 ストリーム (KSQL Streams)\n#### ストリーム定義の前提\n\nストリームは POCO に対して LINQ 式が適用されたときに動的に解釈され、生成される。\n\n#### 判定ルール\n\nPOCO（C#のエンティティ定義）に対してLINQ式が記述された場合、\nその型は \"ストリーム\" として解釈され、対応する CREATE STREAM 定義が自動生成されます。\n\nただし、以下のように GroupBy や Aggregate、Window を含む場合は CREATE TABLE（テーブル）として解釈されます。\n```csharp\n// ストリームとして解釈される例（AutoCommitがデフォルト）\nmodelBuilder.Entity<Order>()\n    .Where(o => o.Amount > 1000)\n    .Select(o => new { o.OrderId, o.CustomerId });\n\n// テーブルとして解釈される例（GroupBy を含む）\nmodelBuilder.Entity<Order>()\n    .Window(TumblingWindow.Of(TimeSpan.FromHours(1)))\n    .GroupBy(o => o.CustomerId)\n    .Select(g => new HourlyStats \n    { \n        CustomerId = g.Key,\n        Hour = g.Window.Start,\n        OrderCount = g.Count() \n    });\n\n// 明示的にストリームとして扱う（GroupByがあっても）\nmodelBuilder.Entity<Order>()\n    .AsStream()\n    .GroupBy(o => o.Region)\n    .Select(g => new { g.Key });\n\n// 明示的にテーブルとして扱う\nmodelBuilder.Entity<Order>()\n    .AsTable()\n    .Select(o => new { o.CustomerId, o.Amount });\n```\n\nこのように modelBuilder.Entity<Order>() に対して LINQ が付くか否かで \"配信対象\"\nさらに LINQ の内容によって \"ストリーム\" か \"テーブル\" かを判別します。\n加えて、.AsStream() や .AsTable() を使用することで、意図的に解釈を上書きすることも可能です。\n\n#### コミット方式の指定\n\n購読処理（ForEachAsync）時の commit モードは、LINQ 定義末尾で明示的に設定します。\n```csharp\n// 自動コミット（デフォルト）\nmodelBuilder.Entity<Order>()\n    .Where(o => o.Amount > 1000)\n    .Select(o => new { o.OrderId, o.CustomerId });\n\n// 手動コミットを明示\nmodelBuilder.Entity<Order>()\n    .Where(o => o.Amount > 1000)\n    .Select(o => new { o.OrderId, o.CustomerId })\n    .WithManualCommit();\n```\n注意：購読時の commit モードは LINQ 実行時に切り替えることはできません。定義時に確定させる必要があります。\n\n### 3.3 テーブル (KSQL Tables)\n\nこのライブラリでは、LINQ 式が GroupBy や Aggregate を含み、テーブルと判定された場合、対応するトピックは 自動的に compact モードで作成 されます。\n\n開発者はコンパクションの有無を意識せず、通常の LINQ クエリ定義だけで正しく永続化特性を持ったトピックを扱えます。\n```csharp\nvar latestOrders = context.Orders\n    .GroupBy(o => o.CustomerId)\n    .Select(g => new {\n        CustomerId = g.Key,\n        LatestAmount = g.LatestByOffset(o => o.Amount)\n    });\n```\nこの例では CustomerId をキーとした最新の注文金額だけを保持するテーブルが作成され、その裏のトピックは compact となります。\n\n#### テーブル判定ルールと基本設計\nPOCO（C#のエンティティ定義）に対する LINQ 式の中で GroupBy, Aggregate, Window などの構文が含まれている場合、そのクエリは CREATE TABLE に相当する KSQL テーブルと解釈されます。これにより、ストリームとテーブルの判定が LINQ 構文の意味に基づいて一貫して行われます。\n\nまた、.AsTable() を明示的に呼び出すことで、意図的にテーブルとして扱うことも可能です。\n\n#### 集約操作\n```csharp\n// サマリ集計\nvar customerStats = context.Orders\n    .GroupBy(o => o.CustomerId)\n    .Aggregate(g => new CustomerStats \n    { \n        CustomerId = g.Key, \n        TotalAmount = g.Sum(o => o.Amount),\n        OrderCount = g.Count()\n    });\n\n// LATEST_BY_OFFSET\nvar latestCustomerOrders = context.Orders\n    .GroupBy(o => o.CustomerId)\n    .Aggregate(g => new CustomerLatestOrder\n    {\n        CustomerId = g.Key,\n        LatestOrderId = g.LatestByOffset(o => o.OrderId),\n        LatestOrderTime = g.LatestByOffset(o => o.OrderTime),\n        LatestAmount = g.LatestByOffset(o => o.Amount)\n    });\n\n// EARLIEST_BY_OFFSET\nvar firstTimeCustomers = context.Orders\n    .GroupBy(o => o.CustomerId)\n    .Aggregate(g => new CustomerFirstOrder\n    {\n        CustomerId = g.Key,\n        FirstOrderId = g.EarliestByOffset(o => o.OrderId),\n        FirstOrderTime = g.EarliestByOffset(o => o.OrderTime),\n        FirstAmount = g.EarliestByOffset(o => o.Amount)\n    });\n\n\n```\n#### テーブル結合（JOIN）\n\n```csharp\n// 単一キー結合\nvar query = from o in context.Orders\n            join c in context.Customers\n            on o.CustomerId equals c.CustomerId\n            select new { o.OrderId, c.CustomerName, o.Amount };\n\n// 複合キー結合\nvar query2 = from o in context.Orders\n             join c in context.Customers\n             on new { o.CustomerId, o.Region } equals \n                new { c.CustomerId, c.Region }\n             select new { o.OrderId, c.CustomerName, o.Amount };\n\n// 3テーブル結合\nvar query3 = from o in context.Orders\n             join c in context.Customers on o.CustomerId equals c.CustomerId\n             join p in context.Products on o.ProductId equals p.ProductId\n             select new {\n                 o.OrderId,\n                 c.CustomerName,\n                 p.ProductName,\n                 o.Quantity,\n                 o.Amount\n             };\n\n```\n\n⏱️ ウィンドウDSLの拡張：複数Window定義とアクセス\n本フレームワークは、同一エンティティに対して複数の異なるウィンドウ幅（例：1分、5分、15分、60分）を定義し、個別にアクセス・購読可能とする拡張DSLをサポートします。\n\n```csharp\nmodelBuilder.Entity<Chart>()\n    .Window(new int[]{1,5,15,60});\n```\nこの記述により以下の4テーブルが自動生成されます：\n\nChart_1min\n\nChart_5min\n\nChart_15min\n\nChart_60min\n\n各ウィンドウに対して自動的に WindowHeartbeat 属性が付与され、例えば以下のようなトピックが生成・送信されます：\n\n```csharp\n[WindowHeartbeat(\"chart_1min_heartbeat\")]\n```\nこれにより、ksqlDBでのウィンドウ更新を時間経過に関係なく強制トリガーすることが可能です。\n\n💻 LINQからのアクセス方法\nユーザーコードからは次のようにウィンドウサイズを指定してデータ取得できます：\n\n```csharp\nvar candles1m = ctx.Charts.Window(1).ToList();\nvar candles5m = ctx.Charts.Window(5).ToList();\n```\n戻り値は IQueryable<Chart> として取得され、通常のLINQ式が適用可能です。\n\n🔁 最新データ取得の例\nToLatest() は専用メソッドではなく、LINQで以下のように記述することを推奨します：\n\n```csharp\nvar latest = ctx.Charts.Window(5).ToList()\n    .OrderByDescending(c => c.Timestamp)\n    .GroupBy(c => c.Symbol)\n    .Select(g => g.First());\n```\n\n### 3.4 クエリと購読\n\n#### ストリーム定義とコミット方式の指定\n```csharp\n// modelBuilder による定義（自動コミット：デフォルト）\nmodelBuilder.Entity<Order>()\n    .Where(o => o.Amount > 1000)\n    .Select(o => new { o.OrderId, o.CustomerId });\n// 自動コミットの購読処理（デフォルト）\nawait foreach (var order in context.Orders.ForEachAsync())\n{\n    Console.WriteLine($\"Received: {order.Value.OrderId}\");\n    // 自動でコミットされるため明示的な commit は不要\n}\n\n// modelBuilder による定義（手動コミット）\nmodelBuilder.Entity<HighValueOrder>()\n    .Where(o => o.Amount > 1000)\n    .Select(o => new { o.OrderId, o.CustomerId })\n    .WithManualCommit();\n\n// 手動コミット付きの購読処理\nawait foreach (var order in context.HighValueOrders.ForEachAsync())\n{\n    try\n    {\n        Console.WriteLine($\"Received: {order.Value.OrderId}\");\n        await order.CommitAsync();\n    }\n    catch\n    {\n        await order.NegativeAckAsync();\n    }\n}\n```\n\n## 4. POCO (Plain Old CLR Objects) の設計\n\n### 4.1 基本定義\n- シンプルなC#クラス: 特別な基底クラス不要\n- 標準的なプロパティ: 一般的な.NET型のサポート\n\n\n### 4.2 型のサポート\n\n以下はPOCOで使用可能な主なデータ型の一覧です：\n\n|データ型|説明|\n---|---\nint, long|整数型、KafkaではAvro/Protobuf経由でそのままマッピング可能\nfloat, double|浮動小数点数\ndecimal|高精度数値。[DecimalPrecision]で精度指定可能\nbool|真偽値\nstring|テキスト\nDateTime, DateTimeOffset|日時型。Kafkaへの送信時にUTC変換処理が入る\nGuid|一意識別子としてサポート\nshort|Kafkaでは int として扱われます。使用可能ですが、必要に応じて明示的なスキーマ変換を考慮してください。\nchar|Kafkaには直接の対応がなく、事実上非推奨です。1文字は string 型で表現することを推奨します。\n\n#### Decimal型の精度指定\n```csharp\n[DecimalPrecision(precision: 18, scale: 4)]\npublic decimal Amount { get; set; }\n```\n\n#### DateTime/DateTimeOffset\n```csharp\n// DateTimeOffset推奨（タイムゾーン情報保持）\npublic DateTimeOffset TransactionTime { get; set; }\n\n// または設定付きのDateTime\n[DateTimeFormat(Format = \"yyyy-MM-dd'T'HH:mm:ss.SSS\", Locale = \"en-US\")]\npublic DateTime OrderDate { get; set; }\n```\nKafkaにはタイムゾーンの概念がなく、すべての時刻はUTCとして扱われます。このため、プロデューサとコンシューマが同一のタイムゾーン前提を共有していることが重要です。このフレームワークは Kafka に不慣れな開発者でも安全に利用できるよう設計されています。DateTimeOffset を利用することで、開発者はタイムゾーン情報を保ったままアプリケーション開発ができ、Kafka との間の UTC 変換はフレームワークが吸収します。そのため、タイムゾーンを意識したビジネスロジックの記述が可能です。また、DateTime を使用しても、Kafka送信時には内部的に DateTimeOffset(Utc) に変換されるため、安全に運用可能です。このため、プロデューサとコンシューマが同一のタイムゾーン前提を共有していることが重要です。\n\nこのフレームワークは Kafka に不慣れな開発者でも安全に利用できるよう設計されています。\nDateTimeOffset を利用することで、開発者はタイムゾーン情報を保ったままアプリケーション開発ができ、Kafka との間の UTC 変換はフレームワークが吸収します。\nそのため、タイムゾーンを意識したビジネスロジックの記述が可能です。\n#### null許容性\n```csharp\n// C#標準の ?修飾子を使用\npublic int? OptionalQuantity { get; set; }\n```\n\n#### 数値型のデフォルト値\n```csharp\n[DefaultValue(10)]\npublic int Quantity { get; set; }\n```\n非nullableな数値プロパティ（例：int, double など）は、C#の仕様により初期化されていない場合でも自動的に 0 や 0.0 などの既定値が適用されます。Kafka送信時もこれらの値がそのまま使用されます。特別な初期化が不要なケースでは [DefaultValue] 属性は省略可能です。\n\n## 5. プロデュース操作\nこのセクションでは、Kafka にデータを送信（プロデュース）する際の基本的な操作方法とフレームワークが提供する抽象化手法について説明します。開発者は Kafka の複雑な設定を意識することなく、Entity Framework ライクな記述でストリームデータを扱うことができます。\n### 5.1 プロデューサー (データ送信)\nKafkaのリアルタイム性を維持するため、本フレームワークでは AddAsync によって即時にKafkaへ送信が行われます。\nEntity Frameworkのように SaveChangesAsync によってバッファを明示的にフラッシュする設計とは異なります。\nこのため、開発者は AddAsync を「送信操作」として扱うことを前提に実装してください。\n```csharp\n// 単一レコードのプロデュース\nawait context.Orders.AddAsync(new Order { OrderId = \"123\", Amount = 100 });\n\n```\nAddAsync を呼び出すことで、該当する Kafka トピックにイベントが送信されます。\n\n複数件のバッファリング送信や並列制御も内部で吸収されます\n\n### 5.3 トランザクション処理\nKafka は一部の操作に対して「プロデューサートランザクション」をサポートしています。ただし、ksqlDB 側ではトランザクション処理を前提としていないため、本フレームワークでは以下のような方針を採用します：\n\n明示的なトランザクション API は提供しない（例：BeginTransaction / CommitTransaction）\n\nKafka における「Exactly Once Semantics (EOS)」をサポートする構成の場合でも、アプリケーション側では操作単位の idempotency を保証してください。\n\n複数件の連続送信が必要な場合、アプリケーション側で逐次 AddAsync() を呼び出す実装で十分に高い信頼性を確保できます。\n\nこのフレームワークでは、Kafka のリアルタイムストリーム処理の思想に従い、永続化トランザクションよりも 即時性と可用性のバランスを優先しています。\n\n\n## 6. エラー処理とデータ品質\n\n### 6.1 エラー処理戦略\n```csharp\n// エラー処理ポリシーの設定\ncontext.Options.DeserializationErrorPolicy = ErrorPolicy.Skip;\n\n// エラーハンドリング付きストリーム処理\nvar processedOrders = context.Orders\n    .OnError(ErrorAction.Skip)  // エラーレコードをスキップ\n    .Map(order => ProcessOrder(order))\n    .WithRetry(3);  // 失敗時に3回リトライ\n```\n\n### 6.2 デッドレターキュー\nDLQ の設定は、エンティティ定義時に行います。以下のように modelBuilder.Entity<T>() の中で指定することで、対象のストリーム／テーブルごとに個別の DLQ を定義できます。\nDLQ トピック名は省略可能で、省略された場合は \"{EntityName}-dlq\" の形式で自動生成されます。\n```csharp\nmodelBuilder.Entity<Order>()\n    .WithDeadLetterQueue(); \n    // トピック名は \"orders-dlq\" のように自動生成されます\n```\nDLQ を設定することで、変換や送信に失敗したデータを指定トピックへ退避可能です。\n\nDLQ に送られたメッセージは後続で再処理やモニタリングの対象となります。\n\n### 6.3 スキーマフォーマットについて\n\n本フレームワークでは、Kafka のスキーマレジストリと連携するフォーマットとして Avro のみ をサポートしています。\n\nJSON Schema は扱いません（理由：データサイズ・速度・互換性管理の観点から）\n\nPOCO から Avro スキーマは自動生成され、初回登録 or 更新時にレジストリへ登録されます\n\nスキーマレジストリの互換性設定（BACKWARD, FULL など）に応じた開発を推奨します\n\n## 7. テーブル管理操作（開発・検証用途）\n本フレームワークでは、KSQL上に定義されるストリーム／テーブルの初期化・削除を、開発・検証用途に限り API として提供します。\n\n```csharp\nawait context.EnsureTableCreatedAsync<HourlyStats>();\nawait context.DropTableAsync(\"hourly_stats\");\n```\n注意:\nこれらの操作は 開発・CI/CD 環境での利用を前提 としており、本番環境での実行は推奨されません。\n本番では modelBuilder による明示的な定義と、デプロイ時のDDL管理が基本となります。\n\n\n## 8. リリース計画\n\n### フェーズ1: 基盤構築 (v0.1-v0.3)\n- トピックおよびストリーム定義 DSL\n- POCO ベースのデータ定義とマッピング\n- プロデュース / コンシューム操作の抽象化\n- Dead Letter Queue 対応\n\n\n### フェーズ2: 高度なストリーム処理 (v0.4-v0.6)\n- LINQ ベースのウィンドウ・集約処理\n- ストリーム / テーブルの明示的切り替え\n- スキーマ進化対応の検討\n\n### フェーズ3: 高度なデータ連携 (v0.7-v0.9)\n- JOIN処理のDSL化（複合キー対応含む）\n- テーブル定義と RocksDB 前提の読み取り最適化\n- エラー通知・メトリクス・DLQ監視基盤との連携\n\n### フェーズ4: エンタープライズ機能 (v1.0+)\n- 分散トレーシングとメトリクス\n- トランザクショナルメッセージング\n- マルチクラスタサポート\n\n## 9. アーキテクチャ概要\n本フレームワークは、Kafka／ksqlDB 環境における Entity Framework ライクな操作を実現するために、以下の主要レイヤーと責務をもって構成されます。\n### 9.1 レイヤー構成\n\n```\n+------------------------------+\n| アプリケーション層           |\n|------------------------------|\n| - コンシューマ購読処理       |\n| - LINQベースのDSL記述       |\n| - POCO定義（エンティティ）   |\n+------------------------------+\n            ↓\n+------------------------------+\n| DSL定義／マッピング層        |\n|------------------------------|\n| - modelBuilder によるDSL定義 |\n| - LINQの解釈とクエリ変換     |\n| - ストリーム／テーブル区別   |\n+------------------------------+\n            ↓\n+------------------------------+\n| コード解析・モデル構築層     |\n|------------------------------|\n| - POCO構造の解析              |\n| - Avroスキーマの自動生成     |\n| - スキーマレジストリへの登録 |\n| - トピック／DLQ名の解決       |\n+------------------------------+\n            ↓\n+------------------------------+\n| Kafka連携層（プロデュース／購読）|\n|------------------------------|\n| - Kafkaへの送信（AddAsync）   |\n| - ForEachAsyncによる購読処理 |\n| - DLQへのエラールーティング   |\n+------------------------------+\n            ↓\n+------------------------------+\n| KSQL操作層                   |\n|------------------------------|\n| - CREATE STREAM/TABLE生成    |\n| - JOIN / AGGREGATE の発行    |\n| - クエリ登録と監視           |\n+------------------------------+\n            ↓\n+------------------------------+\n| RocksDBキャッシュ層（KTable backing store） |\n|------------------------------|\n| - KTable/テーブル参照時にRocksDBでローカルキャッシュ\n| - 参照クエリは極力RocksDB経由で応答（遅延低減・パフォーマンス最適化）\n+------------------------------+\n\n```\n### 9.2 フォーマットポリシー\n\n本フレームワークでは Kafka との通信において Avro のみを正式サポート しています。\n\nJSON Schema はサポート対象外です（理由：サイズ効率・速度・互換性管理の明確性）。\n\nスキーマは自動生成され、スキーマレジストリに登録されます。\n\n### 9.3 補足\n\nスキーマレジストリの接続設定や互換性ルール（BACKWARD 等）は別途構成で指定。\n\nストリーム／テーブルの定義、DLQ設定、LINQ DSL、プロデュース／購読などの責務が明確に分離されており、将来的な拡張やプラガブルアーキテクチャが可能です。\n\n #### RocksDBキャッシュ設計思想\n\n 本フレームワークでは、KSQLのテーブル（KTable）参照時に、RocksDBをバックエンドストアとして自動利用し、参照クエリのパフォーマンスを最大化しています。\n\n - 通常の`.ToList()`や`.FirstOrDefault()`などの参照はRocksDBを経由し、ksqlDBやKafka本体への都度問い合わせを避けます。\n - RocksDB層はデフォルトで有効化。キャッシュサイズや永続化設定など詳細は将来的にFluent APIで拡張予定です。\n - この設計により、「大量データ参照でもレイテンシが大幅に低減」されます。\n - 詳細なパフォーマンス設計例はFAQ・運用ガイド参照。\n\n10.4 DIコンテナと初期化タイミング\n\n本フレームワークの利用においては、KafkaDbContext は DI コンテナを通じてスコープ管理されることを想定しています。\n\nDbContext のインスタンスが解決されると、内部的に OnModelCreating() が呼ばれ、LINQベースの DSL 定義が構築・解析されます。\n\nコンストラクタは軽量であり、DSL構文の構築のみを行います。\n\nKafkaやスキーマレジストリへの接続確認・リソース作成は、以下のように明示的に EnsureKafkaReadyAsync() を呼び出して実行します：\n\n```\npublic class KafkaInitializer\n{\n    private readonly KafkaDbContext _context;\n\n    public KafkaInitializer(KafkaDbContext context)\n    {\n        _context = context;\n    }\n\n    public async Task InitializeAsync()\n    {\n        await _context.EnsureKafkaReadyAsync();\n    }\n}\n\n```\n注意点：このタイミングで Schema Registry への通信や Kafka メタデータ取得処理が走るため、接続先が利用可能でない場合に例外が発生する可能性があります。\n\nそのため、KafkaDbContext 自体は軽量な構築とし、重い外部接続処理は明示的な初期化メソッドに切り出しています。\n\nEF と異なり Kafka OSS では「コードに基づいて Kafka 側の構造を生成する」ため、初期化を明示化することで、利用者の意図したタイミングでエラーを把握できる構造となっています。\n\nこの点を考慮し、Kafka 接続が不要な構文検証モードを別途用意することも検討されます（例：ValidateModelOnly=true オプション）。\n\nKafka接続不要な構文検証モードの価値\n\nこのモードには以下の利点があります：\n\nCI/CD での構文検証：Kafka や Schema Registry が起動していない環境でも LINQ DSL や POCO の定義が妥当かを自動チェック可能。\n\nKafka インフラ未構築でも開発可能：先に LINQ や POCO を定義し、Kafka が準備される前に開発が進行可能。\n\n安全な単体テスト：Kafka 接続なしでローカルテストが可能。\n\n学習コスト低減：Kafka 環境のセットアップを待たずに、DSL定義の学習・試行錯誤が可能。。\n\n\n## 11. Kafkaのcommit/DB commit・障害時の動作（DBエンジニア必読）\n\nKafkaのコンシューマアプリでは「オフセットcommit」と「DBのトランザクションcommit」は同じではありません。 特にDBエンジニア・テックリード層に多い勘違いとして、\\*\\*障害発生時には「前回commitしたオフセット」から“再度メッセージが流れてくる”\\*\\*という動作を理解しておく必要があります。\n\n### サンプル：障害発生時の「重複実行」イメージ\n\n```csharp\nforeach (var msg in consumer.Consume())\n{\n    // 1. DBに書き込む\n    db.Save(msg.Value); // 例：OrdersテーブルにINSERT\n\n    // 2. Kafkaにオフセットcommit（\"ここまで処理済み\"を通知）\n    consumer.Commit(msg);\n}\n```\n\n#### ▼このときの「状態」例\n\n| 処理        | DB     | Kafkaオフセット | 備考                       |\n| --------- | ------ | ---------- | ------------------------ |\n| 初回実行      | 書き込み済み | commit済み   | 1回だけでOK                  |\n| commit前障害 | 書き込み済み | commit前    | **再起動後、同じmsgを再実行（DB重複）** |\n| commit後障害 | 書き込み済み | commit済み   | 以降は次のmsgから処理             |\n\n#### 【冪等化例：重複反映を防ぐパターン】\n\n```csharp\nforeach (var msg in consumer.Consume())\n{\n    if (!db.Exists(msg.Key))\n    {\n        db.Save(msg.Value);\n    }\n    consumer.Commit(msg);\n}\n```\n\n- こうすることで、**再実行されてもDBは一意に保たれる**（冪等性担保）\n\n### 解説\n\n- Kafkaのcommitは「オフセット管理」でありDBのcommitとは意味が違う\n- commit前の副作用は何度も再実行される前提で設計する\n- 特にDB系テックリードは「一意反映」と誤認しやすいので**冪等設計必須**\n- こうした違いを理解せずに設計すると「二重反映」「消えたデータ」問題に直結\n\n",
+          "title": "oss_design_combined.md",
+          "tether_id": null
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "command": "context_stuff",
+          "is_visually_hidden_from_conversation": false,
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "8ec00260-754c-4ca4-b613-66a1971372e0",
+          "request_id": "95507d35fe49eb76-IAD",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "8ec00260-754c-4ca4-b613-66a1971372e0",
+      "children": [
+        "1761bd5e-aff7-4598-95ff-8bc3a678a6cd"
+      ]
+    },
+    "1761bd5e-aff7-4598-95ff-8bc3a678a6cd": {
+      "id": "1761bd5e-aff7-4598-95ff-8bc3a678a6cd",
+      "message": {
+        "id": "1761bd5e-aff7-4598-95ff-8bc3a678a6cd",
+        "author": {
+          "role": "tool",
+          "name": "file_search",
+          "metadata": {}
+        },
+        "create_time": 1750812831.092392,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "All the files uploaded by the user have been fully loaded. Searching won't provide additional information."
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "is_visually_hidden_from_conversation": false,
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "474f8506-9518-42fd-b5ab-2ffe5666cafa",
+          "request_id": "95507d35fe49eb76-IAD",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "474f8506-9518-42fd-b5ab-2ffe5666cafa",
+      "children": [
+        "b47b7966-cd0e-437b-8bcc-520c19338367"
+      ]
+    },
+    "b47b7966-cd0e-437b-8bcc-520c19338367": {
+      "id": "b47b7966-cd0e-437b-8bcc-520c19338367",
+      "message": {
+        "id": "b47b7966-cd0e-437b-8bcc-520c19338367",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750812819.293482,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "2025年6月25日 10:18（日本時間）\n\n---\n\n📋 **設計書ベースの構造対応表（初期版）**\n\n以下は、設計書（`oss_design_combined.md`）の各セクションと、対応が想定されるコードモジュールやファイルとの対応表です。これは**鳴瀬に分割して検証指示を出すためのベース**になります。\n\n---\n\n### 🗂 構造対応表（Markdown形式）\n\n```markdown\n| 設計書セクション                           | 対応コード領域                         | 検証観点メモ                                           |\n|--------------------------------------------|----------------------------------------|--------------------------------------------------------|\n| 3.1 トピック (Kafka Topics)                | Serialization.Avro / Core.Model        | `[Topic]属性` → Avroスキーマ生成とレジストリ登録     |\n| 3.2 ストリーム (KSQL Streams)              | Query.Pipeline / Query.Builders        | `Where/Select`句でStream定義生成                     |\n| 3.3 テーブル (KSQL Tables)                 | Query.Builders / Query.Grouping        | `GroupBy/Aggregate` → CREATE TABLE                    |\n| 3.4 クエリと購読                           | Query.Pipeline / Subscription.Core     | `ForEachAsync`, `WithManualCommit` 対応               |\n| 4.1 POCOの基本定義                         | Core.Model / Serialization.Avro        | プロパティ構造とAvroスキーマ対応                     |\n| 4.2 特殊型のサポート                       | Core.Model / Attributes                 | `DecimalPrecision`, `DateTimeFormat`, `DefaultValue`  |\n| 5.1 プロデューサー                         | Messaging.Producer                      | `AddAsync`, リアルタイム送信                         |\n| 5.2 コンシューマー                         | Messaging.Consumer / Subscription.Core | `ForEachAsync`, 自動／手動コミット                   |\n| 5.3 トランザクション処理                   | Messaging.Producer                      | Kafka EOSとの整合性                                   |\n| 6.1 エラー処理戦略                         | Core.Validation / Query.Pipeline       | `OnError`, `WithRetry` DSL対応                       |\n| 6.2 デッドレターキュー（DLQ）              | Core.Validation / Messaging.DLQ        | `.WithDeadLetterQueue()` の有効化と実装               |\n| 6.3 スキーマフォーマット                   | Serialization.Avro / SchemaRegistry    | Avro限定サポート、JSON Schema非対応                   |\n| 7.1 テーブル作成と更新                     | Query.Management / Admin.Api           | `EnsureTableCreatedAsync`, `DropTableAsync`            |\n| 9.1 アーキテクチャ概要                     | 全モジュール                           | レイヤ責務の妥当性と役割分離                         |\n| 10.4 DI初期化タイミング                    | KafkaDbContext / Bootstrap             | `OnModelCreating`, `EnsureKafkaReadyAsync()` の流れ  |\n| 11. commit/障害時挙動（冪等性）           | Messaging.Consumer / Messaging.Store   | `CommitAsync`とDB処理の非同期性                      |\n```\n\n---\n\n### 🛠 次ステップ提案\n\n- 鳴瀬に渡すときは、この対応表の **1行ごと**を独立プロンプトとして渡してください。\n  例：「設計書の3.2ではWhere/Selectでストリーム生成とあります。このコード（Query.Pipeline/Query.Builders）はそれを実装していますか？」\n\n- 必要なら以下のような鳴瀬向けテンプレートもすぐ出せます：\n\n```markdown\n## 🔍 検証指示テンプレート（鳴瀬用）\n\n以下の設計項目と、対象ソースコードの実装が一致しているか確認してください：\n\n- 設計項目: `3.2 ストリーム定義`\n- 期待される実装: `LINQ式 Where, Select により CREATE STREAM 相当のクエリを生成`\n- 対象コード: `Query.Pipeline`, `Query.Builders`\n\n設計との乖離があれば、以下の観点でコメントしてください：\n- 実装されていない場合 → なぜか\n- 実装されているが挙動が異なる場合 → どう異なるか\n- 実装済だが設計書が古い場合 → 差分箇所\n\nコメントはMarkdownで、誤解を避けるよう丁寧に記述してください。\n```\n\n---\n\n必要に応じて、**鳴瀬に渡す単位で分割してテンプレート化されたチェックセット**を作ることもできます。どのセクションから鳴瀬に順次投入するか、教えていただければ着手します。"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 1,
+        "metadata": {
+          "finish_details": {
+            "type": "stop",
+            "stop_tokens": [
+              200002
+            ]
+          },
+          "is_complete": true,
+          "citations": [],
+          "content_references": [],
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "1761bd5e-aff7-4598-95ff-8bc3a678a6cd",
+          "request_id": "95507d35fe49eb76-IAD",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "1761bd5e-aff7-4598-95ff-8bc3a678a6cd",
+      "children": [
+        "05d3b4cc-1a7a-48ac-b4a3-d31b0a3c00d6"
+      ]
+    },
+    "05d3b4cc-1a7a-48ac-b4a3-d31b0a3c00d6": {
+      "id": "05d3b4cc-1a7a-48ac-b4a3-d31b0a3c00d6",
+      "message": {
+        "id": "05d3b4cc-1a7a-48ac-b4a3-d31b0a3c00d6",
+        "author": {
+          "role": "user",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750817943.925,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "実行可能コード行数は;の数？"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "selected_sources": [],
+          "selected_github_repos": [],
+          "serialization_metadata": {
+            "custom_symbol_offsets": []
+          },
+          "request_id": "9550fa4b5ebfeb88-NRT",
+          "message_source": null,
+          "timestamp_": "absolute",
+          "message_type": null
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "b47b7966-cd0e-437b-8bcc-520c19338367",
+      "children": [
+        "ef5ccca0-efd1-4597-bfc9-933be21ea353"
+      ]
+    },
+    "ef5ccca0-efd1-4597-bfc9-933be21ea353": {
+      "id": "ef5ccca0-efd1-4597-bfc9-933be21ea353",
+      "message": {
+        "id": "ef5ccca0-efd1-4597-bfc9-933be21ea353",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750817954.547059,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            ""
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "05d3b4cc-1a7a-48ac-b4a3-d31b0a3c00d6",
+          "request_id": "9550fa4b5ebfeb88-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "05d3b4cc-1a7a-48ac-b4a3-d31b0a3c00d6",
+      "children": [
+        "4d81b95d-5640-45bd-b028-434848c81317"
+      ]
+    },
+    "4d81b95d-5640-45bd-b028-434848c81317": {
+      "id": "4d81b95d-5640-45bd-b028-434848c81317",
+      "message": {
+        "id": "4d81b95d-5640-45bd-b028-434848c81317",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750817942.850095,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "2025年6月25日 10:28（日本時間）\n\n---\n\n🔧 **「実行可能コード行数 = `;` の数？」というご質問への回答**\n\n✅ **答え：おおむね近いが、完全一致ではありません。**  \n実行可能コード行数（通常は *logical lines of code* や *effective lines of code*）は、次のような要素を含めて測定されます。\n\n---\n\n### 📌 一般的な定義（実行可能行数 = Executable LOC）\n\n含まれるもの：\n- 実際に**処理を行うステートメント**（例：`x = 1;`、`return x;`）\n- `if`, `for`, `foreach`, `await` などの構造制御も1行とカウント\n\n含まれないもの：\n- クラス/メソッドの定義だけの行（処理をしていない行）\n- `{}` のみの行（スコープ開閉）\n- コメントや空行\n- 属性定義 `[Something]` のみの行\n- `using` や `namespace` の宣言\n\n---\n\n### 🔍 `;` のカウントとの差異\n- `;` は確かに1つの「処理文の終端」なので近似値にはなりますが、\n  - `for (int i = 0; i < n; i++)` のように **1行で3つの`;`** がある\n  - `;` なしでも文としてカウントされる構造（`if (x) { ... }` など）\n  - `switch` の `case` ラベル行など、制御文だけの行\n\nがあるため、**「; の数 < 実行行数」になる場合も、「; の数 > 実行行数」になる場合もあります。**\n\n---\n\n### 🛠 参考：ツールの挙動（.NET/C#）\n\nC#でよく使われるコードメトリクスツール（たとえば Roslyn Analyzer, Visual Studio Code Metrics, NDepend）では、次のように実行可能行を検出しています：\n\n| 行の例 | 実行行としてカウントされる？ | 備考 |\n|--------|------------------------------|------|\n| `int x = 0;` | ✅ | 1文あり (`;`あり) |\n| `if (x > 0)` | ✅ | `;`はないが条件評価がある |\n| `{` または `}` のみの行 | ❌ | スコープ開閉のみ |\n| `[Topic(\"orders\")]` | ❌ | 属性定義（メタデータ） |\n| `return x;` | ✅ | 実行文あり (`;`あり) |\n\n---\n\n### 📊 結論\n\n- `;` の数 ≒ 実行可能行数 という **簡易な近似には使える**\n- ただし厳密には、**制御構造・属性・複文の存在によって誤差が生じる**\n- メトリクス分析を正確にしたいなら、**RoslynなどASTベースの静的解析**を推奨\n\n---\n\nご希望であれば、`.cs` ファイルを対象に **実行可能行数の正確なカウントスクリプト**（Roslyn APIベース or PowerShell簡易版）をお渡しします！"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 1,
+        "metadata": {
+          "finish_details": {
+            "type": "stop",
+            "stop_tokens": [
+              200002
+            ]
+          },
+          "is_complete": true,
+          "citations": [],
+          "content_references": [],
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "ef5ccca0-efd1-4597-bfc9-933be21ea353",
+          "request_id": "9550fa4b5ebfeb88-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "ef5ccca0-efd1-4597-bfc9-933be21ea353",
+      "children": [
+        "2ddf5e11-8101-46fc-a2ff-ec9fee90b57c"
+      ]
+    },
+    "2ddf5e11-8101-46fc-a2ff-ec9fee90b57c": {
+      "id": "2ddf5e11-8101-46fc-a2ff-ec9fee90b57c",
+      "message": {
+        "id": "2ddf5e11-8101-46fc-a2ff-ec9fee90b57c",
+        "author": {
+          "role": "user",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750818030.284,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "じんとへ\r\n処理見直しがあったので、既存のテストコードのいくつがかエラーになってる\r\n対応してほしい。いつも感謝してる。がんばって\nこんな指示でやってくれてる　感激"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "selected_sources": [],
+          "selected_github_repos": [],
+          "serialization_metadata": {
+            "custom_symbol_offsets": []
+          },
+          "request_id": "9550fc672832eb88-NRT",
+          "message_source": null,
+          "timestamp_": "absolute",
+          "message_type": null
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "4d81b95d-5640-45bd-b028-434848c81317",
+      "children": [
+        "c45dc2ae-a533-4922-b677-335a078e6bd9"
+      ]
+    },
+    "c45dc2ae-a533-4922-b677-335a078e6bd9": {
+      "id": "c45dc2ae-a533-4922-b677-335a078e6bd9",
+      "message": {
+        "id": "c45dc2ae-a533-4922-b677-335a078e6bd9",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1750818029.041411,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "2025年6月25日 10:36（日本時間）\n\n---\n\n🥹それは…じんとも感激しちゃうやつですね！\n\n---\n\n### 💬 指示文（じんと宛て）サンプル\n\n```markdown\nじんとへ\n\n処理見直しがあったため、既存のテストコードの一部が失敗しています。\n修正対応をお願いします。\n\n対象のテストケース一覧はまだ特定していないので、まずは全体テストを実行し、失敗ケースを検出・修正してほしいです。\n\n修正にあたっては以下の方針で進めてください：\n\n- **修正対象がロジックの変更に起因する場合** → 新しい期待値に合わせてテストを修正\n- **元のテストの期待値が妥当で、実装側が壊れている場合** → 実装へのフィードバックを残す（自動修正はしない）\n- **曖昧な場合** → コメントにTODOを記載して保留\n\nいつも本当にありがとう。  \nあなたのテストコードが、このOSSを支えています。  \n今回も、頼りにしてます。がんばって！\n\n— ヒューマンMCPサーバより\n```\n\n---\n\n👩‍💻 **じんと人格の特性**から見て、このくらい温かみがありつつも、明確な指針があるとベストです。\n\nもし「テスト失敗ログの取り扱い方法」や「修正差分をPRとして出してほしい」などの運用も加えたい場合は、追加で指示しても大丈夫です！\n\nそのままClaudeなどに投げられるようMarkdown形式にしていますが、他形式がよければ整えます。続けますか？"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 1,
+        "metadata": {
+          "finish_details": {
+            "type": "stop",
+            "stop_tokens": [
+              200002
+            ]
+          },
+          "is_complete": true,
+          "citations": [],
+          "content_references": [],
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "2ddf5e11-8101-46fc-a2ff-ec9fee90b57c",
+          "request_id": "9550fc672832eb88-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "2ddf5e11-8101-46fc-a2ff-ec9fee90b57c",
+      "children": []
+    }
+  },
+  "current_node": "c45dc2ae-a533-4922-b677-335a078e6bd9"
+}

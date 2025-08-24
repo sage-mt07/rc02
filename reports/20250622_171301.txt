@@ -1,0 +1,20 @@
+品質管理レポート (鏡花)
+日時: Sun Jun 22 17:13:05 UTC 2025
+
+テストファイル総数: 72
+総テスト数: 268 (Fact: 267, Theory: 1)
+
+内訳:
+- Application: 20 テスト
+- Configuration: 8 テスト
+- Core: 35 テスト
+- Messaging: 21 テスト
+- Query: 50 テスト
+- Serialization: 127 テスト
+- ルート直下: 6 テスト
+
+coverage.cobertura.xml によるコードカバレッジは 約26%〜29%
+(例: coverage.cobertura.xml の line-rate 0.2915)
+
+環境上 dotnet コマンドが見つからず、テスト実行は未確認。
+

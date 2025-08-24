@@ -1,0 +1,20 @@
+品質管理レポート (鏡花)
+日時: Tue Jul  1 22:38:39 UTC 2025
+
+対象ファイル: docs/api_reference.md
+
+## 1. ソースとの整合性確認
+- 新たに追加された `StartErrorHandling` チェーンや `WindowDef` の記述を確認。実装ファイル `src/EventSetErrorHandlingExtensions.cs` 等で定義されたメソッドと一致。
+- `AvroOperationRetrySettings` および `AvroRetryPolicy` の項目を追記し、`src/Configuration/Options` 内の実装と整合。
+- `ResilientAvroSerializerManager` など内部処理クラスも表に反映し、名称差異なし。
+
+## 2. ドキュメント品質評価
+- DSL一覧に戻り値型と目的が明示されており、利用者がチェーンの流れを把握しやすい。
+- 構成オプションや内部機構の表形式が維持され、追記箇所も統一された書式で読みやすい。
+- ただし `implement_status.md` へのリンクが旧フォルダ(`docs/old`)となっている点は要整理。
+
+## 3. 利用者目線の気付き
+- `StartErrorHandling()` のサンプルフローを備考に記載したため、初学者が使い方を掴みやすくなった。
+- `AvroOperationRetrySettings` の説明は概要に留まっている。具体例が今後求められる可能性あり。
+
+以上、現状の更新内容は実装と概ね一致しており、利用者が参照するAPI情報として十分実用的と判断します。

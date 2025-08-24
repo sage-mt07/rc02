@@ -1,0 +1,24 @@
+鏡花レビュー 2025-06-27
+
+対象: 実装コードと `docs/oss_design_combined.md` の比較
+
+## 1. コンテキストクラスの命名差異
+- 設計ドキュメントでは `KsqlContext` 系で統一【F:docs/oss_design_combined.md†L112-L121】
+- 実装には依然 `IKafkaContext` や `KafkaContext` が存在【F:src/Query/Linq/UnifiedJoinResult.cs†L21-L29】【F:src/KsqlContext.cs†L423-L431】
+- 命名統一提案は `diff_kafka_context_rename_20250627.md` で指摘済【F:docs/diff_log/diff_kafka_context_rename_20250627.md†L1-L12】
+
+## 2. DLQ 機構
+- 設計では DLQ トピック自動送信と設定統合を明示【F:docs/oss_design_combined.md†L588-L602】
+- 実装では `DlqProducer` や `DlqTopicConfiguration` が存在し、初期化オプションあり【F:src/Messaging/Producers/DlqProducer.cs†L17-L32】【F:src/Configuration/DlqTopicConfiguration.cs†L6-L34】
+- `implement_status.md` では DLQ 設定が「部分実装」と記載【F:docs/implement_status.md†L8-L13】
+
+## 3. Manual Commit サポート
+- ドキュメントは `.WithManualCommit()` による手動コミット指定を解説【F:docs/oss_design_combined.md†L202-L216】
+- 実装には `IManualCommitMessage<T>` インタフェースが存在し対応済み【F:src/Core/Abstractions/IManualCommitMessage.cs†L5-L10】
+
+## 4. ReadyStateMonitor の整合性
+- 設計ドキュメントに Lag 監視機能として記述【F:docs/oss_design_combined.md†L788-L795】
+- 実装には `ReadyStateMonitor` クラスがありロジックが実装されている【F:src/StateStore/Monitoring/ReadyStateMonitor.cs†L10-L32】
+
+### 所感
+- 命名揺れ以外は概ね設計と実装が一致しているが、DLQ 設定はまだ完全ではない。設計文書の内容を踏まえ、今後の実装統合とドキュメント更新が望まれる。

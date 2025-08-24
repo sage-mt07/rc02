@@ -1,0 +1,6 @@
+6. Infrastructure/Schema Registry連携
+ Avroスキーマ自動生成・Schema Registry登録/互換性チェックが意図通り動作するか
+
+ スキーマのバージョニング・破壊的変更時のFail-Safeが担保されているか
+
+ スキーマ不一致・外部データ投入時のエラーが検知・報告できるか

@@ -1,0 +1,355 @@
+{
+  "id": "684e4601-f038-8007-9627-999fe3975912",
+  "title": "AI共同作業絵",
+  "create_time": 1749960194.085487,
+  "update_time": 1750078055.864395,
+  "mapping": {
+    "client-created-root": {
+      "id": "client-created-root",
+      "message": null,
+      "parent": null,
+      "children": [
+        "5e7748bf-384b-454f-b7d2-e02e4060c7d7"
+      ]
+    },
+    "5e7748bf-384b-454f-b7d2-e02e4060c7d7": {
+      "id": "5e7748bf-384b-454f-b7d2-e02e4060c7d7",
+      "message": {
+        "id": "5e7748bf-384b-454f-b7d2-e02e4060c7d7",
+        "author": {
+          "role": "system",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": null,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            ""
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 0,
+        "metadata": {
+          "is_visually_hidden_from_conversation": true
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "client-created-root",
+      "children": [
+        "852dc7e5-a3b3-4579-9d9a-a1902245239b"
+      ]
+    },
+    "852dc7e5-a3b3-4579-9d9a-a1902245239b": {
+      "id": "852dc7e5-a3b3-4579-9d9a-a1902245239b",
+      "message": {
+        "id": "852dc7e5-a3b3-4579-9d9a-a1902245239b",
+        "author": {
+          "role": "user",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1749960194.821,
+        "update_time": null,
+        "content": {
+          "content_type": "multimodal_text",
+          "parts": [
+            {
+              "content_type": "image_asset_pointer",
+              "asset_pointer": "file-service://file-YBYGziw3j7TenqAZS29YNA",
+              "size_bytes": 2230139,
+              "width": 1024,
+              "height": 1024,
+              "fovea": null,
+              "metadata": {
+                "dalle": null,
+                "gizmo": null,
+                "generation": null,
+                "container_pixel_height": null,
+                "container_pixel_width": null,
+                "emu_omit_glimpse_image": null,
+                "emu_patches_override": null,
+                "sanitized": true,
+                "asset_pointer_link": null,
+                "watermarked_asset_pointer": null
+              }
+            },
+            "添付の画像をベースに以下のAIと共同作業する絵にしてください\n天城（プロジェクトマネージャー）\n広夢（戦略広報）\n鏡花（レビュアー／品質管理）\n鳴瀬（開発担当）\n詩音（テストエンジニア）"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "attachments": [
+            {
+              "id": "file-YBYGziw3j7TenqAZS29YNA",
+              "size": 2230139,
+              "name": "ChatGPT Image 2025年6月15日 13_01_29.png",
+              "mime_type": "image/png",
+              "width": 1024,
+              "height": 1024
+            }
+          ],
+          "selected_github_repos": [],
+          "system_hints": [
+            "picture_v2"
+          ],
+          "serialization_metadata": {
+            "custom_symbol_offsets": []
+          },
+          "request_id": "94ff2d2b8d0ae381-NRT",
+          "message_source": null,
+          "timestamp_": "absolute",
+          "message_type": null
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "5e7748bf-384b-454f-b7d2-e02e4060c7d7",
+      "children": [
+        "8f65a685-af87-4403-a8f8-9d2929497c34"
+      ]
+    },
+    "8f65a685-af87-4403-a8f8-9d2929497c34": {
+      "id": "8f65a685-af87-4403-a8f8-9d2929497c34",
+      "message": {
+        "id": "8f65a685-af87-4403-a8f8-9d2929497c34",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1749960206.028008,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            ""
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 1,
+        "metadata": {
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "852dc7e5-a3b3-4579-9d9a-a1902245239b",
+          "request_id": "94ff2d2b8d0ae381-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "852dc7e5-a3b3-4579-9d9a-a1902245239b",
+      "children": [
+        "3924d63c-83ac-4cdf-b681-1ae00463228a"
+      ]
+    },
+    "3924d63c-83ac-4cdf-b681-1ae00463228a": {
+      "id": "3924d63c-83ac-4cdf-b681-1ae00463228a",
+      "message": {
+        "id": "3924d63c-83ac-4cdf-b681-1ae00463228a",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1749960196.445834,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "{\n  \"prompt\": \"An illustrated scene in a warm, retro cartoon style showing an elderly AI expert collaborating with five AI assistants in an office setting. The elderly expert is sitting at a desk, wearing glasses and a jacket with an 'AI' patch. Behind him is a computer screen showing a brain-shaped AI logo. Around him are five personified AI assistants with distinct appearances and roles:\\n\\n1. **Tenjo Amagi (Project Manager)**: Calm and composed female AI with a clipboard, giving directions.\\n2. **Hiromu (Strategic PR)**: Energetic male AI with a headset, talking excitedly and holding a media plan.\\n3. **Kyoka (Reviewer/QA)**: Sharp-eyed female AI with glasses, holding a red pen and checklist.\\n4. **Naruse (Developer)**: Focused male AI with a hoodie, typing code on a laptop.\\n5. **Shion (Test Engineer)**: Young, detail-oriented female AI with a tablet, checking test results.\\n\\nThe environment is cozy, with books, coffee mugs, and monitors around, symbolizing a productive and friendly AI-human collaboration space.\",\n  \"size\": \"1024x1024\"\n}"
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": false,
+        "weight": 1,
+        "metadata": {
+          "finish_details": {
+            "type": "stop",
+            "stop_tokens": [
+              200007
+            ]
+          },
+          "is_complete": true,
+          "citations": [],
+          "content_references": [],
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "8f65a685-af87-4403-a8f8-9d2929497c34",
+          "request_id": "94ff2d2b8d0ae381-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "t2uay3k.sj1i4kz",
+        "channel": null
+      },
+      "parent": "8f65a685-af87-4403-a8f8-9d2929497c34",
+      "children": [
+        "ddd757ec-2c22-4d56-b447-5862e4b90d97"
+      ]
+    },
+    "ddd757ec-2c22-4d56-b447-5862e4b90d97": {
+      "id": "ddd757ec-2c22-4d56-b447-5862e4b90d97",
+      "message": {
+        "id": "ddd757ec-2c22-4d56-b447-5862e4b90d97",
+        "author": {
+          "role": "tool",
+          "name": "t2uay3k.sj1i4kz",
+          "metadata": {}
+        },
+        "create_time": 1749960217.215516,
+        "update_time": null,
+        "content": {
+          "content_type": "multimodal_text",
+          "parts": [
+            {
+              "content_type": "image_asset_pointer",
+              "asset_pointer": "sediment://file_00000000ea546230a21ea978e0294c5a",
+              "size_bytes": 3617360,
+              "width": 1024,
+              "height": 1536,
+              "fovea": null,
+              "metadata": {
+                "dalle": {
+                  "gen_id": "15f1197c-3eac-49e8-b780-6a3d8c9ba15e",
+                  "prompt": "",
+                  "seed": null,
+                  "parent_gen_id": null,
+                  "edit_op": null,
+                  "serialization_title": "DALL-E generation metadata"
+                },
+                "gizmo": null,
+                "generation": {
+                  "gen_id": "15f1197c-3eac-49e8-b780-6a3d8c9ba15e",
+                  "gen_size": "xlimage",
+                  "seed": null,
+                  "parent_gen_id": null,
+                  "height": 1536,
+                  "width": 1024,
+                  "transparent_background": false,
+                  "serialization_title": "Image Generation metadata"
+                },
+                "container_pixel_height": 1536,
+                "container_pixel_width": 1024,
+                "emu_omit_glimpse_image": null,
+                "emu_patches_override": null,
+                "sanitized": false,
+                "asset_pointer_link": null,
+                "watermarked_asset_pointer": null
+              }
+            }
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 0,
+        "metadata": {
+          "image_gen_title": "AIエキスパートと協力的なアシスタントたち",
+          "citations": [],
+          "content_references": [],
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "3924d63c-83ac-4cdf-b681-1ae00463228a",
+          "request_id": "94ff2d2b8d0ae381-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "3924d63c-83ac-4cdf-b681-1ae00463228a",
+      "children": [
+        "f777af43-26e1-4ce6-bc8b-4c3a339f7813"
+      ]
+    },
+    "f777af43-26e1-4ce6-bc8b-4c3a339f7813": {
+      "id": "f777af43-26e1-4ce6-bc8b-4c3a339f7813",
+      "message": {
+        "id": "f777af43-26e1-4ce6-bc8b-4c3a339f7813",
+        "author": {
+          "role": "tool",
+          "name": "t2uay3k.sj1i4kz",
+          "metadata": {}
+        },
+        "create_time": 1749960299.654402,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            "GPT-4o returned 1 images. From now on, do not say or show ANYTHING. Please end this turn now. I repeat: From now on, do not say or show ANYTHING. Please end this turn now. Do not summarize the image. Do not ask followup question. Just end the turn and do not do anything else."
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": null,
+        "weight": 0,
+        "metadata": {
+          "citations": [],
+          "content_references": [],
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "ddd757ec-2c22-4d56-b447-5862e4b90d97",
+          "request_id": "94ff2d2b8d0ae381-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "assistant",
+        "channel": null
+      },
+      "parent": "ddd757ec-2c22-4d56-b447-5862e4b90d97",
+      "children": [
+        "95d8bf82-b60f-47da-ab58-08263f7a4e3a"
+      ]
+    },
+    "95d8bf82-b60f-47da-ab58-08263f7a4e3a": {
+      "id": "95d8bf82-b60f-47da-ab58-08263f7a4e3a",
+      "message": {
+        "id": "95d8bf82-b60f-47da-ab58-08263f7a4e3a",
+        "author": {
+          "role": "assistant",
+          "name": null,
+          "metadata": {}
+        },
+        "create_time": 1749960297.378434,
+        "update_time": null,
+        "content": {
+          "content_type": "text",
+          "parts": [
+            ""
+          ]
+        },
+        "status": "finished_successfully",
+        "end_turn": true,
+        "weight": 1,
+        "metadata": {
+          "finish_details": {
+            "type": "stop",
+            "stop_tokens": [
+              200002
+            ]
+          },
+          "is_complete": true,
+          "citations": [],
+          "content_references": [],
+          "message_type": null,
+          "model_slug": "gpt-4o",
+          "default_model_slug": "gpt-4o",
+          "parent_id": "f777af43-26e1-4ce6-bc8b-4c3a339f7813",
+          "request_id": "94ff2d2b8d0ae381-NRT",
+          "timestamp_": "absolute"
+        },
+        "recipient": "all",
+        "channel": null
+      },
+      "parent": "f777af43-26e1-4ce6-bc8b-4c3a339f7813",
+      "children": []
+    }
+  },
+  "current_node": "95d8bf82-b60f-47da-ab58-08263f7a4e3a"
+}

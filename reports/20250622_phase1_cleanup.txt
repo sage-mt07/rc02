@@ -1,0 +1,10 @@
+迅人レポート 2025-06-22
+
+## Phase1 メソッド削除実施内容
+- Debug/診断系メソッド削除: CoreLayerPhase3Marker, QueryDiagnostics
+- 未実装Avroメソッド削除: AvroSerializer, AvroDeserializer
+- PoolMetrics クラス削除
+- TopicOverrideService クラス削除
+- 該当テスト削除
+
+Phase1 完了後、再調査サイクルを実施予定。

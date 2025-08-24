@@ -1,0 +1,86 @@
+Kafka/ksqlDB OSS向け POCO設計・PK・シリアライズ方針まとめ
+1. 業務POCO（エンティティ）の設計原則
+業務POCO（エンティティクラス）は“純粋な業務データ構造”とし、PK（[Key]属性）は原則付与しない
+
+POCOはDB/業務都合・ビジネスロジック都合で設計し、Kafkaのkey schemaは意識しなくてよい
+
+これにより、Kafka/ksqlDBのスキーマや一意性ルールの影響をPOCO本体に及ぼさない
+
+2. PK（key schema）は「必要なときだけ」DTO/出力用POCOに明示
+Kafka/ksqlDB等に出力・集約する際、LINQクエリ等で論理的な一意性（group by等）が発生したときのみ、
+
+出力用POCO（DTO）で「PK（[Key]属性）」を明示する
+
+PKにするカラムは、その都度LINQ/group byで一意性を担保したいカラム群を指定
+
+3. key schemaの順序はDTO/POCOの定義順に厳密に従う
+複合キーの場合、「DTO/出力POCOのプロパティ定義順＝key schemaの順序」
+
+これによりJOINやGROUP BY時の物理的key schemaの一致を厳密に担保する
+
+必ずLINQ/group byで指定した論理PKカラムの順序と合わせる
+
+4. PK運用ルール
+業務POCOからPK排除→Kafkaや集約・出力用DTOでのみPK属性を利用
+
+key schemaが必要なstream/tableは、出力用POCOでPK属性・順序を明示
+
+DTO・POCOのPK属性・順序がKafka/ksqlDB key schema仕様となる
+
+5. 物理的・論理的一貫性・パフォーマンスの担保
+業務POCOの自由度・シンプルさを保ちつつ、Kafka/ksqlDB上での一意性・効率・互換性も実現
+
+DTO/出力POCOでの明示的なPK設計により、アップサート・集約・JOINの性能と安全性を保証
+
+6. OSS自動変換・マッピング設計指針
+OSSでのkey/valueスキーマ分割・マッピングも、この新方針に準拠
+
+業務POCOはkey schemaを意識せず、DTO/出力用POCOでのみkey schema化
+
+マッピング時も「カラム定義順＝key schema順」を厳守
+
+7. シリアライズ／デシリアライズ方針
+OSSはKafkaとのデータのやり取りにおいて、POCO⇔key/value構造体の変換（serialize/deserialize）を完全自動で行う
+
+利用者はPOCOのみ意識してコーディングすれば良い
+
+produce時： DTO/POCOを受け取り、PK属性（key schema部）と残りのプロパティ（value schema部）を自動分離し、それぞれシリアライズ
+
+consume時： Kafkaから受信したkey/valueそれぞれをデシリアライズし、DTO/POCOへ自動再構成
+
+シリアライザ・デシリアライザは型ごと・スキーマごとにキャッシュし、性能・一貫性を確保
+
+key/valueスキーマの順序・型不一致もOSSが自動吸収・補正
+
+利用者がKafka/ksqlDBの細かなkey/value実装差異を意識する必要はなし
+
+8. 設計ガイド・運用ドキュメントへの明記
+この運用ルール・設計方針を全プロジェクト・OSSドキュメント・開発ガイドに明記し、チーム全員で遵守
+
+【例】
+csharp
+コピーする
+編集する
+// 業務POCO
+public class Order
+{
+    public int OrderId { get; set; }
+    public int CustomerId { get; set; }
+    public decimal Amount { get; set; }
+}
+
+// 集約・出力用DTO
+public class OrderSummary
+{
+    [Key] // 論理PKの順で定義
+    public int CustomerId { get; set; }
+    public int ProductId { get; set; }
+    public decimal Total { get; set; }
+}
+group byの順序が「CustomerId, ProductId」なら、POCOもその順で定義
+
+Kafka出力時はこのkey schemaで運用
+
+シリアライズ・デシリアライズも自動吸収
+
+本設計原則に従い、Kafka/ksqlDB OSSのPOCO・スキーマ設計・シリアライズ実装・運用を行うこと。
