@@ -2,12 +2,12 @@ namespace Kafka.Ksql.Linq.Cache.Configuration;
 
 using System.Collections.Generic;
 
-public class TableCacheOptions
+internal class TableCacheOptions
 {
     public List<TableCacheEntry> Entries { get; set; } = new();
 }
 
-public class TableCacheEntry
+internal class TableCacheEntry
 {
     public string Entity { get; set; } = string.Empty;
     public string SourceTopic { get; set; } = string.Empty;

@@ -14,7 +14,7 @@ namespace Kafka.Ksql.Linq.Mapping;
 /// <summary>
 /// Generate ISpecificRecord implementations from POCO types at runtime.
 /// </summary>
-public static class SpecificRecordGenerator
+internal static class SpecificRecordGenerator
 {
     private static readonly ConcurrentDictionary<string, Lazy<Type>> _cache = new();
     private static readonly ModuleBuilder _moduleBuilder;

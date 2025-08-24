@@ -15,7 +15,7 @@ using System.Globalization;
 /// <summary>
 /// Holds generated key/value types and their associated PropertyMeta information.
 /// </summary>
-public class KeyValueTypeMapping
+internal class KeyValueTypeMapping
 {
     public const char KeySep = '\u0000';
     public Type KeyType { get; set; } = default!;

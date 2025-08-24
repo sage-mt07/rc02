@@ -19,7 +19,7 @@ namespace Kafka.Ksql.Linq.Mapping;
 /// Provides registration and lookup of dynamically generated key/value types
 /// based on PropertyMeta information.
 /// </summary>
-public class MappingRegistry
+internal class MappingRegistry
 {
     private readonly ConcurrentDictionary<Type, KeyValueTypeMapping> _mappings = new();
     private readonly ModuleBuilder _moduleBuilder;
