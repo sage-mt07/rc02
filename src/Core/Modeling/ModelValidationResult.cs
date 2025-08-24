@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Kafka.Ksql.Linq.Core.Modeling;
-public class ModelValidationResult
+internal class ModelValidationResult
 {
     public bool HasErrors { get; set; }
     public Dictionary<Type, List<string>> EntityErrors { get; set; } = new();

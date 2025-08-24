@@ -6,7 +6,7 @@ namespace Kafka.Ksql.Linq.Query.Schema;
 /// <summary>
 /// クエリによって生成されるKey/Value構造の定義
 /// </summary>
-public class KeyValueSchemaInfo
+internal class KeyValueSchemaInfo
 {
     public string ClassName { get; set; } = string.Empty;
     public string Namespace { get; set; } = string.Empty;
