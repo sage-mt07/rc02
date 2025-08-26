@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Kafka.Ksql.Linq.Query.Analysis;
@@ -20,4 +21,5 @@ internal class TumblingQao
     public IReadOnlyList<string> Projection { get; init; } = new List<string>();
     public IReadOnlyList<ColumnShape> PocoShape { get; init; } = new List<ColumnShape>();
     public BasedOnSpec BasedOn { get; init; } = new(new List<string>(), string.Empty, string.Empty, string.Empty);
+    public DayOfWeek WeekAnchor { get; init; } = DayOfWeek.Monday;
 }

@@ -45,7 +45,8 @@ internal static class TumblingAnalyzer
             Keys = keys,
             Projection = projection,
             PocoShape = pocoShape,
-            BasedOn = basedOn
+            BasedOn = basedOn,
+            WeekAnchor = res.WeekAnchor
         };
     }
 

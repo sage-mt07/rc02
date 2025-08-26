@@ -34,7 +34,8 @@ internal static class DerivationPlanner
                 Timeframe = tf,
                 KeyShape = keyShapes,
                 ValueShape = valueShapes,
-                BasedOnSpec = qao.BasedOn
+                BasedOnSpec = qao.BasedOn,
+                WeekAnchor = qao.WeekAnchor
             };
             entities.Add(agg); dag.AddNode(aggId);
 
@@ -47,7 +48,8 @@ internal static class DerivationPlanner
                 ValueShape = valueShapes,
                 InputHint = tf.Unit == "m" && tf.Value == 1 ? "10sAgg" : tf.Unit == "wk" ? "bar_1m_final" : "bar_1m_live",
                 SyncHint = tf.Unit == "m" && tf.Value == 1 ? "HB_1m" : null,
-                BasedOnSpec = qao.BasedOn
+                BasedOnSpec = qao.BasedOn,
+                WeekAnchor = qao.WeekAnchor
             };
             entities.Add(live); dag.AddNode(liveId);
 
@@ -60,7 +62,8 @@ internal static class DerivationPlanner
                 ValueShape = valueShapes,
                 InputHint = tf.Unit == "m" && tf.Value == 1 ? "bar_1m_agg_final ⟂ bar_prev_1m" : $"bar_{tfStr}_agg_final ⟂ bar_prev_1m",
                 SyncHint = tf.Unit == "m" && tf.Value == 1 ? "HB_1m" : null,
-                BasedOnSpec = qao.BasedOn
+                BasedOnSpec = qao.BasedOn,
+                WeekAnchor = qao.WeekAnchor
             };
             entities.Add(final); dag.AddNode(finalId);
 
@@ -80,7 +83,8 @@ internal static class DerivationPlanner
                     Timeframe = tf,
                     KeyShape = keyShapes,
                     ValueShape = valueShapes,
-                    BasedOnSpec = qao.BasedOn
+                    BasedOnSpec = qao.BasedOn,
+                    WeekAnchor = qao.WeekAnchor
                 };
                 entities.Add(prev); dag.AddNode(prev.Id);
 
@@ -92,7 +96,8 @@ internal static class DerivationPlanner
                     KeyShape = keyShapes,
                     ValueShape = Array.Empty<ColumnShape>(),
                     MaterializationHint = MaterializationHint.Stream,
-                    BasedOnSpec = qao.BasedOn
+                    BasedOnSpec = qao.BasedOn,
+                    WeekAnchor = qao.WeekAnchor
                 };
                 entities.Add(hb); dag.AddNode(hb.Id);
             }

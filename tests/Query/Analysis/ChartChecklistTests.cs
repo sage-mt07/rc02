@@ -185,5 +185,105 @@ public class ChartChecklistTests
         Assert.Contains("bar_1m_live", liveHour.Sources);
         Assert.Equal("Window(TUMBLING,1h)+Emit(CHANGES)", liveHour.Operation);
     }
+
+    [Fact]
+    public void QueryAdapter_Rolls_Up_1m_To_5m_Live()
+    {
+        var qao = new TumblingQao
+        {
+            TimeKey = "Timestamp",
+            Windows = new List<Timeframe> { new(1, "m"), new(5, "m") },
+            Keys = new[] { "Broker", "Symbol", "BucketStart" },
+            Projection = new[] { "Broker", "Symbol", "BucketStart" },
+            PocoShape = new[]
+            {
+                new ColumnShape("Broker", typeof(string), false),
+                new ColumnShape("Symbol", typeof(string), false),
+                new ColumnShape("Timestamp", typeof(DateTime), false),
+                new ColumnShape("BucketStart", typeof(DateTime), false)
+            },
+            BasedOn = new BasedOnSpec(new[] { "Broker" }, "Open", "Close", "MarketDate")
+        };
+        var (entities, dag) = DerivationPlanner.Plan(qao);
+        var specs = QueryAdapter.Build(entities, dag);
+        var live5m = specs.First(s => s.TargetId == "bar_5m_live");
+        Assert.Contains("bar_1m_live", live5m.Sources);
+        Assert.Equal("Window(TUMBLING,5m)+Emit(CHANGES)", live5m.Operation);
+        Assert.Contains("bar_1m_live", dag.Edges["bar_5m_live"]);
+    }
+
+    [Fact]
+    public void QueryAdapter_Composes_5m_Final_With_1m_Prev()
+    {
+        var qao = new TumblingQao
+        {
+            TimeKey = "Timestamp",
+            Windows = new List<Timeframe> { new(1, "m"), new(5, "m") },
+            Keys = new[] { "Broker", "Symbol", "BucketStart" },
+            Projection = new[] { "Broker", "Symbol", "BucketStart" },
+            PocoShape = new[]
+            {
+                new ColumnShape("Broker", typeof(string), false),
+                new ColumnShape("Symbol", typeof(string), false),
+                new ColumnShape("Timestamp", typeof(DateTime), false),
+                new ColumnShape("BucketStart", typeof(DateTime), false)
+            },
+            BasedOn = new BasedOnSpec(new[] { "Broker" }, "Open", "Close", "MarketDate")
+        };
+        var (entities, dag) = DerivationPlanner.Plan(qao);
+        Assert.Contains(entities, e => e.Id == "bar_prev_1m" && e.Role == Role.Prev1m);
+        var specs = QueryAdapter.Build(entities, dag);
+        var final5m = specs.First(s => s.TargetId == "bar_5m_final");
+        Assert.Contains("bar_prev_1m", final5m.Sources);
+        Assert.Equal("Compose(AggFinal⟂BarPrev1m)", final5m.Operation);
+        Assert.Contains("bar_prev_1m", dag.Edges["bar_5m_final"]);
+    }
+
+    [Fact]
+    public void Planner_Preserves_WeekAnchor()
+    {
+        var qao = new TumblingQao
+        {
+            TimeKey = "Timestamp",
+            Windows = new List<Timeframe> { new(1, "m"), new(1, "wk") },
+            Keys = new[] { "Broker", "Symbol", "BucketStart" },
+            Projection = new[] { "Broker", "Symbol", "BucketStart" },
+            PocoShape = new[]
+            {
+                new ColumnShape("Broker", typeof(string), false),
+                new ColumnShape("Symbol", typeof(string), false),
+                new ColumnShape("Timestamp", typeof(DateTime), false),
+                new ColumnShape("BucketStart", typeof(DateTime), false)
+            },
+            BasedOn = new BasedOnSpec(new[] { "Broker" }, "Open", "Close", "MarketDate"),
+            WeekAnchor = DayOfWeek.Monday
+        };
+        var (entities, _) = DerivationPlanner.Plan(qao);
+        Assert.All(entities, e => Assert.Equal(DayOfWeek.Monday, e.WeekAnchor));
+    }
+
+    [Fact]
+    public void QueryAdapter_Generates_Month_Topic_Suffix()
+    {
+        var qao = new TumblingQao
+        {
+            TimeKey = "Timestamp",
+            Windows = new List<Timeframe> { new(1, "m"), new(1, "mo") },
+            Keys = new[] { "Broker", "Symbol", "BucketStart" },
+            Projection = new[] { "Broker", "Symbol", "BucketStart" },
+            PocoShape = new[]
+            {
+                new ColumnShape("Broker", typeof(string), false),
+                new ColumnShape("Symbol", typeof(string), false),
+                new ColumnShape("Timestamp", typeof(DateTime), false),
+                new ColumnShape("BucketStart", typeof(DateTime), false)
+            },
+            BasedOn = new BasedOnSpec(new[] { "Broker" }, "Open", "Close", "MarketDate")
+        };
+        var (entities, dag) = DerivationPlanner.Plan(qao);
+        var specs = QueryAdapter.Build(entities, dag);
+        Assert.Contains(specs, s => s.TargetId == "bar_1mo_live");
+        Assert.Contains(specs, s => s.TargetId == "bar_1m_live");
+    }
 }
 
