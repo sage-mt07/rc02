@@ -87,7 +87,7 @@ public class RollupBuilderTests
     {
         var md = BuildMetadata();
         var sql = LiveBuilder.Build(md, "5m");
-        Assert.Contains("TABLE 1mLive WINDOW TUMBLING(5m)", sql);
+        Assert.Contains("TABLE bar_1m_live WINDOW TUMBLING(5m)", sql);
         Assert.DoesNotContain("HB_1m", sql);
     }
 
@@ -96,7 +96,7 @@ public class RollupBuilderTests
     {
         var md = BuildMetadata();
         var sql = FinalBuilder.Build(md, "5m");
-        Assert.Contains("COMPOSE(5mAggFinal ⟂ prev_1m)", sql);
+        Assert.Contains("COMPOSE(bar_5m_agg_final ⟂ bar_prev_1m)", sql);
         Assert.DoesNotContain("HB_1m", sql);
         var sql1 = FinalBuilder.Build(md, "1m");
         Assert.Contains("SYNC HB_1m", sql1);

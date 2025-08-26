@@ -55,11 +55,11 @@ internal class ExpressionAnalysisResult
             var liveInput = tf switch
             {
                 "1m" => "10sAgg",
-                "1wk" => "1mFinal",
-                _ => "1mLive"
+                "1wk" => "bar_1m_final",
+                _ => "bar_1m_live"
             };
             md = md.WithProperty($"input/{tf}Live", liveInput);
-            md = md.WithProperty($"input/{tf}Final", $"{tf}AggFinal ⟂ prev_1m");
+            md = md.WithProperty($"input/{tf}Final", $"bar_{tf}_agg_final ⟂ bar_prev_1m");
         }
         return md;
     }

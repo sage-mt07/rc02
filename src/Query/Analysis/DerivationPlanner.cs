@@ -23,9 +23,9 @@ internal static class DerivationPlanner
         foreach (var tf in qao.Windows)
         {
             var tfStr = $"{tf.Value}{tf.Unit}";
-            var aggId = $"agg_final_{tfStr}";
-            var liveId = $"live_{tfStr}";
-            var finalId = $"final_{tfStr}";
+            var aggId = $"bar_{tfStr}_agg_final";
+            var liveId = $"bar_{tfStr}_live";
+            var finalId = $"bar_{tfStr}_final";
 
             var agg = new DerivedEntity
             {
@@ -45,7 +45,7 @@ internal static class DerivationPlanner
                 Timeframe = tf,
                 KeyShape = keyShapes,
                 ValueShape = valueShapes,
-                InputHint = tf.Unit == "m" && tf.Value == 1 ? "10sAgg" : tf.Unit == "wk" ? "1mFinal" : "1mLive",
+                InputHint = tf.Unit == "m" && tf.Value == 1 ? "10sAgg" : tf.Unit == "wk" ? "bar_1m_final" : "bar_1m_live",
                 SyncHint = tf.Unit == "m" && tf.Value == 1 ? "HB_1m" : null,
                 BasedOnSpec = qao.BasedOn
             };
@@ -58,24 +58,24 @@ internal static class DerivationPlanner
                 Timeframe = tf,
                 KeyShape = keyShapes,
                 ValueShape = valueShapes,
-                InputHint = tf.Unit == "m" && tf.Value == 1 ? "1mAggFinal ⟂ prev_1m" : $"{tfStr}AggFinal ⟂ prev_1m",
+                InputHint = tf.Unit == "m" && tf.Value == 1 ? "bar_1m_agg_final ⟂ bar_prev_1m" : $"bar_{tfStr}_agg_final ⟂ bar_prev_1m",
                 SyncHint = tf.Unit == "m" && tf.Value == 1 ? "HB_1m" : null,
                 BasedOnSpec = qao.BasedOn
             };
             entities.Add(final); dag.AddNode(finalId);
 
             dag.AddEdge(aggId, finalId);
-            dag.AddEdge("prev_1m", finalId);
+            dag.AddEdge("bar_prev_1m", finalId);
             if (tf.Unit == "wk")
-                dag.AddEdge("final_1m", liveId);
+                dag.AddEdge("bar_1m_final", liveId);
             else if (!(tf.Unit == "m" && tf.Value == 1))
-                dag.AddEdge("live_1m", liveId);
+                dag.AddEdge("bar_1m_live", liveId);
 
             if (tf.Unit == "m" && tf.Value == 1 && prev == null)
             {
                 prev = new DerivedEntity
                 {
-                    Id = "prev_1m",
+                    Id = "bar_prev_1m",
                     Role = Role.Prev1m,
                     Timeframe = tf,
                     KeyShape = keyShapes,
