@@ -1,0 +1,3 @@
+- add tests verifying 5m live derives from 1m live and 5m final composes with bar_prev_1m
+- ensure week anchor metadata propagates through derivation planner
+- confirm month windows use `1mo` topic suffix

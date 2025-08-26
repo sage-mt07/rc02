@@ -20,7 +20,7 @@ internal static class QueryAdapter
             {
                 Role.AggFinal => $"Window(TUMBLING,{e.Timeframe.Value}{e.Timeframe.Unit})+Emit(FINAL+GRACE)",
                 Role.Live => $"Window(TUMBLING,{e.Timeframe.Value}{e.Timeframe.Unit})+Emit(CHANGES)",
-                Role.Final => "Compose(AggFinal⟂Prev1m)",
+                Role.Final => "Compose(AggFinal⟂BarPrev1m)",
                 _ => string.Empty
             };
             var projector = e.Role == Role.AggFinal ? "BucketStartFromWindowStart" : null;

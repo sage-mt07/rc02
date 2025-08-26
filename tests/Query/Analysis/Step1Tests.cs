@@ -96,12 +96,12 @@ public class Step1Tests
         var qao = TumblingAnalyzer.Analyze(BuildExpression(), typeof(Rate));
         var (entities, dag) = DerivationPlanner.Plan(qao);
         var specs = QueryAdapter.Build(entities, dag);
-        var agg = specs.First(s => s.TargetId.StartsWith("agg_final_1m"));
+        var agg = specs.First(s => s.TargetId.StartsWith("bar_1m_agg_final"));
         Assert.Contains("FINAL+GRACE", agg.Operation);
         Assert.Equal("BucketStartFromWindowStart", agg.Projector);
-        var live = specs.First(s => s.TargetId.StartsWith("live_1m"));
+        var live = specs.First(s => s.TargetId.StartsWith("bar_1m_live"));
         Assert.Contains("CHANGES", live.Operation);
-        var final = specs.First(s => s.TargetId.StartsWith("final_1m"));
+        var final = specs.First(s => s.TargetId.StartsWith("bar_1m_final"));
         Assert.Contains("Compose", final.Operation);
         Assert.NotEmpty(agg.BasedOnRef.JoinKeys);
     }
@@ -158,9 +158,9 @@ public class Step1Tests
             BasedOn = new BasedOnSpec(new[] { "Broker" }, "Open", "Close", "MarketDate")
         };
         var (entities, dag) = DerivationPlanner.Plan(qao);
-        var liveWeek = entities.First(e => e.Id == "live_1wk");
-        Assert.Equal("1mFinal", liveWeek.InputHint);
-        Assert.Contains("final_1m", dag.Edges[liveWeek.Id]);
+        var liveWeek = entities.First(e => e.Id == "bar_1wk_live");
+        Assert.Equal("bar_1m_final", liveWeek.InputHint);
+        Assert.Contains("bar_1m_final", dag.Edges[liveWeek.Id]);
     }
 
     [Fact]
@@ -183,7 +183,7 @@ public class Step1Tests
         var live = entities.First(e => e.Role == Role.Live && e.Timeframe.Value == 1);
         Assert.Equal(MaterializationHint.Table, live.MaterializationHint);
         Assert.Equal("HB_1m", live.SyncHint);
-        Assert.DoesNotContain(dag.Edges[live.Id], id => id.StartsWith("agg_final"));
+        Assert.DoesNotContain(dag.Edges[live.Id], id => id.Contains("_agg_final"));
     }
 
     [Fact]
@@ -210,7 +210,7 @@ public class Step1Tests
         EntityModelRegistrar.Register(new MappingRegistry(), models);
         var specs = QueryAdapter.Build(entities, dag).ToList();
 
-        var live = specs.First(s => s.TargetId.StartsWith("live_1m"));
+        var live = specs.First(s => s.TargetId.StartsWith("bar_1m_live"));
         var badLive = new List<QuerySpec>
         {
             new() { TargetId = live.TargetId, Sources = live.Sources, Operation = live.Operation, Projector = live.Projector, Sync = live.Sync, BasedOnRef = live.BasedOnRef, ColumnPlan = new[] { "Broker" } }

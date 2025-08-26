@@ -32,4 +32,5 @@ internal class DerivedEntity
     public string? InputHint { get; init; }
     public string? SyncHint { get; init; }
     public BasedOnSpec BasedOnSpec { get; init; } = new(new List<string>(), string.Empty, string.Empty, string.Empty);
+    public DayOfWeek WeekAnchor { get; init; } = DayOfWeek.Monday;
 }
