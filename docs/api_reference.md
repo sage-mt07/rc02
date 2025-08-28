@@ -28,7 +28,6 @@ POCO モデルで最も利用される属性です。
 | `MaxLengthAttribute` | 文字列長制限 | `length` | 超過時は例外。 |
 | `ScheduleRangeAttribute` | 開始・終了プロパティ名の対指定 | `openPropertyName`, `closePropertyName` | 取引時間帯などの範囲指定。 |
 
-`WithDeadLetterQueue()` は `OnError(ErrorAction.DLQ)` に置き換えられました。
 
 ## Fluent API
 
