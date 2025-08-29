@@ -1,0 +1,7 @@
+index,test_name,result,duration_sec
+001,"Kafka.Ksql.Linq.Tests.Integration.Streamiz.StreamizRocksDbTests.String_To_RocksDb",Passed,44
+002,"Kafka.Ksql.Linq.Tests.Integration.Streamiz.StreamizRocksDbTests.Bytes_To_RocksDb",Passed,46
+003,"Kafka.Ksql.Linq.Tests.Integration.Streamiz.StreamizRocksDbTests.Avro_To_RocksDb",Passed,45
+004,"Kafka.Ksql.Linq.Tests.Integration.Streamiz.StreamizRocksDbTests.AvroKey_To_RocksDb",Passed,46
+005,"Kafka.Ksql.Linq.Tests.Integration.Streamiz.StreamizRocksDbTests.AvroKeyValueDifferentTypes_To_RocksDb",Passed,44
+006,"Kafka.Ksql.Linq.Tests.Integration.Streamiz.StreamizRocksDbTests.AvroKeyValueDifferentTypes2_To_RocksDb",Passed,54

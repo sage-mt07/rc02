@@ -1,0 +1,38 @@
+index,test_name,result,duration_sec
+001,"Kafka.Ksql.Linq.Tests.Integration.CheckTest1.TestShouldRun",Passed,33
+002,"Kafka.Ksql.Linq.Tests.Integration.BigBang_KafkaConnection_StrictTests.EX02_AddAsync_KafkaDown_ShouldLogAndTimeout",Failed,39
+003,"Kafka.Ksql.Linq.Tests.Integration.BigBang_KafkaConnection_StrictTests.EX02_ForeachAsync_KafkaDown_ShouldLogAndTimeout",Failed,40
+004,"Kafka.Ksql.Linq.Tests.Integration.BigBang_KafkaConnection_TolerantTests.EX01_AddAsync_KafkaDown_ShouldFailGracefully",Failed,36
+005,"Kafka.Ksql.Linq.Tests.Integration.BigBang_KafkaConnection_TolerantTests.EX01_ForeachAsync_KafkaDown_ShouldFailGracefully",Failed,40
+006,"Kafka.Ksql.Linq.Tests.Integration.KafkaConnectivityTests.ProducerConsumer_RoundTrip",Passed,38
+007,"Kafka.Ksql.Linq.Tests.Integration.KafkaServiceDownTests.AddAsync_ShouldThrow_WhenKafkaIsDown",Failed,39
+008,"Kafka.Ksql.Linq.Tests.Integration.KafkaServiceDownTests.ForeachAsync_ShouldThrow_WhenKafkaIsDown",Failed,39
+009,"Kafka.Ksql.Linq.Tests.Integration.KsqlDbServiceDownTests.ExecuteStatement_ShouldFail_WhenKsqlDbDown",Failed,33
+010,"Kafka.Ksql.Linq.Tests.Integration.PortConnectivityTests.Kafka_Broker_Should_Be_Reachable",Passed,35
+011,"Kafka.Ksql.Linq.Tests.Integration.PortConnectivityTests.SchemaRegistry_Should_Be_Reachable",Passed,35
+012,"Kafka.Ksql.Linq.Tests.Integration.PortConnectivityTests.KsqlDb_Should_Be_Reachable",Passed,35
+013,"Kafka.Ksql.Linq.Tests.Integration.SchemaRegistryResetTests.Setup_ShouldRegisterAllSchemas",Passed,36
+014,"Kafka.Ksql.Linq.Tests.Integration.SchemaRegistryResetTests.DuplicateSchemaRegistration_ShouldSucceed",Passed,32
+015,"Kafka.Ksql.Linq.Tests.Integration.SchemaRegistryResetTests.UpperCaseSubjects_ShouldNotExist",Passed,35
+016,"Kafka.Ksql.Linq.Tests.Integration.InvalidQueryTests.GeneratedQuery_IsRejected(ksql: "SELECT ID, COUNT(*) FROM ORDERS GROUP BY ID;")",Failed,28
+017,"Kafka.Ksql.Linq.Tests.Integration.InvalidQueryTests.GeneratedQuery_IsRejected(ksql: "SELECT CASE WHEN ID=1 THEN 'A' ELSE 2 END FROM ORD"···)",Passed,34
+018,"Kafka.Ksql.Linq.Tests.Integration.KsqlSyntaxTests.GeneratedQuery_IsValidInKsqlDb(ksql: "CREATE STREAM test_stream AS SELECT * FROM source "···)",Passed,35
+019,"Kafka.Ksql.Linq.Tests.Integration.KsqlSyntaxTests.GeneratedQuery_IsValidInKsqlDb(ksql: "SELECT CustomerId, COUNT(*) FROM orders GROUP BY C"···)",Failed,27
+020,"Kafka.Ksql.Linq.Tests.Integration.AdvancedDataTypeTests.Decimal_DateTime_Enum_RoundTrip",Failed,35
+021,"Kafka.Ksql.Linq.Tests.Integration.CompositeKeyPocoTests.SendAndReceive_CompositeKeyPoco",Failed,37
+022,"Kafka.Ksql.Linq.Tests.Integration.DefaultAndBoundaryValueTests.DefaultValuesRoundTrip",Failed,38
+023,"Kafka.Ksql.Linq.Tests.Integration.DefaultAndBoundaryValueTests.DecimalPrecisionRoundTrip",Failed,35
+024,"Kafka.Ksql.Linq.Tests.Integration.DefaultAndBoundaryValueTests.BoundaryValuesRoundTrip",Failed,37
+025,"Kafka.Ksql.Linq.Tests.Integration.DlqIntegrationTests.ForEachAsync_OnErrorDlq_WritesToDlq",Failed,35
+026,"Kafka.Ksql.Linq.Tests.Integration.DummyFlagMessageTests.SendAsync_AddsDummyFlagHeader",Failed,37
+027,"Kafka.Ksql.Linq.Tests.Integration.DummyFlagSchemaRecognitionTests.DummyMessages_EnableQueries",Failed,29
+028,"Kafka.Ksql.Linq.Tests.Integration.JoinIntegrationTests.TwoTableJoin_Query_ShouldBeValid",Failed,39
+029,"Kafka.Ksql.Linq.Tests.Integration.ManualCommitIntegrationTests.ManualCommit_PersistsOffset",Failed,48
+030,"Kafka.Ksql.Linq.Tests.Integration.NoKeyPocoTests.SendAndReceive_NoKeyRecord",Failed,36
+031,"Kafka.Ksql.Linq.Tests.Integration.SchemaNameCaseSensitivityTests.LowercaseField_ShouldSucceed",Passed,38
+032,"Kafka.Ksql.Linq.Tests.Integration.Streamiz.StreamizRocksDbTests.String_To_RocksDb",Passed,44
+033,"Kafka.Ksql.Linq.Tests.Integration.Streamiz.StreamizRocksDbTests.Bytes_To_RocksDb",Passed,45
+034,"Kafka.Ksql.Linq.Tests.Integration.Streamiz.StreamizRocksDbTests.Avro_To_RocksDb",Passed,45
+035,"Kafka.Ksql.Linq.Tests.Integration.Streamiz.StreamizRocksDbTests.AvroKey_To_RocksDb",Passed,43
+036,"Kafka.Ksql.Linq.Tests.Integration.Streamiz.StreamizRocksDbTests.AvroKeyValueDifferentTypes_To_RocksDb",Passed,45
+037,"Kafka.Ksql.Linq.Tests.Integration.Streamiz.StreamizRocksDbTests.AvroKeyValueDifferentTypes2_To_RocksDb",Passed,53

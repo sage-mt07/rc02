@@ -30,6 +30,7 @@ public class KafkaServiceDownTests
         public OrderContext(KsqlDslOptions options) : base(options) { }
         protected override void OnModelCreating(IModelBuilder modelBuilder)
             => modelBuilder.Entity<Order>();
+        protected override bool SkipSchemaRegistration => true;
     }
 
     private static KsqlDslOptions CreateOptions() => new()

@@ -66,18 +66,11 @@ public class SchemaRegistryResetTests
     [Trait("Category", "Integration")]
     public async Task Setup_ShouldRegisterAllSchemas()
     {
-        //if (!IsKsqlDbAvailable())
-        //    throw new SkipException("ksqlDB unavailable");
+        // if (!IsKsqlDbAvailable())
+        //     throw new SkipException("ksqlDB unavailable");
 
-        //try
-        //{
-        //    await EnvSchemaRegistryResetTests.ResetAsync();
-
-        //}
-        //catch (Exception)
-        //{
-
-        //}
+        await EnvSchemaRegistryResetTests.ResetAsync();
+        await EnvSchemaRegistryResetTests.SetupAsync();
 
         var subjects = await Http.GetFromJsonAsync<string[]>($"{EnvSchemaRegistryResetTests.SchemaRegistryUrl}/subjects");
         Assert.NotNull(subjects);
@@ -95,18 +88,11 @@ public class SchemaRegistryResetTests
     [Trait("Category", "Integration")]
     public async Task DuplicateSchemaRegistration_ShouldSucceed()
     {
-        //if (!IsKsqlDbAvailable())
-        //    throw new SkipException("ksqlDB unavailable");
+        // if (!IsKsqlDbAvailable())
+        //     throw new SkipException("ksqlDB unavailable");
 
-        //try
-        //{
-        //    await EnvSchemaRegistryResetTests.ResetAsync();
-
-        //}
-        //catch (Exception)
-        //{
-
-        //}
+        await EnvSchemaRegistryResetTests.ResetAsync();
+        await EnvSchemaRegistryResetTests.SetupAsync();
 
         var latest = await Http.GetFromJsonAsync<JsonElement>($"{EnvSchemaRegistryResetTests.SchemaRegistryUrl}/subjects/orders-value/versions/latest");
         var schema = latest.GetProperty("schema").GetString();
@@ -119,17 +105,10 @@ public class SchemaRegistryResetTests
     [Trait("Category", "Integration")]
     public async Task UpperCaseSubjects_ShouldNotExist()
     {
-        //if (!IsKsqlDbAvailable())
-        //    throw new SkipException("ksqlDB unavailable");
-        //try
-        //{
-        //    await EnvSchemaRegistryResetTests.ResetAsync();
-
-        //}
-        //catch (Exception)
-        //{
-
-        //}
+        // if (!IsKsqlDbAvailable())
+        //     throw new SkipException("ksqlDB unavailable");
+        await EnvSchemaRegistryResetTests.ResetAsync();
+        await EnvSchemaRegistryResetTests.SetupAsync();
         var subjects = await Http.GetFromJsonAsync<string[]>($"{EnvSchemaRegistryResetTests.SchemaRegistryUrl}/subjects");
         Assert.NotNull(subjects);
 
@@ -174,8 +153,47 @@ public class EnvSchemaRegistryResetTests
         return new BasicContext(options);
     }
 
-    internal static Task ResetAsync() => Task.CompletedTask;
-    internal static Task SetupAsync() => Task.CompletedTask;
+    internal static async Task ResetAsync()
+    {
+        using var client = new HttpClient();
+        string[]? subjects = null;
+        try { subjects = await client.GetFromJsonAsync<string[]>($"{SchemaRegistryUrl}/subjects"); }
+        catch { /* ignore */ }
+        if (subjects == null) return;
+        foreach (var s in subjects)
+        {
+            try
+            {
+                var url = $"{SchemaRegistryUrl}/subjects/{Uri.EscapeDataString(s)}?permanent=true";
+                await client.DeleteAsync(url);
+            }
+            catch { /* ignore */ }
+        }
+    }
+
+    internal static async Task SetupAsync()
+    {
+        using var client = new HttpClient();
+        var subjects = TestSchema.AllTopicNames
+            .SelectMany(t => new[] {$"{t}-value", $"{t}-key"})
+            .Concat(new[] { "source-value" })
+            .Distinct()
+            .ToArray();
+
+        var schemaObject = new
+        {
+            type = "record",
+            name = "DummyRecord",
+            fields = new object[] { new { name = "x", type = "string" } }
+        };
+        var schemaJson = JsonSerializer.Serialize(schemaObject);
+        foreach (var subject in subjects)
+        {
+            var payload = new { schema = schemaJson };
+            var resp = await client.PostAsJsonAsync($"{SchemaRegistryUrl}/subjects/{subject}/versions", payload);
+            resp.EnsureSuccessStatusCode();
+        }
+    }
 
     private class BasicContext : KsqlContext
     {

@@ -1,0 +1,4 @@
+index,test_name,result,duration_sec
+001,"Kafka.Ksql.Linq.Tests.Integration.SchemaRegistryResetTests.Setup_ShouldRegisterAllSchemas",Passed,35
+002,"Kafka.Ksql.Linq.Tests.Integration.SchemaRegistryResetTests.DuplicateSchemaRegistration_ShouldSucceed",Passed,35
+003,"Kafka.Ksql.Linq.Tests.Integration.SchemaRegistryResetTests.UpperCaseSubjects_ShouldNotExist",Passed,35
