@@ -1,0 +1,2 @@
+index,test_name,result,duration_sec
+001,"Kafka.Ksql.Linq.Tests.Integration.KafkaServiceDownTests.AddAsync_ShouldThrow_WhenKafkaIsDown",Failed,64

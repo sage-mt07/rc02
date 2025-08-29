@@ -1,0 +1,14 @@
+ Network physicaltests_default  Creating
+ Network physicaltests_default  Created
+ Container physicaltests-zookeeper-1  Creating
+ Container physicaltests-zookeeper-1  Created
+ Container physicaltests-kafka-1  Creating
+ Container physicaltests-kafka-1  Created
+ Container schema-registry  Creating
+ Container physicaltests-ksqldb-server-1  Creating
+ Container physicaltests-ksqldb-server-1  Created
+ Container physicaltests-ksqldb-cli-1  Creating
+ Container schema-registry  Created
+ Container physicaltests-ksqldb-cli-1  Created
+ Container physicaltests-zookeeper-1  Starting
+Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint physicaltests-zookeeper-1 (cd3428284eeb1cf8fd438e2bc451cd2dcb464273ea1d1b4e327180eafcb826cd): Bind for 0.0.0.0:2181 failed: port is already allocated

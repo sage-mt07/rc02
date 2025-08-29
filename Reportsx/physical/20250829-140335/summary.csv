@@ -1,0 +1,4 @@
+index,test_name,result,duration_sec
+001,"Kafka.Ksql.Linq.Tests.Integration.DefaultAndBoundaryValueTests.DefaultValuesRoundTrip",Failed,41
+002,"Kafka.Ksql.Linq.Tests.Integration.DefaultAndBoundaryValueTests.DecimalPrecisionRoundTrip",Failed,36
+003,"Kafka.Ksql.Linq.Tests.Integration.DefaultAndBoundaryValueTests.BoundaryValuesRoundTrip",Failed,35

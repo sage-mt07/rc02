@@ -1,0 +1,6 @@
+time="2025-08-29T20:44:42+09:00" level=warning msg="/mnt/c/dev/rc02/tools/docker-compose.kafka.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+NAME                      IMAGE                                   COMMAND                  SERVICE           CREATED         STATUS         PORTS
+tools-kafka-1             confluentinc/cp-kafka:7.5.1             "/etc/confluent/dock…"   kafka             2 minutes ago   Up 2 minutes   0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp
+tools-ksqldb-server-1     confluentinc/cp-ksqldb-server:7.5.1     "/etc/confluent/dock…"   ksqldb-server     2 minutes ago   Up 2 minutes   0.0.0.0:8088->8088/tcp, [::]:8088->8088/tcp
+tools-schema-registry-1   confluentinc/cp-schema-registry:7.5.1   "/etc/confluent/dock…"   schema-registry   2 minutes ago   Up 2 minutes   0.0.0.0:8081->8081/tcp, [::]:8081->8081/tcp
+tools-zookeeper-1         confluentinc/cp-zookeeper:7.5.1         "/etc/confluent/dock…"   zookeeper         2 minutes ago   Up 2 minutes   0.0.0.0:2181->2181/tcp, [::]:2181->2181/tcp

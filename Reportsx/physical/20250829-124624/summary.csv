@@ -1,0 +1,3 @@
+index,test_name,result,duration_sec
+001,"Kafka.Ksql.Linq.Tests.Integration.KsqlSyntaxTests.GeneratedQuery_IsValidInKsqlDb(ksql: "CREATE STREAM test_stream AS SELECT * FROM source "···)",Passed,35
+002,"Kafka.Ksql.Linq.Tests.Integration.KsqlSyntaxTests.GeneratedQuery_IsValidInKsqlDb(ksql: "SELECT CustomerId, COUNT(*) FROM orders GROUP BY C"···)",Failed,28

@@ -96,6 +96,13 @@ internal static class SpecificRecordGenerator
 
     private static string MapToAvroType(Type t, KsqlDecimalAttribute? decAttr, System.Reflection.PropertyInfo? prop)
     {
+        // Handle Nullable<T> as union ["null", <T>]
+        var underlying = Nullable.GetUnderlyingType(t);
+        if (underlying != null)
+        {
+            var inner = MapToAvroType(underlying, decAttr, prop);
+            return $"[ \"null\", {inner} ]";
+        }
         if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>))
         {
             var args = t.GetGenericArguments();
@@ -105,10 +112,11 @@ internal static class SpecificRecordGenerator
         }
         if (t == typeof(int)) return "\"int\"";
         if (t == typeof(long)) return "\"long\"";
-        if (t == typeof(float)) return "\"float\"";
+        // Map C# float (Single) to Avro double to align with ksqlDB AVRO limitations
+        if (t == typeof(float)) return "\"double\"";
         if (t == typeof(double)) return "\"double\"";
         if (t == typeof(bool)) return "\"boolean\"";
-        if (t == typeof(string)) return "\"string\"";
+        if (t == typeof(string)) return "[ \"null\", \"string\" ]";
         if (t == typeof(byte[])) return "\"bytes\"";
         if (t == typeof(decimal))
         {
@@ -127,10 +135,19 @@ internal static class SpecificRecordGenerator
         var propTypes = new Type[props.Length];
         for (int i = 0; i < props.Length; i++)
         {
-            if (props[i].PropertyType == typeof(decimal))
+            var ptype = props[i].PropertyType;
+            if (ptype == typeof(decimal))
+            {
                 propTypes[i] = typeof(AvroDecimal);
-            else if (props[i].PropertyType == typeof(Guid))
+            }
+            else if (Nullable.GetUnderlyingType(ptype) == typeof(decimal))
+            {
+                propTypes[i] = typeof(Nullable<>).MakeGenericType(typeof(AvroDecimal));
+            }
+            else if (ptype == typeof(Guid))
                 propTypes[i] = typeof(string);
+            else if (ptype == typeof(float))
+                propTypes[i] = typeof(double);
             else
                 propTypes[i] = props[i].PropertyType;
         }

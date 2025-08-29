@@ -330,10 +330,20 @@ internal class KeyValueTypeMapping
             var value = meta.PropertyInfo!.GetValue(poco);
             var avroProp = AvroKeyType!.GetProperty(meta.PropertyInfo!.Name)!;
             var scale = DecimalPrecisionConfig.ResolveScale(meta.Scale, meta.PropertyInfo);
-            if (avroProp.PropertyType == typeof(AvroDecimal) && value is decimal dec)
-                avroProp.SetValue(keyInstance, ToAvroDecimal(dec, scale));
+            var avroType = avroProp.PropertyType;
+            var isNullableAvroDecimal = avroType.IsGenericType && avroType.GetGenericTypeDefinition() == typeof(Nullable<>) && avroType.GetGenericArguments()[0] == typeof(AvroDecimal);
+            if (isNullableAvroDecimal && value is null)
+            {
+                avroProp.SetValue(keyInstance, null);
+            }
+            else if ((avroType == typeof(AvroDecimal) || isNullableAvroDecimal) && value is decimal decKey)
+            {
+                avroProp.SetValue(keyInstance, ToAvroDecimal(decKey, scale));
+            }
             else if (avroProp.PropertyType == typeof(string) && value is Guid g)
                 avroProp.SetValue(keyInstance, g.ToString("D"));
+            else if (avroProp.PropertyType == typeof(double) && value is float f)
+                avroProp.SetValue(keyInstance, (double)f);
             else
                 avroProp.SetValue(keyInstance, value);
         }
@@ -351,10 +361,20 @@ internal class KeyValueTypeMapping
             var value = meta.PropertyInfo!.GetValue(poco);
             var avroProp = AvroValueType!.GetProperty(meta.PropertyInfo!.Name)!;
             var scale = DecimalPrecisionConfig.ResolveScale(meta.Scale, meta.PropertyInfo);
-            if (avroProp.PropertyType == typeof(AvroDecimal) && value is decimal dec)
-                avroProp.SetValue(valueInstance, ToAvroDecimal(dec, scale));
+            var avroTypeVal = avroProp.PropertyType;
+            var isNullableAvroDecimalVal = avroTypeVal.IsGenericType && avroTypeVal.GetGenericTypeDefinition() == typeof(Nullable<>) && avroTypeVal.GetGenericArguments()[0] == typeof(AvroDecimal);
+            if (isNullableAvroDecimalVal && value is null)
+            {
+                avroProp.SetValue(valueInstance, null);
+            }
+            else if ((avroTypeVal == typeof(AvroDecimal) || isNullableAvroDecimalVal) && value is decimal decVal)
+            {
+                avroProp.SetValue(valueInstance, ToAvroDecimal(decVal, scale));
+            }
             else if (avroProp.PropertyType == typeof(string) && value is Guid g)
                 avroProp.SetValue(valueInstance, g.ToString("D"));
+            else if (avroProp.PropertyType == typeof(double) && value is float fv)
+                avroProp.SetValue(valueInstance, (double)fv);
             else
                 avroProp.SetValue(valueInstance, value);
         }
@@ -372,10 +392,20 @@ internal class KeyValueTypeMapping
             var val = meta.PropertyInfo!.GetValue(poco);
             var avroProp = AvroValueType!.GetProperty(meta.PropertyInfo!.Name)!;
             var scale = DecimalPrecisionConfig.ResolveScale(meta.Scale, meta.PropertyInfo);
-            if (avroProp.PropertyType == typeof(AvroDecimal) && val is decimal decv)
+            var avroTypeValueProp = avroProp.PropertyType;
+            var isNullableAvroDecimalValueProp = avroTypeValueProp.IsGenericType && avroTypeValueProp.GetGenericTypeDefinition() == typeof(Nullable<>) && avroTypeValueProp.GetGenericArguments()[0] == typeof(AvroDecimal);
+            if (isNullableAvroDecimalValueProp && val is null)
+            {
+                avroProp.SetValue(value, null);
+            }
+            else if ((avroTypeValueProp == typeof(AvroDecimal) || isNullableAvroDecimalValueProp) && val is decimal decv)
+            {
                 avroProp.SetValue(value, ToAvroDecimal(decv, scale));
+            }
             else if (avroProp.PropertyType == typeof(string) && val is Guid gv)
                 avroProp.SetValue(value, gv.ToString("D"));
+            else if (avroProp.PropertyType == typeof(double) && val is float fvv)
+                avroProp.SetValue(value, (double)fvv);
             else
                 avroProp.SetValue(value, val);
         }
@@ -388,10 +418,18 @@ internal class KeyValueTypeMapping
                 var val = meta.PropertyInfo!.GetValue(poco);
                 var avroProp = AvroKeyType!.GetProperty(meta.PropertyInfo!.Name)!;
                 var scale = DecimalPrecisionConfig.ResolveScale(meta.Scale, meta.PropertyInfo);
-                if (avroProp.PropertyType == typeof(AvroDecimal) && val is decimal dek)
+                var avroTypeKeyProp = avroProp.PropertyType;
+                var isNullableAvroDecimalKeyProp = avroTypeKeyProp.IsGenericType && avroTypeKeyProp.GetGenericTypeDefinition() == typeof(Nullable<>) && avroTypeKeyProp.GetGenericArguments()[0] == typeof(AvroDecimal);
+                if (isNullableAvroDecimalKeyProp && val is null)
+                    avroProp.SetValue(key, null);
+                else if ((avroTypeKeyProp == typeof(AvroDecimal) || isNullableAvroDecimalKeyProp) && val is decimal dek)
+                {
                     avroProp.SetValue(key, ToAvroDecimal(dek, scale));
+                }
                 else if (avroProp.PropertyType == typeof(string) && val is Guid gk)
                     avroProp.SetValue(key, gk.ToString("D"));
+                else if (avroProp.PropertyType == typeof(double) && val is float fk)
+                    avroProp.SetValue(key, (double)fk);
                 else
                     avroProp.SetValue(key, val);
             }

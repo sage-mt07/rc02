@@ -225,7 +225,8 @@ internal class MappingRegistry
             ilSet.Emit(OpCodes.Ret);
             property.SetGetMethod(getMethod);
             property.SetSetMethod(setMethod);
-            if (meta.PropertyType == typeof(decimal) && meta.Precision.HasValue && meta.Scale.HasValue)
+            if (((meta.PropertyType == typeof(decimal)) || (Nullable.GetUnderlyingType(meta.PropertyType) == typeof(decimal)))
+                && meta.Precision.HasValue && meta.Scale.HasValue)
             {
                 var ctor = typeof(KsqlDecimalAttribute).GetConstructor(new[] { typeof(int), typeof(int) });
                 var attr = new CustomAttributeBuilder(ctor!, new object[] { meta.Precision.Value, meta.Scale.Value });

@@ -1,0 +1,3 @@
+index,test_name,result,duration_sec
+001,"Kafka.Ksql.Linq.Tests.Integration.InvalidQueryTests.GeneratedQuery_IsRejected(ksql: "SELECT ID, COUNT(*) FROM ORDERS GROUP BY ID;")",Failed,28
+002,"Kafka.Ksql.Linq.Tests.Integration.InvalidQueryTests.GeneratedQuery_IsRejected(ksql: "SELECT CASE WHEN ID=1 THEN 'A' ELSE 2 END FROM ORD"···)",Passed,32

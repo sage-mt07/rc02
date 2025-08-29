@@ -1,0 +1,2 @@
+index,test_name,result,duration_sec
+001,"Kafka.Ksql.Linq.Tests.Integration.BigBang_KafkaConnection_StrictTests.EX02_AddAsync_KafkaDown_ShouldLogAndTimeout",Failed,5050

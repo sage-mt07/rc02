@@ -3,21 +3,30 @@ set -euo pipefail
 
 REPO="/mnt/c/dev/rc02"
 PROJECT="$REPO/physicalTests/Kafka.Ksql.Linq.Tests.Integration.csproj"
-# Prefer the compose stack used by DockerHelper in tests, fallback to physicalTests
-if [ -f "$REPO/tools/docker-compose.kafka.yml" ]; then
-  COMPOSE_FILE="$REPO/tools/docker-compose.kafka.yml"
+# Compose file selection policy
+# - Default: physicalTests/docker-compose.yaml (validated combination)
+# - Override only when COMPOSE_FILE is explicitly provided via environment
+if [ -n "${COMPOSE_FILE:-}" ]; then
+  COMPOSE_FILE="$COMPOSE_FILE"
 else
   COMPOSE_FILE="$REPO/physicalTests/docker-compose.yaml"
 fi
 PRUNE_AFTER_EACH="${PRUNE_AFTER_EACH:-false}"
 FILTER_EXPR="${1:-}"
-DOWN_STYLE="${DOWN_STYLE:-mid}"   # 'mid' (stop during test) or 'pre' (stop before test)
-DOWN_AFTER="${DOWN_AFTER:-5}"     # seconds to wait before stopping service when DOWN_STYLE=mid
+DOWN_STYLE="${DOWN_STYLE:-mid}"     # 'mid' (stop during test) or 'pre' (stop before test)
+DOWN_AFTER="${DOWN_AFTER:-5}"       # seconds to wait before stopping service when DOWN_STYLE=mid
 INFER_DOWNS="${INFER_DOWNS:-false}" # if true, infer service-down from test name
+PREPULL="${PREPULL:-true}"          # if true, run one-time docker compose pull at start
+UP_PULL_POLICY="${UP_PULL_POLICY:-never}" # compose up pull policy: never|missing|always
 
 TS="$(date -u +%Y%m%d-%H%M%S)"
 ROOT_RUN_DIR="$REPO/Reportsx/physical/$TS"
 mkdir -p "$ROOT_RUN_DIR"
+
+# Pre-pull images once to avoid pulling per test
+if [ "$PREPULL" = "true" ]; then
+  (docker compose -f "$COMPOSE_FILE" pull) >"$ROOT_RUN_DIR/prepull.log" 2>&1 || true
+fi
 
 wait_for_service() {
   # $1: service name, $2: state token (e.g., '(healthy)' or 'Exit')
@@ -44,7 +53,7 @@ decide_scenario() {
 start_infra() {
   # $1: scenario
   local scenario="$1"
-  (docker compose -f "$COMPOSE_FILE" up -d) >"$RUN_DIR/compose_up.out" 2>&1
+  (docker compose -f "$COMPOSE_FILE" up --pull "$UP_PULL_POLICY" -d) >"$RUN_DIR/compose_up.out" 2>&1
   (docker compose -f "$COMPOSE_FILE" ps -a) >"$RUN_DIR/compose_ps.out" 2>&1
   (docker compose -f "$COMPOSE_FILE" logs --no-color) >"$RUN_DIR/compose_up.log" 2>&1 || true
 

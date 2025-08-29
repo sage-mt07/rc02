@@ -15,7 +15,7 @@ public sealed class DlqOptions
     public bool EnableForDeserializationError { get; set; } = true;
     public bool EnableForHandlerError { get; set; } = true;
     public double SamplingRate { get; set; } = 1.0;
-    public int MaxPerSecond { get; set; } = 0;
+    public int MaxPerSecond { get; set; } = 1;
 
     // 例外テキスト整形
     public int ErrorMessageMaxLength { get; set; } = 1024;
@@ -105,4 +105,3 @@ public class DlqMetrics
     public string ErrorType { get; set; } = string.Empty;
     public DateTime ProcessedAt { get; set; }
 }
-

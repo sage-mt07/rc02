@@ -1,0 +1,40 @@
+[ReRun] "Kafka.Ksql.Linq.Tests.Integration.BigBang_KafkaConnection_StrictTests.EX02_AddAsync_KafkaDown_ShouldLogAndTimeout" -> BigBang_KafkaConnection_StrictTests.EX02_AddAsync_KafkaDown_ShouldLogAndTimeout"
+  -> Unknown (no log)
+[ReRun] "Kafka.Ksql.Linq.Tests.Integration.BigBang_KafkaConnection_StrictTests.EX02_ForeachAsync_KafkaDown_ShouldLogAndTimeout" -> BigBang_KafkaConnection_StrictTests.EX02_ForeachAsync_KafkaDown_ShouldLogAndTimeout"
+  -> Unknown (no log)
+[ReRun] "Kafka.Ksql.Linq.Tests.Integration.BigBang_KafkaConnection_TolerantTests.EX01_AddAsync_KafkaDown_ShouldFailGracefully" -> BigBang_KafkaConnection_TolerantTests.EX01_AddAsync_KafkaDown_ShouldFailGracefully"
+  -> Unknown (no log)
+[ReRun] "Kafka.Ksql.Linq.Tests.Integration.BigBang_KafkaConnection_TolerantTests.EX01_ForeachAsync_KafkaDown_ShouldFailGracefully" -> BigBang_KafkaConnection_TolerantTests.EX01_ForeachAsync_KafkaDown_ShouldFailGracefully"
+  -> Unknown (no log)
+[ReRun] "Kafka.Ksql.Linq.Tests.Integration.KafkaServiceDownTests.AddAsync_ShouldThrow_WhenKafkaIsDown" -> KafkaServiceDownTests.AddAsync_ShouldThrow_WhenKafkaIsDown"
+  -> Unknown (no log)
+[ReRun] "Kafka.Ksql.Linq.Tests.Integration.KafkaServiceDownTests.ForeachAsync_ShouldThrow_WhenKafkaIsDown" -> KafkaServiceDownTests.ForeachAsync_ShouldThrow_WhenKafkaIsDown"
+  -> Unknown (no log)
+[ReRun] "Kafka.Ksql.Linq.Tests.Integration.KsqlDbServiceDownTests.ExecuteStatement_ShouldFail_WhenKsqlDbDown" -> KsqlDbServiceDownTests.ExecuteStatement_ShouldFail_WhenKsqlDbDown"
+  -> Unknown (no log)
+[ReRun] "Kafka.Ksql.Linq.Tests.Integration.InvalidQueryTests.GeneratedQuery_IsRejected(ksql: "SELECT ID, COUNT(*) FROM ORDERS GROUP BY ID;")" -> InvalidQueryTests.GeneratedQuery_IsRejected"
+  -> Unknown (no log)
+[ReRun] "Kafka.Ksql.Linq.Tests.Integration.KsqlSyntaxTests.GeneratedQuery_IsValidInKsqlDb(ksql: "SELECT CustomerId, COUNT(*) FROM orders GROUP BY C"···)" -> KsqlSyntaxTests.GeneratedQuery_IsValidInKsqlDb"
+  -> Unknown (no log)
+[ReRun] "Kafka.Ksql.Linq.Tests.Integration.AdvancedDataTypeTests.Decimal_DateTime_Enum_RoundTrip" -> AdvancedDataTypeTests.Decimal_DateTime_Enum_RoundTrip"
+  -> Unknown (no log)
+[ReRun] "Kafka.Ksql.Linq.Tests.Integration.CompositeKeyPocoTests.SendAndReceive_CompositeKeyPoco" -> CompositeKeyPocoTests.SendAndReceive_CompositeKeyPoco"
+  -> Unknown (no log)
+[ReRun] "Kafka.Ksql.Linq.Tests.Integration.DefaultAndBoundaryValueTests.DefaultValuesRoundTrip" -> DefaultAndBoundaryValueTests.DefaultValuesRoundTrip"
+  -> Unknown (no log)
+[ReRun] "Kafka.Ksql.Linq.Tests.Integration.DefaultAndBoundaryValueTests.DecimalPrecisionRoundTrip" -> DefaultAndBoundaryValueTests.DecimalPrecisionRoundTrip"
+  -> Unknown (no log)
+[ReRun] "Kafka.Ksql.Linq.Tests.Integration.DefaultAndBoundaryValueTests.BoundaryValuesRoundTrip" -> DefaultAndBoundaryValueTests.BoundaryValuesRoundTrip"
+  -> Unknown (no log)
+[ReRun] "Kafka.Ksql.Linq.Tests.Integration.DlqIntegrationTests.ForEachAsync_OnErrorDlq_WritesToDlq" -> DlqIntegrationTests.ForEachAsync_OnErrorDlq_WritesToDlq"
+  -> Unknown (no log)
+[ReRun] "Kafka.Ksql.Linq.Tests.Integration.DummyFlagMessageTests.SendAsync_AddsDummyFlagHeader" -> DummyFlagMessageTests.SendAsync_AddsDummyFlagHeader"
+  -> Unknown (no log)
+[ReRun] "Kafka.Ksql.Linq.Tests.Integration.DummyFlagSchemaRecognitionTests.DummyMessages_EnableQueries" -> DummyFlagSchemaRecognitionTests.DummyMessages_EnableQueries"
+  -> Unknown (no log)
+[ReRun] "Kafka.Ksql.Linq.Tests.Integration.JoinIntegrationTests.TwoTableJoin_Query_ShouldBeValid" -> JoinIntegrationTests.TwoTableJoin_Query_ShouldBeValid"
+  -> Unknown (no log)
+[ReRun] "Kafka.Ksql.Linq.Tests.Integration.ManualCommitIntegrationTests.ManualCommit_PersistsOffset" -> ManualCommitIntegrationTests.ManualCommit_PersistsOffset"
+  -> Unknown (no log)
+[ReRun] "Kafka.Ksql.Linq.Tests.Integration.NoKeyPocoTests.SendAndReceive_NoKeyRecord" -> NoKeyPocoTests.SendAndReceive_NoKeyRecord"
+  -> Unknown (no log)

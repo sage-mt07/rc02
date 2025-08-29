@@ -614,8 +614,16 @@ public abstract class KsqlContext : IKsqlContext
             model.Partitions = config.Creation.NumPartitions;
             model.ReplicationFactor = config.Creation.ReplicationFactor;
         }
+        // Fallback defaults for simple entity without explicit topic settings
+        if (model.Partitions <= 0)
+            model.Partitions = 1;
+        if (model.ReplicationFactor <= 0)
+            model.ReplicationFactor = 1;
 
         await _adminService.CreateDbTopicAsync(topic, model.Partitions, model.ReplicationFactor);
+
+        // Wait for ksqlDB readiness briefly before issuing DDL
+        await WaitForKsqlReadyAsync(TimeSpan.FromSeconds(15));
 
         string ddl;
         var schemaProvider = new Query.Ddl.EntityModelDdlAdapter(model);
@@ -629,6 +637,50 @@ public abstract class KsqlContext : IKsqlContext
             var msg = $"DDL execution failed for {type.Name}: {result.Message}";
             Logger.LogError(msg);
             throw new InvalidOperationException(msg);
+        }
+
+        // Ensure the entity is visible to ksqlDB metadata before proceeding
+        await WaitForEntityDdlAsync(model, TimeSpan.FromSeconds(12));
+    }
+
+    private async Task WaitForKsqlReadyAsync(TimeSpan timeout)
+    {
+        var start = DateTime.UtcNow;
+        while (DateTime.UtcNow - start < timeout)
+        {
+            try
+            {
+                var ping = await ExecuteStatementAsync("SHOW TOPICS;");
+                if (ping.IsSuccess)
+                    return;
+            }
+            catch { }
+            await Task.Delay(500);
+        }
+    }
+
+    private async Task WaitForEntityDdlAsync(EntityModel model, TimeSpan timeout)
+    {
+        var deadline = DateTime.UtcNow + timeout;
+        var entity = model.GetTopicName().ToUpperInvariant();
+        var stmt = model.StreamTableType == StreamTableType.Table
+            ? $"DESCRIBE {entity};"
+            : $"DESCRIBE {entity};";
+
+        while (DateTime.UtcNow < deadline)
+        {
+            try
+            {
+                var res = await ExecuteStatementAsync(stmt);
+                if (res.IsSuccess && !string.IsNullOrWhiteSpace(res.Message))
+                {
+                    var msg = res.Message.ToUpperInvariant();
+                    if (!msg.Contains("STATEMENT_ERROR"))
+                        return;
+                }
+            }
+            catch { }
+            await Task.Delay(500);
         }
     }
 
@@ -983,4 +1035,3 @@ internal class EventSetWithServices<T> : EventSet<T> where T : class
         }
     }
 }
-

@@ -44,11 +44,24 @@ public class DefaultAndBoundaryValueTests
         }
     }
 
-    private static KsqlDslOptions CreateOptions() => new()
+    private static KsqlDslOptions CreateOptions()
     {
-        Common = new CommonSection { BootstrapServers = EnvDefaultAndBoundaryValueTests.KafkaBootstrapServers },
-        SchemaRegistry = new SchemaRegistrySection { Url = EnvDefaultAndBoundaryValueTests.SchemaRegistryUrl }
-    };
+        var options = new KsqlDslOptions
+        {
+            Common = new CommonSection { BootstrapServers = EnvDefaultAndBoundaryValueTests.KafkaBootstrapServers },
+            SchemaRegistry = new SchemaRegistrySection { Url = EnvDefaultAndBoundaryValueTests.SchemaRegistryUrl }
+        };
+        // Ensure fresh consumption for each test run
+        options.Topics.Add("alltyperecords", new Configuration.Messaging.TopicSection
+        {
+            Consumer = new Configuration.Messaging.ConsumerSection
+            {
+                AutoOffsetReset = "Earliest",
+                GroupId = Guid.NewGuid().ToString()
+            }
+        });
+        return options;
+    }
 
     [Fact]
     [Trait("Category", "Integration")]
@@ -64,7 +77,8 @@ public class DefaultAndBoundaryValueTests
         await ctx.Set<AllTypeRecord>().AddAsync(data);
 
         await ctx.WaitForEntityReadyAsync<AllTypeRecord>(TimeSpan.FromSeconds(5));
-        var describe = await ctx.ExecuteStatementAsync("DESCRIBE ALLTYPERECORD;");
+        // Topic is 'alltyperecords' -> ksql entity created as ALLTYPERECORDS
+        var describe = await ctx.ExecuteStatementAsync("DESCRIBE ALLTYPERECORDS;");
         var desc = describe.Message.ToUpperInvariant();
         Assert.Contains("INTVAL", desc);
         Assert.Contains("LONGVAL", desc);
@@ -77,7 +91,7 @@ public class DefaultAndBoundaryValueTests
         Assert.Contains("NULLABLEDECIMALVAL", desc);
 
         var list = new List<AllTypeRecord>();
-        await ctx.Set<AllTypeRecord>().ForEachAsync(r => { list.Add(r); return Task.CompletedTask; }, TimeSpan.FromSeconds(1));
+        await ctx.Set<AllTypeRecord>().ForEachAsync(r => { list.Add(r); return Task.CompletedTask; }, TimeSpan.FromSeconds(3));
 
         var result = Assert.Single(list);
         Assert.Equal(data.IntVal, result.IntVal);
@@ -113,7 +127,7 @@ public class DefaultAndBoundaryValueTests
             await ctx.Set<AllTypeRecord>().AddAsync(r);
 
         var list = new List<AllTypeRecord>();
-        await ctx.Set<AllTypeRecord>().ForEachAsync(r => { list.Add(r); return Task.CompletedTask; }, TimeSpan.FromSeconds(1));
+        await ctx.Set<AllTypeRecord>().ForEachAsync(r => { list.Add(r); return Task.CompletedTask; }, TimeSpan.FromSeconds(3));
 
         Assert.Equal(rows.Length, list.Count);
         foreach (var r in rows)
@@ -164,7 +178,7 @@ public class DefaultAndBoundaryValueTests
             await ctx.Set<AllTypeRecord>().AddAsync(r);
 
         var list = new List<AllTypeRecord>();
-        await ctx.Set<AllTypeRecord>().ForEachAsync(r => { list.Add(r); return Task.CompletedTask; }, TimeSpan.FromSeconds(1));
+        await ctx.Set<AllTypeRecord>().ForEachAsync(r => { list.Add(r); return Task.CompletedTask; }, TimeSpan.FromSeconds(3));
 
         Assert.Equal(rows.Length, list.Count);
         foreach (var r in rows)
