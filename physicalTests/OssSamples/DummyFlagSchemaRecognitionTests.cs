@@ -19,7 +19,7 @@ namespace Kafka.Ksql.Linq.Tests.Integration;
 public class DummyFlagSchemaRecognitionTests
 {
 
-    [KsqlTopic("orders")]
+    [KsqlTopic("orders_dummyflag")]
     public class OrderValue
     {
         public int CustomerId { get; set; }

@@ -1,0 +1,65 @@
+name: .NET CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'src/**'
+      - 'tests/**'    
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    - name: Set build environment
+      run: echo "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1" >> $GITHUB_ENV
+        && echo "NUGET_PACKAGES=$HOME/.nuget/packages" >> $GITHUB_ENV
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Test with coverage
+      run: dotnet test --configuration Release --no-build --collect:"XPlat Code Coverage"  --filter "FullyQualifiedName!~physicalTests"
+
+    - name: Install ReportGenerator
+      run: dotnet tool install --global dotnet-reportgenerator-globaltool
+
+    - name: Generate HTML report
+      run: reportgenerator -reports:"**/coverage.cobertura.xml" -targetdir:"coverage-report"
+
+    - name: Upload coverage report as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: coverage-report
+
+    - name: Upload cobertura xml as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-xml
+        path: ./tests/TestResults/**/*.cobertura.xml
+    

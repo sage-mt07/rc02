@@ -72,6 +72,7 @@ public class DefaultAndBoundaryValueTests
         await EnvDefaultAndBoundaryValueTests.ResetAsync();
 
         await using var ctx = new AllTypeContext(CreateOptions());
+        await ctx.EnsurePrimedAsync<AllTypeRecord>();
 
         var data = new AllTypeRecord { Id = 1 };
         await ctx.Set<AllTypeRecord>().AddAsync(data);
@@ -114,6 +115,7 @@ public class DefaultAndBoundaryValueTests
         await EnvDefaultAndBoundaryValueTests.ResetAsync();
 
         await using var ctx = new AllTypeContext(CreateOptions());
+        await ctx.EnsurePrimedAsync<AllTypeRecord>();
 
         var rows = new[]
         {
@@ -147,6 +149,7 @@ public class DefaultAndBoundaryValueTests
         await EnvDefaultAndBoundaryValueTests.ResetAsync();
 
         await using var ctx = new AllTypeContext(CreateOptions());
+        await ctx.EnsurePrimedAsync<AllTypeRecord>();
 
         var rows = new[]
         {

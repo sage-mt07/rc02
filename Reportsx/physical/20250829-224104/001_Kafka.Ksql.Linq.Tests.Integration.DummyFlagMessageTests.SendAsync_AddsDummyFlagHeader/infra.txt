@@ -1,0 +1,1 @@
+[infra] scenario=all_up (INFER_DOWNS=false, DOWN_STYLE=mid, DOWN_AFTER=5)

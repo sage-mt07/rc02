@@ -75,8 +75,9 @@ public class JoinIntegrationTests
 
         var ksql = KsqlCreateStatementBuilder
             .Build("orders_customers", model)
-            .Replace("OrderValue", "orders")
-            .Replace("Customer", "customers");
+            // Replace type names only at safe boundaries to avoid corrupting property names
+            .Replace(" FROM OrderValue ", " FROM orders ")
+            .Replace(" JOIN Customer ", " JOIN customers ");
 
         var response = await ctx.ExecuteExplainAsync(ksql);
         Assert.True(response.IsSuccess, $"{ksql} failed: {response.Message}");

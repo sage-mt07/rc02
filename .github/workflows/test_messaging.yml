@@ -1,0 +1,25 @@
+name: Test Messaging
+
+on:
+  push:
+    paths:
+      - 'restructure_outputs/messaging/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+
+      - name: Restore
+        run: dotnet restore restructure_outputs/messaging/Tests/Messaging.Tests.csproj
+
+      - name: Test
+        run: dotnet test restructure_outputs/messaging/Tests/Messaging.Tests.csproj --verbosity normal
