@@ -23,10 +23,26 @@ public class KafkaConnectivityTests
         {
             await admin.CreateTopicsAsync(new[] { new TopicSpecification { Name = topic, NumPartitions = 1, ReplicationFactor = 1 } });
         }
+        // small warm-up to let metadata settle
+        await Task.Delay(1000);
 
         using var producer = new ProducerBuilder<Null, string>(new ProducerConfig { BootstrapServers = bootstrap }).Build();
-        await producer.ProduceAsync(topic, new Message<Null, string> { Value = "ok" });
-        producer.Flush(TimeSpan.FromSeconds(10));
+        // retry produce lightly
+        var prodOk = false; Exception? prodEx = null;
+        for (var i = 0; i < 3 && !prodOk; i++)
+        {
+            try
+            {
+                await producer.ProduceAsync(topic, new Message<Null, string> { Value = "ok" });
+                producer.Flush(TimeSpan.FromSeconds(5));
+                prodOk = true;
+            }
+            catch (Exception ex)
+            {
+                prodEx = ex; await Task.Delay(500);
+            }
+        }
+        if (!prodOk && prodEx != null) throw prodEx;
 
         using var consumer = new ConsumerBuilder<Null, string>(new ConsumerConfig
         {
@@ -36,7 +52,11 @@ public class KafkaConnectivityTests
         }).Build();
 
         consumer.Subscribe(topic);
-        var msg = consumer.Consume(TimeSpan.FromSeconds(10));
+        // poll a few times until message arrives
+        Confluent.Kafka.ConsumeResult<Null, string>? msg = null;
+        var end = DateTime.UtcNow + TimeSpan.FromSeconds(10);
+        while (DateTime.UtcNow < end && msg == null)
+            msg = consumer.Consume(TimeSpan.FromMilliseconds(500));
         consumer.Close();
 
         Assert.NotNull(msg);
