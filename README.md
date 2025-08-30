@@ -1,4 +1,4 @@
-# <img src="./src/KsqlLinq-icon-128.png" alt="Kafka.Ksql.Linq Icon" width="60"  height="60" /> Kafka.Ksql.Linq
+# <img src="./src/KsqlLinq-icon-128.png" alt="Kafka.Ksql.Linq Icon" width="60"   style="vertical-align: middle; margin-right: 8px;" /> Kafka.Ksql.Linq
 
 
 
