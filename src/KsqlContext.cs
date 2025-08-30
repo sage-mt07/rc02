@@ -692,11 +692,30 @@ public abstract class KsqlContext : IKsqlContext
         if (model.QueryModel != null)
         {
             RegisterQueryModelMapping(model);
-            var sql = Query.Builders.KsqlCreateStatementBuilder.Build(
-                model.GetTopicName(),
-                model.QueryModel,
-                model.KeySchemaId,
-                model.ValueSchemaId);
+            // Use optional source name resolver from options to override FROM/JOIN object names
+            Func<Type, string>? resolver = null;
+            if (_dslOptions.SourceNameOverrides is { Count: > 0 })
+            {
+                resolver = (Type t) =>
+                {
+                    var key = t?.Name ?? string.Empty;
+                    if (!string.IsNullOrEmpty(key) && _dslOptions.SourceNameOverrides.TryGetValue(key, out var name))
+                        return name;
+                    return key;
+                };
+            }
+            var sql = resolver == null
+                ? Query.Builders.KsqlCreateStatementBuilder.Build(
+                    model.GetTopicName(),
+                    model.QueryModel,
+                    model.KeySchemaId,
+                    model.ValueSchemaId)
+                : Query.Builders.KsqlCreateStatementBuilder.Build(
+                    model.GetTopicName(),
+                    model.QueryModel,
+                    model.KeySchemaId,
+                    model.ValueSchemaId,
+                    resolver);
             var result = await ExecuteStatementAsync(sql);
             if (!result.IsSuccess)
             {

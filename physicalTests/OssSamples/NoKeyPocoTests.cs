@@ -13,6 +13,7 @@ using Xunit.Sdk;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
+[Collection("DataRoundTrip")]
 public class NoKeyPocoTests
 {
     [KsqlTopic("records_no_key")]

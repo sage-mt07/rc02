@@ -15,6 +15,7 @@ using Xunit.Sdk;
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
 
+[Collection("Connectivity")]
 public class KafkaServiceDownTests
 {
     [KsqlTopic("orders")]

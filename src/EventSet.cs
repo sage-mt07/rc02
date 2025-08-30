@@ -198,12 +198,68 @@ public abstract class EventSet<T> : IEntitySet<T> where T : class
     /// REDESIGNED: ForEachAsync supporting continuous Kafka consumption
     /// Design change: ToListAsync() is disallowed; now based on GetAsyncEnumerator
     /// </summary>
-    public virtual Task ForEachAsync(Func<T, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default)
+    public virtual async Task ForEachAsync(Func<T, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default)
     {
         if (action == null)
             throw new ArgumentNullException(nameof(action));
 
-        return ForEachAsync((item, headers, _) => action(item), timeout, autoCommit, cancellationToken);
+        // Keep existing behavior for the common overload:
+        // Skip dummy records (is_dummy=true) and ignore headers/meta.
+        var context = GetContext() as KsqlContext
+            ?? throw new InvalidOperationException("KsqlContext is required");
+
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+        if (timeout != default && timeout != TimeSpan.Zero)
+        {
+            linkedCts.CancelAfter(timeout);
+        }
+
+        await foreach (var (entity, headers, meta) in ConsumeAsync(context, autoCommit, linkedCts.Token))
+        {
+            // Maintain current behavior: skip dummy messages on the common overload
+            if (headers.TryGetValue("is_dummy", out var dummyHeader) && bool.TryParse(dummyHeader, out var isDummy) && isDummy)
+            {
+                continue;
+            }
+
+            var maxAttempts = _errorHandlingContext.ErrorAction == ErrorAction.Retry
+                ? _errorHandlingContext.RetryCount + 1
+                : 1;
+
+            for (var attempt = 1; attempt <= maxAttempts; attempt++)
+            {
+                try
+                {
+                    await action(entity);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _errorHandlingContext.CurrentAttempt = attempt;
+
+                    if (attempt < maxAttempts && _errorHandlingContext.ErrorAction == ErrorAction.Retry)
+                    {
+                        await Task.Delay(_errorHandlingContext.RetryInterval, linkedCts.Token);
+                        continue;
+                    }
+
+                    var dlq = context.DlqOptions;
+                    if (_dlqProducer != null && dlq.EnableForHandlerError && DlqGuard.ShouldSend(dlq, context.DlqLimiter, ex.GetType()))
+                    {
+                        var env = DlqEnvelopeFactory.From(
+                            meta, ex,
+                            dlq.ApplicationId, dlq.ConsumerGroup, dlq.Host,
+                            dlq.ErrorMessageMaxLength, dlq.StackTraceMaxLength, dlq.NormalizeStackTraceWhitespace);
+                        await _dlqProducer.ProduceAsync(env, linkedCts.Token).ConfigureAwait(false);
+                    }
+
+                    if (!autoCommit)
+                        _commitManager?.Commit(entity);
+                    break;
+                }
+            }
+        }
     }
 
     [Obsolete("Use ForEachAsync(Func<T, Dictionary<string,string>, MessageMeta, Task>)")]
@@ -226,10 +282,7 @@ public abstract class EventSet<T> : IEntitySet<T> where T : class
         }
         await foreach (var (entity, headers, meta) in ConsumeAsync(context, autoCommit, linkedCts.Token))
         {
-            if (headers.TryGetValue("is_dummy", out var dummyHeader) && bool.TryParse(dummyHeader, out var isDummy) && isDummy)
-            {
-                continue;
-            }
+            // Headered overload intentionally allows dummy records to pass through
 
             var maxAttempts = _errorHandlingContext.ErrorAction == ErrorAction.Retry
                 ? _errorHandlingContext.RetryCount + 1

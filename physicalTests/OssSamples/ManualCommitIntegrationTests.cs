@@ -9,12 +9,19 @@ using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
+[Collection("DataRoundTrip")]
 public class ManualCommitIntegrationTests
 {
     [Fact]
     [Trait("Category", "Integration")]
     public async Task ManualCommit_PersistsOffset()
     {
+        // Ensure clean slate and environment readiness
+        try { await PhysicalTestEnv.Cleanup.DeleteSubjectsAsync(EnvManualCommitIntegrationTests.SchemaRegistryUrl, new[] { "manual_commit" }); } catch { }
+        try { await PhysicalTestEnv.Cleanup.DeleteTopicsAsync(EnvManualCommitIntegrationTests.KafkaBootstrapServers, new[] { "manual_commit" }); } catch { }
+        // Ensure environment is ready and topic exists
+        await PhysicalTestEnv.Health.WaitForKafkaAsync(EnvManualCommitIntegrationTests.KafkaBootstrapServers, TimeSpan.FromSeconds(120));
+        await PhysicalTestEnv.Health.WaitForHttpOkAsync($"{EnvManualCommitIntegrationTests.SchemaRegistryUrl}/subjects", TimeSpan.FromSeconds(120));
         var groupId = Guid.NewGuid().ToString();
 
         var options = new KsqlDslOptions
@@ -38,7 +45,20 @@ public class ManualCommitIntegrationTests
             using var sendCts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
             for (var i = 1; i <= 5; i++)
             {
-                await ctx.Samples.AddAsync(new ManualCommitContext.Sample { Id = i }, cancellationToken: sendCts.Token);
+                var attempts = 0;
+                while (true)
+                {
+                    try
+                    {
+                        await ctx.Samples.AddAsync(new ManualCommitContext.Sample { Id = i }, cancellationToken: sendCts.Token);
+                        break;
+                    }
+                    catch (Confluent.SchemaRegistry.SchemaRegistryException)
+                    {
+                        if (++attempts >= 3) throw;
+                        await Task.Delay(500);
+                    }
+                }
             }
 
             using var consumeCts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
@@ -76,4 +96,3 @@ public static class EnvManualCommitIntegrationTests
     internal const string SchemaRegistryUrl = "http://localhost:8081";
     internal const string KafkaBootstrapServers = "localhost:9092";
 }
-

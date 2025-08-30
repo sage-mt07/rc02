@@ -82,7 +82,78 @@ public static class KsqlCreateStatementBuilder
         return builder.Build(projection.Body);
     }
 
+    /// <summary>
+    /// Build a CREATE statement with an optional source name resolver for FROM/JOIN tables.
+    /// </summary>
+    public static string Build(string streamName, KsqlQueryModel model, int? keySchemaId, int? valueSchemaId, Func<Type, string> sourceNameResolver)
+    {
+        if (string.IsNullOrWhiteSpace(streamName))
+            throw new ArgumentException("Stream name is required", nameof(streamName));
+        if (model == null)
+            throw new ArgumentNullException(nameof(model));
+
+        var selectClause = BuildSelectClause(model.SelectProjection);
+        var fromClause = BuildFromClauseCore(model, sourceNameResolver);
+        var whereClause = BuildWhereClause(model.WhereCondition);
+        var groupByClause = BuildGroupByClause(model.GroupByExpression);
+        var havingClause = BuildHavingClause(model.HavingCondition);
+
+        var createType = model.IsAggregateQuery ? "CREATE TABLE" : "CREATE STREAM";
+
+        var sb = new StringBuilder();
+        sb.Append($"{createType} {streamName}");
+        if (keySchemaId.HasValue || valueSchemaId.HasValue)
+        {
+            var withParts = new List<string> { $"KAFKA_TOPIC='{streamName}'" };
+            if (keySchemaId.HasValue)
+            {
+                withParts.Add("KEY_FORMAT='AVRO'");
+                withParts.Add($"KEY_SCHEMA_ID={keySchemaId.Value}");
+            }
+            withParts.Add("VALUE_FORMAT='AVRO'");
+            if (valueSchemaId.HasValue)
+                withParts.Add($"VALUE_SCHEMA_ID={valueSchemaId.Value}");
+            sb.Append(" WITH (" + string.Join(", ", withParts) + ")");
+        }
+        sb.AppendLine(" AS");
+        sb.AppendLine($"SELECT {selectClause}");
+        sb.Append(fromClause);
+        if (!string.IsNullOrEmpty(whereClause))
+        {
+            sb.AppendLine();
+            sb.Append(whereClause);
+        }
+        if (!string.IsNullOrEmpty(groupByClause))
+        {
+            sb.AppendLine();
+            sb.Append(groupByClause);
+        }
+        if (!string.IsNullOrEmpty(havingClause))
+        {
+            sb.AppendLine();
+            sb.Append(havingClause);
+        }
+        var mode = model.ExecutionMode == Query.Pipeline.QueryExecutionMode.Unspecified
+            ? Query.Pipeline.QueryExecutionMode.PushQuery
+            : model.ExecutionMode;
+        if (mode == Query.Pipeline.QueryExecutionMode.PushQuery)
+        {
+            sb.AppendLine();
+            sb.Append("EMIT CHANGES;");
+        }
+        else
+        {
+            sb.Append(';');
+        }
+        return sb.ToString();
+    }
+
     private static string BuildFromClause(KsqlQueryModel model)
+    {
+        return BuildFromClauseCore(model, null);
+    }
+
+    private static string BuildFromClauseCore(KsqlQueryModel model, Func<Type, string>? sourceNameResolver)
     {
         var types = model.SourceTypes;
         if (types == null || types.Length == 0)
@@ -92,11 +163,13 @@ public static class KsqlCreateStatementBuilder
             throw new NotSupportedException("Only up to 2 tables are supported in JOIN");
 
         var result = new StringBuilder();
-        result.Append($"FROM {types[0].Name}");
+        var left = sourceNameResolver?.Invoke(types[0]) ?? types[0].Name;
+        result.Append($"FROM {left}");
 
         if (types.Length > 1)
         {
-            result.Append($" JOIN {types[1].Name}");
+            var right = sourceNameResolver?.Invoke(types[1]) ?? types[1].Name;
+            result.Append($" JOIN {right}");
             if (model.JoinCondition == null)
                 throw new InvalidOperationException("Join condition required for two table join");
 

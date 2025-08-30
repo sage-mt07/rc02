@@ -13,6 +13,7 @@ using Xunit;
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
 
+[Collection("DataRoundTrip")]
 public class CompositeKeyPocoTests
 {
     public class OrderContext : KsqlContext
@@ -26,10 +27,12 @@ public class CompositeKeyPocoTests
         }
     }
 
-    [Fact(Skip = "")]
+    [Fact]
     [Trait("Category", "Integration")]
     public async Task SendAndReceive_CompositeKeyPoco()
     {
+        try { await EnvCompositeKeyPocoTests.ResetAsync(); } catch { }
+        try { await EnvCompositeKeyPocoTests.SetupAsync(); } catch { }
         var loggerFactory = LoggerFactory.Create(builder =>
         {
             builder
@@ -45,9 +48,13 @@ public class CompositeKeyPocoTests
             SchemaRegistry = new SchemaRegistrySection { Url = EnvCompositeKeyPocoTests.SchemaRegistryUrl }
              
         };
+        options.Entities.Add(new EntityConfiguration { Entity = nameof(Order), EnableCache = true });
         options.Topics.Add("orders", new Configuration.Messaging.TopicSection { Consumer = new Configuration.Messaging.ConsumerSection { AutoOffsetReset = "Earliest", GroupId = Guid.NewGuid().ToString() } });
 
         await using var ctx = new OrderContext(options, loggerFactory);
+
+        // Ensure ksqlDB metadata and stream/table are ready before producing
+        await ctx.WaitForEntityReadyAsync<Order>(TimeSpan.FromSeconds(30));
 
         await ctx.Orders.AddAsync(new Order
         {
@@ -56,12 +63,23 @@ public class CompositeKeyPocoTests
             ProductId = 3,
             Quantity = 4
         });
-        await Task.Delay(5000);
+        // Poll ToListAsync until data is observed or timeout
+        var deadline = DateTime.UtcNow + TimeSpan.FromSeconds(20);
         var list = await ctx.Orders.ToListAsync();
-        Assert.Single(list);
+        while (list.Count == 0 && DateTime.UtcNow < deadline)
+        {
+            await Task.Delay(500);
+            list = await ctx.Orders.ToListAsync();
+        }
+        // Exclude priming dummy (composite key defaults)
+        var filtered = list.FindAll(o => !(o.OrderId == 0 && o.UserId == 0));
+        Assert.True(filtered.Count == 1, $"Expected 1 record excluding dummy, got {filtered.Count}");
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            ctx.Orders.ForEachAsync(o => { return Task.CompletedTask; }, TimeSpan.FromSeconds(1)));
+        // Verify ForEachAsync can run briefly without throwing (cancel after 1s)
+        using (var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(1)))
+        {
+            await ctx.Orders.ForEachAsync(_ => Task.CompletedTask, cancellationToken: cts.Token);
+        }
 
         await ctx.DisposeAsync();
     }
@@ -100,8 +118,19 @@ public class EnvCompositeKeyPocoTests
         return new BasicContext(options);
     }
 
-    internal static Task ResetAsync() => Task.CompletedTask;
-    internal static Task SetupAsync() => Task.CompletedTask;
+    internal static async Task ResetAsync()
+    {
+        try { PhysicalTestEnv.Cleanup.DeleteLocalRocksDbState(); } catch { }
+        var topics = new[] { "orders" };
+        try { await PhysicalTestEnv.Cleanup.DeleteSubjectsAsync(SchemaRegistryUrl, topics); } catch { }
+        try { await PhysicalTestEnv.Cleanup.DeleteTopicsAsync(KafkaBootstrapServers, topics); } catch { }
+    }
+    internal static async Task SetupAsync()
+    {
+        await PhysicalTestEnv.Health.WaitForKafkaAsync(KafkaBootstrapServers, TimeSpan.FromSeconds(120));
+        await PhysicalTestEnv.Health.WaitForHttpOkAsync($"{SchemaRegistryUrl}/subjects", TimeSpan.FromSeconds(120));
+        await PhysicalTestEnv.Health.WaitForHttpOkAsync($"{KsqlDbUrl}/info", TimeSpan.FromSeconds(120));
+    }
 
     private class BasicContext : KsqlContext
     {

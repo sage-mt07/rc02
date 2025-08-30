@@ -273,4 +273,20 @@ public class ToQueryDslTests
         Assert.True(whereIdx < groupIdx);
         Assert.True(groupIdx < havingIdx);
     }
+
+    [Fact]
+    public void SourceNameResolver_Replaces_FromAndJoin_Names()
+    {
+        var model = new KsqlQueryRoot()
+            .From<Order>()
+            .Join<Customer>((o, c) => o.CustomerId == c.Id)
+            .Select((o, c) => new { o.Id, c.Name })
+            .Build();
+
+        string Resolver(Type t) => t == typeof(Order) ? "ORDERS" : t == typeof(Customer) ? "CUSTOMERS" : t.Name;
+
+        var sql = KsqlCreateStatementBuilder.Build("view", model, null, null, Resolver);
+        Assert.Contains("FROM ORDERS", sql);
+        Assert.Contains("JOIN CUSTOMERS", sql);
+    }
 }

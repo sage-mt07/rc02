@@ -14,6 +14,7 @@ using Xunit.Sdk;
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
 
+[Collection("DataRoundTrip")]
 public class SchemaNameCaseSensitivityTests
 {
 

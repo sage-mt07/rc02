@@ -20,12 +20,13 @@ using Xunit;
 #nullable enable
 namespace Kafka.Ksql.Linq.Tests.Integration.Streamiz;
 
+[Collection("Streamiz")]
 public class StreamizRocksDbTests
 {
     private static async Task WaitUntilRunningAsync(KafkaStream stream, TimeSpan? timeout = null)
     {
         var stateProp = typeof(KafkaStream).GetProperty("StreamState", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-        var end = DateTime.UtcNow + (timeout ?? TimeSpan.FromSeconds(30));
+        var end = DateTime.UtcNow + (timeout ?? TimeSpan.FromSeconds(90));
         while ((KafkaStream.State)stateProp!.GetValue(stream)! != KafkaStream.State.RUNNING)
         {
             if (DateTime.UtcNow > end)
@@ -57,7 +58,7 @@ public class StreamizRocksDbTests
         return (Materialized<TKey, TValue, IKeyValueStore<Bytes, byte[]>>)createMethod.Invoke(null, new object[] { storeName })!;
     }
 
-    private static async Task StartWithRetryAsync(KafkaStream stream, int retries = 3)
+    private static async Task StartWithRetryAsync(KafkaStream stream, int retries = 5)
     {
         var loggerFactory = LoggerFactory.Create(builder =>
         {
@@ -74,7 +75,7 @@ public class StreamizRocksDbTests
         {
             await stream.StartAsync();
             await WaitUntilRunningAsync(stream);
-        }, retries);
+        }, retries, 2000);
     }
 
     private static async Task ProduceWithRetryAsync<TKey, TValue>(string topic, TKey key, TValue value, CachedSchemaRegistryClient schemaRegistry, int retries = 3)
@@ -236,8 +237,7 @@ public class StreamizRocksDbTests
         };
 
         var stream = new KafkaStream(builder.Build(), config);
-        await stream.StartAsync();
-        await WaitUntilRunningAsync(stream);
+        await StartWithRetryAsync(stream);
 
         var key = new byte[] { 0x01 };
         var value = new byte[] { 0x02, 0x03 };
@@ -278,8 +278,7 @@ public class StreamizRocksDbTests
         };
 
         var stream = new KafkaStream(builder.Build(), config);
-        await stream.StartAsync();
-        await WaitUntilRunningAsync(stream);
+        await StartWithRetryAsync(stream);
 
         var producerConfig = new ProducerConfig { BootstrapServers = "localhost:9092" };
         var schemaConfig = new SchemaRegistryConfig { Url = "http://localhost:8081" };

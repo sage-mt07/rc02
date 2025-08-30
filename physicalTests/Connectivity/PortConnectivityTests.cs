@@ -12,13 +12,15 @@ using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
-//[TestCaseOrderer("Kafka.Ksql.Linq.Tests.Integration.PriorityOrderer", "Kafka.Ksql.Linq.Tests.Integration")]
+[TestCaseOrderer("Kafka.Ksql.Linq.Tests.Integration.PriorityOrderer", "Kafka.Ksql.Linq.Tests.Integration")]
+[Collection("Connectivity")]
 public class PortConnectivityTests
 {
 [Fact]
 //[TestPriority(1)]
     public void Kafka_Broker_Should_Be_Reachable()
     {
+        EnvPortConnectivityTests.SetupAsync().GetAwaiter().GetResult();
         using var admin = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = EnvPortConnectivityTests.KafkaBootstrapServers }).Build();
         var meta = admin.GetMetadata(TimeSpan.FromSeconds(10));
         Assert.NotEmpty(meta.Brokers);
@@ -28,6 +30,7 @@ public class PortConnectivityTests
 //[TestPriority(2)]
     public async Task SchemaRegistry_Should_Be_Reachable()
     {
+        await EnvPortConnectivityTests.SetupAsync();
         using var http = new HttpClient();
         var resp = await http.GetAsync($"{EnvPortConnectivityTests.SchemaRegistryUrl}/subjects");
         Assert.True(resp.IsSuccessStatusCode);
@@ -37,6 +40,7 @@ public class PortConnectivityTests
 //[TestPriority(3)]
     public async Task KsqlDb_Should_Be_Reachable()
     {
+        await EnvPortConnectivityTests.SetupAsync();
         await using var ctx = EnvPortConnectivityTests.CreateContext();
         var result = await ctx.ExecuteStatementAsync("SHOW TOPICS;");
         Assert.True(result.IsSuccess);
@@ -77,7 +81,12 @@ static class EnvPortConnectivityTests
     }
 
     internal static Task ResetAsync() => Task.CompletedTask;
-    internal static Task SetupAsync() => Task.CompletedTask;
+    internal static async Task SetupAsync()
+    {
+        await PhysicalTestEnv.Health.WaitForKafkaAsync(KafkaBootstrapServers, TimeSpan.FromSeconds(120));
+        await PhysicalTestEnv.Health.WaitForHttpOkAsync($"{SchemaRegistryUrl}/subjects", TimeSpan.FromSeconds(120));
+        await PhysicalTestEnv.Health.WaitForHttpOkAsync($"{KsqlDbUrl}/info", TimeSpan.FromSeconds(120));
+    }
 
     private class BasicContext : KsqlContext
     {

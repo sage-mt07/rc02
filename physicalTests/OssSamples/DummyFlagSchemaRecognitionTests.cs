@@ -16,6 +16,7 @@ using Xunit.Sdk;
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
 
+[Collection("DDL")]
 public class DummyFlagSchemaRecognitionTests
 {
 
@@ -78,7 +79,15 @@ public class DummyFlagSchemaRecognitionTests
         var options = new KsqlDslOptions
         {
             Common = new CommonSection { BootstrapServers = EnvDummyFlagSchemaRecognitionTests.KafkaBootstrapServers },
-            SchemaRegistry = new SchemaRegistrySection { Url = EnvDummyFlagSchemaRecognitionTests.SchemaRegistryUrl }
+            SchemaRegistry = new SchemaRegistrySection { Url = EnvDummyFlagSchemaRecognitionTests.SchemaRegistryUrl },
+            SourceNameOverrides = new Dictionary<string, string>
+            {
+                [nameof(OrderValue)] = "ORDERS",
+                [nameof(Customer)] = "CUSTOMERS",
+                [nameof(EventLog)] = "EVENTS",
+                [nameof(NullableOrder)] = "ORDERS_NULLABLE",
+                [nameof(NullableKeyOrder)] = "ORDERS_NULLABLE_KEY"
+            }
         };
 
         await using var ctx = new DummyContext(options);
@@ -115,20 +124,23 @@ public class DummyFlagSchemaRecognitionTests
     public async Task DummyMessages_EnableQueries()
     {
 
-        try
-        {
-            await EnvDummyFlagSchemaRecognitionTests.ResetAsync();
-
-        }
-        catch (Exception)
-        {
-        }
+        try { await EnvDummyFlagSchemaRecognitionTests.ResetAsync(); } catch { }
+        try { await EnvDummyFlagSchemaRecognitionTests.SetupAsync(); } catch { }
 
         await using (var ctx = EnvDummyFlagSchemaRecognitionTests.CreateContext())
         {
             foreach (var ddl in TestSchema.GenerateTableDdls())
             {
-                await ctx.ExecuteStatementAsync(ddl);
+                // retry up to 3 times per DDL to avoid transient startup races
+                var attempts = 0; Exception? last = null;
+                while (attempts++ < 3)
+                {
+                    var r = await ctx.ExecuteStatementAsync(ddl);
+                    if (r.IsSuccess) { last = null; break; }
+                    last = new InvalidOperationException(r.Message);
+                    await Task.Delay(1000);
+                }
+                if (last != null) throw last;
             }
         }
 
@@ -182,13 +194,46 @@ public class EnvDummyFlagSchemaRecognitionTests
         {
             Common = new CommonSection { BootstrapServers = KafkaBootstrapServers },
             SchemaRegistry = new SchemaRegistrySection { Url = SchemaRegistryUrl },
-            KsqlDbUrl = KsqlDbUrl
+            KsqlDbUrl = KsqlDbUrl,
+            SourceNameOverrides = new Dictionary<string, string>
+            {
+                [nameof(DummyFlagSchemaRecognitionTests.OrderValue)] = "ORDERS",
+                [nameof(DummyFlagSchemaRecognitionTests.Customer)] = "CUSTOMERS",
+                [nameof(DummyFlagSchemaRecognitionTests.EventLog)] = "EVENTS",
+                [nameof(DummyFlagSchemaRecognitionTests.NullableOrder)] = "ORDERS_NULLABLE",
+                [nameof(DummyFlagSchemaRecognitionTests.NullableKeyOrder)] = "ORDERS_NULLABLE_KEY"
+            }
         };
         return new BasicContext(options);
     }
 
-    internal static Task ResetAsync() => Task.CompletedTask;
-    internal static Task SetupAsync() => Task.CompletedTask;
+    internal static async Task ResetAsync()
+    {
+        // Best-effort cleanup for topics, subjects, and local RocksDB state
+        try
+        {
+            PhysicalTestEnv.Cleanup.DeleteLocalRocksDbState();
+        }
+        catch { }
+
+        try
+        {
+            await PhysicalTestEnv.Cleanup.DeleteSubjectsAsync(SchemaRegistryUrl, TestSchema.AllTopicNames);
+        }
+        catch { }
+
+        try
+        {
+            await PhysicalTestEnv.Cleanup.DeleteTopicsAsync(KafkaBootstrapServers, TestSchema.AllTopicNames);
+        }
+        catch { }
+    }
+    internal static async Task SetupAsync()
+    {
+        await PhysicalTestEnv.Health.WaitForKafkaAsync(KafkaBootstrapServers, TimeSpan.FromSeconds(120));
+        await PhysicalTestEnv.Health.WaitForHttpOkAsync($"{SchemaRegistryUrl}/subjects", TimeSpan.FromSeconds(120));
+        await PhysicalTestEnv.Health.WaitForHttpOkAsync($"{KsqlDbUrl}/info", TimeSpan.FromSeconds(120));
+    }
 
     private class BasicContext : KsqlContext
     {

@@ -16,6 +16,7 @@ using Xunit.Sdk;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
+[Collection("Schema")]
 public class SchemaRegistryResetTests
 {
     private static readonly HttpClient Http = new();
@@ -173,6 +174,9 @@ public class EnvSchemaRegistryResetTests
 
     internal static async Task SetupAsync()
     {
+        await PhysicalTestEnv.Health.WaitForKafkaAsync(KafkaBootstrapServers, TimeSpan.FromSeconds(120));
+        await PhysicalTestEnv.Health.WaitForHttpOkAsync($"{SchemaRegistryUrl}/subjects", TimeSpan.FromSeconds(120));
+        await PhysicalTestEnv.Health.WaitForHttpOkAsync($"{KsqlDbUrl}/info", TimeSpan.FromSeconds(120));
         using var client = new HttpClient();
         var subjects = TestSchema.AllTopicNames
             .SelectMany(t => new[] {$"{t}-value", $"{t}-key"})
@@ -190,8 +194,21 @@ public class EnvSchemaRegistryResetTests
         foreach (var subject in subjects)
         {
             var payload = new { schema = schemaJson };
-            var resp = await client.PostAsJsonAsync($"{SchemaRegistryUrl}/subjects/{subject}/versions", payload);
-            resp.EnsureSuccessStatusCode();
+            var ok = false; Exception? last = null;
+            for (var i = 0; i < 3 && !ok; i++)
+            {
+                try
+                {
+                    var resp = await client.PostAsJsonAsync($"{SchemaRegistryUrl}/subjects/{subject}/versions", payload);
+                    resp.EnsureSuccessStatusCode();
+                    ok = true;
+                }
+                catch (Exception ex)
+                {
+                    last = ex; await Task.Delay(1000);
+                }
+            }
+            if (!ok && last != null) throw last;
         }
     }
 

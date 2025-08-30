@@ -205,3 +205,21 @@ OSS本体はアプリケーション側の運用情報・エラー通知等を**
 - RetryBackoff, DeadLetterRetry, Topic間リレーション設計
 - クエリのExplain/Previewモード
 
+---
+
+## 11. 物理環境ヘルスチェック運用（担当: 楠木）
+
+- 目的: コンテナ起動直後の不安定状態を吸収し、テストの誤失敗を抑止する。
+- 対象サービスと待機指標:
+  - Kafka: AdminClient の `GetMetadata` が成功
+  - Schema Registry: `GET /subjects` が 2xx/4xx（＝起動済み）
+  - ksqlDB: `GET /info` が 2xx/4xx（または `SHOW TOPICS;` 実行可能）
+- 実施ポイント:
+  - `physicalTests/up.ps1` に TCP/HTTP 簡易待機を実装（既定90秒）
+  - 各 `Env.Setup` に待機を追加（例: `EnvSchemaRegistryResetTests.SetupAsync`, `EnvCompositeKeyPocoTests.SetupAsync`）
+- リトライ設計:
+  - 1–2秒間隔で 60–90 秒を上限とする。
+  - タイムアウト時は Warning ログに留め、テスト内で明示確認するか再試行。
+- 注意:
+  - 認証/TLS/プロキシ環境ではエンドポイントと資格情報の調整が必要。
+  - ローカルRocksDBの残骸が安定性に影響する場合、事前削除を推奨。

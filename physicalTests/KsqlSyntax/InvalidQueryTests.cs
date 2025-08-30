@@ -13,6 +13,7 @@ using Xunit.Sdk;
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
 
+[Collection("DDL")]
 public class InvalidQueryTests
 {
     [Theory]
@@ -21,16 +22,8 @@ public class InvalidQueryTests
     [InlineData("SELECT CASE WHEN ID=1 THEN 'A' ELSE 2 END FROM ORDERS EMIT CHANGES;")]
     public async Task GeneratedQuery_IsRejected(string ksql)
     {
-
-        try
-        {
-            await EnvInvalidQueryTests.ResetAsync();
-
-        }
-        catch (System.Exception)
-        {
-
-        }
+        try { await EnvInvalidQueryTests.ResetAsync(); } catch { }
+        try { await EnvInvalidQueryTests.SetupAsync(); } catch { }
  
         await using var ctx = EnvInvalidQueryTests.CreateContext();
         var response = await ctx.ExecuteExplainAsync(ksql);
@@ -72,7 +65,12 @@ public class EnvInvalidQueryTests
     }
 
     internal static Task ResetAsync() => Task.CompletedTask;
-    internal static Task SetupAsync() => Task.CompletedTask;
+    internal static async Task SetupAsync()
+    {
+        await PhysicalTestEnv.Health.WaitForKafkaAsync(KafkaBootstrapServers, TimeSpan.FromSeconds(120));
+        await PhysicalTestEnv.Health.WaitForHttpOkAsync($"{SchemaRegistryUrl}/subjects", TimeSpan.FromSeconds(120));
+        await PhysicalTestEnv.Health.WaitForHttpOkAsync($"{KsqlDbUrl}/info", TimeSpan.FromSeconds(120));
+    }
 
     private class BasicContext : KsqlContext
     {

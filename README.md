@@ -1,4 +1,6 @@
-# Kafka.Ksql.Linq
+# <img src="./src/KsqlLinq-icon-128.png" alt="Kafka.Ksql.Linq Icon" width="60"  height="60" /> Kafka.Ksql.Linq
+
+
 
 Kafka.Ksql.Linq は C# から Kafka/ksqlDB のクエリを LINQ 風に記述できる DSL ライブラリです。
 Entity Framework の経験がある開発者がストリーム処理ロジックを直感的に書けることを目指しています。

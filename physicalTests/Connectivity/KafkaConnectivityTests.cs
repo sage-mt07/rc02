@@ -9,11 +9,13 @@ using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
+[Collection("Connectivity")]
 public class KafkaConnectivityTests
 {
     [Fact]
     public async Task ProducerConsumer_RoundTrip()
     {
+        await EnvKafkaConnectivityTests.SetupAsync();
         var bootstrap = EnvKafkaConnectivityTests.KafkaBootstrapServers;
         var topic = "connectivity_" + Guid.NewGuid().ToString("N");
 
@@ -83,7 +85,12 @@ public  class EnvKafkaConnectivityTests
     }
 
     internal static Task ResetAsync() => Task.CompletedTask;
-    internal static Task SetupAsync() => Task.CompletedTask;
+    internal static async Task SetupAsync()
+    {
+        await PhysicalTestEnv.Health.WaitForKafkaAsync(KafkaBootstrapServers, TimeSpan.FromSeconds(120));
+        await PhysicalTestEnv.Health.WaitForHttpOkAsync($"{SchemaRegistryUrl}/subjects", TimeSpan.FromSeconds(120));
+        await PhysicalTestEnv.Health.WaitForHttpOkAsync($"{KsqlDbUrl}/info", TimeSpan.FromSeconds(120));
+    }
 
     private class BasicContext : KsqlContext
     {

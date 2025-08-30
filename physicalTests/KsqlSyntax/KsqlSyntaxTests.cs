@@ -17,21 +17,22 @@ using Xunit.Sdk;
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
 
+[Collection("DDL")]
 public class KsqlSyntaxTests
 {
     public KsqlSyntaxTests()
     {
         EnvKsqlSyntaxTests.ResetAsync().GetAwaiter().GetResult();
+        EnvKsqlSyntaxTests.SetupAsync().GetAwaiter().GetResult();
 
         using var ctx = EnvKsqlSyntaxTests.CreateContext();
-        var r1 = ctx.ExecuteStatementAsync(
-            "CREATE STREAM IF NOT EXISTS source (id INT) WITH (KAFKA_TOPIC='source', VALUE_FORMAT='AVRO', PARTITIONS=1);"
-        ).Result;
+        var r1 = PhysicalTestEnv.KsqlHelpers.ExecuteStatementWithRetryAsync(ctx,
+            "CREATE STREAM IF NOT EXISTS source (id INT) WITH (KAFKA_TOPIC='source', VALUE_FORMAT='AVRO', PARTITIONS=1);").Result;
         Console.WriteLine($"CREATE STREAM result: {r1.IsSuccess}, msg: {r1.Message}");
 
         foreach (var ddl in TestSchema.GenerateTableDdls())
         {
-            var r = ctx.ExecuteStatementAsync(ddl).Result;
+            var r = PhysicalTestEnv.KsqlHelpers.ExecuteStatementWithRetryAsync(ctx, ddl).Result;
             Console.WriteLine($"DDL result: {r.IsSuccess}, msg: {r.Message}");
         }
     }

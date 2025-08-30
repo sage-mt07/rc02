@@ -14,6 +14,7 @@ using Xunit;
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
 
+[Collection("DataRoundTrip")]
 public class DlqIntegrationTests
 {
     [KsqlTopic("orders")]

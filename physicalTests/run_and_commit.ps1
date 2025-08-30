@@ -9,8 +9,8 @@ Push-Location $repoRoot
 try {
   Write-Host "=== Physical tests: START ==="
 
-  # 1) 起動
-  & ".\physicalTests\up.ps1"
+  # 1) 環境リセット（down -v → ローカル状態クリア → up & wait）
+  & ".\physicalTests\reset.ps1"
 
   # 2) テスト
   & ".\physicalTests\test.ps1" -Solution "Kafka.Ksql.Linq.sln" -Results "reports\physical"

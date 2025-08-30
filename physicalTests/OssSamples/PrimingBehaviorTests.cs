@@ -11,6 +11,7 @@ using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
+[Collection("DataRoundTrip")]
 public class PrimingBehaviorTests
 {
     [KsqlTopic("priming_records")]

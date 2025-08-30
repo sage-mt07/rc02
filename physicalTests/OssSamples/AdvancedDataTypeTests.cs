@@ -16,6 +16,7 @@ using Xunit.Sdk;
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
 
+[Collection("DataRoundTrip")]
 public class AdvancedDataTypeTests
 {
     public enum Status { Pending, Done }

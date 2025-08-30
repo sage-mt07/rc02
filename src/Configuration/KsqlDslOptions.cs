@@ -91,4 +91,11 @@ public class KsqlDslOptions
         public int Precision { get; init; }
         public int Scale   { get; init; }
     }
+
+    /// <summary>
+    /// Optional overrides for ksqlDB source object names when generating
+    /// CREATE STREAM/TABLE AS SELECT (FROM/JOIN) for query-defined entities.
+    /// Key: C# type name (e.g., "Order"). Value: ksqlDB object name (e.g., "ORDERS").
+    /// </summary>
+    public Dictionary<string, string> SourceNameOverrides { get; init; } = new();
 }

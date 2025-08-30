@@ -13,6 +13,7 @@ using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
+[Collection("DDL")]
 public class JoinIntegrationTests
 {
     [KsqlTopic("orders")]

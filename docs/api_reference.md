@@ -102,6 +102,12 @@ modelBuilder.Entity<OrderSummary>().ToQuery(q => q
 - `autoCommit` 既定値は `true` で、`ConsumerConfig.EnableAutoCommit` により自動コミットされます。
 - `ctx.Set<DlqEnvelope>()` で DLQ ストリーム取得。`Take()` や `ToListAsync()` は利用不可。
 
+### ForEachAsync の dummy メッセージ扱い（仕様差分）
+
+- 非ヘッダ版 `ForEachAsync(Func<T, Task>)`：`is_dummy=true` のメッセージはスキップします。
+- ヘッダ版 `ForEachAsync(Func<T, Dictionary<string,string>, MessageMeta, Task>)`：`is_dummy=true` も処理に渡されます（ヘッダ参照用途）。
+- 互換性: 既存コードの挙動は非ヘッダ版のまま維持されます。
+
 ## エラーハンドリング
 
 | API / Enum | 説明 | 実装状態 |
@@ -169,6 +175,21 @@ await foreach (var rec in ctx.Dlq.ReadAsync())
 | `AvroRetryPolicy` | リトライ回数や遅延などのポリシー | ✅ |
 
 `KsqlDslOptions.DlqTopicName` は既定で `"dead-letter-queue"` です。
+
+### KsqlCreateStatementBuilder（テーブル名差し替え）
+
+`CREATE STREAM/TABLE AS SELECT` の生成時、FROM/JOIN のソース名を差し替えるためのオーバーロードを追加しました。
+
+```csharp
+// 既存：
+string Build(string name, KsqlQueryModel model, int? keySchemaId = null, int? valueSchemaId = null)
+
+// 追加：ソース名リゾルバを指定
+string Build(string name, KsqlQueryModel model, int? keySchemaId, int? valueSchemaId, Func<Type, string> sourceNameResolver)
+```
+
+- `sourceNameResolver`: `typeof(エンティティ型)` を受け取り、ksqlDB 側のテーブル/ストリーム名を返します。
+- 既存シグネチャはそのまま利用可能（互換性維持）。
 
 ## 既定値の参照
 

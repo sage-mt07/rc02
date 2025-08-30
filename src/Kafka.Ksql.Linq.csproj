@@ -9,6 +9,11 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <!-- ✅ Nullable警告は警告のまま (段階的移行のため) -->
     <WarningsNotAsErrors>CS8600;CS8601;CS8602;CS8603;CS8618;CS8619;CS8620;CS8625</WarningsNotAsErrors>
+    <PackageId>Kafka.Ksql.Linq</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>synthaicode</Authors>
+    <Description>LINQ-style DSL for Kafka ksqlDB</Description>    
+	<PackageIcon>KsqlLinq-icon-128.png</PackageIcon>
   </PropertyGroup>
   
   <ItemGroup>
@@ -25,7 +30,9 @@
     <Compile Remove="ReceiveOnly\**\*.cs" />
   </ItemGroup>
 
-
+	<ItemGroup>
+		<None Include="KsqlLinq-icon-128.png" Pack="true" PackagePath="" />
+	</ItemGroup>
 
 	<ItemGroup>
         <PackageReference Include="Confluent.Kafka" Version="2.10.1" />
