@@ -87,7 +87,15 @@ public class AdvancedDataTypeTests
         catch (OperationCanceledException) { /* expected after first message */ }
         Assert.Single(list);
         Assert.Equal(data.Price, list[0].Price);
+        // Defined scale is 4 for Price; ensure normalized recovery
+        Assert.Equal(4, GetScale(list[0].Price));
         Assert.True(Math.Abs((list[0].Created - data.Created).TotalMinutes) < 1);
+    }
+
+    private static int GetScale(decimal value)
+    {
+        var bits = decimal.GetBits(value);
+        return (bits[3] >> 16) & 0x7F;
     }
 }
 

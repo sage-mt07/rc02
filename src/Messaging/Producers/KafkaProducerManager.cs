@@ -191,6 +191,7 @@ internal class KafkaProducerManager : IDisposable
             foreach (var kvp in headers)
                 context.Headers[kvp.Key] = kvp.Value;
         }
+
         await producer.SendAsync(keyObj, valueObj, context, cancellationToken).ConfigureAwait(false);
     }
 

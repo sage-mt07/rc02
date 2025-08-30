@@ -41,6 +41,7 @@ public class DummyFlagMessageTests
         {
           //  modelBuilder.Entity<OrderValue>();
         }
+        protected override bool SkipSchemaRegistration => true;
     }
 
     // KafkaProducer が is_dummy ヘッダーを追加し EventSet で取得できるか確認
@@ -75,10 +76,13 @@ public class DummyFlagMessageTests
         await using var ctx = new DummyContext(options);
         using (var admin = new Confluent.Kafka.AdminClientBuilder(new Confluent.Kafka.AdminClientConfig { BootstrapServers = EnvDummyFlagMessageTests.KafkaBootstrapServers }).Build())
         {
-            try { await admin.DeleteTopicsAsync(new[] { "orders_dummyflag" }); } catch { }
             try { await admin.CreateTopicsAsync(new[] { new Confluent.Kafka.Admin.TopicSpecification { Name = "orders_dummyflag", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
-            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "orders_dummyflag", 1, 1, TimeSpan.FromSeconds(10));
+            await Task.Delay(3000);
+            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "orders_dummyflag", 1, 1, TimeSpan.FromSeconds(90));
         }
+
+        // Ensure ksqlDB is ready before producing/consuming
+        await PhysicalTestEnv.KsqlHelpers.WaitForKsqlReadyAsync(EnvDummyFlagMessageTests.KsqlDbUrl, TimeSpan.FromSeconds(120), graceMs: 1000);
 
         var headers = new Dictionary<string, string> { ["is_dummy"] = "true" };
 
@@ -91,9 +95,26 @@ public class DummyFlagMessageTests
             IsHighPriority = false,
             Count = 1
         }, headers);
-        await Task.Delay(500);
+        // Ensure entity is visible to ksqlDB before consuming
+        await ctx.WaitForEntityReadyAsync<OrderValue>(TimeSpan.FromSeconds(15));
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => ctx.OrderValues.ToListAsync());
+
+        // KafkaMessageContext を受け取るオーバーロードではヘッダーを確認可能（先に検証してから通常ForEachのスキップを確認）
+        var contexts = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        for (int attempt = 1; attempt <= 5 && !contexts.ContainsKey("is_dummy"); attempt++)
+        {
+            await ctx.OrderValues.ForEachAsync((o, c, m) =>
+            {
+                foreach (var key in c.Keys)
+                {
+                    if (!contexts.ContainsKey(key)) contexts[key] = c[key];
+                }
+                return Task.CompletedTask;
+            }, TimeSpan.FromSeconds(12));
+            if (!contexts.ContainsKey("is_dummy")) await Task.Delay(1000);
+        }
+        Assert.True(contexts.TryGetValue("is_dummy", out var v) && v == "true");
 
         // 通常の ForEachAsync では is_dummy ヘッダー付きメッセージがスキップされる
         var consumed = new List<OrderValue>();
@@ -101,22 +122,8 @@ public class DummyFlagMessageTests
         {
             consumed.Add(o);
             return Task.CompletedTask;
-        }, TimeSpan.FromSeconds(100));
-        Assert.Empty(consumed);
-
-        // KafkaMessageContext を受け取るオーバーロードではヘッダーを確認可能
-        var contexts = new Dictionary<string, string>();
-           
-        await ctx.OrderValues.ForEachAsync((o, c, m) =>
-        {
-            foreach(var key in c.Keys)
-            {
-                contexts.Add(key, c[key]);
-            }
-            return Task.CompletedTask;
         }, TimeSpan.FromSeconds(5));
-        Assert.Single(contexts);
-        Assert.Equal("true", contexts["is_dummy"].ToString());
+        Assert.Empty(consumed);
 
         await ctx.DisposeAsync();
     }

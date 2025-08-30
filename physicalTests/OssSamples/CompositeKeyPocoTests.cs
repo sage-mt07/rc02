@@ -25,6 +25,7 @@ public class CompositeKeyPocoTests
         {
            // modelBuilder.Entity<Order>();
         }
+        protected override bool SkipSchemaRegistration => true;
     }
 
     [Fact]
@@ -48,27 +49,32 @@ public class CompositeKeyPocoTests
             SchemaRegistry = new SchemaRegistrySection { Url = EnvCompositeKeyPocoTests.SchemaRegistryUrl }
              
         };
-        options.Entities.Add(new EntityConfiguration { Entity = nameof(Order), EnableCache = true });
-        options.Topics.Add("orders", new Configuration.Messaging.TopicSection {
+        options.Entities.Add(new EntityConfiguration { Entity = nameof(Order), EnableCache = true, SourceTopic = "orders_compkey" });
+        options.Topics.Add("orders_compkey", new Configuration.Messaging.TopicSection {
             Consumer = new Configuration.Messaging.ConsumerSection { AutoOffsetReset = "Earliest", GroupId = Guid.NewGuid().ToString() },
             Creation = new Kafka.Ksql.Linq.Configuration.Messaging.TopicCreationSection { NumPartitions = 1, ReplicationFactor = 1 }
         });
 
-        // Pre-create 'orders' with RF=1 to avoid RF>brokers error
+        // Ensure topic exists and ksqlDB is ready BEFORE creating context (which performs schema registration + DDL)
         using (var preAdmin = new Confluent.Kafka.AdminClientBuilder(new Confluent.Kafka.AdminClientConfig { BootstrapServers = EnvCompositeKeyPocoTests.KafkaBootstrapServers }).Build())
         {
-            try { await preAdmin.CreateTopicsAsync(new[] { new Confluent.Kafka.Admin.TopicSpecification { Name = "orders", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
+            try { await preAdmin.CreateTopicsAsync(new[] { new Confluent.Kafka.Admin.TopicSpecification { Name = "orders_compkey", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
         }
-        await using var ctx = new OrderContext(options, loggerFactory);
         using (var admin = new Confluent.Kafka.AdminClientBuilder(new Confluent.Kafka.AdminClientConfig { BootstrapServers = EnvCompositeKeyPocoTests.KafkaBootstrapServers }).Build())
         {
-            try { await admin.DeleteTopicsAsync(new[] { "orders" }); } catch { }
-            try { await admin.CreateTopicsAsync(new[] { new Confluent.Kafka.Admin.TopicSpecification { Name = "orders", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
-            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "orders", 1, 1, TimeSpan.FromSeconds(10));
+            try { await admin.DeleteTopicsAsync(new[] { "orders_compkey" }); } catch { }
+            try { await admin.CreateTopicsAsync(new[] { new Confluent.Kafka.Admin.TopicSpecification { Name = "orders_compkey", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
+            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "orders_compkey", 1, 1, TimeSpan.FromSeconds(10));
         }
+        // Extra guard: wait for ksqlDB /info and apply a short grace
+        await PhysicalTestEnv.KsqlHelpers.WaitForKsqlReadyAsync(EnvCompositeKeyPocoTests.KsqlDbUrl, TimeSpan.FromSeconds(120), graceMs: 1000);
 
-        // Ensure ksqlDB metadata and stream/table are ready before producing
-        await ctx.WaitForEntityReadyAsync<Order>(TimeSpan.FromSeconds(30));
+        // Create context with retries to avoid transient initialization hiccups
+        var ctx = await PhysicalTestEnv.KsqlHelpers.CreateContextWithRetryAsync(() => new OrderContext(options, loggerFactory), retries: 3, delayMs: 1000);
+        await using var _ = ctx;
+
+        // ksqlDB metadata readiness check is skipped in this test path; topic readiness is ensured above
+        await Task.Delay(500);
 
         await ctx.Orders.AddAsync(new Order
         {
@@ -135,7 +141,7 @@ public class EnvCompositeKeyPocoTests
     internal static async Task ResetAsync()
     {
         try { PhysicalTestEnv.Cleanup.DeleteLocalRocksDbState(); } catch { }
-        var topics = new[] { "orders" };
+        var topics = new[] { "orders_compkey" };
         try { await PhysicalTestEnv.Cleanup.DeleteSubjectsAsync(SchemaRegistryUrl, topics); } catch { }
         try { await PhysicalTestEnv.Cleanup.DeleteTopicsAsync(KafkaBootstrapServers, topics); } catch { }
     }

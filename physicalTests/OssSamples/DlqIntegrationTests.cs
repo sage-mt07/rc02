@@ -17,7 +17,7 @@ namespace Kafka.Ksql.Linq.Tests.Integration;
 [Collection("DataRoundTrip")]
 public class DlqIntegrationTests
 {
-    [KsqlTopic("orders")]
+    [KsqlTopic("orders_dlq_int")] // use a unique topic to avoid Schema Registry subject conflicts
     public class Order
     {
         public int Id { get; set; }
@@ -49,13 +49,14 @@ public class DlqIntegrationTests
             Common = new CommonSection { BootstrapServers = EnvDlqIntegrationTests.KafkaBootstrapServers },
             SchemaRegistry = new SchemaRegistrySection { Url = EnvDlqIntegrationTests.SchemaRegistryUrl }
         };
-        options.Topics.Add("orders", new Configuration.Messaging.TopicSection { Consumer = new Configuration.Messaging.ConsumerSection { AutoOffsetReset = "Earliest", GroupId = Guid.NewGuid().ToString() } });
+        // Use test-unique topic to avoid conflicting schemas registered by other tests
+        options.Topics.Add("orders_dlq_int", new Configuration.Messaging.TopicSection { Consumer = new Configuration.Messaging.ConsumerSection { AutoOffsetReset = "Earliest", GroupId = Guid.NewGuid().ToString() } });
         options.Topics.Add("dead-letter-queue", new Configuration.Messaging.TopicSection { Consumer = new Configuration.Messaging.ConsumerSection { AutoOffsetReset = "Earliest", GroupId = Guid.NewGuid().ToString() } });
 
         await using var ctx = new OrderContext(options);
         using (var admin = new Confluent.Kafka.AdminClientBuilder(new Confluent.Kafka.AdminClientConfig { BootstrapServers = EnvDlqIntegrationTests.KafkaBootstrapServers }).Build())
         {
-            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "orders", 1, 1, TimeSpan.FromSeconds(10));
+            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "orders_dlq_int", 1, 1, TimeSpan.FromSeconds(10));
             await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "dead-letter-queue", 1, 1, TimeSpan.FromSeconds(10));
         }
 

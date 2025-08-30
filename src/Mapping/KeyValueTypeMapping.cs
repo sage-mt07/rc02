@@ -277,7 +277,7 @@ internal class KeyValueTypeMapping
         var oPoco = Expression.Parameter(typeof(object), "poco");
         var srec = Expression.Variable(typeof(ISpecificRecord), "s");
         var poco = Expression.Variable(pocoType, "p");
-        var convM = typeof(KeyValueTypeMapping).GetMethod(nameof(ConvertIfNeeded), BindingFlags.NonPublic | BindingFlags.Static)!;
+        var convM = typeof(KeyValueTypeMapping).GetMethod(nameof(ConvertIfNeededWithScale), BindingFlags.NonPublic | BindingFlags.Static)!;
         var body = new List<Expression>
         {
             Expression.Assign(srec, Expression.Convert(oAvro, typeof(ISpecificRecord))),
@@ -287,7 +287,14 @@ internal class KeyValueTypeMapping
         {
             var prop = metas[i].PropertyInfo!;
             var get = Expression.Call(srec, typeof(ISpecificRecord).GetMethod("Get")!, Expression.Constant(positions[i]));
-            var conv = Expression.Call(convM, get, Expression.Constant(prop.PropertyType, typeof(Type)));
+            // resolve decimal scale per property (compile-time constant in the plan)
+            var scale = DecimalPrecisionConfig.ResolveScale(metas[i].Scale, prop);
+            var conv = Expression.Call(
+                convM,
+                get,
+                Expression.Constant(prop.PropertyType, typeof(Type)),
+                Expression.Constant(scale)
+            );
             body.Add(Expression.Assign(Expression.Property(poco, prop), Expression.Convert(conv, prop.PropertyType)));
         }
         var lambda = Expression.Lambda<Action<object, object>>(Expression.Block(new[] { srec, poco }, body), oAvro, oPoco).Compile();
@@ -314,6 +321,22 @@ internal class KeyValueTypeMapping
             return g;
         try { return Convert.ChangeType(raw, t); }
         catch { return raw; }
+    }
+
+    // Scale-preserving conversion variant used by generated plans.
+    private static object? ConvertIfNeededWithScale(object? raw, Type targetType, int scale)
+    {
+        if (raw is null) return null;
+        var t = Nullable.GetUnderlyingType(targetType) ?? targetType;
+        if (t == typeof(decimal))
+        {
+            decimal Normalize(decimal v) => decimal.Parse(decimal.Round(v, scale).ToString($"F{scale}", CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
+            if (raw is AvroDecimal adv) return Normalize((decimal)adv);
+            if (raw is decimal d) return Normalize(d);
+            try { return Normalize(Convert.ToDecimal(raw, CultureInfo.InvariantCulture)); } catch { }
+        }
+        // Fallback to generic conversion for other types
+        return ConvertIfNeeded(raw, targetType);
     }
 
     private static AvroDecimal ToAvroDecimal(decimal value, int scale) =>

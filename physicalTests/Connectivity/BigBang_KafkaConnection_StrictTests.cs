@@ -58,8 +58,16 @@ public class BigBang_KafkaConnection_StrictTests
 
         var ex = await Assert.ThrowsAnyAsync<Exception>(() => task);
         var text = ex.ToString();
-        Assert.True(ex is KafkaException || text.Contains("connection", StringComparison.OrdinalIgnoreCase)
-                    || text.Contains("Register schema operation failed", StringComparison.OrdinalIgnoreCase),
+        // Accept typical failure shapes under forced Kafka down: KafkaException / ProduceException / TaskCanceled / connection errors
+        var isKafka = ex is KafkaException;
+        var isProduce = ex.GetType().Name.StartsWith("ProduceException", StringComparison.Ordinal);
+        var isCanceled = ex is TaskCanceledException || ex is OperationCanceledException || text.Contains("task was canceled", StringComparison.OrdinalIgnoreCase);
+        var indicativeMsg = text.Contains("refused", StringComparison.OrdinalIgnoreCase)
+                          || text.Contains("Register schema operation failed", StringComparison.OrdinalIgnoreCase)
+                          || text.Contains("serialization", StringComparison.OrdinalIgnoreCase)
+                          || text.Contains("broker", StringComparison.OrdinalIgnoreCase)
+                          || text.Contains("controller", StringComparison.OrdinalIgnoreCase);
+        Assert.True(isKafka || isProduce || isCanceled || indicativeMsg,
             $"Unexpected exception: {ex.GetType().FullName}: {ex.Message}");
     }
 

@@ -117,10 +117,14 @@ public class DefaultAndBoundaryValueTests
         Assert.Equal(data.FloatVal, result.FloatVal);
         Assert.Equal(data.DoubleVal, result.DoubleVal);
         Assert.Equal(data.DecimalVal, result.DecimalVal);
+        // Normalized to defined scale (18,6)
+        Assert.Equal(6, GetScale(result.DecimalVal));
         Assert.Equal(data.StringVal, result.StringVal);
         Assert.Equal(data.BoolVal, result.BoolVal);
         Assert.Equal(data.NullableIntVal, result.NullableIntVal);
         Assert.Equal(data.NullableDecimalVal, result.NullableDecimalVal);
+        if (result.NullableDecimalVal.HasValue)
+            Assert.Equal(6, GetScale(result.NullableDecimalVal.Value));
     }
 
     [Fact]
@@ -163,11 +167,15 @@ public class DefaultAndBoundaryValueTests
             Console.WriteLine($"  id={r.Id}, dec={r.DecimalVal}, scale={GetScale(r.DecimalVal)}");
 
         Assert.Equal(rows.Length, list.Count);
+        // AllTypeRecord.DecimalVal is defined as [KsqlDecimal(18, 6)]
+        const int DefinedScale = 6;
         foreach (var r in rows)
         {
             var found = Assert.Single(list, x => x.Id == r.Id);
+            // Numeric equality must hold
             Assert.Equal(r.DecimalVal, found.DecimalVal);
-            Assert.Equal(GetScale(r.DecimalVal), GetScale(found.DecimalVal));
+            // And recovered value must be normalized to the defined scale (e.g., 0.00 -> 0.000000)
+            Assert.Equal(DefinedScale, GetScale(found.DecimalVal));
         }
     }
 
@@ -229,6 +237,8 @@ public class DefaultAndBoundaryValueTests
             Assert.Equal(r.FloatVal, found.FloatVal);
             Assert.Equal(r.DoubleVal, found.DoubleVal);
             Assert.Equal(r.DecimalVal, found.DecimalVal);
+            // Normalized to defined scale (18,6)
+            Assert.Equal(6, GetScale(found.DecimalVal));
             Assert.Equal(r.NullableIntVal, found.NullableIntVal);
             Assert.Equal(r.NullableDecimalVal, found.NullableDecimalVal);
         }
