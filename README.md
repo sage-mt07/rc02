@@ -5,27 +5,24 @@ Kafka.Ksql.Linq は C# から Kafka/ksqlDB のクエリを LINQ 風に記述で�
 Entity Framework の経験がある開発者がストリーム処理ロジックを直感的に書けることを目指しています。
 
 ## 特徴
-- LINQ ライクな DSL で Kafka/ksqlDB のクエリを構築
-- Schema Registry の SpecificRecord と連携した Avro シリアライズ
-- Window ベースの集約と Push Query 生成をサポート
+- LINQライクな DSL 構文で Kafka/ksqlDB クエリを定義
+- Avro + Schema Registry を前提とした型安全なシリアライズ
+- Window/集約処理・Push/Pull クエリ対応
+- DLQ / Retry / Commit を含む高度なエラーハンドリング
 
 ## Quick Start
-1. .NET 6 SDK をインストールし、リポジトリを取得して依存関係を復元します。
-   ```bash
-   git clone <repository-url>
-   cd rc01
-   dotnet restore
-   ```
-2. Kafka/ksqlDB/Schema Registry を起動します。
-   ```bash
-   docker-compose -f tools/docker-compose.kafka.yml up -d
-   ```
-3. サンプルを実行します。
-   ```bash
-   cd examples/hello-world
-   dotnet run
-   ```
-   さらに詳しいサンプルや誤用例/推奨パターンは [docs/examples_reference.md](docs/examples_reference.md) を参照してください。
+```
+git clone <repository-url>
+cd rc01
+dotnet restore
+
+docker-compose -f tools/docker-compose.kafka.yml up -d
+
+cd examples/hello-world
+dotnet run
+```
+詳細サンプルは[docs/examples_reference.md](docs/examples_reference.md)を参照
+
 
 ## 📖 公式ドキュメントセット
 - [Getting Started](docs/getting-started.md)
@@ -41,7 +38,7 @@ Entity Framework の経験がある開発者がストリーム処理ロジック
 
 ### 🧑‍🏫 初級〜中級者
 - [docs/sqlserver-to-kafka-guide.md](docs/sqlserver-to-kafka-guide.md)
-- [docs/examples_reference.md](docs/examples_reference.md)
+- 
 
 ### 🛠️ 上級開発者
 - [docs/dev_guide.md](docs/dev_guide.md)

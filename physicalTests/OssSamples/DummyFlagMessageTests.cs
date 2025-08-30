@@ -65,6 +65,10 @@ public class DummyFlagMessageTests
         };
 
         await using var ctx = new DummyContext(options);
+        using (var admin = new Confluent.Kafka.AdminClientBuilder(new Confluent.Kafka.AdminClientConfig { BootstrapServers = EnvDummyFlagMessageTests.KafkaBootstrapServers }).Build())
+        {
+            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "orders", 1, 1, TimeSpan.FromSeconds(10));
+        }
 
         var headers = new Dictionary<string, string> { ["is_dummy"] = "true" };
 

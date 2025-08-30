@@ -22,6 +22,7 @@ public class KafkaConnectivityTests
         using (var admin = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = bootstrap }).Build())
         {
             await admin.CreateTopicsAsync(new[] { new TopicSpecification { Name = topic, NumPartitions = 1, ReplicationFactor = 1 } });
+            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, topic, 1, 1, TimeSpan.FromSeconds(10));
         }
         // small warm-up to let metadata settle
         await Task.Delay(1000);

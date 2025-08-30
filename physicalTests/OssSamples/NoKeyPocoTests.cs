@@ -50,17 +50,26 @@ public class NoKeyPocoTests
         };
         options.Topics.Add("records_no_key",new Configuration.Messaging.TopicSection { Consumer=new Configuration.Messaging.ConsumerSection { AutoOffsetReset="Earliest", GroupId=Guid.NewGuid().ToString() } });
         await using var ctx = new RecordContext(options);
+        // Ensure topic is clean and ready
+        using (var admin = new Confluent.Kafka.AdminClientBuilder(new Confluent.Kafka.AdminClientConfig { BootstrapServers = EnvNoKeyPocoTests.KafkaBootstrapServers }).Build())
+        {
+            try { await admin.DeleteTopicsAsync(new[] { "records_no_key" }); } catch { }
+            try { await admin.CreateTopicsAsync(new[] { new Confluent.Kafka.Admin.TopicSpecification { Name = "records_no_key", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
+            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "records_no_key", 1, 1, TimeSpan.FromSeconds(10));
+        }
 
         var data = new Record { Id = 1, Name = "alice" };
         await ctx.Records.AddAsync(data);
+        // Give the broker and consumer subscription a brief moment to settle
+        await Task.Delay(1000);
 
         var list = new List<Record>();
+        var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(10));
         try
         {
-            await ctx.Records.ForEachAsync(r => { list.Add(r); return Task.CompletedTask; }, TimeSpan.FromSeconds(10));
-
+            await ctx.Records.ForEachAsync(r => { list.Add(r); cts.Cancel(); return Task.CompletedTask; }, cancellationToken: cts.Token);
         }
-        catch (OperationCanceledException) { }
+        catch (OperationCanceledException) { /* expected after first message */ }
 
         Assert.Single(list);
         Assert.Equal(data.Id, list[0].Id);

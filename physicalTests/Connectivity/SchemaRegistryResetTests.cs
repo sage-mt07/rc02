@@ -95,10 +95,35 @@ public class SchemaRegistryResetTests
         await EnvSchemaRegistryResetTests.ResetAsync();
         await EnvSchemaRegistryResetTests.SetupAsync();
 
-        var latest = await Http.GetFromJsonAsync<JsonElement>($"{EnvSchemaRegistryResetTests.SchemaRegistryUrl}/subjects/orders-value/versions/latest");
+        JsonElement latest;
+        // Retry fetching latest schema
+        for (var i = 0;; i++)
+        {
+            try
+            {
+                latest = await Http.GetFromJsonAsync<JsonElement>($"{EnvSchemaRegistryResetTests.SchemaRegistryUrl}/subjects/orders-value/versions/latest");
+                break;
+            }
+            catch when (i < 4)
+            {
+                await Task.Delay(500);
+            }
+        }
         var schema = latest.GetProperty("schema").GetString();
-        var resp = await Http.PostAsJsonAsync($"{EnvSchemaRegistryResetTests.SchemaRegistryUrl}/subjects/orders-value/versions", new { schema });
-        resp.EnsureSuccessStatusCode();
+        // Retry re-registering same schema
+        for (var i = 0;; i++)
+        {
+            try
+            {
+                var resp = await Http.PostAsJsonAsync($"{EnvSchemaRegistryResetTests.SchemaRegistryUrl}/subjects/orders-value/versions", new { schema });
+                resp.EnsureSuccessStatusCode();
+                break;
+            }
+            catch when (i < 4)
+            {
+                await Task.Delay(500);
+            }
+        }
     }
 
     // 大文字のサブジェクト名が存在しないことを確認

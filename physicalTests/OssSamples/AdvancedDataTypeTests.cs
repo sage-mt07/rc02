@@ -68,12 +68,23 @@ public class AdvancedDataTypeTests
         options.Topics.Add("records", new Configuration.Messaging.TopicSection { Consumer = new Configuration.Messaging.ConsumerSection { AutoOffsetReset = "Earliest", GroupId = Guid.NewGuid().ToString() } });
 
         await using var ctx = new RecordContext(options);
+        // Ensure topic is clean and ready
+        using (var admin = new Confluent.Kafka.AdminClientBuilder(new Confluent.Kafka.AdminClientConfig { BootstrapServers = EnvAdvancedDataTypeTests.KafkaBootstrapServers }).Build())
+        {
+            try { await admin.DeleteTopicsAsync(new[] { "records" }); } catch { }
+            try { await admin.CreateTopicsAsync(new[] { new Confluent.Kafka.Admin.TopicSpecification { Name = "records", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
+            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "records", 1, 1, TimeSpan.FromSeconds(10));
+        }
 
         var data = new Record { Id = 1, Price = 12.3456m, Created = DateTime.UtcNow };
         await ctx.Records.AddAsync(data);
-        await Task.Delay(5000);
         var list = new List<Record>();
-        await ctx.Records.ForEachAsync(r => { list.Add(r); return Task.CompletedTask; }, TimeSpan.FromSeconds(10));
+        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        try
+        {
+            await ctx.Records.ForEachAsync(r => { list.Add(r); cts.Cancel(); return Task.CompletedTask; }, cancellationToken: cts.Token);
+        }
+        catch (OperationCanceledException) { /* expected after first message */ }
         Assert.Single(list);
         Assert.Equal(data.Price, list[0].Price);
         Assert.True(Math.Abs((list[0].Created - data.Created).TotalMinutes) < 1);

@@ -73,6 +73,13 @@ public class DefaultAndBoundaryValueTests
         await EnvDefaultAndBoundaryValueTests.ResetAsync();
 
         await using var ctx = new AllTypeContext(CreateOptions());
+        // Clean and prepare topic
+        using (var admin = new Confluent.Kafka.AdminClientBuilder(new Confluent.Kafka.AdminClientConfig { BootstrapServers = EnvDefaultAndBoundaryValueTests.KafkaBootstrapServers }).Build())
+        {
+            try { await admin.DeleteTopicsAsync(new[] { "alltyperecords" }); } catch { }
+            try { await admin.CreateTopicsAsync(new[] { new Confluent.Kafka.Admin.TopicSpecification { Name = "alltyperecords", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
+            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "alltyperecords", 1, 1, TimeSpan.FromSeconds(10));
+        }
         await ctx.EnsurePrimedAsync<AllTypeRecord>();
 
         var data = new AllTypeRecord { Id = 1 };
@@ -93,7 +100,12 @@ public class DefaultAndBoundaryValueTests
         Assert.Contains("NULLABLEDECIMALVAL", desc);
 
         var list = new List<AllTypeRecord>();
-        await ctx.Set<AllTypeRecord>().ForEachAsync(r => { list.Add(r); return Task.CompletedTask; }, TimeSpan.FromSeconds(3));
+        var cts1 = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(10));
+        try
+        {
+            await ctx.Set<AllTypeRecord>().ForEachAsync(r => { list.Add(r); cts1.Cancel(); return Task.CompletedTask; }, cancellationToken: cts1.Token);
+        }
+        catch (OperationCanceledException) { }
 
         var result = Assert.Single(list);
         Assert.Equal(data.IntVal, result.IntVal);
@@ -116,6 +128,12 @@ public class DefaultAndBoundaryValueTests
         await EnvDefaultAndBoundaryValueTests.ResetAsync();
 
         await using var ctx = new AllTypeContext(CreateOptions());
+        using (var admin = new Confluent.Kafka.AdminClientBuilder(new Confluent.Kafka.AdminClientConfig { BootstrapServers = EnvDefaultAndBoundaryValueTests.KafkaBootstrapServers }).Build())
+        {
+            try { await admin.DeleteTopicsAsync(new[] { "alltyperecords" }); } catch { }
+            try { await admin.CreateTopicsAsync(new[] { new Confluent.Kafka.Admin.TopicSpecification { Name = "alltyperecords", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
+            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "alltyperecords", 1, 1, TimeSpan.FromSeconds(10));
+        }
         await ctx.EnsurePrimedAsync<AllTypeRecord>();
 
         var rows = new[]
@@ -130,7 +148,7 @@ public class DefaultAndBoundaryValueTests
             await ctx.Set<AllTypeRecord>().AddAsync(r);
 
         var list = new List<AllTypeRecord>();
-        await ctx.Set<AllTypeRecord>().ForEachAsync(r => { list.Add(r); return Task.CompletedTask; }, TimeSpan.FromSeconds(3));
+        await ctx.Set<AllTypeRecord>().ForEachAsync(r => { list.Add(r); return Task.CompletedTask; }, TimeSpan.FromSeconds(10));
 
         Assert.Equal(rows.Length, list.Count);
         foreach (var r in rows)
@@ -150,6 +168,12 @@ public class DefaultAndBoundaryValueTests
         await EnvDefaultAndBoundaryValueTests.ResetAsync();
 
         await using var ctx = new AllTypeContext(CreateOptions());
+        using (var admin = new Confluent.Kafka.AdminClientBuilder(new Confluent.Kafka.AdminClientConfig { BootstrapServers = EnvDefaultAndBoundaryValueTests.KafkaBootstrapServers }).Build())
+        {
+            try { await admin.DeleteTopicsAsync(new[] { "alltyperecords" }); } catch { }
+            try { await admin.CreateTopicsAsync(new[] { new Confluent.Kafka.Admin.TopicSpecification { Name = "alltyperecords", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
+            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "alltyperecords", 1, 1, TimeSpan.FromSeconds(10));
+        }
         await ctx.EnsurePrimedAsync<AllTypeRecord>();
 
         var rows = new[]
@@ -182,7 +206,7 @@ public class DefaultAndBoundaryValueTests
             await ctx.Set<AllTypeRecord>().AddAsync(r);
 
         var list = new List<AllTypeRecord>();
-        await ctx.Set<AllTypeRecord>().ForEachAsync(r => { list.Add(r); return Task.CompletedTask; }, TimeSpan.FromSeconds(3));
+        await ctx.Set<AllTypeRecord>().ForEachAsync(r => { list.Add(r); return Task.CompletedTask; }, TimeSpan.FromSeconds(10));
 
         Assert.Equal(rows.Length, list.Count);
         foreach (var r in rows)

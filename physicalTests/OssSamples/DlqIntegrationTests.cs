@@ -53,6 +53,11 @@ public class DlqIntegrationTests
         options.Topics.Add("dead-letter-queue", new Configuration.Messaging.TopicSection { Consumer = new Configuration.Messaging.ConsumerSection { AutoOffsetReset = "Earliest", GroupId = Guid.NewGuid().ToString() } });
 
         await using var ctx = new OrderContext(options);
+        using (var admin = new Confluent.Kafka.AdminClientBuilder(new Confluent.Kafka.AdminClientConfig { BootstrapServers = EnvDlqIntegrationTests.KafkaBootstrapServers }).Build())
+        {
+            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "orders", 1, 1, TimeSpan.FromSeconds(10));
+            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "dead-letter-queue", 1, 1, TimeSpan.FromSeconds(10));
+        }
 
         // スキーマ確定用ダミーデータ送信
         await ctx.Orders.AddAsync(new Order { Id = 1, Amount = 0.01m });

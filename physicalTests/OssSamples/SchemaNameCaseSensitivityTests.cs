@@ -65,6 +65,12 @@ public class SchemaNameCaseSensitivityTests
         };
 
         await using var ctx = new OrderContext(options);
+        using (var admin = new Confluent.Kafka.AdminClientBuilder(new Confluent.Kafka.AdminClientConfig { BootstrapServers = EnvSchemaNameCaseSensitivityTests.KafkaBootstrapServers }).Build())
+        {
+            try { await admin.DeleteTopicsAsync(new[] { "orders" }); } catch { }
+            try { await admin.CreateTopicsAsync(new[] { new Confluent.Kafka.Admin.TopicSpecification { Name = "orders", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
+            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "orders", 1, 1, TimeSpan.FromSeconds(10));
+        }
 
         var headers = new Dictionary<string, string> { ["is_dummy"] = "true" };
         await ctx.OrderCorrectCases.AddAsync(new OrderCorrectCase

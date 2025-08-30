@@ -52,6 +52,12 @@ public class CompositeKeyPocoTests
         options.Topics.Add("orders", new Configuration.Messaging.TopicSection { Consumer = new Configuration.Messaging.ConsumerSection { AutoOffsetReset = "Earliest", GroupId = Guid.NewGuid().ToString() } });
 
         await using var ctx = new OrderContext(options, loggerFactory);
+        using (var admin = new Confluent.Kafka.AdminClientBuilder(new Confluent.Kafka.AdminClientConfig { BootstrapServers = EnvCompositeKeyPocoTests.KafkaBootstrapServers }).Build())
+        {
+            try { await admin.DeleteTopicsAsync(new[] { "orders" }); } catch { }
+            try { await admin.CreateTopicsAsync(new[] { new Confluent.Kafka.Admin.TopicSpecification { Name = "orders", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
+            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "orders", 1, 1, TimeSpan.FromSeconds(10));
+        }
 
         // Ensure ksqlDB metadata and stream/table are ready before producing
         await ctx.WaitForEntityReadyAsync<Order>(TimeSpan.FromSeconds(30));
