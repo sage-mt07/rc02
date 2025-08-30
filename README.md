@@ -1,4 +1,4 @@
-# <img src="./src/KsqlLinq-icon-128.png" alt="Kafka.Ksql.Linq Icon" width="32"   style="vertical-align: -10px; " /> <span style="position: relative; top: -4px;">Kafka.Ksql.Linq</span>
+# <img src="./src/KsqlLinq-icon-128.png" alt="Kafka.Ksql.Linq Icon" width="36"   style="vertical-align: -10px;margin-right:6px; " />Kafka.Ksql.Linq
 
 
 Kafka.Ksql.Linq は C# から Kafka/ksqlDB のクエリを LINQ 風に記述できる DSL ライブラリです。
