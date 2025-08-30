@@ -91,6 +91,24 @@ internal class KafkaAdminService : IDisposable
                 spec.Configs = new Dictionary<string, string>(c.Configs);
         }
 
+        // Adjust replication factor to available brokers (dev/local single-broker clusters)
+        try
+        {
+            var md = _adminClient.GetMetadata(TimeSpan.FromSeconds(5));
+            var brokers = md?.Brokers?.Count ?? 0;
+            if (brokers > 0 && spec.ReplicationFactor > brokers)
+            {
+                _logger?.LogWarning(
+                    "Requested replication factor {RF} exceeds broker count {Brokers} for {Topic}. Using {AdjRF}.",
+                    spec.ReplicationFactor, brokers, topicName, (short)1);
+                spec.ReplicationFactor = 1;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogDebug(ex, "Failed to get cluster metadata while adjusting RF for {Topic}.", topicName);
+        }
+
         try
         {
             await _adminClient.CreateTopicsAsync(new[] { spec }, new CreateTopicsOptions
@@ -108,7 +126,23 @@ internal class KafkaAdminService : IDisposable
                 _logger?.LogDebug("Topic already exists (race): {TopicName}", topicName);
                 return;
             }
-
+            // Retry once with RF=1 if RF invalid
+            if (result?.Error.Code == ErrorCode.InvalidReplicationFactor ||
+                (result?.Error.Reason?.IndexOf("Replication factor", StringComparison.OrdinalIgnoreCase) >= 0))
+            {
+                try
+                {
+                    spec.ReplicationFactor = 1;
+                    _logger?.LogWarning("Retrying creation of {Topic} with ReplicationFactor=1 due to invalid RF.", topicName);
+                    await _adminClient.CreateTopicsAsync(new[] { spec }, new CreateTopicsOptions { RequestTimeout = TimeSpan.FromSeconds(30) });
+                    _logger?.LogInformation("Topic created (RF=1): {Topic}", topicName);
+                    return;
+                }
+                catch (Exception retryEx)
+                {
+                    _logger?.LogError(retryEx, "Retry with RF=1 failed for topic {Topic}", topicName);
+                }
+            }
             throw new InvalidOperationException($"Failed to create topic '{topicName}': {result?.Error.Reason ?? "Unknown"}", ex);
         }
     }
@@ -174,15 +208,33 @@ internal class KafkaAdminService : IDisposable
             return;
         }
 
+        // Adjust replication factor to available brokers
+        short effectiveRf = replicationFactor;
+        try
+        {
+            var md = _adminClient.GetMetadata(TimeSpan.FromSeconds(5));
+            var brokers = md?.Brokers?.Count ?? 0;
+            if (brokers > 0 && replicationFactor > brokers)
+            {
+                _logger?.LogWarning("Requested replication factor {RF} exceeds broker count {Brokers} for {Topic}. Using {AdjRF}.", replicationFactor, brokers, topicName, (short)1);
+                effectiveRf = 1;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogDebug(ex, "Failed to get cluster metadata while adjusting DB RF for {Topic}.", topicName);
+        }
+
         var spec = new TopicSpecification
         {
             Name = topicName,
             NumPartitions = partitions,
-            ReplicationFactor = replicationFactor
+            ReplicationFactor = effectiveRf
         };
 
         try
         {
+            _logger?.LogDebug("Creating DB topic {Topic} (partitions={Partitions}, rf={RF})", topicName, spec.NumPartitions, spec.ReplicationFactor);
             await _adminClient.CreateTopicsAsync(new[] { spec }, new CreateTopicsOptions { RequestTimeout = TimeSpan.FromSeconds(30) });
             _logger?.LogInformation("DB topic created: {Topic}", topicName);
         }
@@ -194,8 +246,28 @@ internal class KafkaAdminService : IDisposable
                 _logger?.LogDebug("DB topic already exists (race): {Topic}", topicName);
                 return;
             }
-
-            throw;
+            if (result?.Error.Code == ErrorCode.Local_TimedOut || (result?.Error.Reason?.IndexOf("controller", StringComparison.OrdinalIgnoreCase) >= 0))
+            {
+                _logger?.LogWarning("CreateTopics timeout or controller not ready for {Topic}: {Reason}", topicName, result?.Error.Reason);
+            }
+            // Retry once with RF=1 if RF invalid
+            if (result?.Error.Code == ErrorCode.InvalidReplicationFactor ||
+                (result?.Error.Reason?.IndexOf("Replication factor", StringComparison.OrdinalIgnoreCase) >= 0))
+            {
+                try
+                {
+                    spec.ReplicationFactor = 1;
+                    _logger?.LogWarning("Retrying DB topic creation for {Topic} with ReplicationFactor=1 due to invalid RF.", topicName);
+                    await _adminClient.CreateTopicsAsync(new[] { spec }, new CreateTopicsOptions { RequestTimeout = TimeSpan.FromSeconds(30) });
+                    _logger?.LogInformation("DB topic created (RF=1): {Topic}", topicName);
+                    return;
+                }
+                catch (Exception retryEx)
+                {
+                    _logger?.LogError(retryEx, "Retry with RF=1 failed for DB topic {Topic}", topicName);
+                }
+            }
+            throw new InvalidOperationException($"Failed to create DB topic '{topicName}': {result?.Error.Reason ?? ex.Message}", ex);
         }
     }
 

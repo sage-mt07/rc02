@@ -49,8 +49,16 @@ public class CompositeKeyPocoTests
              
         };
         options.Entities.Add(new EntityConfiguration { Entity = nameof(Order), EnableCache = true });
-        options.Topics.Add("orders", new Configuration.Messaging.TopicSection { Consumer = new Configuration.Messaging.ConsumerSection { AutoOffsetReset = "Earliest", GroupId = Guid.NewGuid().ToString() } });
+        options.Topics.Add("orders", new Configuration.Messaging.TopicSection {
+            Consumer = new Configuration.Messaging.ConsumerSection { AutoOffsetReset = "Earliest", GroupId = Guid.NewGuid().ToString() },
+            Creation = new Kafka.Ksql.Linq.Configuration.Messaging.TopicCreationSection { NumPartitions = 1, ReplicationFactor = 1 }
+        });
 
+        // Pre-create 'orders' with RF=1 to avoid RF>brokers error
+        using (var preAdmin = new Confluent.Kafka.AdminClientBuilder(new Confluent.Kafka.AdminClientConfig { BootstrapServers = EnvCompositeKeyPocoTests.KafkaBootstrapServers }).Build())
+        {
+            try { await preAdmin.CreateTopicsAsync(new[] { new Confluent.Kafka.Admin.TopicSpecification { Name = "orders", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
+        }
         await using var ctx = new OrderContext(options, loggerFactory);
         using (var admin = new Confluent.Kafka.AdminClientBuilder(new Confluent.Kafka.AdminClientConfig { BootstrapServers = EnvCompositeKeyPocoTests.KafkaBootstrapServers }).Build())
         {

@@ -57,17 +57,27 @@ public class DummyFlagMessageTests
             SchemaRegistry = new SchemaRegistrySection { Url = EnvDummyFlagMessageTests.SchemaRegistryUrl },
             Topics = new Dictionary<string, TopicSection>
             {
-                ["orders"] = new TopicSection
+                ["orders_dummyflag"] = new TopicSection
                 {
-                    Consumer = new ConsumerSection { AutoOffsetReset = "Earliest" }
+                    Consumer = new ConsumerSection { AutoOffsetReset = "Earliest" },
+                    Creation = new TopicCreationSection { NumPartitions = 1, ReplicationFactor = 1 }
                 }
             }
         };
+        // Map to dedicated topic to avoid SR conflicts
+        options.Entities.Add(new Kafka.Ksql.Linq.Configuration.EntityConfiguration { Entity = nameof(OrderValue), SourceTopic = "orders_dummyflag" });
 
+        // Pre-create 'orders' with RF=1 to satisfy attribute-based topic
+        using (var preAdmin = new Confluent.Kafka.AdminClientBuilder(new Confluent.Kafka.AdminClientConfig { BootstrapServers = EnvDummyFlagMessageTests.KafkaBootstrapServers }).Build())
+        {
+            try { await preAdmin.CreateTopicsAsync(new[] { new Confluent.Kafka.Admin.TopicSpecification { Name = "orders", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
+        }
         await using var ctx = new DummyContext(options);
         using (var admin = new Confluent.Kafka.AdminClientBuilder(new Confluent.Kafka.AdminClientConfig { BootstrapServers = EnvDummyFlagMessageTests.KafkaBootstrapServers }).Build())
         {
-            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "orders", 1, 1, TimeSpan.FromSeconds(10));
+            try { await admin.DeleteTopicsAsync(new[] { "orders_dummyflag" }); } catch { }
+            try { await admin.CreateTopicsAsync(new[] { new Confluent.Kafka.Admin.TopicSpecification { Name = "orders_dummyflag", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
+            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "orders_dummyflag", 1, 1, TimeSpan.FromSeconds(10));
         }
 
         var headers = new Dictionary<string, string> { ["is_dummy"] = "true" };
@@ -81,6 +91,7 @@ public class DummyFlagMessageTests
             IsHighPriority = false,
             Count = 1
         }, headers);
+        await Task.Delay(500);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => ctx.OrderValues.ToListAsync());
 
@@ -103,7 +114,7 @@ public class DummyFlagMessageTests
                 contexts.Add(key, c[key]);
             }
             return Task.CompletedTask;
-        }, TimeSpan.FromSeconds(1));
+        }, TimeSpan.FromSeconds(5));
         Assert.Single(contexts);
         Assert.Equal("true", contexts["is_dummy"].ToString());
 

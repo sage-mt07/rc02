@@ -50,3 +50,8 @@ dotnet run
 - [docs/architecture_overview.md](docs/architecture_overview.md)
 - [docs/test_guidelines.md](docs/test_guidelines.md)
 - [docs/amagiprotocol/README.md](docs/amagiprotocol/README.md)
+
+## License
+
+- ソースコードは [MIT License](./LICENSE) の下で公開されています。  
+- ドキュメントは [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/) の下で公開されています。

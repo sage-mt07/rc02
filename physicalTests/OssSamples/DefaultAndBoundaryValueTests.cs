@@ -107,6 +107,10 @@ public class DefaultAndBoundaryValueTests
         }
         catch (OperationCanceledException) { }
 
+        // debug aid
+        foreach (var r in list)
+            Console.WriteLine($"[DefaultValuesRoundTrip] id={r.Id}, dec={r.DecimalVal}, scale={GetScale(r.DecimalVal)}");
+
         var result = Assert.Single(list);
         Assert.Equal(data.IntVal, result.IntVal);
         Assert.Equal(data.LongVal, result.LongVal);
@@ -149,6 +153,14 @@ public class DefaultAndBoundaryValueTests
 
         var list = new List<AllTypeRecord>();
         await ctx.Set<AllTypeRecord>().ForEachAsync(r => { list.Add(r); return Task.CompletedTask; }, TimeSpan.FromSeconds(10));
+
+        // debug aid
+        Console.WriteLine("[DecimalPrecisionRoundTrip] expected rows:");
+        foreach (var r in rows)
+            Console.WriteLine($"  id={r.Id}, dec={r.DecimalVal}, scale={GetScale(r.DecimalVal)}");
+        Console.WriteLine("[DecimalPrecisionRoundTrip] received rows:");
+        foreach (var r in list)
+            Console.WriteLine($"  id={r.Id}, dec={r.DecimalVal}, scale={GetScale(r.DecimalVal)}");
 
         Assert.Equal(rows.Length, list.Count);
         foreach (var r in rows)
@@ -263,7 +275,13 @@ public class EnvDefaultAndBoundaryValueTests
         return new BasicContext(options);
     }
 
-    internal static Task ResetAsync() => Task.CompletedTask;
+    internal static async Task ResetAsync()
+    {
+        // Ensure local services are reachable before starting the test body
+        await PhysicalTestEnv.Health.WaitForKafkaAsync(KafkaBootstrapServers, TimeSpan.FromSeconds(120));
+        await PhysicalTestEnv.Health.WaitForHttpOkAsync($"{SchemaRegistryUrl}/subjects", TimeSpan.FromSeconds(120));
+        await PhysicalTestEnv.Health.WaitForHttpOkAsync($"{KsqlDbUrl}/info", TimeSpan.FromSeconds(120));
+    }
     internal static Task SetupAsync() => Task.CompletedTask;
 
     private class BasicContext : KsqlContext
