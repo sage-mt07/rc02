@@ -13,6 +13,19 @@ namespace Kafka.Ksql.Linq.Query.Builders;
 internal class SelectClauseBuilder : BuilderBase
 {
     public override KsqlBuilderType BuilderType => KsqlBuilderType.Select;
+    private readonly System.Collections.Generic.IDictionary<string, string>? _paramToSource;
+    private readonly System.Collections.Generic.ISet<string>? _excludeAliases;
+
+    public SelectClauseBuilder() { }
+    public SelectClauseBuilder(System.Collections.Generic.IDictionary<string, string> paramToSource)
+    {
+        _paramToSource = paramToSource;
+    }
+    public SelectClauseBuilder(System.Collections.Generic.IDictionary<string, string> paramToSource, System.Collections.Generic.ISet<string> excludeAliases)
+    {
+        _paramToSource = paramToSource;
+        _excludeAliases = excludeAliases;
+    }
 
     protected override KsqlBuilderType[] GetRequiredBuilderTypes()
     {
@@ -21,12 +34,35 @@ internal class SelectClauseBuilder : BuilderBase
 
     protected override string BuildInternal(Expression expression)
     {
-        var visitor = new SelectExpressionVisitor();
+        var visitor = _paramToSource == null
+            ? new SelectExpressionVisitor()
+            : (_excludeAliases == null
+                ? new SelectExpressionVisitor(_paramToSource)
+                : new SelectExpressionVisitor(_paramToSource, _excludeAliases));
         visitor.Visit(expression);
 
         var result = visitor.GetResult();
 
         // 空の場合は * を返す
+        return string.IsNullOrWhiteSpace(result) ? "*" : result;
+    }
+
+    public string BuildWithParamMap(System.Linq.Expressions.Expression expression, System.Collections.Generic.IDictionary<string, string> paramToSource)
+    {
+        var visitor = new SelectExpressionVisitor(paramToSource);
+        visitor.Visit(expression);
+
+        var result = visitor.GetResult();
+        return string.IsNullOrWhiteSpace(result) ? "*" : result;
+    }
+
+    public string BuildWithParamMapAndExclude(System.Linq.Expressions.Expression expression,
+        System.Collections.Generic.IDictionary<string, string> paramToSource,
+        System.Collections.Generic.ISet<string> excludeAliases)
+    {
+        var visitor = new SelectExpressionVisitor(paramToSource, excludeAliases);
+        visitor.Visit(expression);
+        var result = visitor.GetResult();
         return string.IsNullOrWhiteSpace(result) ? "*" : result;
     }
 

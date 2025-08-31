@@ -126,6 +126,16 @@ public abstract class KsqlContext : IKsqlContext
 
             if (!SkipSchemaRegistration)
             {
+                // Warm-up via dictionary table creation + seed insert. Fail fast if not possible.
+                try
+                {
+                    WarmupDictionaryOrFailAsync().GetAwaiter().GetResult();
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "ksqlDB dictionary warm-up failed: {Message}", ex.Message);
+                    throw;
+                }
                 InitializeWithSchemaRegistration();
             }
             this.UseTableCache(_dslOptions, _loggerFactory);
@@ -547,9 +557,11 @@ public abstract class KsqlContext : IKsqlContext
     {
         var client = _schemaRegistryClient.Value;
 
-        foreach (var (type, model) in _entityModels)
+        // Pass 1: Register schemas for all entities
+        var entities = _entityModels.ToArray();
+        var schemaResults = new Dictionary<Type, SchemaRegistrationResult>();
+        foreach (var (type, model) in entities)
         {
-            SchemaRegistrationResult valueResult;
             try
             {
                 var mapping = _mappingRegistry.GetMapping(type);
@@ -562,8 +574,9 @@ public abstract class KsqlContext : IKsqlContext
                 }
 
                 var valueSubject = $"{model.GetTopicName()}-value";
-                valueResult = await client.RegisterSchemaIfNewAsync(valueSubject, mapping.AvroValueSchema!);
+                var valueResult = await client.RegisterSchemaIfNewAsync(valueSubject, mapping.AvroValueSchema!);
                 model.ValueSchemaId = valueResult.SchemaId;
+                schemaResults[type] = valueResult;
                 DecimalSchemaValidator.Validate(model, client, _dslOptions.ValidationMode, Logger);
             }
             catch (ConfluentSchemaRegistry.SchemaRegistryException ex)
@@ -571,17 +584,24 @@ public abstract class KsqlContext : IKsqlContext
                 Logger.LogError(ex, "Schema registration failed for {Entity}", type.Name);
                 throw;
             }
+        }
 
-            if (model.QueryModel != null || model.QueryExpression != null)
-            {
-                await EnsureQueryEntityDdlAsync(type, model);
-            }
-            else
-            {
-                await EnsureSimpleEntityDdlAsync(type, model);
-            }
+        // Pass 2: Ensure DDL for simple entities first
+        foreach (var (type, model) in entities.Where(e => e.Value.QueryModel == null && e.Value.QueryExpression == null))
+        {
+            await EnsureSimpleEntityDdlAsync(type, model);
+        }
 
-            if (valueResult.WasCreated)
+        // Pass 3: Then ensure DDL for query-defined entities
+        foreach (var (type, model) in entities.Where(e => e.Value.QueryModel != null || e.Value.QueryExpression != null))
+        {
+            await EnsureQueryEntityDdlAsync(type, model);
+        }
+
+        // Pass 4: Materialize newly created schemas with dummy record
+        foreach (var (type, model) in entities)
+        {
+            if (schemaResults.TryGetValue(type, out var valueResult) && valueResult.WasCreated)
             {
                 try
                 {
@@ -630,13 +650,29 @@ public abstract class KsqlContext : IKsqlContext
         ddl = model.StreamTableType == StreamTableType.Table
             ? generator.GenerateCreateTable(schemaProvider)
             : generator.GenerateCreateStream(schemaProvider);
+        Logger.LogInformation("KSQL DDL (simple {Entity}): {Sql}", type.Name, ddl);
 
-        var result = await ExecuteStatementAsync(ddl);
-        if (!result.IsSuccess)
+        // Retry DDL with exponential backoff to tolerate ksqlDB command-topic warmup
+        var attempts = 0;
+        var maxAttempts = Math.Max(0, _dslOptions.KsqlDdlRetryCount) + 1; // include first try
+        var delayMs = Math.Max(0, _dslOptions.KsqlDdlRetryInitialDelayMs);
+        while (true)
         {
-            var msg = $"DDL execution failed for {type.Name}: {result.Message}";
-            Logger.LogError(msg);
-            throw new InvalidOperationException(msg);
+            var result = await ExecuteStatementAsync(ddl);
+            if (result.IsSuccess)
+                break;
+
+            attempts++;
+            var retryable = IsRetryableKsqlError(result.Message);
+            if (!retryable || attempts >= maxAttempts)
+            {
+                var msg = $"DDL execution failed for {type.Name}: {result.Message}";
+                Logger.LogError(msg);
+                throw new InvalidOperationException(msg);
+            }
+            Logger.LogWarning("Retrying DDL for {Entity} (attempt {Attempt}/{Max}) due to: {Reason}", type.Name, attempts, maxAttempts - 1, result.Message);
+            await _delay(TimeSpan.FromMilliseconds(delayMs), default);
+            delayMs = Math.Min(delayMs * 2, 8000);
         }
 
         // Ensure the entity is visible to ksqlDB metadata before proceeding
@@ -657,6 +693,44 @@ public abstract class KsqlContext : IKsqlContext
             catch { }
             await Task.Delay(500);
         }
+    }
+
+    /// <summary>
+    /// Ensure ksqlDB responds to a simple command within the timeout, or throw.
+    /// Executes SHOW TOPICS in a loop, then performs one more SHOW TOPICS as a warmup.
+    /// </summary>
+    private async Task WarmupKsqlWithTopicsOrFail(TimeSpan timeout)
+    {
+        var start = DateTime.UtcNow;
+        while (DateTime.UtcNow - start < timeout)
+        {
+            try
+            {
+                var res = await ExecuteStatementAsync("SHOW TOPICS;");
+                if (res.IsSuccess)
+                {
+                    // one more warmup call (best-effort)
+                    try { await ExecuteStatementAsync("SHOW TOPICS;"); } catch { }
+                    return;
+                }
+            }
+            catch { }
+            await Task.Delay(500);
+        }
+        throw new TimeoutException("ksqlDB warmup timed out while waiting for SHOW TOPICS to succeed.");
+    }
+
+    private static bool IsRetryableKsqlError(string? message)
+    {
+        if (string.IsNullOrWhiteSpace(message)) return true;
+        var m = message.ToLowerInvariant();
+        // common transient indicators during startup/warmup
+        return m.Contains("timeout while waiting for command topic")
+            || m.Contains("could not write the statement")
+            || m.Contains("failed to create new kafkaadminclient")
+            || m.Contains("no resolvable bootstrap urls")
+            || m.Contains("ksqldb server is not ready")
+            || m.Contains("statement_error");
     }
 
     private async Task WaitForEntityDdlAsync(EntityModel model, TimeSpan timeout)
@@ -692,34 +766,49 @@ public abstract class KsqlContext : IKsqlContext
         if (model.QueryModel != null)
         {
             RegisterQueryModelMapping(model);
-            // Use optional source name resolver from options to override FROM/JOIN object names
-            Func<Type, string>? resolver = null;
-            if (_dslOptions.SourceNameOverrides is { Count: > 0 })
+            // Resolve FROM/JOIN object names:
+            // 1) SourceNameOverrides (by type name) > 2) EntityModel.TopicName > 3) type.Name
+            Func<Type, string>? resolver = (Type t) =>
             {
-                resolver = (Type t) =>
+                var key = t?.Name ?? string.Empty;
+                if (!string.IsNullOrEmpty(key) && _dslOptions.SourceNameOverrides is { Count: > 0 } &&
+                    _dslOptions.SourceNameOverrides.TryGetValue(key, out var overrideName))
                 {
-                    var key = t?.Name ?? string.Empty;
-                    if (!string.IsNullOrEmpty(key) && _dslOptions.SourceNameOverrides.TryGetValue(key, out var name))
-                        return name;
-                    return key;
-                };
-            }
-            var sql = resolver == null
-                ? Query.Builders.KsqlCreateStatementBuilder.Build(
-                    model.GetTopicName(),
-                    model.QueryModel,
-                    model.KeySchemaId,
-                    model.ValueSchemaId)
-                : Query.Builders.KsqlCreateStatementBuilder.Build(
+                    return overrideName;
+                }
+                if (t != null && _entityModels.TryGetValue(t, out var srcModel))
+                {
+                    // Use the configured topic/entity name (uppercase for KSQL identifiers)
+                    return srcModel.GetTopicName().ToUpperInvariant();
+                }
+                return key;
+            };
+            var sql = Query.Builders.KsqlCreateStatementBuilder.Build(
                     model.GetTopicName(),
                     model.QueryModel,
                     model.KeySchemaId,
                     model.ValueSchemaId,
                     resolver);
-            var result = await ExecuteStatementAsync(sql);
-            if (!result.IsSuccess)
+            Logger.LogInformation("KSQL DDL (query {Entity}): {Sql}", type.Name, sql);
+            var attempts = 0;
+            var maxAttempts = Math.Max(0, _dslOptions.KsqlDdlRetryCount) + 1;
+            var delayMs = Math.Max(0, _dslOptions.KsqlDdlRetryInitialDelayMs);
+            while (true)
             {
-                Logger.LogWarning("DDL execution failed for {Entity}: {Message}", type.Name, result.Message);
+                var result = await ExecuteStatementAsync(sql);
+                if (result.IsSuccess)
+                    break;
+                attempts++;
+                var retryable = IsRetryableKsqlError(result.Message);
+                if (!retryable || attempts >= maxAttempts)
+                {
+                    var msg = $"DDL execution failed for {type.Name}: {result.Message}";
+                    Logger.LogError(msg);
+                    throw new InvalidOperationException(msg);
+                }
+                Logger.LogWarning("Retrying DDL for {Entity} (attempt {Attempt}/{Max}) due to: {Reason}", type.Name, attempts, maxAttempts - 1, result.Message);
+                await _delay(TimeSpan.FromMilliseconds(delayMs), default);
+                delayMs = Math.Min(delayMs * 2, 8000);
             }
             return;
         }
@@ -944,6 +1033,64 @@ public abstract class KsqlContext : IKsqlContext
         }
 
         throw new TimeoutException($"Entity {typeof(T).Name} not ready after {timeout}.");
+    }
+
+    /// <summary>
+    /// Create a small dictionary table and insert one row to force command-topic consumption.
+    /// Throws if it cannot complete within configured retry policy.
+    /// </summary>
+    private async Task WarmupDictionaryOrFailAsync()
+    {
+        var topic = (_dslOptions.DictionaryTableName ?? "oss_dictionary").Trim();
+        if (string.IsNullOrWhiteSpace(topic)) topic = "oss_dictionary";
+        var ident = topic.ToUpperInvariant();
+
+        // Use JSON formats to avoid Schema Registry conflicts during warmup
+        var createStmt = $"CREATE TABLE IF NOT EXISTS {ident} (NS STRING PRIMARY KEY, KEY STRING, VER INT, VALUE STRING, STAMP BIGINT, NOTE STRING) WITH (KAFKA_TOPIC='{topic}', VALUE_FORMAT='JSON', KEY_FORMAT='KAFKA', PARTITIONS=1);";
+        var insertStmt = $"INSERT INTO {ident} (NS, KEY, VER, VALUE, STAMP, NOTE) VALUES ('global','created_at',1, '1970-01-01 00:00:00.000', 0, 'initial seed');";
+
+        var maxAttempts = Math.Max(0, _dslOptions.KsqlDdlRetryCount) + 1;
+        var delayMs = Math.Max(0, _dslOptions.KsqlDdlRetryInitialDelayMs);
+        Exception? last = null;
+        for (int i = 0; i < maxAttempts; i++)
+        {
+            try
+            {
+                var c = await ExecuteStatementAsync(createStmt);
+                if (!c.IsSuccess)
+                {
+                    if (!IsRetryableKsqlError(c.Message) || i == maxAttempts - 1)
+                        throw new InvalidOperationException(c.Message);
+                    await _delay(TimeSpan.FromMilliseconds(delayMs), default);
+                    delayMs = Math.Min(delayMs * 2, 8000);
+                    continue;
+                }
+
+                // INSERT best-effort with the same retry policy
+                var dly = Math.Max(0, _dslOptions.KsqlDdlRetryInitialDelayMs);
+                for (int j = 0; j < maxAttempts; j++)
+                {
+                    var ins = await ExecuteStatementAsync(insertStmt);
+                    if (ins.IsSuccess) return;
+                    if (!IsRetryableKsqlError(ins.Message) || j == maxAttempts - 1)
+                        throw new InvalidOperationException(ins.Message);
+                    await _delay(TimeSpan.FromMilliseconds(dly), default);
+                    dly = Math.Min(dly * 2, 8000);
+                }
+            }
+            catch (Exception ex)
+            {
+                last = ex;
+                if (i == maxAttempts - 1)
+                {
+                    Logger.LogError(ex, "Dictionary warmup failed: {Message}", ex.Message);
+                    throw;
+                }
+                await _delay(TimeSpan.FromMilliseconds(delayMs), default);
+                delayMs = Math.Min(delayMs * 2, 8000);
+            }
+        }
+        if (last != null) throw last;
     }
 
 

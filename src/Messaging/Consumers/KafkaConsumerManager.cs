@@ -249,6 +249,7 @@ internal class KafkaConsumerManager : IDisposable
     private ConfluentSchemaRegistry.ISchemaRegistryClient CreateSchemaRegistryClient()
     {
         var cfg = new ConfluentSchemaRegistry.SchemaRegistryConfig { Url = _options.SchemaRegistry.Url };
+        _logger.LogClientConfig("schema-registry(consumer)", cfg);
         return new ConfluentSchemaRegistry.CachedSchemaRegistryClient(cfg);
     }
 
@@ -327,7 +328,7 @@ internal class KafkaConsumerManager : IDisposable
 
         foreach (var kvp in topicConfig.Consumer.AdditionalProperties)
             consumerConfig.Set(kvp.Key, kvp.Value);
-
+        _logger.LogClientConfig($"consumer:{topicName}", consumerConfig, topicConfig.Consumer.AdditionalProperties);
         return consumerConfig;
     }
 
@@ -381,4 +382,3 @@ internal class KafkaConsumerManager : IDisposable
         return dict;
     }
 }
-

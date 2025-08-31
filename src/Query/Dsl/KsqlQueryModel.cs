@@ -21,6 +21,7 @@ public class KsqlQueryModel
     public LambdaExpression? BasedOnDayKey { get; set; }
     public List<string> Windows { get; } = new();
     public DayOfWeek WeekAnchor { get; set; } = DayOfWeek.Monday;
+    public int? WithinSeconds { get; set; }
 
     /// <summary>
     /// Returns a simple string representation useful for debugging.

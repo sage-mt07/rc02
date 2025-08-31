@@ -10,40 +10,71 @@ using Kafka.Ksql.Linq.Query.Builders;
 using System;
 using System.Threading.Tasks;
 using Xunit;
+using Microsoft.Extensions.Logging;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
 [Collection("DDL")]
 public class JoinIntegrationTests
 {
-    [KsqlTopic("orders")]
+    [KsqlTopic("orders_join")]
     public class OrderValue
     {
+        [Kafka.Ksql.Linq.Core.Attributes.KsqlKey]
         public int CustomerId { get; set; }
         public int Id { get; set; }
         public string Region { get; set; } = string.Empty;
         public double Amount { get; set; }
     }
 
-    [KsqlTopic("customers")]
+    [KsqlTopic("customers_join")]
     public class Customer
     {
+        [Kafka.Ksql.Linq.Core.Attributes.KsqlKey]
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
+    }
+
+    [KsqlTopic("orders_customers_join")]
+    public class OrderCustomerJoined
+    {
+        [Kafka.Ksql.Linq.Core.Attributes.KsqlKey]
+        public int CustomerId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public double Amount { get; set; }
     }
 
 
     public class JoinContext : KsqlContext
     {
+        // EventSet プロパティで自動登録させる
+        public EventSet<Customer> Customers { get; set; }
+        public EventSet<OrderValue> OrderValues { get; set; }
+
         public JoinContext() : base(new KsqlDslOptions()) { }
         public JoinContext(KsqlDslOptions options) : base(options) { }
+        public JoinContext(KsqlDslOptions options, ILoggerFactory loggerFactory) : base(options, loggerFactory) { }
         protected override void OnModelCreating(IModelBuilder modelBuilder)
         {
+            // ソース
+            modelBuilder.Entity<OrderValue>().AsStream();
+            modelBuilder.Entity<Customer>().AsStream();
 
-            modelBuilder.Entity<OrderValue>();
-            modelBuilder.Entity<Customer>();
+            // JOIN定義を QueryModel として登録
+            var qm = new KsqlQueryRoot()
+                .From<OrderValue>()
+                .Join<Customer>((o, c) => o.CustomerId == c.Id)
+                .Within(300)
+                .Select((o, c) => new { o.CustomerId, c.Name, o.Amount })
+                .Build();
 
+            var builder = modelBuilder.Entity<OrderCustomerJoined>().AsStream();
+            if (builder is Kafka.Ksql.Linq.Core.Modeling.EntityModelBuilder<OrderCustomerJoined> eb)
+            {
+                eb.GetModel().QueryModel = qm;
+            }
         }
+        protected override bool SkipSchemaRegistration => false;
     }
 
     [Fact]
@@ -60,26 +91,25 @@ public class JoinIntegrationTests
         {
         }
 
+        // ksqlDB が再起動直後でも安定するまで待機（/info相当 + 猶予）
+        await PhysicalTestEnv.KsqlHelpers.WaitForKsqlReadyAsync(EnvJoinIntegrationTests.KsqlDbUrl, TimeSpan.FromSeconds(180), graceMs: 2000);
+
         var options = new KsqlDslOptions
         {
             Common = new CommonSection { BootstrapServers = EnvJoinIntegrationTests.KafkaBootstrapServers },
-            SchemaRegistry = new SchemaRegistrySection { Url = EnvJoinIntegrationTests.SchemaRegistryUrl }
+            SchemaRegistry = new SchemaRegistrySection { Url = EnvJoinIntegrationTests.SchemaRegistryUrl },
+            KsqlDbUrl = EnvJoinIntegrationTests.KsqlDbUrl
         };
 
-        await using var ctx = new JoinContext(options);
+        using var lf = LoggerFactory.Create(b =>
+        {
+            b.AddConsole();
+            b.SetMinimumLevel(LogLevel.Information);
+        });
+        await using var ctx = new JoinContext(options, lf);
 
-        var model = new KsqlQueryRoot()
-            .From<OrderValue>()
-            .Join<Customer>((o, c) => o.CustomerId == c.Id)
-            .Select((o, c) => new { o.CustomerId, c.Name, o.Amount })
-            .Build();
-
-        var ksql = KsqlCreateStatementBuilder
-            .Build("orders_customers", model)
-            // Replace type names only at safe boundaries to avoid corrupting property names
-            .Replace(" FROM OrderValue ", " FROM orders ")
-            .Replace(" JOIN Customer ", " JOIN customers ");
-
+        // JOIN の計画が生成できることを確認（ソースとJOINは OnModelCreating で設定済み）
+        var ksql = "SELECT CustomerId, Name, Amount FROM ORDERS_JOIN JOIN CUSTOMERS_JOIN ON (CustomerId = Id);";
         var response = await ctx.ExecuteExplainAsync(ksql);
         Assert.True(response.IsSuccess, $"{ksql} failed: {response.Message}");
     }

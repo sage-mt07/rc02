@@ -23,7 +23,7 @@ try {
 
 dotnet test $Solution `
   -c Release `
-  --filter "Category=Physical" `
+  --filter "Category=Integration" `
   --logger "trx;LogFileName=physical.trx" `
   --results-directory $Results
 

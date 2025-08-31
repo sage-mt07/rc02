@@ -138,7 +138,15 @@ internal class MappingRegistry
         if (model == null) throw new ArgumentNullException(nameof(model));
         if (keyProperties == null) throw new ArgumentNullException(nameof(keyProperties));
 
-        var valueProps = ExtractProjectionProperties(model.SelectProjection, resultType)
+        // For query-defined entities (int), exclude key properties from value schema
+        var keyNames = new HashSet<string>(keyProperties.Select(k => k.Name), StringComparer.Ordinal);
+        var projected = ExtractProjectionProperties(model.SelectProjection, resultType);
+        if (projected.Count == 0)
+        {
+            projected = resultType.GetProperties(BindingFlags.Public | BindingFlags.Instance).ToList();
+        }
+        var valueProps = projected
+            .Where(p => !keyNames.Contains(p.Name))
             .Select(p => PropertyMeta.FromProperty(p))
             .ToArray();
         var keyMeta = keyProperties.Select(p => PropertyMeta.FromProperty(p)).ToArray();

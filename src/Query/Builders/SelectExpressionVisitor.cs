@@ -16,6 +16,13 @@ internal class SelectExpressionVisitor : ExpressionVisitor
     private readonly List<string> _columns = new();
     private readonly HashSet<string> _usedAliases = new();
     private readonly HashSet<string> _selectedGroupKeys = new();
+    private readonly System.Collections.Generic.IDictionary<string, string>? _paramToSource;
+
+    public SelectExpressionVisitor() { }
+    public SelectExpressionVisitor(System.Collections.Generic.IDictionary<string, string> paramToSource)
+    {
+        _paramToSource = paramToSource;
+    }
 
     public string GetResult()
     {
@@ -45,10 +52,11 @@ internal class SelectExpressionVisitor : ExpressionVisitor
             {
                 var columnExpression = ProcessProjectionArgument(arg);
                 var alias = GenerateUniqueAlias(memberName);
+                var aliasQuoted = alias.StartsWith("`") ? alias : $"`{alias}`";
 
                 if (columnExpression != alias)
                 {
-                    _columns.Add($"{columnExpression} AS {alias}");
+                    _columns.Add($"{columnExpression} AS {aliasQuoted}");
                 }
                 else
                 {
@@ -179,7 +187,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
     /// <summary>
     /// カラム名取得
     /// </summary>
-    private static string GetColumnName(MemberExpression member)
+    private string GetColumnName(MemberExpression member)
     {
         // ネストしたプロパティアクセスの処理
         var path = new List<string>();
@@ -192,9 +200,15 @@ internal class SelectExpressionVisitor : ExpressionVisitor
         }
 
         // ルートがParameterの場合は最後の要素のみ使用
-        if (member.Expression is ParameterExpression)
+        if (member.Expression is ParameterExpression pe)
         {
-            return KsqlNameUtils.Sanitize(member.Member.Name);
+            var name = KsqlNameUtils.Sanitize(member.Member.Name);
+            if (!name.StartsWith("`")) name = $"`{name}`"; // preserve case for ksqlDB
+            if (_paramToSource != null && _paramToSource.TryGetValue(pe.Name ?? string.Empty, out var source))
+            {
+                return $"{source}.{name}";
+            }
+            return name;
         }
 
         // g.Key.X のようなアクセスでは "Key" プレフィックスを除外

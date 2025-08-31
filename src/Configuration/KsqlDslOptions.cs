@@ -98,4 +98,32 @@ public class KsqlDslOptions
     /// Key: C# type name (e.g., "Order"). Value: ksqlDB object name (e.g., "ORDERS").
     /// </summary>
     public Dictionary<string, string> SourceNameOverrides { get; init; } = new();
+
+    /// <summary>
+    /// Warm-up delay in milliseconds before issuing DDL to ksqlDB during initialization.
+    /// App settings key: KsqlWarmupDelayMs. Default: 3000ms.
+    /// </summary>
+    [DefaultValue(3000)]
+    public int KsqlWarmupDelayMs { get; init; } = 3000;
+
+    /// <summary>
+    /// Number of retry attempts for ksqlDB DDL statements (CREATE STREAM/TABLE, CSAS/CTAS).
+    /// Default: 3 retries.
+    /// </summary>
+    [DefaultValue(5)]
+    public int KsqlDdlRetryCount { get; init; } = 5;
+
+    /// <summary>
+    /// Initial delay in milliseconds used for exponential backoff when retrying DDL.
+    /// Default: 500ms.
+    /// </summary>
+    [DefaultValue(1000)]
+    public int KsqlDdlRetryInitialDelayMs { get; init; } = 1000;
+
+    /// <summary>
+    /// Dictionary table name used to warm up ksqlDB command topic via REST.
+    /// Default: oss_dictionary
+    /// </summary>
+    [DefaultValue("oss_dictionary")]
+    public string DictionaryTableName { get; init; } = "oss_dictionary";
 }

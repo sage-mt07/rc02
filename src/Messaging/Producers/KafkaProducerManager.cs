@@ -14,6 +14,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using ConfluentSchemaRegistry = Confluent.SchemaRegistry;
+using Kafka.Ksql.Linq.Core.Extensions;
 
 namespace Kafka.Ksql.Linq.Messaging.Producers;
 
@@ -97,12 +98,14 @@ internal class KafkaProducerManager : IDisposable
         };
         foreach (var kv in section.Producer.AdditionalProperties)
             pc.Set(kv.Key, kv.Value);
+        _logger.LogClientConfig($"producer:{topicName}", pc, section.Producer.AdditionalProperties);
         return pc;
     }
 
     private ConfluentSchemaRegistry.ISchemaRegistryClient CreateSchemaRegistryClient()
     {
         var cfg = new ConfluentSchemaRegistry.SchemaRegistryConfig { Url = _options.SchemaRegistry.Url };
+        _logger.LogClientConfig("schema-registry(producer)", cfg);
         return new ConfluentSchemaRegistry.CachedSchemaRegistryClient(cfg);
     }
 

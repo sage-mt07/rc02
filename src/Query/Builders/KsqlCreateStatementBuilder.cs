@@ -29,12 +29,8 @@ public static class KsqlCreateStatementBuilder
         sb.Append($"{createType} {streamName}");
         if (keySchemaId.HasValue || valueSchemaId.HasValue)
         {
+            // int: omit key SerDe, include only value
             var withParts = new List<string> { $"KAFKA_TOPIC='{streamName}'" };
-            if (keySchemaId.HasValue)
-            {
-                withParts.Add("KEY_FORMAT='AVRO'");
-                withParts.Add($"KEY_SCHEMA_ID={keySchemaId.Value}");
-            }
             withParts.Add("VALUE_FORMAT='AVRO'");
             if (valueSchemaId.HasValue)
                 withParts.Add($"VALUE_SCHEMA_ID={valueSchemaId.Value}");
@@ -92,7 +88,26 @@ public static class KsqlCreateStatementBuilder
         if (model == null)
             throw new ArgumentNullException(nameof(model));
 
-        var selectClause = BuildSelectClause(model.SelectProjection);
+        string selectClause;
+        if (model.SelectProjection == null)
+        {
+            selectClause = "*";
+        }
+        else
+        {
+            // Map projection parameter names to resolved source names for qualification
+            var map = new System.Collections.Generic.Dictionary<string, string>(StringComparer.Ordinal);
+            var parameters = model.SelectProjection.Parameters;
+            for (int i = 0; i < parameters.Count && i < (model.SourceTypes?.Length ?? 0); i++)
+            {
+                var pname = parameters[i].Name ?? string.Empty;
+                // Use the same aliases as FROM/JOIN (o/i) for qualification
+                var alias = i == 0 ? "o" : "i";
+                map[pname] = alias;
+            }
+            var builder = new SelectClauseBuilder(map);
+            selectClause = builder.Build(model.SelectProjection.Body);
+        }
         var fromClause = BuildFromClauseCore(model, sourceNameResolver);
         var whereClause = BuildWhereClause(model.WhereCondition);
         var groupByClause = BuildGroupByClause(model.GroupByExpression);
@@ -104,12 +119,8 @@ public static class KsqlCreateStatementBuilder
         sb.Append($"{createType} {streamName}");
         if (keySchemaId.HasValue || valueSchemaId.HasValue)
         {
+            // int: omit key SerDe, include only value
             var withParts = new List<string> { $"KAFKA_TOPIC='{streamName}'" };
-            if (keySchemaId.HasValue)
-            {
-                withParts.Add("KEY_FORMAT='AVRO'");
-                withParts.Add($"KEY_SCHEMA_ID={keySchemaId.Value}");
-            }
             withParts.Add("VALUE_FORMAT='AVRO'");
             if (valueSchemaId.HasValue)
                 withParts.Add($"VALUE_SCHEMA_ID={valueSchemaId.Value}");
@@ -163,22 +174,86 @@ public static class KsqlCreateStatementBuilder
             throw new NotSupportedException("Only up to 2 tables are supported in JOIN");
 
         var result = new StringBuilder();
-        var left = sourceNameResolver?.Invoke(types[0]) ?? types[0].Name;
-        result.Append($"FROM {left}");
+        var left = sourceNameResolver?.Invoke(types[0]) ?? ResolveSourceName(types[0]);
+        var lAlias = "o"; // explicit alias for left source
+        result.Append($"FROM {left} {lAlias}");
 
         if (types.Length > 1)
         {
-            var right = sourceNameResolver?.Invoke(types[1]) ?? types[1].Name;
-            result.Append($" JOIN {right}");
+            var right = sourceNameResolver?.Invoke(types[1]) ?? ResolveSourceName(types[1]);
+            var rAlias = "i"; // explicit alias for right source
+            result.Append($" JOIN {right} {rAlias}");
             if (model.JoinCondition == null)
                 throw new InvalidOperationException("Join condition required for two table join");
 
-            var whereBuilder = new WhereClauseBuilder();
-            var condition = whereBuilder.Build(model.JoinCondition.Body);
+            // Enforce WITHIN for stream-stream joins: require WithinSeconds
+            if (!model.WithinSeconds.HasValue || model.WithinSeconds.Value <= 0)
+                throw new InvalidOperationException("Stream-Stream JOIN requires Within(seconds). Specify a positive seconds window.");
+            result.Append($" WITHIN {model.WithinSeconds.Value} SECONDS");
+
+            // Build a qualified join condition using aliases to avoid ambiguity
+            var condition = BuildQualifiedJoinCondition(model.JoinCondition, lAlias, rAlias);
             result.Append($" ON {condition}");
         }
 
         return result.ToString();
+    }
+
+    private static string BuildQualifiedJoinCondition(LambdaExpression joinExpr, string leftAlias, string rightAlias)
+    {
+        string Build(Expression expr)
+        {
+            switch (expr)
+            {
+                case BinaryExpression be when be.NodeType == ExpressionType.Equal:
+                    return $"({Build(be.Left)} = {Build(be.Right)})";
+                case MemberExpression me:
+                {
+                    var param = GetRootParameter(me);
+                    if (param != null)
+                    {
+                        if (joinExpr.Parameters.Count > 0 && param == joinExpr.Parameters[0])
+                        {
+                            var col = me.Member.Name;
+                            if (!col.StartsWith("`")) col = $"`{col}`";
+                            return $"{leftAlias}.{col}";
+                        }
+                        if (joinExpr.Parameters.Count > 1 && param == joinExpr.Parameters[1])
+                        {
+                            var col = me.Member.Name;
+                            if (!col.StartsWith("`")) col = $"`{col}`";
+                            return $"{rightAlias}.{col}";
+                        }
+                    }
+                    return me.Member.Name;
+                }
+                case UnaryExpression ue:
+                    return Build(ue.Operand);
+                case ConstantExpression ce:
+                    return Builders.Common.BuilderValidation.SafeToString(ce.Value);
+                default:
+                    return expr.ToString();
+            }
+        }
+
+        static ParameterExpression? GetRootParameter(MemberExpression me)
+        {
+            Expression? e = me.Expression;
+            while (e is MemberExpression m)
+                e = m.Expression;
+            return e as ParameterExpression;
+        }
+
+        return Build(joinExpr.Body);
+    }
+
+    private static string ResolveSourceName(Type type)
+    {
+        // If the entity type has [KsqlTopic("name")], use that (uppercased for KSQL identifiers)
+        var attr = type.GetCustomAttributes(true).OfType<Kafka.Ksql.Linq.Core.Attributes.KsqlTopicAttribute>().FirstOrDefault();
+        if (attr != null && !string.IsNullOrWhiteSpace(attr.Name))
+            return attr.Name.ToUpperInvariant();
+        return type.Name;
     }
 
     private static string BuildWhereClause(LambdaExpression? where)

@@ -107,10 +107,6 @@ public class DefaultAndBoundaryValueTests
         }
         catch (OperationCanceledException) { }
 
-        // debug aid
-        foreach (var r in list)
-            Console.WriteLine($"[DefaultValuesRoundTrip] id={r.Id}, dec={r.DecimalVal}, scale={GetScale(r.DecimalVal)}");
-
         var result = Assert.Single(list);
         Assert.Equal(data.IntVal, result.IntVal);
         Assert.Equal(data.LongVal, result.LongVal);
@@ -157,14 +153,6 @@ public class DefaultAndBoundaryValueTests
 
         var list = new List<AllTypeRecord>();
         await ctx.Set<AllTypeRecord>().ForEachAsync(r => { list.Add(r); return Task.CompletedTask; }, TimeSpan.FromSeconds(10));
-
-        // debug aid
-        Console.WriteLine("[DecimalPrecisionRoundTrip] expected rows:");
-        foreach (var r in rows)
-            Console.WriteLine($"  id={r.Id}, dec={r.DecimalVal}, scale={GetScale(r.DecimalVal)}");
-        Console.WriteLine("[DecimalPrecisionRoundTrip] received rows:");
-        foreach (var r in list)
-            Console.WriteLine($"  id={r.Id}, dec={r.DecimalVal}, scale={GetScale(r.DecimalVal)}");
 
         Assert.Equal(rows.Length, list.Count);
         // AllTypeRecord.DecimalVal is defined as [KsqlDecimal(18, 6)]

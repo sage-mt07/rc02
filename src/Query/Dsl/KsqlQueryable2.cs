@@ -97,6 +97,13 @@ public class KsqlQueryable2<T1, T2> : IKsqlQueryable
         return this;
     }
 
+    public KsqlQueryable2<T1, T2> Within(int seconds)
+    {
+        if (seconds <= 0) throw new ArgumentOutOfRangeException(nameof(seconds), "seconds must be > 0");
+        _model.WithinSeconds = seconds;
+        return this;
+    }
+
     public KsqlQueryable2<T1, T2> Tumbling(Expression<Func<T1, T2, object>> timeProperty, TimeSpan size, TimeSpan? grace = null)
     {
         throw new NotSupportedException("Legacy Tumbling overload is not supported in this phase.");

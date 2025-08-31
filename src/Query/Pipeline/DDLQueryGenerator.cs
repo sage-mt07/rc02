@@ -123,21 +123,14 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
             var hasKey = schema.Columns.Any(c => c.IsKey);
 
             var withParts = new List<string> { $"KAFKA_TOPIC='{topicName}'" };
-            if (hasKey)
-            {
-                withParts.Add("KEY_FORMAT='AVRO'");
-                if (schema.KeySchemaId.HasValue)
-                    withParts.Add($"KEY_SCHEMA_ID={schema.KeySchemaId.Value}");
-            }
-            withParts.Add("VALUE_FORMAT='AVRO'");
-            if (schema.ValueSchemaId.HasValue)
-                withParts.Add($"VALUE_SCHEMA_ID={schema.ValueSchemaId.Value}");
+            // For TABLE with explicit columns, avoid SCHEMA_ID and KEY_FORMAT to let ksql infer key from PRIMARY KEY
+            // Only include SCHEMA_ID/KEY_FORMAT when using schema IDs path
             withParts.Add($"PARTITIONS={partitions}");
             withParts.Add($"REPLICAS={replicas}");
             var withClause = string.Join(", ", withParts);
 
             // --- KSQLルール対応（カラム定義 vs スキーマID系は排他） ---
-            bool useSchemaId = schema.KeySchemaId.HasValue || schema.ValueSchemaId.HasValue;
+            bool useSchemaId = false; // prefer explicit columns for TABLE so PRIMARY KEY is declared
             string query;
             if (useSchemaId)
             {
@@ -147,7 +140,10 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
             else
             {
                 // カラム定義部あり
-                query = $"CREATE TABLE IF NOT EXISTS {tableName} ({columns}) WITH ({withClause})";
+                // Rebuild WITH clause for explicit columns: include VALUE_FORMAT only
+                var withPartsCols = new List<string> { $"KAFKA_TOPIC='{topicName}'", "VALUE_FORMAT='AVRO'", $"PARTITIONS={partitions}", $"REPLICAS={replicas}" };
+                var withCols = string.Join(", ", withPartsCols);
+                query = $"CREATE TABLE IF NOT EXISTS {tableName} ({columns}) WITH ({withCols})";
             }
 
             if (!query.TrimEnd().EndsWith(";"))
@@ -220,17 +216,18 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
 
         if (keyColumns.Count > 1)
         {
-            var fields = keyColumns.Select(c => $"{c.Name} {c.Type}");
+            var fields = keyColumns.Select(c => $"`{c.Name}` {c.Type}");
             var structDef = $"STRUCT<{string.Join(", ", fields)}>";
-            var keyColumnName = $"{schema.ObjectName}_key";
+            var keyColumnName = $"`{schema.ObjectName}_key`";
             columns.Add($"{keyColumnName} {structDef} PRIMARY KEY");
-            columns.AddRange(nonKeyColumns.Select(c => $"{c.Name} {c.Type}"));
+            columns.AddRange(nonKeyColumns.Select(c => $"`{c.Name}` {c.Type}"));
         }
         else
         {
             foreach (var column in schema.Columns)
             {
-                var definition = $"{column.Name} {column.Type}";
+                var cname = column.Name.StartsWith("`") ? column.Name : $"`{column.Name}`";
+                var definition = $"{cname} {column.Type}";
                 if (column.IsKey)
                 {
                     definition += " PRIMARY KEY";
