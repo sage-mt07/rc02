@@ -41,14 +41,50 @@ public class KsqlQueryable2Tests
     }
 
     [Fact]
-    public void Join_BuildsJoinClause()
+    public void Join_WithWithin_AddsClause()
+    {
+        var queryable = new KsqlQueryable<Order>()
+            .Join<Payment>((o, p) => o.Id == p.OrderId)
+            .Within(300)
+            .Select((o, p) => new { o.Id, p.Paid });
+        var model = queryable.Build();
+        var sql = KsqlCreateStatementBuilder.Build("JoinTest", model);
+        Assert.Contains("WITHIN 300 SECONDS", sql);
+        Assert.Contains("SELECT o.`Id` AS `Id`, i.`Paid` AS `Paid`", sql);
+        Assert.Contains("ON (o.`Id` = i.`OrderId`)", sql);
+    }
+
+    [Fact]
+    public void Join_WithoutWithin_Throws()
     {
         var queryable = new KsqlQueryable<Order>()
             .Join<Payment>((o, p) => o.Id == p.OrderId)
             .Select((o, p) => new { o.Id, p.Paid });
         var model = queryable.Build();
-        var sql = KsqlCreateStatementBuilder.Build("JoinTest", model);
-        Assert.Contains("JOIN Payment", sql);
-        Assert.Contains("ON (Id = OrderId)", sql);
+        Assert.Throws<InvalidOperationException>(() => KsqlCreateStatementBuilder.Build("JoinTest", model));
+    }
+
+    [Fact]
+    public void Select_WithUnqualifiedColumn_Throws()
+    {
+        var outside = new Order();
+        var queryable = new KsqlQueryable<Order>()
+            .Join<Payment>((o, p) => o.Id == p.OrderId)
+            .Within(5)
+            .Select((o, p) => new { outside.Id, p.Paid });
+        var model = queryable.Build();
+        Assert.Throws<InvalidOperationException>(() => KsqlCreateStatementBuilder.Build("JoinTest", model));
+    }
+
+    [Fact]
+    public void Join_WithUnqualifiedColumnInCondition_Throws()
+    {
+        var outside = new Order();
+        var queryable = new KsqlQueryable<Order>()
+            .Join<Payment>((o, p) => outside.Id == p.OrderId)
+            .Within(5)
+            .Select((o, p) => new { o.Id, p.Paid });
+        var model = queryable.Build();
+        Assert.Throws<InvalidOperationException>(() => KsqlCreateStatementBuilder.Build("JoinTest", model));
     }
 }

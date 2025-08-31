@@ -14,6 +14,7 @@ using Kafka.Ksql.Linq.Messaging;
 using Kafka.Ksql.Linq.Runtime.Heartbeat;
 using Confluent.Kafka;
 using Kafka.Ksql.Linq.Query.Abstractions;
+using Kafka.Ksql.Linq.Query.Adapters;
 using Kafka.Ksql.Linq.SchemaRegistryTools;
 using Kafka.Ksql.Linq.Core.Dlq;
 using Microsoft.Extensions.Configuration;
@@ -45,6 +46,7 @@ public abstract class KsqlContext : IKsqlContext
     private ICommitManager _commitManager = null!;
     private Lazy<ConfluentSchemaRegistry.ISchemaRegistryClient> _schemaRegistryClient = null!;
     private IKsqlDbClient _ksqlDbClient = null!;
+    private IDictionaryKvClient _dictionaryClient = null!;
     private Core.Dlq.IDlqClient _dlqClient = null!;
     private IRateLimiter _dlqLimiter = null!;
     private ILeadershipFlag _leaderFlag = null!;
@@ -100,6 +102,7 @@ public abstract class KsqlContext : IKsqlContext
 
         _schemaRegistryClient = new Lazy<ConfluentSchemaRegistry.ISchemaRegistryClient>(CreateSchemaRegistryClient);
         _ksqlDbClient = new KsqlDbClient(GetDefaultKsqlDbUrl());
+        _dictionaryClient = new DictionaryKvClient(_ksqlDbClient, _dslOptions.DictionaryTableName);
 
         _loggerFactory = loggerFactory;
         _logger = _loggerFactory.CreateLoggerOrNull<KsqlContext>();
@@ -783,12 +786,22 @@ public abstract class KsqlContext : IKsqlContext
                 }
                 return key;
             };
+            var isPublic = model.GetTopicName().EndsWith(".pub", StringComparison.OrdinalIgnoreCase);
+            var kind = isPublic ? "pub" : "int";
+            var topicName = await TopicNameResolver.ResolvePhysicalAsync(model, kind, _dictionaryClient);
+            string? partitionKey = null;
+            if (isPublic)
+            {
+                partitionKey = model.GetOrderedKeyProperties().FirstOrDefault()?.Name;
+            }
             var sql = Query.Builders.KsqlCreateStatementBuilder.Build(
-                    model.GetTopicName(),
+                    topicName,
                     model.QueryModel,
                     model.KeySchemaId,
                     model.ValueSchemaId,
-                    resolver);
+                    resolver,
+                    includeKey: isPublic,
+                    partitionBy: partitionKey);
             Logger.LogInformation("KSQL DDL (query {Entity}): {Sql}", type.Name, sql);
             var attempts = 0;
             var maxAttempts = Math.Max(0, _dslOptions.KsqlDdlRetryCount) + 1;

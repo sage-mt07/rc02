@@ -261,4 +261,70 @@ public class KafkaAdminServiceTests
 
         Assert.Equal("1", spec!.Configs!["x"]);
     }
+
+    [Theory]
+    [InlineData("sc.kksl.orders.OrderCustomerJoin.pub")]
+    [InlineData("sc.kksl.orders.OrderCustomerJoin.int")]
+    public async Task EnsureTopicExistsAsync_UsesBaseCreationForPubInt(string topic)
+    {
+        var options = new KsqlDslOptions
+        {
+            Topics =
+            {
+                ["sc.kksl.orders.OrderCustomerJoin"] = new TopicSection
+                {
+                    Creation = new TopicCreationSection { NumPartitions = 6, ReplicationFactor = 3 }
+                },
+                [topic] = new TopicSection { Creation = null }
+            }
+        };
+        var proxy = DispatchProxy.Create<IAdminClient, FakeAdminClient>();
+        var fake = (FakeAdminClient)proxy!;
+        fake.MetadataHandler = _ => CreateMetadata(Array.Empty<TopicMetadata>());
+        TopicSpecification? spec = null;
+        fake.CreateHandler = (specs, _) => { spec = specs.Single(); return Task.CompletedTask; };
+
+        var svc = CreateUninitialized(options, proxy);
+        await svc.EnsureTopicExistsAsync(topic);
+
+        Assert.Equal(6, spec!.NumPartitions);
+        Assert.Equal((short)3, spec.ReplicationFactor);
+    }
+
+    [Fact]
+    public async Task EnsureTopicExistsAsync_ThrowsWhenChildHasStructure()
+    {
+        var options = new KsqlDslOptions
+        {
+            Topics =
+            {
+                ["ns.Entity"] = new TopicSection
+                {
+                    Creation = new TopicCreationSection { NumPartitions = 1, ReplicationFactor = 1 }
+                },
+                ["ns.Entity.pub"] = new TopicSection
+                {
+                    Creation = new TopicCreationSection { NumPartitions = 2 }
+                }
+            }
+        };
+        var proxy = DispatchProxy.Create<IAdminClient, FakeAdminClient>();
+        var svc = CreateUninitialized(options, proxy);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => svc.EnsureTopicExistsAsync("ns.Entity.pub"));
+    }
+
+    [Fact]
+    public async Task EnsureTopicExistsAsync_ThrowsWhenBaseMissing()
+    {
+        var options = new KsqlDslOptions
+        {
+            Topics =
+            {
+                ["ns.Entity.pub"] = new TopicSection { Creation = null }
+            }
+        };
+        var proxy = DispatchProxy.Create<IAdminClient, FakeAdminClient>();
+        var svc = CreateUninitialized(options, proxy);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => svc.EnsureTopicExistsAsync("ns.Entity.pub"));
+    }
 }

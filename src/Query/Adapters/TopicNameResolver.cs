@@ -24,6 +24,15 @@ internal static class TopicNameResolver
         return Sanitize(name);
     }
 
+    public static async System.Threading.Tasks.Task<string> ResolvePhysicalAsync(EntityModel model, string kind, Kafka.Ksql.Linq.Infrastructure.KsqlDb.IDictionaryKvClient client)
+    {
+        var ns = (model.EntityType.Namespace ?? string.Empty).ToLowerInvariant();
+        var entity = Kafka.Ksql.Linq.Infrastructure.Naming.SnakeCaseConverter.ToSnakeCase(model.EntityType.Name);
+        var key = $"topic/{ns}/{entity}/{kind}/kafka_topic";
+        var physical = await client.GetAsync(key);
+        return physical ?? $"{ns}.{entity}.{kind}";
+    }
+
     private static string Sanitize(string n)
     {
         var name = Regex.Replace(n.ToLowerInvariant(), "[^a-z0-9_]", "_");
