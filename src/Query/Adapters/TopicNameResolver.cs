@@ -30,7 +30,9 @@ internal static class TopicNameResolver
         var entity = Kafka.Ksql.Linq.Infrastructure.Naming.SnakeCaseConverter.ToSnakeCase(model.EntityType.Name);
         var key = $"topic/{ns}/{entity}/{kind}/kafka_topic";
         var physical = await client.GetAsync(key);
-        return physical ?? $"{ns}.{entity}.{kind}";
+        if (string.IsNullOrWhiteSpace(physical))
+            throw new InvalidOperationException($"Physical topic name not found for '{key}'. Ensure the dictionary contains this entry.");
+        return physical;
     }
 
     private static string Sanitize(string n)

@@ -23,6 +23,8 @@ public static class KsqlCreateStatementBuilder
             throw new ArgumentException("Stream name is required", nameof(streamName));
         if (model == null)
             throw new ArgumentNullException(nameof(model));
+        if (includeKey && string.IsNullOrWhiteSpace(partitionBy))
+            throw new InvalidOperationException("Public topics require PARTITION BY for key emission.");
 
         string selectClause;
         if (model.SelectProjection == null)
@@ -129,7 +131,7 @@ public static class KsqlCreateStatementBuilder
 
             // Enforce WITHIN for stream-stream joins: require WithinSeconds
             if (!model.WithinSeconds.HasValue || model.WithinSeconds.Value <= 0)
-                throw new InvalidOperationException("Stream-Stream JOIN requires Within(seconds). Specify a positive seconds window.");
+                throw new InvalidOperationException("Stream-Stream JOIN requires .Within(seconds) (e.g. Within(60)).");
             result.Append($" WITHIN {model.WithinSeconds.Value} SECONDS");
 
             // Build a qualified join condition using aliases to avoid ambiguity

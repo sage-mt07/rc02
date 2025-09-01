@@ -17,10 +17,11 @@ internal class DictionaryKvClient : IDictionaryKvClient
 
     public async Task<string?> GetAsync(string key)
     {
-        var stmt = $"SELECT v FROM {_table} WHERE k='{key}' LIMIT 1;";
+        var stmt = $"SELECT v FROM {_table} WHERE k='{key}';";
         var res = await _client.ExecuteStatementAsync(stmt);
         if (!res.IsSuccess)
-            return null;
+            throw new System.InvalidOperationException($"Dictionary lookup failed for '{key}': {res.Message}");
+        var values = new System.Collections.Generic.List<string?>();
         try
         {
             using var doc = JsonDocument.Parse(res.Message);
@@ -29,21 +30,28 @@ internal class DictionaryKvClient : IDictionaryKvClient
                 if (el.TryGetProperty("row", out var row))
                 {
                     var cols = row.GetProperty("columns");
-                    return cols[0].GetString();
+                    values.Add(cols[0].GetString());
                 }
             }
         }
         catch { }
-        return null;
+        if (values.Count == 0)
+            return null;
+        if (values.Count > 1)
+            throw new System.InvalidOperationException($"Dictionary contains duplicate entries for '{key}'.");
+        var value = values[0];
+        if (string.IsNullOrWhiteSpace(value))
+            throw new System.InvalidOperationException($"Dictionary entry for '{key}' is empty.");
+        return value;
     }
 
     public async Task<Dictionary<string, string>> GetByPrefixAsync(string prefix)
     {
         var stmt = $"SELECT k, v FROM {_table} WHERE k LIKE '{prefix}%';";
         var res = await _client.ExecuteStatementAsync(stmt);
-        var dict = new Dictionary<string, string>();
         if (!res.IsSuccess)
-            return dict;
+            throw new System.InvalidOperationException($"Dictionary prefix lookup failed for '{prefix}': {res.Message}");
+        var dict = new Dictionary<string, string>();
         try
         {
             using var doc = JsonDocument.Parse(res.Message);

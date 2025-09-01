@@ -1,6 +1,7 @@
 using Kafka.Ksql.Linq.Query.Dsl;
 using Kafka.Ksql.Linq.Query.Builders;
 using System;
+using System.Linq;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query.Dsl;
@@ -59,5 +60,40 @@ public class KsqlCreateStatementBuilderDslTests
         Assert.DoesNotContain("KEY_SCHEMA_ID", sql);
         Assert.Contains("VALUE_SCHEMA_ID=2", sql);
         Assert.DoesNotContain("PARTITION BY", sql);
+    }
+
+    private static KsqlQueryModel BuildAggregateModel()
+    {
+        return new KsqlQueryRoot()
+            .From<Order>()
+            .Select(o => new { Count = new int[] { o.Id }.Count() })
+            .Build();
+    }
+
+    [Fact]
+    public void Build_TablePublic_IncludesKeyAndPartition()
+    {
+        var model = BuildAggregateModel();
+        var sql = KsqlCreateStatementBuilder.Build("agg_pub", model, 1, 2, includeKey: true, partitionBy: "Id");
+        Assert.Contains("CREATE TABLE agg_pub", sql);
+        Assert.Contains("KEY_FORMAT='AVRO'", sql);
+        Assert.Contains("PARTITION BY Id", sql);
+    }
+
+    [Fact]
+    public void Build_TableInternal_OmitsKey()
+    {
+        var model = BuildAggregateModel();
+        var sql = KsqlCreateStatementBuilder.Build("agg_int", model, 1, 2);
+        Assert.Contains("CREATE TABLE agg_int", sql);
+        Assert.DoesNotContain("KEY_FORMAT", sql);
+        Assert.DoesNotContain("PARTITION BY", sql);
+    }
+
+    [Fact]
+    public void Build_PublicWithoutPartition_Throws()
+    {
+        var model = new KsqlQueryRoot().From<Order>().Select(o => new { o.Id }).Build();
+        Assert.Throws<InvalidOperationException>(() => KsqlCreateStatementBuilder.Build("orders_pub", model, 1, 2, includeKey: true));
     }
 }

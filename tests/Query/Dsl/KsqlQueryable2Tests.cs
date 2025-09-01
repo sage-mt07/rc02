@@ -61,7 +61,8 @@ public class KsqlQueryable2Tests
             .Join<Payment>((o, p) => o.Id == p.OrderId)
             .Select((o, p) => new { o.Id, p.Paid });
         var model = queryable.Build();
-        Assert.Throws<InvalidOperationException>(() => KsqlCreateStatementBuilder.Build("JoinTest", model));
+        var ex = Assert.Throws<InvalidOperationException>(() => KsqlCreateStatementBuilder.Build("JoinTest", model));
+        Assert.Contains("Within(60)", ex.Message);
     }
 
     [Fact]

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Kafka.Ksql.Linq.Core.Abstractions;
@@ -11,12 +12,8 @@ namespace Kafka.Ksql.Linq.Tests.Query.Adapters
     {
         private class StubDict : IDictionaryKvClient
         {
-            public Task<string?> GetAsync(string key)
-            {
-                if (key == "topic/sc.kksl.orders/order_customer_join_v2/pub/kafka_topic")
-                    return Task.FromResult<string?>("sc.kksl.orders.order_customer_join_v2.pub");
-                return Task.FromResult<string?>(null);
-            }
+            public Func<string, Task<string?>> Handler { get; set; } = _ => Task.FromResult<string?>(null);
+            public Task<string?> GetAsync(string key) => Handler(key);
             public Task<Dictionary<string, string>> GetByPrefixAsync(string prefix) => Task.FromResult(new Dictionary<string, string>());
             public Task UpsertAsync(string key, string value) => Task.CompletedTask;
         }
@@ -24,17 +21,33 @@ namespace Kafka.Ksql.Linq.Tests.Query.Adapters
         [Fact]
         public async Task UsesDictionaryValue()
         {
+            var dict = new StubDict { Handler = key => Task.FromResult<string?>("sc.kksl.orders.order_customer_join_v2.pub") };
             var model = new EntityModel { EntityType = typeof(Sc.Kksl.Orders.OrderCustomerJoinV2) };
-            var name = await TopicNameResolver.ResolvePhysicalAsync(model, "pub", new StubDict());
+            var name = await TopicNameResolver.ResolvePhysicalAsync(model, "pub", dict);
             Assert.Equal("sc.kksl.orders.order_customer_join_v2.pub", name);
         }
 
         [Fact]
-        public async Task DefaultsWhenMissing()
+        public async Task ThrowsWhenMissing()
         {
             var model = new EntityModel { EntityType = typeof(Sc.Kksl.Orders.OrderCustomerJoinV2) };
-            var name = await TopicNameResolver.ResolvePhysicalAsync(model, "int", new StubDict());
-            Assert.Equal("sc.kksl.orders.order_customer_join_v2.int", name);
+            await Assert.ThrowsAsync<InvalidOperationException>(() => TopicNameResolver.ResolvePhysicalAsync(model, "int", new StubDict()));
+        }
+
+        [Fact]
+        public async Task ThrowsWhenEmpty()
+        {
+            var dict = new StubDict { Handler = _ => Task.FromResult<string?>("") };
+            var model = new EntityModel { EntityType = typeof(Sc.Kksl.Orders.OrderCustomerJoinV2) };
+            await Assert.ThrowsAsync<InvalidOperationException>(() => TopicNameResolver.ResolvePhysicalAsync(model, "int", dict));
+        }
+
+        [Fact]
+        public async Task PropagatesDictionaryError()
+        {
+            var dict = new StubDict { Handler = _ => Task.FromException<string?>(new InvalidOperationException("boom")) };
+            var model = new EntityModel { EntityType = typeof(Sc.Kksl.Orders.OrderCustomerJoinV2) };
+            await Assert.ThrowsAsync<InvalidOperationException>(() => TopicNameResolver.ResolvePhysicalAsync(model, "int", dict));
         }
     }
 }
