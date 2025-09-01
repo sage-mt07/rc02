@@ -9,15 +9,15 @@ namespace Kafka.Ksql.Linq.Query.Builders;
 
 public static class KsqlCreateStatementBuilder
 {
-    public static string Build(string streamName, KsqlQueryModel model, string? keySchemaFullName = null, string? valueSchemaFullName = null, bool includeKey = false, string? partitionBy = null)
+    public static string Build(string streamName, KsqlQueryModel model, string? keySchemaFullName = null, string? valueSchemaFullName = null, string? partitionBy = null)
     {
-        return Build(streamName, model, keySchemaFullName, valueSchemaFullName, ResolveSourceName, includeKey, partitionBy);
+        return Build(streamName, model, keySchemaFullName, valueSchemaFullName, ResolveSourceName, partitionBy);
     }
 
     /// <summary>
     /// Build a CREATE statement with an optional source name resolver for FROM/JOIN tables.
     /// </summary>
-    public static string Build(string streamName, KsqlQueryModel model, string? keySchemaFullName, string? valueSchemaFullName, Func<Type, string> sourceNameResolver, bool includeKey = false, string? partitionBy = null)
+    public static string Build(string streamName, KsqlQueryModel model, string? keySchemaFullName, string? valueSchemaFullName, Func<Type, string> sourceNameResolver, string? partitionBy = null)
     {
         if (string.IsNullOrWhiteSpace(streamName))
             throw new ArgumentException("Stream name is required", nameof(streamName));
@@ -53,10 +53,10 @@ public static class KsqlCreateStatementBuilder
 
         var sb = new StringBuilder();
         sb.Append($"{createType} {streamName}");
-        if (includeKey || !string.IsNullOrWhiteSpace(keySchemaFullName) || !string.IsNullOrWhiteSpace(valueSchemaFullName))
+        if (!string.IsNullOrWhiteSpace(keySchemaFullName) || !string.IsNullOrWhiteSpace(valueSchemaFullName))
         {
             var withParts = new List<string> { $"KAFKA_TOPIC='{streamName}'" };
-            if (includeKey && !string.IsNullOrWhiteSpace(keySchemaFullName))
+            if (!string.IsNullOrWhiteSpace(keySchemaFullName))
             {
                 withParts.Add("KEY_FORMAT='AVRO'");
                 withParts.Add($"KEY_AVRO_SCHEMA_FULL_NAME='{keySchemaFullName}'");

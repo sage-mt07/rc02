@@ -22,7 +22,7 @@ public class KsqlCreateStatementBuilderDslTests
             .Select((o, c) => new { o.Id, c.Name })
             .Build();
 
-        var sql = KsqlCreateStatementBuilder.Build("JoinView", model, "com.acme.Key", "com.acme.Value", includeKey: true);
+        var sql = KsqlCreateStatementBuilder.Build("JoinView", model, "com.acme.Key", "com.acme.Value");
         Assert.Contains("JOIN Customer", sql);
         Assert.Contains("WHERE", sql);
         Assert.Contains("SELECT", sql);

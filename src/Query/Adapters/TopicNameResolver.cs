@@ -24,11 +24,11 @@ internal static class TopicNameResolver
         return Sanitize(name);
     }
 
-    public static async System.Threading.Tasks.Task<string> ResolvePhysicalAsync(EntityModel model, string kind, Kafka.Ksql.Linq.Infrastructure.KsqlDb.IDictionaryKvClient client)
+    public static async System.Threading.Tasks.Task<string> ResolvePhysicalAsync(EntityModel model, Kafka.Ksql.Linq.Infrastructure.KsqlDb.IDictionaryKvClient client)
     {
         var ns = (model.EntityType.Namespace ?? string.Empty).ToLowerInvariant();
         var entity = Kafka.Ksql.Linq.Infrastructure.Naming.SnakeCaseConverter.ToSnakeCase(model.EntityType.Name);
-        var key = $"topic/{ns}/{entity}/{kind}/kafka_topic";
+        var key = $"topic/{ns}/{entity}/kafka_topic";
         var physical = await client.GetAsync(key);
         if (string.IsNullOrWhiteSpace(physical))
             throw new InvalidOperationException($"Physical topic name not found for '{key}'. Ensure the dictionary contains this entry.");

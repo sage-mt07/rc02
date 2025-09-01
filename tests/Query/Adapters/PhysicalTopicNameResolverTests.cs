@@ -21,17 +21,17 @@ namespace Kafka.Ksql.Linq.Tests.Query.Adapters
         [Fact]
         public async Task UsesDictionaryValue()
         {
-            var dict = new StubDict { Handler = key => Task.FromResult<string?>("sc.kksl.orders.order_customer_join_v2.pub") };
+            var dict = new StubDict { Handler = key => Task.FromResult<string?>("sc.kksl.orders.order_customer_join_v2") };
             var model = new EntityModel { EntityType = typeof(Sc.Kksl.Orders.OrderCustomerJoinV2) };
-            var name = await TopicNameResolver.ResolvePhysicalAsync(model, "pub", dict);
-            Assert.Equal("sc.kksl.orders.order_customer_join_v2.pub", name);
+            var name = await TopicNameResolver.ResolvePhysicalAsync(model, dict);
+            Assert.Equal("sc.kksl.orders.order_customer_join_v2", name);
         }
 
         [Fact]
         public async Task ThrowsWhenMissing()
         {
             var model = new EntityModel { EntityType = typeof(Sc.Kksl.Orders.OrderCustomerJoinV2) };
-            await Assert.ThrowsAsync<InvalidOperationException>(() => TopicNameResolver.ResolvePhysicalAsync(model, "int", new StubDict()));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => TopicNameResolver.ResolvePhysicalAsync(model, new StubDict()));
         }
 
         [Fact]
@@ -39,7 +39,7 @@ namespace Kafka.Ksql.Linq.Tests.Query.Adapters
         {
             var dict = new StubDict { Handler = _ => Task.FromResult<string?>("") };
             var model = new EntityModel { EntityType = typeof(Sc.Kksl.Orders.OrderCustomerJoinV2) };
-            await Assert.ThrowsAsync<InvalidOperationException>(() => TopicNameResolver.ResolvePhysicalAsync(model, "int", dict));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => TopicNameResolver.ResolvePhysicalAsync(model, dict));
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace Kafka.Ksql.Linq.Tests.Query.Adapters
         {
             var dict = new StubDict { Handler = _ => Task.FromException<string?>(new InvalidOperationException("boom")) };
             var model = new EntityModel { EntityType = typeof(Sc.Kksl.Orders.OrderCustomerJoinV2) };
-            await Assert.ThrowsAsync<InvalidOperationException>(() => TopicNameResolver.ResolvePhysicalAsync(model, "int", dict));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => TopicNameResolver.ResolvePhysicalAsync(model, dict));
         }
     }
 }

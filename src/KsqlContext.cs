@@ -789,22 +789,13 @@ public abstract class KsqlContext : IKsqlContext
                 }
                 return key;
             };
-            var isPublic = model.GetTopicName().EndsWith(".pub", StringComparison.OrdinalIgnoreCase);
-            var kind = isPublic ? "pub" : "int";
-            var topicName = await TopicNameResolver.ResolvePhysicalAsync(model, kind, _dictionaryClient);
-            string? partitionKey = null;
-            if (isPublic)
-            {
-                partitionKey = model.GetOrderedKeyProperties().FirstOrDefault()?.Name;
-            }
+            var topicName = await TopicNameResolver.ResolvePhysicalAsync(model, _dictionaryClient);
             var sql = Query.Builders.KsqlCreateStatementBuilder.Build(
                     topicName,
                     model.QueryModel,
                     model.KeySchemaFullName,
                     model.ValueSchemaFullName,
-                    resolver,
-                    includeKey: isPublic,
-                    partitionBy: partitionKey);
+                    resolver);
             Logger.LogInformation("KSQL DDL (query {Entity}): {Sql}", type.Name, sql);
             var attempts = 0;
             var maxAttempts = Math.Max(0, _dslOptions.KsqlDdlRetryCount) + 1;
