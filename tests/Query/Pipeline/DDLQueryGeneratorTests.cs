@@ -43,6 +43,8 @@ public class DDLQueryGeneratorTests
         Assert.Contains("KAFKA_TOPIC='topic'", query);
         Assert.Contains("KEY_AVRO_SCHEMA_FULL_NAME='com.acme.Key'", query);
         Assert.Contains("VALUE_AVRO_SCHEMA_FULL_NAME='com.acme.Value'", query);
+        Assert.Contains("PARTITIONS=1", query);
+        Assert.Contains("REPLICAS=1", query);
         File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
     }
 
@@ -79,6 +81,8 @@ public class DDLQueryGeneratorTests
         var query = ExecuteInScope(() => generator.GenerateCreateTable(new EntityModelDdlAdapter(model)));
         Assert.Contains("KEY_FORMAT='AVRO'", query);
         Assert.Contains("KEY_AVRO_SCHEMA_FULL_NAME='com.acme.Key'", query);
+        Assert.Contains("PARTITIONS=1", query);
+        Assert.Contains("REPLICAS=1", query);
     }
 
     [Fact]

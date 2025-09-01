@@ -61,6 +61,8 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
             var streamName = SanitizeName(schema.TopicName);
             var topicName = schema.TopicName;
             var hasKey = schema.Columns.Any(c => c.IsKey);
+            var partitions = schema.Partitions;
+            var replicas = schema.Replicas;
 
             var withParts = new List<string> { $"KAFKA_TOPIC='{topicName}'" };
             if (hasKey && !string.IsNullOrWhiteSpace(schema.KeySchemaFullName))
@@ -71,6 +73,8 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
             withParts.Add("VALUE_FORMAT='AVRO'");
             if (!string.IsNullOrWhiteSpace(schema.ValueSchemaFullName))
                 withParts.Add($"VALUE_AVRO_SCHEMA_FULL_NAME='{schema.ValueSchemaFullName}'");
+            withParts.Add($"PARTITIONS={partitions}");
+            withParts.Add($"REPLICAS={replicas}");
             var withClause = string.Join(", ", withParts);
 
             var query = $"CREATE STREAM IF NOT EXISTS {streamName} ({columns}) WITH ({withClause});";
@@ -97,6 +101,8 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
             var tableName = SanitizeName(schema.TopicName);
             var topicName = schema.TopicName;
             var hasKey = schema.Columns.Any(c => c.IsKey);
+            var partitions = schema.Partitions;
+            var replicas = schema.Replicas;
 
             var withParts = new List<string> { $"KAFKA_TOPIC='{topicName}'" };
             if (hasKey && !string.IsNullOrWhiteSpace(schema.KeySchemaFullName))
@@ -107,6 +113,8 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
             withParts.Add("VALUE_FORMAT='AVRO'");
             if (!string.IsNullOrWhiteSpace(schema.ValueSchemaFullName))
                 withParts.Add($"VALUE_AVRO_SCHEMA_FULL_NAME='{schema.ValueSchemaFullName}'");
+            withParts.Add($"PARTITIONS={partitions}");
+            withParts.Add($"REPLICAS={replicas}");
             var withClause = string.Join(", ", withParts);
 
             var query = $"CREATE TABLE IF NOT EXISTS {tableName} ({columns}) WITH ({withClause});";
