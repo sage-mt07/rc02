@@ -9,22 +9,20 @@ namespace Kafka.Ksql.Linq.Query.Builders;
 
 public static class KsqlCreateStatementBuilder
 {
-    public static string Build(string streamName, KsqlQueryModel model, int? keySchemaId = null, int? valueSchemaId = null, bool includeKey = false, string? partitionBy = null)
+    public static string Build(string streamName, KsqlQueryModel model, string? keySchemaFullName = null, string? valueSchemaFullName = null, bool includeKey = false, string? partitionBy = null)
     {
-        return Build(streamName, model, keySchemaId, valueSchemaId, ResolveSourceName, includeKey, partitionBy);
+        return Build(streamName, model, keySchemaFullName, valueSchemaFullName, ResolveSourceName, includeKey, partitionBy);
     }
 
     /// <summary>
     /// Build a CREATE statement with an optional source name resolver for FROM/JOIN tables.
     /// </summary>
-    public static string Build(string streamName, KsqlQueryModel model, int? keySchemaId, int? valueSchemaId, Func<Type, string> sourceNameResolver, bool includeKey = false, string? partitionBy = null)
+    public static string Build(string streamName, KsqlQueryModel model, string? keySchemaFullName, string? valueSchemaFullName, Func<Type, string> sourceNameResolver, bool includeKey = false, string? partitionBy = null)
     {
         if (string.IsNullOrWhiteSpace(streamName))
             throw new ArgumentException("Stream name is required", nameof(streamName));
         if (model == null)
             throw new ArgumentNullException(nameof(model));
-        if (includeKey && string.IsNullOrWhiteSpace(partitionBy))
-            throw new InvalidOperationException("Public topics require PARTITION BY for key emission.");
 
         string selectClause;
         if (model.SelectProjection == null)
@@ -55,18 +53,17 @@ public static class KsqlCreateStatementBuilder
 
         var sb = new StringBuilder();
         sb.Append($"{createType} {streamName}");
-        if (includeKey || keySchemaId.HasValue || valueSchemaId.HasValue)
+        if (includeKey || !string.IsNullOrWhiteSpace(keySchemaFullName) || !string.IsNullOrWhiteSpace(valueSchemaFullName))
         {
             var withParts = new List<string> { $"KAFKA_TOPIC='{streamName}'" };
-            if (includeKey)
+            if (includeKey && !string.IsNullOrWhiteSpace(keySchemaFullName))
             {
                 withParts.Add("KEY_FORMAT='AVRO'");
-                if (keySchemaId.HasValue)
-                    withParts.Add($"KEY_SCHEMA_ID={keySchemaId.Value}");
+                withParts.Add($"KEY_AVRO_SCHEMA_FULL_NAME='{keySchemaFullName}'");
             }
             withParts.Add("VALUE_FORMAT='AVRO'");
-            if (valueSchemaId.HasValue)
-                withParts.Add($"VALUE_SCHEMA_ID={valueSchemaId.Value}");
+            if (!string.IsNullOrWhiteSpace(valueSchemaFullName))
+                withParts.Add($"VALUE_AVRO_SCHEMA_FULL_NAME='{valueSchemaFullName}'");
             sb.Append(" WITH (" + string.Join(", ", withParts) + ")");
         }
         sb.AppendLine(" AS");

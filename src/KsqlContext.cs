@@ -28,6 +28,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ConfluentSchemaRegistry = Confluent.SchemaRegistry;
+using Avro;
 
 namespace Kafka.Ksql.Linq;
 /// <summary>
@@ -572,13 +573,15 @@ public abstract class KsqlContext : IKsqlContext
                 if (model.HasKeys() && mapping.AvroKeySchema != null)
                 {
                     var keySubject = $"{model.GetTopicName()}-key";
-                    var keyResult = await client.RegisterSchemaIfNewAsync(keySubject, mapping.AvroKeySchema);
-                    model.KeySchemaId = keyResult.SchemaId;
+                    await client.RegisterSchemaIfNewAsync(keySubject, mapping.AvroKeySchema);
+                    var keySchema = Avro.Schema.Parse(mapping.AvroKeySchema);
+                    model.KeySchemaFullName = keySchema.Fullname;
                 }
 
                 var valueSubject = $"{model.GetTopicName()}-value";
                 var valueResult = await client.RegisterSchemaIfNewAsync(valueSubject, mapping.AvroValueSchema!);
-                model.ValueSchemaId = valueResult.SchemaId;
+                var valueSchema = Avro.Schema.Parse(mapping.AvroValueSchema!);
+                model.ValueSchemaFullName = valueSchema.Fullname;
                 schemaResults[type] = valueResult;
                 DecimalSchemaValidator.Validate(model, client, _dslOptions.ValidationMode, Logger);
             }
@@ -797,8 +800,8 @@ public abstract class KsqlContext : IKsqlContext
             var sql = Query.Builders.KsqlCreateStatementBuilder.Build(
                     topicName,
                     model.QueryModel,
-                    model.KeySchemaId,
-                    model.ValueSchemaId,
+                    model.KeySchemaFullName,
+                    model.ValueSchemaFullName,
                     resolver,
                     includeKey: isPublic,
                     partitionBy: partitionKey);

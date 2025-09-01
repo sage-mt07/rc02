@@ -22,14 +22,13 @@ public class KsqlCreateStatementBuilderDslTests
             .Select((o, c) => new { o.Id, c.Name })
             .Build();
 
-        var sql = KsqlCreateStatementBuilder.Build("JoinView", model, 1, 2, includeKey: true, partitionBy: "Id");
+        var sql = KsqlCreateStatementBuilder.Build("JoinView", model, "com.acme.Key", "com.acme.Value", includeKey: true);
         Assert.Contains("JOIN Customer", sql);
         Assert.Contains("WHERE", sql);
         Assert.Contains("SELECT", sql);
         Assert.Contains("KEY_FORMAT='AVRO'", sql);
-        Assert.Contains("KEY_SCHEMA_ID=1", sql);
-        Assert.Contains("VALUE_SCHEMA_ID=2", sql);
-        Assert.Contains("PARTITION BY Id", sql);
+        Assert.Contains("KEY_AVRO_SCHEMA_FULL_NAME='com.acme.Key'", sql);
+        Assert.Contains("VALUE_AVRO_SCHEMA_FULL_NAME='com.acme.Value'", sql);
     }
 
     [Fact]
@@ -55,10 +54,10 @@ public class KsqlCreateStatementBuilderDslTests
             .Select(o => new { o.Id })
             .Build();
 
-        var sql = KsqlCreateStatementBuilder.Build("orders_int", model, 1, 2);
+        var sql = KsqlCreateStatementBuilder.Build("orders", model, null, "com.acme.Value");
         Assert.DoesNotContain("KEY_FORMAT", sql);
-        Assert.DoesNotContain("KEY_SCHEMA_ID", sql);
-        Assert.Contains("VALUE_SCHEMA_ID=2", sql);
+        Assert.DoesNotContain("KEY_AVRO_SCHEMA_FULL_NAME", sql);
+        Assert.Contains("VALUE_AVRO_SCHEMA_FULL_NAME='com.acme.Value'", sql);
         Assert.DoesNotContain("PARTITION BY", sql);
     }
 
@@ -68,32 +67,5 @@ public class KsqlCreateStatementBuilderDslTests
             .From<Order>()
             .Select(o => new { Count = new int[] { o.Id }.Count() })
             .Build();
-    }
-
-    [Fact]
-    public void Build_TablePublic_IncludesKeyAndPartition()
-    {
-        var model = BuildAggregateModel();
-        var sql = KsqlCreateStatementBuilder.Build("agg_pub", model, 1, 2, includeKey: true, partitionBy: "Id");
-        Assert.Contains("CREATE TABLE agg_pub", sql);
-        Assert.Contains("KEY_FORMAT='AVRO'", sql);
-        Assert.Contains("PARTITION BY Id", sql);
-    }
-
-    [Fact]
-    public void Build_TableInternal_OmitsKey()
-    {
-        var model = BuildAggregateModel();
-        var sql = KsqlCreateStatementBuilder.Build("agg_int", model, 1, 2);
-        Assert.Contains("CREATE TABLE agg_int", sql);
-        Assert.DoesNotContain("KEY_FORMAT", sql);
-        Assert.DoesNotContain("PARTITION BY", sql);
-    }
-
-    [Fact]
-    public void Build_PublicWithoutPartition_Throws()
-    {
-        var model = new KsqlQueryRoot().From<Order>().Select(o => new { o.Id }).Build();
-        Assert.Throws<InvalidOperationException>(() => KsqlCreateStatementBuilder.Build("orders_pub", model, 1, 2, includeKey: true));
     }
 }

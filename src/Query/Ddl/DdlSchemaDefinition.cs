@@ -8,6 +8,6 @@ public record DdlSchemaDefinition(
     DdlObjectType ObjectType,
     int Partitions,
     short Replicas,
-    int? KeySchemaId,
-    int? ValueSchemaId,
+    string? KeySchemaFullName,
+    string? ValueSchemaFullName,
     IReadOnlyList<ColumnDefinition> Columns);

@@ -58,44 +58,22 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
         {
             schema = provider.GetSchema();
             var columns = GenerateColumnDefinitions(schema);
-            var partitions = schema.Partitions;
-            var replicas = schema.Replicas;
             var streamName = SanitizeName(schema.TopicName);
             var topicName = schema.TopicName;
             var hasKey = schema.Columns.Any(c => c.IsKey);
 
             var withParts = new List<string> { $"KAFKA_TOPIC='{topicName}'" };
-            if (hasKey)
+            if (hasKey && !string.IsNullOrWhiteSpace(schema.KeySchemaFullName))
             {
                 withParts.Add("KEY_FORMAT='AVRO'");
-                if (schema.KeySchemaId.HasValue)
-                    withParts.Add($"KEY_SCHEMA_ID={schema.KeySchemaId.Value}");
+                withParts.Add($"KEY_AVRO_SCHEMA_FULL_NAME='{schema.KeySchemaFullName}'");
             }
             withParts.Add("VALUE_FORMAT='AVRO'");
-            if (schema.ValueSchemaId.HasValue)
-                withParts.Add($"VALUE_SCHEMA_ID={schema.ValueSchemaId.Value}");
-            withParts.Add($"PARTITIONS={partitions}");
-            withParts.Add($"REPLICAS={replicas}");
+            if (!string.IsNullOrWhiteSpace(schema.ValueSchemaFullName))
+                withParts.Add($"VALUE_AVRO_SCHEMA_FULL_NAME='{schema.ValueSchemaFullName}'");
             var withClause = string.Join(", ", withParts);
 
-            // ★ KSQLルール対応：カラム定義とSCHEMA_ID系は排他
-            bool useSchemaId = schema.ValueSchemaId.HasValue || schema.KeySchemaId.HasValue;
-            string query;
-            if (useSchemaId)
-            {
-                // カラム定義部なし
-                query = $"CREATE STREAM IF NOT EXISTS {streamName} WITH ({withClause})";
-            }
-            else
-            {
-                // カラム定義部あり
-                query = $"CREATE STREAM IF NOT EXISTS {streamName} ({columns}) WITH ({withClause})";
-            }
-
-            if (!query.TrimEnd().EndsWith(";"))
-            {
-                query += ";";
-            }
+            var query = $"CREATE STREAM IF NOT EXISTS {streamName} ({columns}) WITH ({withClause});";
 
             return query;
         }
@@ -116,40 +94,22 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
         {
             schema = provider.GetSchema();
             var columns = GenerateColumnDefinitions(schema);
-            var partitions = schema.Partitions;
-            var replicas = schema.Replicas;
             var tableName = SanitizeName(schema.TopicName);
             var topicName = schema.TopicName;
             var hasKey = schema.Columns.Any(c => c.IsKey);
 
             var withParts = new List<string> { $"KAFKA_TOPIC='{topicName}'" };
-            // For TABLE with explicit columns, avoid SCHEMA_ID and KEY_FORMAT to let ksql infer key from PRIMARY KEY
-            // Only include SCHEMA_ID/KEY_FORMAT when using schema IDs path
-            withParts.Add($"PARTITIONS={partitions}");
-            withParts.Add($"REPLICAS={replicas}");
+            if (hasKey && !string.IsNullOrWhiteSpace(schema.KeySchemaFullName))
+            {
+                withParts.Add("KEY_FORMAT='AVRO'");
+                withParts.Add($"KEY_AVRO_SCHEMA_FULL_NAME='{schema.KeySchemaFullName}'");
+            }
+            withParts.Add("VALUE_FORMAT='AVRO'");
+            if (!string.IsNullOrWhiteSpace(schema.ValueSchemaFullName))
+                withParts.Add($"VALUE_AVRO_SCHEMA_FULL_NAME='{schema.ValueSchemaFullName}'");
             var withClause = string.Join(", ", withParts);
 
-            // --- KSQLルール対応（カラム定義 vs スキーマID系は排他） ---
-            bool useSchemaId = false; // prefer explicit columns for TABLE so PRIMARY KEY is declared
-            string query;
-            if (useSchemaId)
-            {
-                // カラム定義部なし
-                query = $"CREATE TABLE IF NOT EXISTS {tableName} WITH ({withClause})";
-            }
-            else
-            {
-                // カラム定義部あり
-                // Rebuild WITH clause for explicit columns: include VALUE_FORMAT only
-                var withPartsCols = new List<string> { $"KAFKA_TOPIC='{topicName}'", "VALUE_FORMAT='AVRO'", $"PARTITIONS={partitions}", $"REPLICAS={replicas}" };
-                var withCols = string.Join(", ", withPartsCols);
-                query = $"CREATE TABLE IF NOT EXISTS {tableName} ({columns}) WITH ({withCols})";
-            }
-
-            if (!query.TrimEnd().EndsWith(";"))
-            {
-                query += ";";
-            }
+            var query = $"CREATE TABLE IF NOT EXISTS {tableName} ({columns}) WITH ({withClause});";
 
             return query;
         }
