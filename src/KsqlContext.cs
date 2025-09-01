@@ -47,7 +47,6 @@ public abstract class KsqlContext : IKsqlContext
     private ICommitManager _commitManager = null!;
     private Lazy<ConfluentSchemaRegistry.ISchemaRegistryClient> _schemaRegistryClient = null!;
     private IKsqlDbClient _ksqlDbClient = null!;
-    private IDictionaryKvClient _dictionaryClient = null!;
     private Core.Dlq.IDlqClient _dlqClient = null!;
     private IRateLimiter _dlqLimiter = null!;
     private ILeadershipFlag _leaderFlag = null!;
@@ -103,7 +102,6 @@ public abstract class KsqlContext : IKsqlContext
 
         _schemaRegistryClient = new Lazy<ConfluentSchemaRegistry.ISchemaRegistryClient>(CreateSchemaRegistryClient);
         _ksqlDbClient = new KsqlDbClient(GetDefaultKsqlDbUrl());
-        _dictionaryClient = new DictionaryKvClient(_ksqlDbClient, _dslOptions.DictionaryTableName);
 
         _loggerFactory = loggerFactory;
         _logger = _loggerFactory.CreateLoggerOrNull<KsqlContext>();
@@ -130,16 +128,6 @@ public abstract class KsqlContext : IKsqlContext
 
             if (!SkipSchemaRegistration)
             {
-                // Warm-up via dictionary table creation + seed insert. Fail fast if not possible.
-                try
-                {
-                    WarmupDictionaryOrFailAsync().GetAwaiter().GetResult();
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "ksqlDB dictionary warm-up failed: {Message}", ex.Message);
-                    throw;
-                }
                 InitializeWithSchemaRegistration();
             }
             this.UseTableCache(_dslOptions, _loggerFactory);
@@ -789,7 +777,7 @@ public abstract class KsqlContext : IKsqlContext
                 }
                 return key;
             };
-            var topicName = await TopicNameResolver.ResolvePhysicalAsync(model, _dictionaryClient);
+            var topicName = model.GetTopicName();
             var sql = Query.Builders.KsqlCreateStatementBuilder.Build(
                     topicName,
                     model.QueryModel,
@@ -1042,63 +1030,6 @@ public abstract class KsqlContext : IKsqlContext
         throw new TimeoutException($"Entity {typeof(T).Name} not ready after {timeout}.");
     }
 
-    /// <summary>
-    /// Create a small dictionary table and insert one row to force command-topic consumption.
-    /// Throws if it cannot complete within configured retry policy.
-    /// </summary>
-    private async Task WarmupDictionaryOrFailAsync()
-    {
-        var topic = (_dslOptions.DictionaryTableName ?? "oss_dictionary").Trim();
-        if (string.IsNullOrWhiteSpace(topic)) topic = "oss_dictionary";
-        var ident = topic.ToUpperInvariant();
-
-        // Use JSON formats to avoid Schema Registry conflicts during warmup
-        var createStmt = $"CREATE TABLE IF NOT EXISTS {ident} (NS STRING PRIMARY KEY, KEY STRING, VER INT, VALUE STRING, STAMP BIGINT, NOTE STRING) WITH (KAFKA_TOPIC='{topic}', VALUE_FORMAT='JSON', KEY_FORMAT='KAFKA', PARTITIONS=1);";
-        var insertStmt = $"INSERT INTO {ident} (NS, KEY, VER, VALUE, STAMP, NOTE) VALUES ('global','created_at',1, '1970-01-01 00:00:00.000', 0, 'initial seed');";
-
-        var maxAttempts = Math.Max(0, _dslOptions.KsqlDdlRetryCount) + 1;
-        var delayMs = Math.Max(0, _dslOptions.KsqlDdlRetryInitialDelayMs);
-        Exception? last = null;
-        for (int i = 0; i < maxAttempts; i++)
-        {
-            try
-            {
-                var c = await ExecuteStatementAsync(createStmt);
-                if (!c.IsSuccess)
-                {
-                    if (!IsRetryableKsqlError(c.Message) || i == maxAttempts - 1)
-                        throw new InvalidOperationException(c.Message);
-                    await _delay(TimeSpan.FromMilliseconds(delayMs), default);
-                    delayMs = Math.Min(delayMs * 2, 8000);
-                    continue;
-                }
-
-                // INSERT best-effort with the same retry policy
-                var dly = Math.Max(0, _dslOptions.KsqlDdlRetryInitialDelayMs);
-                for (int j = 0; j < maxAttempts; j++)
-                {
-                    var ins = await ExecuteStatementAsync(insertStmt);
-                    if (ins.IsSuccess) return;
-                    if (!IsRetryableKsqlError(ins.Message) || j == maxAttempts - 1)
-                        throw new InvalidOperationException(ins.Message);
-                    await _delay(TimeSpan.FromMilliseconds(dly), default);
-                    dly = Math.Min(dly * 2, 8000);
-                }
-            }
-            catch (Exception ex)
-            {
-                last = ex;
-                if (i == maxAttempts - 1)
-                {
-                    Logger.LogError(ex, "Dictionary warmup failed: {Message}", ex.Message);
-                    throw;
-                }
-                await _delay(TimeSpan.FromMilliseconds(delayMs), default);
-                delayMs = Math.Min(delayMs * 2, 8000);
-            }
-        }
-        if (last != null) throw last;
-    }
 
 
 

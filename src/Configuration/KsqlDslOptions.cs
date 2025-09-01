@@ -119,11 +119,4 @@ public class KsqlDslOptions
     /// </summary>
     [DefaultValue(1000)]
     public int KsqlDdlRetryInitialDelayMs { get; init; } = 1000;
-
-    /// <summary>
-    /// Dictionary table name used to warm up ksqlDB command topic via REST.
-    /// Default: oss_dictionary
-    /// </summary>
-    [DefaultValue("oss_dictionary")]
-    public string DictionaryTableName { get; init; } = "oss_dictionary";
 }
