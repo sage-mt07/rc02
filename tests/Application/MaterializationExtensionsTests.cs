@@ -61,11 +61,9 @@ public class MaterializationExtensionsTests
         var client = new FakeSchemaRegistryClient();
         await using var ctx = new TestContext(client);
         await ctx.EnsureMaterializedIfSchemaIsNewAsync<Order>();
-        Assert.NotNull(ctx.StubSet);
-        Assert.Single(ctx.StubSet!.Added);
-        Assert.Equal("true", ctx.StubSet!.Added[0].Headers?["is_dummy"]);
+        Assert.Null(ctx.StubSet);
 
         await ctx.EnsureMaterializedIfSchemaIsNewAsync<Order>();
-        Assert.Single(ctx.StubSet!.Added);
+        Assert.Null(ctx.StubSet);
     }
 }

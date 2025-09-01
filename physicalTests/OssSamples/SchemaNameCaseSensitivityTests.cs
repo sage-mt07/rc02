@@ -74,7 +74,6 @@ public class SchemaNameCaseSensitivityTests
             await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "orders_casename", 1, 1, TimeSpan.FromSeconds(10));
         }
 
-        var headers = new Dictionary<string, string> { ["is_dummy"] = "true" };
         await ctx.OrderCorrectCases.AddAsync(new OrderCorrectCase
         {
             CustomerId = 1,
@@ -83,7 +82,7 @@ public class SchemaNameCaseSensitivityTests
             Amount = 10d,
             IsHighPriority = false,
             Count = 1
-        }, headers);
+        });
 
 
         var timeout = TimeSpan.FromSeconds(5);

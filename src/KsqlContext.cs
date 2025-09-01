@@ -592,25 +592,6 @@ public abstract class KsqlContext : IKsqlContext
             await EnsureQueryEntityDdlAsync(type, model);
         }
 
-        // Pass 4: Materialize newly created schemas with dummy record
-        foreach (var (type, model) in entities)
-        {
-            if (schemaResults.TryGetValue(type, out var valueResult) && valueResult.WasCreated)
-            {
-                try
-                {
-                    var dummy = CreateDummyInstance(type);
-                    var headers = new Dictionary<string, string> { ["is_dummy"] = "true" };
-                    dynamic set = GetEventSet(type);
-                    await set.AddAsync((dynamic)dummy, headers);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Materialization failed for {Entity}", type.Name);
-                    throw;
-                }
-            }
-        }
     }
 
     /// <summary>

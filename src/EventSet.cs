@@ -203,8 +203,6 @@ public abstract class EventSet<T> : IEntitySet<T> where T : class
         if (action == null)
             throw new ArgumentNullException(nameof(action));
 
-        // Keep existing behavior for the common overload:
-        // Skip dummy records (is_dummy=true) and ignore headers/meta.
         var context = GetContext() as KsqlContext
             ?? throw new InvalidOperationException("KsqlContext is required");
 
@@ -217,12 +215,6 @@ public abstract class EventSet<T> : IEntitySet<T> where T : class
 
         await foreach (var (entity, headers, meta) in ConsumeAsync(context, autoCommit, linkedCts.Token))
         {
-            // Maintain current behavior: skip dummy messages on the common overload
-            if (headers.TryGetValue("is_dummy", out var dummyHeader) && bool.TryParse(dummyHeader, out var isDummy) && isDummy)
-            {
-                continue;
-            }
-
             var maxAttempts = _errorHandlingContext.ErrorAction == ErrorAction.Retry
                 ? _errorHandlingContext.RetryCount + 1
                 : 1;

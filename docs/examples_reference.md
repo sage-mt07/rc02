@@ -29,9 +29,8 @@
    ```csharp
    await context.Set<OrderMessage>().ForEachAsync((msg, headers, meta) =>
    {
-       if (headers.TryGetValue("is_dummy", out var d) && d == "true")
-           return Task.CompletedTask;
        // ...
+       return Task.CompletedTask;
    });
    ```
 7. **Error handling** — `examples/error-handling`  
