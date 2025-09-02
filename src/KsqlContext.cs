@@ -14,6 +14,7 @@ using Kafka.Ksql.Linq.Messaging;
 using Kafka.Ksql.Linq.Runtime.Heartbeat;
 using Confluent.Kafka;
 using Kafka.Ksql.Linq.Query.Abstractions;
+using Kafka.Ksql.Linq.Query.Adapters;
 using Kafka.Ksql.Linq.SchemaRegistryTools;
 using Kafka.Ksql.Linq.Core.Dlq;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +28,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ConfluentSchemaRegistry = Confluent.SchemaRegistry;
+using Avro;
 
 namespace Kafka.Ksql.Linq;
 /// <summary>
@@ -126,16 +128,6 @@ public abstract class KsqlContext : IKsqlContext
 
             if (!SkipSchemaRegistration)
             {
-                // Warm-up via dictionary table creation + seed insert. Fail fast if not possible.
-                try
-                {
-                    WarmupDictionaryOrFailAsync().GetAwaiter().GetResult();
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "ksqlDB dictionary warm-up failed: {Message}", ex.Message);
-                    throw;
-                }
                 InitializeWithSchemaRegistration();
             }
             this.UseTableCache(_dslOptions, _loggerFactory);
@@ -569,13 +561,15 @@ public abstract class KsqlContext : IKsqlContext
                 if (model.HasKeys() && mapping.AvroKeySchema != null)
                 {
                     var keySubject = $"{model.GetTopicName()}-key";
-                    var keyResult = await client.RegisterSchemaIfNewAsync(keySubject, mapping.AvroKeySchema);
-                    model.KeySchemaId = keyResult.SchemaId;
+                    await client.RegisterSchemaIfNewAsync(keySubject, mapping.AvroKeySchema);
+                    var keySchema = Avro.Schema.Parse(mapping.AvroKeySchema);
+                    model.KeySchemaFullName = keySchema.Fullname;
                 }
 
                 var valueSubject = $"{model.GetTopicName()}-value";
                 var valueResult = await client.RegisterSchemaIfNewAsync(valueSubject, mapping.AvroValueSchema!);
-                model.ValueSchemaId = valueResult.SchemaId;
+                var valueSchema = Avro.Schema.Parse(mapping.AvroValueSchema!);
+                model.ValueSchemaFullName = valueSchema.Fullname;
                 schemaResults[type] = valueResult;
                 DecimalSchemaValidator.Validate(model, client, _dslOptions.ValidationMode, Logger);
             }
@@ -598,25 +592,6 @@ public abstract class KsqlContext : IKsqlContext
             await EnsureQueryEntityDdlAsync(type, model);
         }
 
-        // Pass 4: Materialize newly created schemas with dummy record
-        foreach (var (type, model) in entities)
-        {
-            if (schemaResults.TryGetValue(type, out var valueResult) && valueResult.WasCreated)
-            {
-                try
-                {
-                    var dummy = CreateDummyInstance(type);
-                    var headers = new Dictionary<string, string> { ["is_dummy"] = "true" };
-                    dynamic set = GetEventSet(type);
-                    await set.AddAsync((dynamic)dummy, headers);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Materialization failed for {Entity}", type.Name);
-                    throw;
-                }
-            }
-        }
     }
 
     /// <summary>
@@ -783,11 +758,12 @@ public abstract class KsqlContext : IKsqlContext
                 }
                 return key;
             };
+            var topicName = model.GetTopicName();
             var sql = Query.Builders.KsqlCreateStatementBuilder.Build(
-                    model.GetTopicName(),
+                    topicName,
                     model.QueryModel,
-                    model.KeySchemaId,
-                    model.ValueSchemaId,
+                    model.KeySchemaFullName,
+                    model.ValueSchemaFullName,
                     resolver);
             Logger.LogInformation("KSQL DDL (query {Entity}): {Sql}", type.Name, sql);
             var attempts = 0;
@@ -1035,63 +1011,6 @@ public abstract class KsqlContext : IKsqlContext
         throw new TimeoutException($"Entity {typeof(T).Name} not ready after {timeout}.");
     }
 
-    /// <summary>
-    /// Create a small dictionary table and insert one row to force command-topic consumption.
-    /// Throws if it cannot complete within configured retry policy.
-    /// </summary>
-    private async Task WarmupDictionaryOrFailAsync()
-    {
-        var topic = (_dslOptions.DictionaryTableName ?? "oss_dictionary").Trim();
-        if (string.IsNullOrWhiteSpace(topic)) topic = "oss_dictionary";
-        var ident = topic.ToUpperInvariant();
-
-        // Use JSON formats to avoid Schema Registry conflicts during warmup
-        var createStmt = $"CREATE TABLE IF NOT EXISTS {ident} (NS STRING PRIMARY KEY, KEY STRING, VER INT, VALUE STRING, STAMP BIGINT, NOTE STRING) WITH (KAFKA_TOPIC='{topic}', VALUE_FORMAT='JSON', KEY_FORMAT='KAFKA', PARTITIONS=1);";
-        var insertStmt = $"INSERT INTO {ident} (NS, KEY, VER, VALUE, STAMP, NOTE) VALUES ('global','created_at',1, '1970-01-01 00:00:00.000', 0, 'initial seed');";
-
-        var maxAttempts = Math.Max(0, _dslOptions.KsqlDdlRetryCount) + 1;
-        var delayMs = Math.Max(0, _dslOptions.KsqlDdlRetryInitialDelayMs);
-        Exception? last = null;
-        for (int i = 0; i < maxAttempts; i++)
-        {
-            try
-            {
-                var c = await ExecuteStatementAsync(createStmt);
-                if (!c.IsSuccess)
-                {
-                    if (!IsRetryableKsqlError(c.Message) || i == maxAttempts - 1)
-                        throw new InvalidOperationException(c.Message);
-                    await _delay(TimeSpan.FromMilliseconds(delayMs), default);
-                    delayMs = Math.Min(delayMs * 2, 8000);
-                    continue;
-                }
-
-                // INSERT best-effort with the same retry policy
-                var dly = Math.Max(0, _dslOptions.KsqlDdlRetryInitialDelayMs);
-                for (int j = 0; j < maxAttempts; j++)
-                {
-                    var ins = await ExecuteStatementAsync(insertStmt);
-                    if (ins.IsSuccess) return;
-                    if (!IsRetryableKsqlError(ins.Message) || j == maxAttempts - 1)
-                        throw new InvalidOperationException(ins.Message);
-                    await _delay(TimeSpan.FromMilliseconds(dly), default);
-                    dly = Math.Min(dly * 2, 8000);
-                }
-            }
-            catch (Exception ex)
-            {
-                last = ex;
-                if (i == maxAttempts - 1)
-                {
-                    Logger.LogError(ex, "Dictionary warmup failed: {Message}", ex.Message);
-                    throw;
-                }
-                await _delay(TimeSpan.FromMilliseconds(delayMs), default);
-                delayMs = Math.Min(delayMs * 2, 8000);
-            }
-        }
-        if (last != null) throw last;
-    }
 
 
 

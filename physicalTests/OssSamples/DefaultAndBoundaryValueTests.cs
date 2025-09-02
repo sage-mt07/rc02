@@ -80,7 +80,6 @@ public class DefaultAndBoundaryValueTests
             try { await admin.CreateTopicsAsync(new[] { new Confluent.Kafka.Admin.TopicSpecification { Name = "alltyperecords", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
             await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "alltyperecords", 1, 1, TimeSpan.FromSeconds(10));
         }
-        await ctx.EnsurePrimedAsync<AllTypeRecord>();
 
         var data = new AllTypeRecord { Id = 1 };
         await ctx.Set<AllTypeRecord>().AddAsync(data);
@@ -138,7 +137,6 @@ public class DefaultAndBoundaryValueTests
             try { await admin.CreateTopicsAsync(new[] { new Confluent.Kafka.Admin.TopicSpecification { Name = "alltyperecords", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
             await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "alltyperecords", 1, 1, TimeSpan.FromSeconds(10));
         }
-        await ctx.EnsurePrimedAsync<AllTypeRecord>();
 
         var rows = new[]
         {
@@ -182,7 +180,6 @@ public class DefaultAndBoundaryValueTests
             try { await admin.CreateTopicsAsync(new[] { new Confluent.Kafka.Admin.TopicSpecification { Name = "alltyperecords", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
             await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "alltyperecords", 1, 1, TimeSpan.FromSeconds(10));
         }
-        await ctx.EnsurePrimedAsync<AllTypeRecord>();
 
         var rows = new[]
         {

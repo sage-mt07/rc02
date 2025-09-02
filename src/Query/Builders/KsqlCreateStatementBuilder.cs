@@ -9,79 +9,15 @@ namespace Kafka.Ksql.Linq.Query.Builders;
 
 public static class KsqlCreateStatementBuilder
 {
-    public static string Build(string streamName, KsqlQueryModel model, int? keySchemaId = null, int? valueSchemaId = null)
+    public static string Build(string streamName, KsqlQueryModel model, string? keySchemaFullName = null, string? valueSchemaFullName = null, string? partitionBy = null)
     {
-        if (string.IsNullOrWhiteSpace(streamName))
-            throw new ArgumentException("Stream name is required", nameof(streamName));
-        if (model == null)
-            throw new ArgumentNullException(nameof(model));
-
-
-        var selectClause = BuildSelectClause(model.SelectProjection);
-        var fromClause = BuildFromClause(model);
-        var whereClause = BuildWhereClause(model.WhereCondition);
-        var groupByClause = BuildGroupByClause(model.GroupByExpression);
-        var havingClause = BuildHavingClause(model.HavingCondition);
-
-        var createType = model.IsAggregateQuery ? "CREATE TABLE" : "CREATE STREAM";
-
-        var sb = new StringBuilder();
-        sb.Append($"{createType} {streamName}");
-        if (keySchemaId.HasValue || valueSchemaId.HasValue)
-        {
-            // int: omit key SerDe, include only value
-            var withParts = new List<string> { $"KAFKA_TOPIC='{streamName}'" };
-            withParts.Add("VALUE_FORMAT='AVRO'");
-            if (valueSchemaId.HasValue)
-                withParts.Add($"VALUE_SCHEMA_ID={valueSchemaId.Value}");
-            sb.Append(" WITH (" + string.Join(", ", withParts) + ")");
-        }
-        sb.AppendLine(" AS");
-        sb.AppendLine($"SELECT {selectClause}");
-        sb.Append(fromClause);
-        if (!string.IsNullOrEmpty(whereClause))
-        {
-            sb.AppendLine();
-            sb.Append(whereClause);
-        }
-        if (!string.IsNullOrEmpty(groupByClause))
-        {
-            sb.AppendLine();
-            sb.Append(groupByClause);
-        }
-        if (!string.IsNullOrEmpty(havingClause))
-        {
-            sb.AppendLine();
-            sb.Append(havingClause);
-        }
-        var mode = model.ExecutionMode == Query.Pipeline.QueryExecutionMode.Unspecified
-            ? Query.Pipeline.QueryExecutionMode.PushQuery
-            : model.ExecutionMode;
-        if (mode == Query.Pipeline.QueryExecutionMode.PushQuery)
-        {
-            sb.AppendLine();
-            sb.Append("EMIT CHANGES;");
-        }
-        else
-        {
-            sb.Append(';');
-        }
-        return sb.ToString();
-    }
-
-    private static string BuildSelectClause(LambdaExpression? projection)
-    {
-        if (projection == null)
-            return "*";
-
-        var builder = new SelectClauseBuilder();
-        return builder.Build(projection.Body);
+        return Build(streamName, model, keySchemaFullName, valueSchemaFullName, ResolveSourceName, partitionBy);
     }
 
     /// <summary>
     /// Build a CREATE statement with an optional source name resolver for FROM/JOIN tables.
     /// </summary>
-    public static string Build(string streamName, KsqlQueryModel model, int? keySchemaId, int? valueSchemaId, Func<Type, string> sourceNameResolver)
+    public static string Build(string streamName, KsqlQueryModel model, string? keySchemaFullName, string? valueSchemaFullName, Func<Type, string> sourceNameResolver, string? partitionBy = null)
     {
         if (string.IsNullOrWhiteSpace(streamName))
             throw new ArgumentException("Stream name is required", nameof(streamName));
@@ -117,13 +53,17 @@ public static class KsqlCreateStatementBuilder
 
         var sb = new StringBuilder();
         sb.Append($"{createType} {streamName}");
-        if (keySchemaId.HasValue || valueSchemaId.HasValue)
+        if (!string.IsNullOrWhiteSpace(keySchemaFullName) || !string.IsNullOrWhiteSpace(valueSchemaFullName))
         {
-            // int: omit key SerDe, include only value
             var withParts = new List<string> { $"KAFKA_TOPIC='{streamName}'" };
+            if (!string.IsNullOrWhiteSpace(keySchemaFullName))
+            {
+                withParts.Add("KEY_FORMAT='AVRO'");
+                withParts.Add($"KEY_AVRO_SCHEMA_FULL_NAME='{keySchemaFullName}'");
+            }
             withParts.Add("VALUE_FORMAT='AVRO'");
-            if (valueSchemaId.HasValue)
-                withParts.Add($"VALUE_SCHEMA_ID={valueSchemaId.Value}");
+            if (!string.IsNullOrWhiteSpace(valueSchemaFullName))
+                withParts.Add($"VALUE_AVRO_SCHEMA_FULL_NAME='{valueSchemaFullName}'");
             sb.Append(" WITH (" + string.Join(", ", withParts) + ")");
         }
         sb.AppendLine(" AS");
@@ -144,6 +84,11 @@ public static class KsqlCreateStatementBuilder
             sb.AppendLine();
             sb.Append(havingClause);
         }
+        if (!string.IsNullOrEmpty(partitionBy))
+        {
+            sb.AppendLine();
+            sb.Append($"PARTITION BY {partitionBy}");
+        }
         var mode = model.ExecutionMode == Query.Pipeline.QueryExecutionMode.Unspecified
             ? Query.Pipeline.QueryExecutionMode.PushQuery
             : model.ExecutionMode;
@@ -157,11 +102,6 @@ public static class KsqlCreateStatementBuilder
             sb.Append(';');
         }
         return sb.ToString();
-    }
-
-    private static string BuildFromClause(KsqlQueryModel model)
-    {
-        return BuildFromClauseCore(model, null);
     }
 
     private static string BuildFromClauseCore(KsqlQueryModel model, Func<Type, string>? sourceNameResolver)
@@ -188,7 +128,7 @@ public static class KsqlCreateStatementBuilder
 
             // Enforce WITHIN for stream-stream joins: require WithinSeconds
             if (!model.WithinSeconds.HasValue || model.WithinSeconds.Value <= 0)
-                throw new InvalidOperationException("Stream-Stream JOIN requires Within(seconds). Specify a positive seconds window.");
+                throw new InvalidOperationException("Stream-Stream JOIN requires .Within(seconds) (e.g. Within(60)).");
             result.Append($" WITHIN {model.WithinSeconds.Value} SECONDS");
 
             // Build a qualified join condition using aliases to avoid ambiguity
@@ -225,7 +165,7 @@ public static class KsqlCreateStatementBuilder
                             return $"{rightAlias}.{col}";
                         }
                     }
-                    return me.Member.Name;
+                    throw new InvalidOperationException("Unqualified column access in JOIN condition is not allowed.");
                 }
                 case UnaryExpression ue:
                     return Build(ue.Operand);

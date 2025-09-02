@@ -10,8 +10,8 @@ public class DdlSchemaBuilder
     private readonly int _partitions;
     private short _replicas;
     private readonly List<ColumnDefinition> _columns = new();
-    private int? _keySchemaId;
-    private int? _valueSchemaId;
+    private string? _keySchemaFullName;
+    private string? _valueSchemaFullName;
 
     public DdlSchemaBuilder(string objectName, DdlObjectType objectType, string topicName, int partitions = 1, short replicas = 1)
     {
@@ -34,10 +34,10 @@ public class DdlSchemaBuilder
         return this;
     }
 
-    public DdlSchemaBuilder WithSchemaIds(int? keySchemaId, int? valueSchemaId)
+    public DdlSchemaBuilder WithSchemaFullNames(string? keySchemaFullName, string? valueSchemaFullName)
     {
-        _keySchemaId = keySchemaId;
-        _valueSchemaId = valueSchemaId;
+        _keySchemaFullName = keySchemaFullName;
+        _valueSchemaFullName = valueSchemaFullName;
         return this;
     }
 
@@ -49,8 +49,8 @@ public class DdlSchemaBuilder
             _objectType,
             _partitions,
             _replicas,
-            _keySchemaId,
-            _valueSchemaId,
+            _keySchemaFullName,
+            _valueSchemaFullName,
             _columns);
     }
 }

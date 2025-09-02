@@ -238,8 +238,6 @@ public class MyKsqlContext : KsqlContext
 
 CREATE TABLE/STREAM を実行してテーブルを登録した直後は、KSQL 側がスキーマ情報を完全に認識するまで時間がかかる場合があります。スキーマ未確定の状態で `SELECT` などの DML を実行すると `column 'REGION' cannot be resolved` といったエラーが発生するため、各テーブルに対応する Kafka トピック（例: `orders`, `customers`）へ **1 件以上のダミーレコード** を **AVRO** 形式で送信してください。全てのカラムを埋めたレコードを投入した後に DML クエリを実行することで、カラムスキーマが正しく取得されます。テストコードではこのダミーデータ送信をセットアップ処理に組み込むことを推奨します。
 
-テスト目的で送信するダミーメッセージには `is_dummy=true` といったヘッダーを付与することで、consumer や KSQL 側で本番データと区別できます。このヘッダー値を利用して、スキーマ確定後のクリーンアップや検証を行ってください。
-詳細なテスト手順は `features/dummy_flag_test/instruction.md` も併せて参照してください。
 
 ダミーレコード送信後は、`WaitForEntityReadyAsync<T>()` を呼び出して ksqlDB が対象ストリーム/テーブルを認識するまで待機すると安全です。伝搬遅延による `DESCRIBE` 失敗を回避でき、テストや初期化処理での競合を防止できます。
 

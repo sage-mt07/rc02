@@ -21,24 +21,9 @@ public static class MaterializationExtensions
         var topicName = model.GetTopicName();
         var subject = $"{topicName}-value";
         var schema = GenerateSchemaJson<T>();
-        var result = await client.RegisterSchemaIfNewAsync(subject, schema);
-        if (result.WasCreated)
-        {
-            var dummy = DummyObjectFactory.CreateDummy<T>();
-            await context.Set<T>().AddAsync(dummy, new Dictionary<string, string> { ["is_dummy"] = "true" });
-        }
+        await client.RegisterSchemaIfNewAsync(subject, schema);
     }
 
-    /// <summary>
-    /// Always send a priming message for the given entity type with is_dummy header.
-    /// Safe to call repeatedly because consumers skip messages with is_dummy=true.
-    /// </summary>
-    public static async Task EnsurePrimedAsync<T>(this KsqlContext context) where T : class, new()
-    {
-        if (context == null) throw new ArgumentNullException(nameof(context));
-        var dummy = DummyObjectFactory.CreateDummy<T>();
-        await context.Set<T>().AddAsync(dummy, new Dictionary<string, string> { ["is_dummy"] = "true" });
-    }
 
     private static string GenerateSchemaJson<T>()
     {

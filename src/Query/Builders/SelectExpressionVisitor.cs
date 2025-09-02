@@ -17,11 +17,17 @@ internal class SelectExpressionVisitor : ExpressionVisitor
     private readonly HashSet<string> _usedAliases = new();
     private readonly HashSet<string> _selectedGroupKeys = new();
     private readonly System.Collections.Generic.IDictionary<string, string>? _paramToSource;
+    private readonly System.Collections.Generic.ISet<string>? _excludeAliases;
 
     public SelectExpressionVisitor() { }
     public SelectExpressionVisitor(System.Collections.Generic.IDictionary<string, string> paramToSource)
     {
         _paramToSource = paramToSource;
+    }
+    public SelectExpressionVisitor(System.Collections.Generic.IDictionary<string, string> paramToSource, System.Collections.Generic.ISet<string> excludeAliases)
+    {
+        _paramToSource = paramToSource;
+        _excludeAliases = new HashSet<string>(excludeAliases);
     }
 
     public string GetResult()
@@ -189,40 +195,34 @@ internal class SelectExpressionVisitor : ExpressionVisitor
     /// </summary>
     private string GetColumnName(MemberExpression member)
     {
-        // ネストしたプロパティアクセスの処理
-        var path = new List<string>();
-        var current = member;
-
-        while (current != null)
+        // プロパティアクセスチェーンを分解
+        var stack = new System.Collections.Generic.Stack<string>();
+        Expression? expr = member;
+        while (expr is MemberExpression me)
         {
-            path.Insert(0, current.Member.Name);
-            current = current.Expression as MemberExpression;
+            stack.Push(me.Member.Name);
+            expr = me.Expression;
         }
 
-        // ルートがParameterの場合は最後の要素のみ使用
-        if (member.Expression is ParameterExpression pe)
-        {
-            var name = KsqlNameUtils.Sanitize(member.Member.Name);
-            if (!name.StartsWith("`")) name = $"`{name}`"; // preserve case for ksqlDB
-            if (_paramToSource != null && _paramToSource.TryGetValue(pe.Name ?? string.Empty, out var source))
-            {
-                return $"{source}.{name}";
-            }
-            return name;
-        }
+        if (expr is not ParameterExpression pe)
+            throw new InvalidOperationException("Unqualified column access is not allowed. Use source parameter properties.");
 
+        var path = stack.ToArray();
         // g.Key.X のようなアクセスでは "Key" プレフィックスを除外
-        if (path.Count > 1 && path[0] == "Key")
+        if (path.Length > 0 && path[0] == "Key")
+            path = path[1..];
+
+        for (int i = 0; i < path.Length; i++)
         {
-            path.RemoveAt(0);
+            var segment = KsqlNameUtils.Sanitize(path[i]);
+            if (!segment.StartsWith("`")) segment = $"`{segment}`";
+            path[i] = segment;
         }
 
-        for (int i = 0; i < path.Count; i++)
-        {
-            path[i] = KsqlNameUtils.Sanitize(path[i]);
-        }
-
-        return string.Join(".", path);
+        var col = string.Join(".", path);
+        if (_paramToSource != null && _paramToSource.TryGetValue(pe.Name ?? string.Empty, out var source))
+            return $"{source}.{col}";
+        return col;
     }
 
     /// <summary>

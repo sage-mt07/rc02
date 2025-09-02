@@ -53,9 +53,7 @@ public class PrimingBehaviorTests
     {
         await using var ctx = new RecordContext(CreateOptions());
 
-        // Ensure ksql metadata is ready and send priming dummy (is_dummy=true)
         await ctx.WaitForEntityReadyAsync<Record>(TimeSpan.FromSeconds(10));
-        await ctx.EnsurePrimedAsync<Record>();
 
         // Send a real record
         await ctx.Set<Record>().AddAsync(new Record { Id = 1, Note = "real" });
@@ -63,13 +61,9 @@ public class PrimingBehaviorTests
         var list = new List<Record>();
         await ctx.Set<Record>().ForEachAsync(r => { list.Add(r); return Task.CompletedTask; }, TimeSpan.FromSeconds(5));
 
-        // Exactly one record should be observed (dummy is skipped)
-        Assert.True(list.Count >= 1, "Expected at least one non-dummy record");
-        foreach (var item in list)
-        {
-            Assert.Equal(1, item.Id);
-            Assert.Equal("real", item.Note);
-        }
+        Assert.Single(list);
+        Assert.Equal(1, list[0].Id);
+        Assert.Equal("real", list[0].Note);
     }
 }
 

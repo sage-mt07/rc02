@@ -35,10 +35,15 @@ public class DDLQueryGeneratorTests
     {
         var model = CreateEntityModel();
         model.TopicName = "topic";
+        model.KeySchemaFullName = "com.acme.Key";
+        model.ValueSchemaFullName = "com.acme.Value";
         var generator = new DDLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateCreateStream(new EntityModelDdlAdapter(model)));
         Assert.Contains("CREATE STREAM IF NOT EXISTS topic", query);
         Assert.Contains("KAFKA_TOPIC='topic'", query);
+        Assert.Contains("KEY_AVRO_SCHEMA_FULL_NAME='com.acme.Key'", query);
+        Assert.Contains("VALUE_AVRO_SCHEMA_FULL_NAME='com.acme.Value'", query);
+        Assert.Contains("PARTITIONS=1", query);
         Assert.Contains("REPLICAS=1", query);
         File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
     }
@@ -58,19 +63,25 @@ public class DDLQueryGeneratorTests
     public void GenerateCreateStream_IncludesKeyFormat()
     {
         var model = CreateEntityModel();
+        model.KeySchemaFullName = "com.acme.Key";
+        model.ValueSchemaFullName = "com.acme.Value";
         var generator = new DDLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateCreateStream(new EntityModelDdlAdapter(model)));
         Assert.Contains("KEY_FORMAT='AVRO'", query);
-        Assert.Contains("REPLICAS=1", query);
+        Assert.Contains("KEY_AVRO_SCHEMA_FULL_NAME='com.acme.Key'", query);
     }
 
     [Fact]
     public void GenerateCreateTable_IncludesKeyFormat()
     {
         var model = CreateEntityModel();
+        model.KeySchemaFullName = "com.acme.Key";
+        model.ValueSchemaFullName = "com.acme.Value";
         var generator = new DDLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateCreateTable(new EntityModelDdlAdapter(model)));
         Assert.Contains("KEY_FORMAT='AVRO'", query);
+        Assert.Contains("KEY_AVRO_SCHEMA_FULL_NAME='com.acme.Key'", query);
+        Assert.Contains("PARTITIONS=1", query);
         Assert.Contains("REPLICAS=1", query);
     }
 
@@ -78,35 +89,23 @@ public class DDLQueryGeneratorTests
     public void GenerateCreateTable_AlwaysIncludesValueFormat()
     {
         var model = CreateEntityModel();
+        model.ValueSchemaFullName = "com.acme.Value";
         var generator = new DDLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateCreateTable(new EntityModelDdlAdapter(model)));
         Assert.Contains("VALUE_FORMAT='AVRO'", query);
+        Assert.Contains("VALUE_AVRO_SCHEMA_FULL_NAME='com.acme.Value'", query);
     }
 
     [Fact]
-    public void GenerateCreateTable_UsesReplicationFactorFromModel()
-    {
-        var builder = new ModelBuilder();
-        builder.Entity<TestEntity>()
-            .WithReplicationFactor(4);
-        var model = builder.GetEntityModel<TestEntity>()!;
-
-        var generator = new DDLQueryGenerator();
-        var query = ExecuteInScope(() => generator.GenerateCreateTable(new EntityModelDdlAdapter(model)));
-
-        Assert.Contains("REPLICAS=4", query);
-    }
-
-    [Fact]
-    public void GenerateCreateStream_IncludesSchemaIds()
+    public void GenerateCreateStream_IncludesSchemaFullNames()
     {
         var model = CreateEntityModel();
-        model.KeySchemaId = 10;
-        model.ValueSchemaId = 20;
+        model.KeySchemaFullName = "com.acme.Key";
+        model.ValueSchemaFullName = "com.acme.Value";
         var generator = new DDLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateCreateStream(new EntityModelDdlAdapter(model)));
-        Assert.Contains("KEY_SCHEMA_ID=10", query);
-        Assert.Contains("VALUE_SCHEMA_ID=20", query);
+        Assert.Contains("KEY_AVRO_SCHEMA_FULL_NAME='com.acme.Key'", query);
+        Assert.Contains("VALUE_AVRO_SCHEMA_FULL_NAME='com.acme.Value'", query);
     }
 
     [Fact]

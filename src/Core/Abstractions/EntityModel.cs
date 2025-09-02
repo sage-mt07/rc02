@@ -33,14 +33,14 @@ public class EntityModel
     public short ReplicationFactor { get; set; } = 1;
 
     /// <summary>
-    /// Schema Registry ID for the key schema.
+    /// Fully-qualified Avro schema name for the key.
     /// </summary>
-    public int? KeySchemaId { get; set; }
+    public string? KeySchemaFullName { get; set; }
 
     /// <summary>
-    /// Schema Registry ID for the value schema.
+    /// Fully-qualified Avro schema name for the value.
     /// </summary>
-    public int? ValueSchemaId { get; set; }
+    public string? ValueSchemaFullName { get; set; }
 
     public PropertyInfo[] KeyProperties { get; set; } = Array.Empty<PropertyInfo>();
 

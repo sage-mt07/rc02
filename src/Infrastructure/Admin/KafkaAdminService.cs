@@ -79,8 +79,30 @@ internal class KafkaAdminService : IDisposable
         };
         if (topicName == _options.Heartbeat.Topic)
             ApplyRate1mSpec(spec);
-        // appsettings keys are looked up by the resolved topic name
-        if (_options.Topics.TryGetValue(topicName, out var sec) && sec?.Creation != null)
+        // topic structure: base key holds partitions/replication; .pub/.int can't override
+        var baseKey = topicName;
+        if (topicName.EndsWith(".pub", StringComparison.OrdinalIgnoreCase))
+            baseKey = topicName.Substring(0, topicName.Length - 4);
+        else if (topicName.EndsWith(".int", StringComparison.OrdinalIgnoreCase))
+            baseKey = topicName.Substring(0, topicName.Length - 4);
+
+        if (!string.Equals(baseKey, topicName, StringComparison.Ordinal))
+        {
+            if (_options.Topics.TryGetValue(topicName, out var child) && child?.Creation != null)
+                throw new InvalidOperationException($"Structure settings must be defined on base topic '{baseKey}'");
+
+            if (!_options.Topics.TryGetValue(baseKey, out var parent) || parent?.Creation == null)
+                throw new InvalidOperationException($"Base topic '{baseKey}' missing creation settings for '{topicName}'");
+
+            var c = parent.Creation;
+            if (c.NumPartitions > 0)
+                spec.NumPartitions = c.NumPartitions;
+            if (c.ReplicationFactor > 0)
+                spec.ReplicationFactor = c.ReplicationFactor;
+            if (c.Configs.Count > 0)
+                spec.Configs = new Dictionary<string, string>(c.Configs);
+        }
+        else if (_options.Topics.TryGetValue(topicName, out var sec) && sec?.Creation != null)
         {
             var c = sec.Creation;
             if (c.NumPartitions > 0)

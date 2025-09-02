@@ -52,7 +52,7 @@ var schema = QueryAnalyzer.AnalyzeQuery<User, User>(q => q.Where(u => u.Id == 1)
 var query = context.Set<User>().Where(u => u.Id == 1);
 var entity = new User { Id = 1, Name = "Alice" };
 var (key, value) = PocoMapper.ToKeyValue(entity, schema);
-await context.AddAsync(entity, headers: new Dictionary<string, string> { ["is_dummy"] = "true" });
+await context.AddAsync(entity);
 ```
 
 上記のように `Query` から生成したエンティティを `PocoMapper` で key/value に変換し、`KsqlContext` 経由で Kafka へ送信します。

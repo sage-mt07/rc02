@@ -26,7 +26,7 @@ public class EntityModelDdlAdapter : IDdlSchemaProvider
             _model.GetTopicName(),
             _model.Partitions > 0 ? _model.Partitions : 1,
             _model.ReplicationFactor > 0 ? _model.ReplicationFactor : (short)1)
-            .WithSchemaIds(_model.KeySchemaId, _model.ValueSchemaId);
+            .WithSchemaFullNames(_model.KeySchemaFullName, _model.ValueSchemaFullName);
 
         var keys = _model.AdditionalSettings.TryGetValue("keys", out var kObj) && kObj is string[] kArr
             ? kArr

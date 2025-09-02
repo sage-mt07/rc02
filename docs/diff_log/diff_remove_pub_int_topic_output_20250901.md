@@ -1,0 +1,2 @@
+- Dropped `.pub`/`.int` topic branching from `KsqlContext` and `TopicNameResolver`
+- `KsqlCreateStatementBuilder` no longer requires `includeKey`; key SerDe is emitted when key schema name is provided

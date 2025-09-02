@@ -102,12 +102,6 @@ modelBuilder.Entity<OrderSummary>().ToQuery(q => q
 - `autoCommit` 既定値は `true` で、`ConsumerConfig.EnableAutoCommit` により自動コミットされます。
 - `ctx.Set<DlqEnvelope>()` で DLQ ストリーム取得。`Take()` や `ToListAsync()` は利用不可。
 
-### ForEachAsync の dummy メッセージ扱い（仕様差分）
-
-- 非ヘッダ版 `ForEachAsync(Func<T, Task>)`：`is_dummy=true` のメッセージはスキップします。
-- ヘッダ版 `ForEachAsync(Func<T, Dictionary<string,string>, MessageMeta, Task>)`：`is_dummy=true` も処理に渡されます（ヘッダ参照用途）。
-- 互換性: 既存コードの挙動は非ヘッダ版のまま維持されます。
-
 ## エラーハンドリング
 
 | API / Enum | 説明 | 実装状態 |
