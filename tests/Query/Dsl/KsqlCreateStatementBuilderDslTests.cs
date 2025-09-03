@@ -55,7 +55,7 @@ public class KsqlCreateStatementBuilderDslTests
             .Build();
 
         var sql = KsqlCreateStatementBuilder.Build("orders", model, null, "com.acme.Value");
-        Assert.DoesNotContain("KEY_FORMAT", sql);
+        Assert.Contains("KEY_FORMAT='AVRO'", sql);
         Assert.DoesNotContain("KEY_AVRO_SCHEMA_FULL_NAME", sql);
         Assert.Contains("VALUE_AVRO_SCHEMA_FULL_NAME='com.acme.Value'", sql);
         Assert.DoesNotContain("PARTITION BY", sql);

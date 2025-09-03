@@ -55,12 +55,9 @@ public static class KsqlCreateStatementBuilder
         sb.Append($"{createType} {streamName}");
         if (!string.IsNullOrWhiteSpace(keySchemaFullName) || !string.IsNullOrWhiteSpace(valueSchemaFullName))
         {
-            var withParts = new List<string> { $"KAFKA_TOPIC='{streamName}'" };
+            var withParts = new List<string> { $"KAFKA_TOPIC='{streamName}'", "KEY_FORMAT='AVRO'" };
             if (!string.IsNullOrWhiteSpace(keySchemaFullName))
-            {
-                withParts.Add("KEY_FORMAT='AVRO'");
                 withParts.Add($"KEY_AVRO_SCHEMA_FULL_NAME='{keySchemaFullName}'");
-            }
             withParts.Add("VALUE_FORMAT='AVRO'");
             if (!string.IsNullOrWhiteSpace(valueSchemaFullName))
                 withParts.Add($"VALUE_AVRO_SCHEMA_FULL_NAME='{valueSchemaFullName}'");

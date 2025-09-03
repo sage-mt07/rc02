@@ -92,7 +92,21 @@ public class DDLQueryGeneratorTests
         model.ValueSchemaFullName = "com.acme.Value";
         var generator = new DDLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateCreateTable(new EntityModelDdlAdapter(model)));
+        Assert.Contains("KEY_FORMAT='AVRO'", query);
+        Assert.DoesNotContain("KEY_AVRO_SCHEMA_FULL_NAME", query);
         Assert.Contains("VALUE_FORMAT='AVRO'", query);
+        Assert.Contains("VALUE_AVRO_SCHEMA_FULL_NAME='com.acme.Value'", query);
+    }
+
+    [Fact]
+    public void GenerateCreateStream_EmitsKeyFormatWithoutKeySchema()
+    {
+        var model = CreateEntityModel();
+        model.ValueSchemaFullName = "com.acme.Value";
+        var generator = new DDLQueryGenerator();
+        var query = ExecuteInScope(() => generator.GenerateCreateStream(new EntityModelDdlAdapter(model)));
+        Assert.Contains("KEY_FORMAT='AVRO'", query);
+        Assert.DoesNotContain("KEY_AVRO_SCHEMA_FULL_NAME", query);
         Assert.Contains("VALUE_AVRO_SCHEMA_FULL_NAME='com.acme.Value'", query);
     }
 
