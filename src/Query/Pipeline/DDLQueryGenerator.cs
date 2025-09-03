@@ -65,10 +65,11 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
             var replicas = schema.Replicas;
 
             var withParts = new List<string> { $"KAFKA_TOPIC='{topicName}'" };
-            if (hasKey && !string.IsNullOrWhiteSpace(schema.KeySchemaFullName))
+            if (hasKey)
             {
                 withParts.Add("KEY_FORMAT='AVRO'");
-                withParts.Add($"KEY_AVRO_SCHEMA_FULL_NAME='{schema.KeySchemaFullName}'");
+                if (!string.IsNullOrWhiteSpace(schema.KeySchemaFullName))
+                    withParts.Add($"KEY_AVRO_SCHEMA_FULL_NAME='{schema.KeySchemaFullName}'");
             }
             withParts.Add("VALUE_FORMAT='AVRO'");
             if (!string.IsNullOrWhiteSpace(schema.ValueSchemaFullName))
@@ -105,10 +106,11 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
             var replicas = schema.Replicas;
 
             var withParts = new List<string> { $"KAFKA_TOPIC='{topicName}'" };
-            if (hasKey && !string.IsNullOrWhiteSpace(schema.KeySchemaFullName))
+            if (hasKey)
             {
                 withParts.Add("KEY_FORMAT='AVRO'");
-                withParts.Add($"KEY_AVRO_SCHEMA_FULL_NAME='{schema.KeySchemaFullName}'");
+                if (!string.IsNullOrWhiteSpace(schema.KeySchemaFullName))
+                    withParts.Add($"KEY_AVRO_SCHEMA_FULL_NAME='{schema.KeySchemaFullName}'");
             }
             withParts.Add("VALUE_FORMAT='AVRO'");
             if (!string.IsNullOrWhiteSpace(schema.ValueSchemaFullName))
