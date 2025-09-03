@@ -46,7 +46,8 @@ internal class MappingRegistry
         Type pocoType,
         PropertyMeta[] keyProperties,
         PropertyMeta[] valueProperties,
-        string? topicName = null)
+        string? topicName = null,
+        bool genericKey = false)
     {
         if (_mappings.TryGetValue(pocoType, out var existing))
         {
@@ -61,11 +62,15 @@ internal class MappingRegistry
         var valueType = CreateType(ns, $"{baseName}-value", valueProperties);
 
         // Generate ISpecificRecord types for Avro deserialization
-        var avroKeyType = SpecificRecordGenerator.Generate(keyType);
+        Type? avroKeyType = null;
+        string? avroKeySchema = null;
+        if (!genericKey && keyProperties.Length > 0)
+        {
+            avroKeyType = SpecificRecordGenerator.Generate(keyType);
+            avroKeySchema = ((Avro.Specific.ISpecificRecord)Activator.CreateInstance(avroKeyType)!).Schema.ToString();
+        }
+
         var avroValueType = SpecificRecordGenerator.Generate(valueType);
-        var avroKeySchema = avroKeyType != null
-            ? ((Avro.Specific.ISpecificRecord)Activator.CreateInstance(avroKeyType)!).Schema.ToString()
-            : null;
         var avroValueSchema = ((Avro.Specific.ISpecificRecord)Activator.CreateInstance(avroValueType)!).Schema.ToString();
 
         var keyTypeProps = keyProperties
@@ -99,9 +104,10 @@ internal class MappingRegistry
     public KeyValueTypeMapping RegisterMeta(
         Type pocoType,
         (PropertyMeta[] KeyProperties, PropertyMeta[] ValueProperties) meta,
-        string? topicName = null)
+        string? topicName = null,
+        bool genericKey = false)
     {
-        return Register(pocoType, meta.KeyProperties, meta.ValueProperties, topicName);
+        return Register(pocoType, meta.KeyProperties, meta.ValueProperties, topicName, genericKey);
     }
 
     /// <summary>
@@ -109,7 +115,7 @@ internal class MappingRegistry
     /// Convenience wrapper so callers don't need to manually convert
     /// PropertyInfo to <see cref="PropertyMeta"/> arrays.
     /// </summary>
-    public KeyValueTypeMapping RegisterEntityModel(EntityModel model)
+    public KeyValueTypeMapping RegisterEntityModel(EntityModel model, bool genericKey = false)
     {
         if (model == null) throw new ArgumentNullException(nameof(model));
 
@@ -120,7 +126,7 @@ internal class MappingRegistry
             .Select(p => PropertyMeta.FromProperty(p))
             .ToArray();
 
-        return Register(model.EntityType, keyMeta, valueMeta, model.GetTopicName());
+        return Register(model.EntityType, keyMeta, valueMeta, model.GetTopicName(), genericKey);
     }
 
     /// <summary>
@@ -132,7 +138,8 @@ internal class MappingRegistry
         Type resultType,
         KsqlQueryModel model,
         PropertyInfo[] keyProperties,
-        string? topicName = null)
+        string? topicName = null,
+        bool genericKey = false)
     {
         if (resultType == null) throw new ArgumentNullException(nameof(resultType));
         if (model == null) throw new ArgumentNullException(nameof(model));
@@ -151,7 +158,7 @@ internal class MappingRegistry
             .ToArray();
         var keyMeta = keyProperties.Select(p => PropertyMeta.FromProperty(p)).ToArray();
 
-        return Register(resultType, keyMeta, valueProps, topicName ?? resultType.Name.ToLowerInvariant());
+        return Register(resultType, keyMeta, valueProps, topicName ?? resultType.Name.ToLowerInvariant(), genericKey);
     }
 
     private static List<PropertyInfo> ExtractProjectionProperties(LambdaExpression? projection, Type resultType)

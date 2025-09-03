@@ -47,5 +47,27 @@ public class MappingRegistryTests
             System.Array.Empty<PropertyMeta>());
         Assert.Empty(mapping.KeyProperties);
         Assert.Empty(mapping.ValueProperties);
+        Assert.Null(mapping.AvroKeyType);
+        Assert.Null(mapping.AvroKeySchema);
+    }
+
+    [Fact]
+    public void Register_GenericKey_SkipsAvroGeneration()
+    {
+        var registry = new MappingRegistry();
+        var keyProps = new[] { PropertyMeta.FromProperty(typeof(Sample).GetProperty(nameof(Sample.Id))!) };
+        var valueProps = typeof(Sample).GetProperties()
+            .Select(p => PropertyMeta.FromProperty(p))
+            .ToArray();
+
+        var mapping = registry.Register(
+            typeof(Sample),
+            keyProps,
+            valueProps,
+            genericKey: true);
+
+        Assert.Null(mapping.AvroKeyType);
+        Assert.Null(mapping.AvroKeySchema);
+        Assert.NotNull(mapping.AvroValueType);
     }
 }
