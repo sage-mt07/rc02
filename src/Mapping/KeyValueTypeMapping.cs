@@ -5,6 +5,7 @@ using Kafka.Ksql.Linq.Configuration;
 using System;
 using System.Reflection;
 using Avro;
+using Avro.Generic;
 using Avro.Specific;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -142,20 +143,27 @@ internal class KeyValueTypeMapping
     /// </summary>
     public object CombineFromAvroKeyValue(object? avroKey, object avroValue, Type pocoType)
     {
-        if (avroValue is not ISpecificRecord vrec)
-            throw new InvalidOperationException($"value must be ISpecificRecord. actual={avroValue.GetType()}");
+        if (avroValue is not ISpecificRecord && avroValue is not GenericRecord)
+            throw new InvalidOperationException($"value must be ISpecificRecord or GenericRecord. actual={avroValue.GetType()}");
         if (pocoType == null) throw new ArgumentNullException(nameof(pocoType));
 
-        var vfp = Fingerprint(vrec.Schema);
-        var vplan = PlanCache.GetOrAdd((pocoType, avroValue.GetType(), vfp), _ => BuildPlan(pocoType, vrec.Schema, ValueProperties));
+        Schema vSchema = avroValue is ISpecificRecord vs ? vs.Schema : ((GenericRecord)avroValue).Schema;
+        var vfp = Fingerprint(vSchema);
+        var vplan = PlanCache.GetOrAdd((pocoType, avroValue.GetType(), vfp), _ => BuildPlan(pocoType, vSchema, ValueProperties, avroValue is GenericRecord));
 
         var instance = Activator.CreateInstance(pocoType)!;
         vplan(avroValue, instance);
 
-        if (avroKey is ISpecificRecord krec)
+        if (avroKey is GenericRecord krec)
         {
             var kfp = Fingerprint(krec.Schema);
-            var kplan = PlanCache.GetOrAdd((pocoType, avroKey.GetType(), kfp), _ => BuildPlan(pocoType, krec.Schema, KeyProperties));
+            var kplan = PlanCache.GetOrAdd((pocoType, avroKey.GetType(), kfp), _ => BuildPlan(pocoType, krec.Schema, KeyProperties, true));
+            kplan(avroKey, instance);
+        }
+        else if (avroKey is ISpecificRecord kspec)
+        {
+            var kfp = Fingerprint(kspec.Schema);
+            var kplan = PlanCache.GetOrAdd((pocoType, avroKey.GetType(), kfp), _ => BuildPlan(pocoType, kspec.Schema, KeyProperties, false));
             kplan(avroKey, instance);
         }
 
@@ -165,27 +173,57 @@ internal class KeyValueTypeMapping
     public string FormatKeyForPrefix(object avroKey)
     {
         if (avroKey == null) throw new ArgumentNullException(nameof(avroKey));
-        var parts = new string[KeyProperties.Length];
+        if (avroKey is GenericRecord krec)
+        {
+            if (krec.Schema is not RecordSchema rs)
+                throw new InvalidOperationException($"Schema '{krec.Schema.Fullname}' is not RecordSchema.");
+
+            var map = new Dictionary<string, int>(StringComparer.Ordinal);
+            foreach (var f in rs.Fields)
+            {
+                map[f.Name] = f.Pos;
+                if (f.Aliases != null)
+                    foreach (var a in f.Aliases) map[a] = f.Pos;
+            }
+
+            var parts = new string[KeyProperties.Length];
+            for (int i = 0; i < KeyProperties.Length; i++)
+            {
+                var meta = KeyProperties[i];
+                var name = meta.SourceName ?? meta.PropertyInfo!.Name;
+                if (!map.TryGetValue(name, out var pos))
+                {
+                    var alt = char.ToLowerInvariant(name[0]) + name.Substring(1);
+                    if (!map.TryGetValue(alt, out pos))
+                        throw new InvalidOperationException($"Field '{name}' not found in key schema '{rs.Fullname}'");
+                }
+                var raw = krec.GetValue(pos);
+                parts[i] = ToSortableString(raw, meta.PropertyInfo.PropertyType);
+            }
+            return string.Join(KeySep, parts);
+        }
+
+        var fallback = new string[KeyProperties.Length];
         for (int i = 0; i < KeyProperties.Length; i++)
         {
             var meta = KeyProperties[i];
             var p = avroKey.GetType().GetProperty(meta.PropertyInfo!.Name)
                     ?? throw new InvalidOperationException($"Key property '{meta.PropertyInfo!.Name}' not found on {avroKey.GetType().Name}");
             var raw = p.GetValue(avroKey);
-            var targetType = meta.PropertyInfo.PropertyType;
-            parts[i] = ToSortableString(raw, targetType);
+            fallback[i] = ToSortableString(raw, meta.PropertyInfo.PropertyType);
         }
-        return string.Join(KeySep, parts);
+        return string.Join(KeySep, fallback);
     }
 
     public object CombineFromStringKeyAndAvroValue(string key, object avroValue, Type pocoType)
     {
         if (pocoType == null) throw new ArgumentNullException(nameof(pocoType));
-        if (avroValue is not ISpecificRecord vrec)
-            throw new InvalidOperationException($"value must be ISpecificRecord. actual={avroValue.GetType()}");
+        if (avroValue is not ISpecificRecord && avroValue is not GenericRecord)
+            throw new InvalidOperationException($"value must be ISpecificRecord or GenericRecord. actual={avroValue.GetType()}");
 
-        var vfp = Fingerprint(vrec.Schema);
-        var vplan = PlanCache.GetOrAdd((pocoType, avroValue.GetType(), vfp), _ => BuildPlan(pocoType, vrec.Schema, ValueProperties));
+        Schema vSchema = avroValue is ISpecificRecord vs ? vs.Schema : ((GenericRecord)avroValue).Schema;
+        var vfp = Fingerprint(vSchema);
+        var vplan = PlanCache.GetOrAdd((pocoType, avroValue.GetType(), vfp), _ => BuildPlan(pocoType, vSchema, ValueProperties, avroValue is GenericRecord));
         var instance = Activator.CreateInstance(pocoType)!;
         vplan(avroValue, instance);
 
@@ -244,7 +282,7 @@ internal class KeyValueTypeMapping
         return Convert.ChangeType(s, t, CultureInfo.InvariantCulture);
     }
 
-    private static Action<object, object> BuildPlan(Type pocoType, Schema schema, PropertyMeta[] metas)
+    private static Action<object, object> BuildPlan(Type pocoType, Schema schema, PropertyMeta[] metas, bool generic)
     {
         if (schema is not RecordSchema rs)
             throw new InvalidOperationException($"Schema '{schema.Fullname}' is not RecordSchema.");
@@ -275,18 +313,20 @@ internal class KeyValueTypeMapping
 
         var oAvro = Expression.Parameter(typeof(object), "avro");
         var oPoco = Expression.Parameter(typeof(object), "poco");
-        var srec = Expression.Variable(typeof(ISpecificRecord), "s");
+        var sType = generic ? typeof(GenericRecord) : typeof(ISpecificRecord);
+        var getM = generic ? sType.GetMethod("GetValue", new[] { typeof(int) })! : sType.GetMethod("Get")!;
+        var srec = Expression.Variable(sType, "s");
         var poco = Expression.Variable(pocoType, "p");
         var convM = typeof(KeyValueTypeMapping).GetMethod(nameof(ConvertIfNeededWithScale), BindingFlags.NonPublic | BindingFlags.Static)!;
         var body = new List<Expression>
         {
-            Expression.Assign(srec, Expression.Convert(oAvro, typeof(ISpecificRecord))),
+            Expression.Assign(srec, Expression.Convert(oAvro, sType)),
             Expression.Assign(poco, Expression.Convert(oPoco, pocoType))
         };
         for (int i = 0; i < metas.Length; i++)
         {
             var prop = metas[i].PropertyInfo!;
-            var get = Expression.Call(srec, typeof(ISpecificRecord).GetMethod("Get")!, Expression.Constant(positions[i]));
+            var get = Expression.Call(srec, getM, Expression.Constant(positions[i]));
             // resolve decimal scale per property (compile-time constant in the plan)
             var scale = DecimalPrecisionConfig.ResolveScale(metas[i].Scale, prop);
             var conv = Expression.Call(
