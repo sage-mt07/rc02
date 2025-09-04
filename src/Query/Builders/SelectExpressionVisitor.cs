@@ -58,16 +58,10 @@ internal class SelectExpressionVisitor : ExpressionVisitor
             {
                 var columnExpression = ProcessProjectionArgument(arg);
                 var alias = GenerateUniqueAlias(memberName);
-                var aliasQuoted = alias.StartsWith("`") ? alias : $"`{alias}`";
-
                 if (columnExpression != alias)
-                {
-                    _columns.Add($"{columnExpression} AS {aliasQuoted}");
-                }
+                    _columns.Add($"{columnExpression} AS {alias}");
                 else
-                {
                     _columns.Add(columnExpression);
-                }
             }
         }
 
@@ -213,11 +207,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
             path = path[1..];
 
         for (int i = 0; i < path.Length; i++)
-        {
-            var segment = KsqlNameUtils.Sanitize(path[i]);
-            if (!segment.StartsWith("`")) segment = $"`{segment}`";
-            path[i] = segment;
-        }
+            path[i] = KsqlNameUtils.Sanitize(path[i]);
 
         var col = string.Join(".", path);
         if (_paramToSource != null && _paramToSource.TryGetValue(pe.Name ?? string.Empty, out var source))

@@ -57,7 +57,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
         try
         {
             schema = provider.GetSchema();
-            var columns = GenerateColumnDefinitions(schema);
+            var columns = GenerateColumnDefinitions(schema, isStream: true);
             var streamName = SanitizeName(schema.TopicName);
             var topicName = schema.TopicName;
             var hasKey = schema.Columns.Any(c => c.IsKey);
@@ -68,8 +68,6 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
             if (hasKey)
             {
                 withParts.Add("KEY_FORMAT='AVRO'");
-                if (!string.IsNullOrWhiteSpace(schema.KeySchemaFullName))
-                    withParts.Add($"KEY_AVRO_SCHEMA_FULL_NAME='{schema.KeySchemaFullName}'");
             }
             withParts.Add("VALUE_FORMAT='AVRO'");
             if (!string.IsNullOrWhiteSpace(schema.ValueSchemaFullName))
@@ -98,7 +96,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
         try
         {
             schema = provider.GetSchema();
-            var columns = GenerateColumnDefinitions(schema);
+            var columns = GenerateColumnDefinitions(schema, isStream: false);
             var tableName = SanitizeName(schema.TopicName);
             var topicName = schema.TopicName;
             var hasKey = schema.Columns.Any(c => c.IsKey);
@@ -109,8 +107,6 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
             if (hasKey)
             {
                 withParts.Add("KEY_FORMAT='AVRO'");
-                if (!string.IsNullOrWhiteSpace(schema.KeySchemaFullName))
-                    withParts.Add($"KEY_AVRO_SCHEMA_FULL_NAME='{schema.KeySchemaFullName}'");
             }
             withParts.Add("VALUE_FORMAT='AVRO'");
             if (!string.IsNullOrWhiteSpace(schema.ValueSchemaFullName))
@@ -177,7 +173,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
     /// <summary>
     /// カラム定義生成
     /// </summary>
-    private string GenerateColumnDefinitions(DdlSchemaDefinition schema)
+    private string GenerateColumnDefinitions(DdlSchemaDefinition schema, bool isStream)
     {
         var keyColumns = schema.Columns.Where(c => c.IsKey).ToList();
         var nonKeyColumns = schema.Columns.Where(c => !c.IsKey).ToList();
@@ -186,27 +182,39 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
 
         if (keyColumns.Count > 1)
         {
-            var fields = keyColumns.Select(c => $"`{c.Name}` {c.Type}");
+            var fields = keyColumns.Select(c => $"{QuoteIfReserved(c.Name)} {c.Type}");
             var structDef = $"STRUCT<{string.Join(", ", fields)}>";
-            var keyColumnName = $"`{schema.ObjectName}_key`";
-            columns.Add($"{keyColumnName} {structDef} PRIMARY KEY");
-            columns.AddRange(nonKeyColumns.Select(c => $"`{c.Name}` {c.Type}"));
+            var keyColumnName = $"{schema.ObjectName}_key";
+            columns.Add($"{keyColumnName} {structDef} {(isStream ? "KEY" : "PRIMARY KEY")}");
+            columns.AddRange(nonKeyColumns.Select(c => $"{QuoteIfReserved(c.Name)} {c.Type}"));
         }
         else
         {
             foreach (var column in schema.Columns)
             {
-                var cname = column.Name.StartsWith("`") ? column.Name : $"`{column.Name}`";
+                var cname = QuoteIfReserved(column.Name);
                 var definition = $"{cname} {column.Type}";
                 if (column.IsKey)
-                {
-                    definition += " PRIMARY KEY";
-                }
+                    definition += isStream ? " KEY" : " PRIMARY KEY";
                 columns.Add(definition);
             }
         }
 
         return string.Join(", ", columns);
+    }
+
+    private static string QuoteIfReserved(string name)
+    {
+        // Minimal reserved set needed by our schemas
+        switch (name)
+        {
+            case "Topic":
+            case "Partition":
+            case "Offset":
+                return $"`{name}`";
+            default:
+                return name;
+        }
     }
 
     /// <summary>

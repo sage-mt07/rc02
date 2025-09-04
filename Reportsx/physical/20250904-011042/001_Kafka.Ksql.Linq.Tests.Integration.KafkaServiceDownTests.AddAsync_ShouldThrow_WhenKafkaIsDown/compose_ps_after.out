@@ -1,0 +1,6 @@
+NAME                            IMAGE                                   COMMAND                  SERVICE           CREATED         STATUS                       PORTS
+physicaltests-kafka-1           confluentinc/cp-kafka:7.4.3             "/etc/confluent/dock…"   kafka             4 minutes ago   Exited (143) 4 minutes ago   
+physicaltests-ksqldb-cli-1      confluentinc/ksqldb-cli:0.29.0          "/bin/sh"                ksqldb-cli        4 minutes ago   Up 4 minutes                 
+physicaltests-ksqldb-server-1   confluentinc/ksqldb-server:0.29.0       "/usr/bin/docker/run"    ksqldb-server     4 minutes ago   Exited (255) 3 minutes ago   
+physicaltests-zookeeper-1       confluentinc/cp-zookeeper:7.4.3         "/etc/confluent/dock…"   zookeeper         4 minutes ago   Up 4 minutes                 0.0.0.0:2181->2181/tcp, [::]:2181->2181/tcp
+schema-registry                 confluentinc/cp-schema-registry:7.4.3   "/etc/confluent/dock…"   schema-registry   4 minutes ago   Exited (1) 3 minutes ago     

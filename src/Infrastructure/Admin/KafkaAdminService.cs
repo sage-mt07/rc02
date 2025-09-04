@@ -22,6 +22,10 @@ internal class KafkaAdminService : IDisposable
     public KafkaAdminService(IOptions<KsqlDslOptions> options, ILoggerFactory? loggerFactory = null)
     {
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+        // Ensure [DefaultValue]s are applied when constructed outside KsqlContext
+        // (e.g., direct use in integration tests). Without this, some Confluent
+        // client configs may receive zero/invalid values (e.g., MetadataMaxAgeMs=0).
+        DefaultValueBinder.ApplyDefaults(_options);
         _logger = loggerFactory?.CreateLogger<KafkaAdminService>();
 
         var adminConfig = CreateAdminConfig();
@@ -384,8 +388,13 @@ internal class KafkaAdminService : IDisposable
             BootstrapServers = _options.Common.BootstrapServers,
             ClientId = $"{_options.Common.ClientId}-admin",
             //  RequestTimeoutMs = _options.Common.RequestTimeoutMs,
-            MetadataMaxAgeMs = _options.Common.MetadataMaxAgeMs
         };
+        // Only set MetadataMaxAgeMs when it's a positive value; otherwise
+        // let the Confluent client use its own default to avoid invalid range.
+        if (_options.Common.MetadataMaxAgeMs > 0)
+        {
+            config.MetadataMaxAgeMs = _options.Common.MetadataMaxAgeMs;
+        }
 
         // Security settings
         if (_options.Common.SecurityProtocol != SecurityProtocol.Plaintext)

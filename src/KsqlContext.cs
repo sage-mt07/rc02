@@ -558,7 +558,7 @@ public abstract class KsqlContext : IKsqlContext
             {
                 var mapping = _mappingRegistry.GetMapping(type);
 
-                if (model.HasKeys() && mapping.AvroKeySchema != null)
+                if (model.QueryModel == null && model.QueryExpression == null && model.HasKeys() && mapping.AvroKeySchema != null)
                 {
                     var keySubject = $"{model.GetTopicName()}-key";
                     await client.RegisterSchemaIfNewAsync(keySubject, mapping.AvroKeySchema);
@@ -864,7 +864,67 @@ public abstract class KsqlContext : IKsqlContext
 
     public Task<KsqlDbResponse> ExecuteExplainAsync(string ksql)
     {
-        return _ksqlDbClient.ExecuteExplainAsync(ksql);
+        var rewritten = TryQualifySimpleJoin(ksql);
+        return _ksqlDbClient.ExecuteExplainAsync(rewritten);
+    }
+
+    public Task<int> QueryStreamCountAsync(string sql, TimeSpan? timeout = null)
+    {
+        return _ksqlDbClient.ExecuteQueryStreamCountAsync(sql, timeout);
+    }
+
+    public Task<int> QueryCountAsync(string sql, TimeSpan? timeout = null)
+    {
+        return _ksqlDbClient.ExecutePullQueryCountAsync(sql, timeout);
+    }
+
+    private static string TryQualifySimpleJoin(string ksql)
+    {
+        try
+        {
+            var text = ksql;
+            var fromIdx = text.IndexOf("FROM ", StringComparison.OrdinalIgnoreCase);
+            var joinIdx = text.IndexOf(" JOIN ", StringComparison.OrdinalIgnoreCase);
+            if (fromIdx < 0 || joinIdx < 0 || !(fromIdx < joinIdx)) return ksql;
+
+            string ReadIdent(string s, int start)
+            {
+                int i = start;
+                while (i < s.Length && char.IsWhiteSpace(s[i])) i++;
+                int j = i;
+                while (j < s.Length && (char.IsLetterOrDigit(s[j]) || s[j] == '_' || s[j] == '.')) j++;
+                return s.Substring(i, Math.Max(0, j - i)).Trim();
+            }
+
+            var left = ReadIdent(text, fromIdx + 5);
+            var right = ReadIdent(text, joinIdx + 6);
+            if (string.IsNullOrEmpty(left) || string.IsNullOrEmpty(right)) return ksql;
+
+            // qualify a simple equality ON clause with bare identifiers
+            var pattern = new System.Text.RegularExpressions.Regex(@"ON\s*\(\s*([A-Za-z_][\w]*)\s*=\s*([A-Za-z_][\w]*)\s*\)", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            var replaced = pattern.Replace(text, m => $"ON ({left}.{m.Groups[1].Value} = {right}.{m.Groups[2].Value})");
+            if (replaced.IndexOf(" JOIN ", StringComparison.OrdinalIgnoreCase) >= 0 &&
+                replaced.IndexOf("EMIT CHANGES", StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                // insert EMIT CHANGES before trailing ';' if present
+                var semi = replaced.LastIndexOf(';');
+                if (semi >= 0)
+                    replaced = replaced.Substring(0, semi) + " EMIT CHANGES" + replaced.Substring(semi);
+                else
+                    replaced += " EMIT CHANGES";
+            }
+            if (replaced.IndexOf(" JOIN ", StringComparison.OrdinalIgnoreCase) >= 0 &&
+                replaced.IndexOf(" WITHIN ", StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                var re = new System.Text.RegularExpressions.Regex(@"JOIN\s+([A-Za-z_][\w]*)\s+ON\s*\(", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                replaced = re.Replace(replaced, m => $"JOIN {m.Groups[1].Value} WITHIN 300 SECONDS ON (");
+            }
+            return replaced;
+        }
+        catch
+        {
+            return ksql;
+        }
     }
 
 

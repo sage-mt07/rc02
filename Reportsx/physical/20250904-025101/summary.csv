@@ -1,0 +1,4 @@
+index,test_name,result,duration_sec
+001,"Kafka.Ksql.Linq.Tests.Integration.BarDslExplainTests.Explain_Tumbling_1m_Live_Ohlc_ShouldBeAccepted",Passed,43
+002,"Kafka.Ksql.Linq.Tests.Integration.BarDslExplainTests.Explain_Tumbling_5m_Live_Ohlc_ShouldBeAccepted",Passed,41
+003,"Kafka.Ksql.Linq.Tests.Integration.BarDslExplainTests.Explain_Tumbling_1m_Final_Ohlc_ShouldBeAccepted",Passed,42

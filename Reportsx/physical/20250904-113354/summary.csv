@@ -1,0 +1,3 @@
+index,test_name,result,duration_sec
+001,"Kafka.Ksql.Linq.Tests.Integration.BarScheduleExplainTests.Explain_Daily_With_MarketSchedule_ShouldBeAccepted",Failed,38
+002,"Kafka.Ksql.Linq.Tests.Integration.BarScheduleExplainTests.Explain_Weekly_With_MarketSchedule_ShouldBeAccepted",Failed,41

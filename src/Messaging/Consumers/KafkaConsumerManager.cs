@@ -83,9 +83,11 @@ internal class KafkaConsumerManager : IDisposable
         var mapping = _mappingRegistry.GetMapping(typeof(TPOCO));
         var config = BuildConsumerConfig(topic, null, model.GroupId, autoCommit);
 
+        // Support key-less entities by falling back to Ignore for TKey
+        var keyType = mapping.AvroKeyType ?? typeof(Confluent.Kafka.Ignore);
         var method = typeof(KafkaConsumerManager)
             .GetMethod(nameof(ConsumeInternal), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
-            .MakeGenericMethod(mapping.AvroKeyType!, mapping.AvroValueType!, typeof(TPOCO));
+            .MakeGenericMethod(keyType, mapping.AvroValueType!, typeof(TPOCO));
 
         var enumerable = (IAsyncEnumerable<(TPOCO, Dictionary<string, string>, MessageMeta)>)method
             .Invoke(this, new object?[] { topic, config, mapping, fromBeginning, model.Partitions, cancellationToken })!;
@@ -226,6 +228,14 @@ internal class KafkaConsumerManager : IDisposable
     private IConsumer<TKey, TValue> CreateConsumer<TKey, TValue>(ConsumerConfig config)
         where TKey : class where TValue : class
     {
+        // When using Ignore as TKey (key-less topics), do not attach Avro deserializer for the key.
+        if (typeof(TKey) == typeof(Confluent.Kafka.Ignore))
+        {
+            return (IConsumer<TKey, TValue>) (object) new ConsumerBuilder<Confluent.Kafka.Ignore, TValue>(config)
+                .SetValueDeserializer(new AvroDeserializer<TValue>(_schemaRegistryClient.Value).AsSyncOverAsync())
+                .Build();
+        }
+
         return new ConsumerBuilder<TKey, TValue>(config)
             .SetKeyDeserializer(new AvroDeserializer<TKey>(_schemaRegistryClient.Value).AsSyncOverAsync())
             .SetValueDeserializer(new AvroDeserializer<TValue>(_schemaRegistryClient.Value).AsSyncOverAsync())

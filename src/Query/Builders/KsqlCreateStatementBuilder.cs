@@ -53,16 +53,11 @@ public static class KsqlCreateStatementBuilder
 
         var sb = new StringBuilder();
         sb.Append($"{createType} {streamName}");
-        if (!string.IsNullOrWhiteSpace(keySchemaFullName) || !string.IsNullOrWhiteSpace(valueSchemaFullName))
-        {
-            var withParts = new List<string> { $"KAFKA_TOPIC='{streamName}'", "KEY_FORMAT='AVRO'" };
-            if (!string.IsNullOrWhiteSpace(keySchemaFullName))
-                withParts.Add($"KEY_AVRO_SCHEMA_FULL_NAME='{keySchemaFullName}'");
-            withParts.Add("VALUE_FORMAT='AVRO'");
-            if (!string.IsNullOrWhiteSpace(valueSchemaFullName))
-                withParts.Add($"VALUE_AVRO_SCHEMA_FULL_NAME='{valueSchemaFullName}'");
-            sb.Append(" WITH (" + string.Join(", ", withParts) + ")");
-        }
+        // Emit AVRO formats; add only VALUE_AVRO_SCHEMA_FULL_NAME when provided (KEY_* is unsupported)
+        var withParts = new List<string> { $"KAFKA_TOPIC='{streamName}'", "KEY_FORMAT='AVRO'", "VALUE_FORMAT='AVRO'" };
+        if (!string.IsNullOrWhiteSpace(valueSchemaFullName))
+            withParts.Add($"VALUE_AVRO_SCHEMA_FULL_NAME='{valueSchemaFullName}'");
+        sb.Append(" WITH (" + string.Join(", ", withParts) + ")");
         sb.AppendLine(" AS");
         sb.AppendLine($"SELECT {selectClause}");
         sb.Append(fromClause);
@@ -150,17 +145,9 @@ public static class KsqlCreateStatementBuilder
                     if (param != null)
                     {
                         if (joinExpr.Parameters.Count > 0 && param == joinExpr.Parameters[0])
-                        {
-                            var col = me.Member.Name;
-                            if (!col.StartsWith("`")) col = $"`{col}`";
-                            return $"{leftAlias}.{col}";
-                        }
+                            return $"{leftAlias}.{me.Member.Name}";
                         if (joinExpr.Parameters.Count > 1 && param == joinExpr.Parameters[1])
-                        {
-                            var col = me.Member.Name;
-                            if (!col.StartsWith("`")) col = $"`{col}`";
-                            return $"{rightAlias}.{col}";
-                        }
+                            return $"{rightAlias}.{me.Member.Name}";
                     }
                     throw new InvalidOperationException("Unqualified column access in JOIN condition is not allowed.");
                 }

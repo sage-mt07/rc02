@@ -130,12 +130,40 @@ internal class KafkaProducerManager : IDisposable
             () => { prod.Flush(System.TimeSpan.FromSeconds(5)); prod.Dispose(); });
     }
 
-
-    private ProducerHolder CreateProducer(Type keyType, Type valueType, string topicName)
+    private ProducerHolder CreateValueOnlyProducer<TValue>(string topicName) where TValue : class
     {
-        var method = typeof(KafkaProducerManager).GetMethod(nameof(CreateKeyedProducer), BindingFlags.NonPublic | BindingFlags.Instance)!
-            .MakeGenericMethod(keyType, valueType);
-        return (ProducerHolder)method.Invoke(this, new object[] { topicName })!;
+        var config = BuildProducerConfig(topicName);
+        var prod = new ProducerBuilder<Null, TValue>(config)
+            .SetValueSerializer(new AvroSerializer<TValue>(_schemaRegistryClient.Value).AsSyncOverAsync())
+            .Build();
+        return new ProducerHolder(
+            topicName,
+            (k, v, ctx, ct) =>
+            {
+                var msg = new Message<Null, TValue> { Key = default, Value = (TValue?)v! };
+                if (ctx?.Headers?.Count > 0)
+                    msg.Headers = BuildHeaders(ctx);
+                return prod.ProduceAsync(topicName, msg, ct);
+            },
+            t => prod.Flush(t),
+            () => { prod.Flush(System.TimeSpan.FromSeconds(5)); prod.Dispose(); });
+    }
+
+
+    private ProducerHolder CreateProducer(Type? keyType, Type valueType, string topicName)
+    {
+        if (keyType == null || keyType == typeof(Confluent.Kafka.Null))
+        {
+            var m = typeof(KafkaProducerManager).GetMethod(nameof(CreateValueOnlyProducer), BindingFlags.NonPublic | BindingFlags.Instance)!
+                .MakeGenericMethod(valueType);
+            return (ProducerHolder)m.Invoke(this, new object[] { topicName })!;
+        }
+        else
+        {
+            var method = typeof(KafkaProducerManager).GetMethod(nameof(CreateKeyedProducer), BindingFlags.NonPublic | BindingFlags.Instance)!
+                .MakeGenericMethod(keyType, valueType);
+            return (ProducerHolder)method.Invoke(this, new object[] { topicName })!;
+        }
     }
 
     private Task<ProducerHolder> GetProducerAsync<TPOCO>(string? topicName = null) where TPOCO : class
@@ -149,7 +177,8 @@ internal class KafkaProducerManager : IDisposable
             if (_producers.TryGetValue(typeof(TPOCO), out var existing))
                 return Task.FromResult(existing);
 
-            ProducerHolder producer = CreateProducer(mapping.AvroKeyType!, mapping.AvroValueType!, name);
+            var keyType = mapping.AvroKeyType ?? typeof(Confluent.Kafka.Null);
+            ProducerHolder producer = CreateProducer(keyType, mapping.AvroValueType!, name);
 
             _producers[typeof(TPOCO)] = producer;
             return Task.FromResult(producer);
@@ -160,7 +189,8 @@ internal class KafkaProducerManager : IDisposable
             if (_topicProducers.TryGetValue(key, out var existing))
                 return Task.FromResult(existing);
 
-            ProducerHolder producer = CreateProducer(mapping.AvroKeyType!, mapping.AvroValueType!, name);
+            var keyType2 = mapping.AvroKeyType ?? typeof(Confluent.Kafka.Null);
+            ProducerHolder producer = CreateProducer(keyType2, mapping.AvroValueType!, name);
 
             _topicProducers[key] = producer;
             return Task.FromResult(producer);
@@ -174,10 +204,8 @@ internal class KafkaProducerManager : IDisposable
         var producer = await GetProducerAsync<TPOCO>(topicName);
         var mapping = _mappingRegistry.GetMapping(typeof(TPOCO));
 
-        object? keyObj;
-        object valueObj;
-        keyObj = Activator.CreateInstance(mapping.AvroKeyType!)!;
-        valueObj = Activator.CreateInstance(mapping.AvroValueType!)!;
+        object? keyObj = mapping.AvroKeyType != null ? Activator.CreateInstance(mapping.AvroKeyType)! : null;
+        object valueObj = Activator.CreateInstance(mapping.AvroValueType!)!;
         mapping.PopulateAvroKeyValue(entity, keyObj, valueObj);
 
         var context = new KafkaMessageContext

@@ -1,0 +1,1 @@
+[infra] scenario=kafka_down (INFER_DOWNS=true, DOWN_STYLE=pre, DOWN_AFTER=5)

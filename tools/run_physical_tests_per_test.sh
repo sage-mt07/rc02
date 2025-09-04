@@ -57,14 +57,27 @@ start_infra() {
   (docker compose -f "$COMPOSE_FILE" ps -a) >"$RUN_DIR/compose_ps.out" 2>&1
   (docker compose -f "$COMPOSE_FILE" logs --no-color) >"$RUN_DIR/compose_up.log" 2>&1 || true
 
+  # basic HTTP waiters (schema registry / ksqldb)
+  http_wait() {
+    local url="$1"; local timeout="${2:-120}"; local start=$(date +%s)
+    while :; do
+      if curl -sS --max-time 3 "$url" >/dev/null; then return 0; fi
+      sleep 2; now=$(date +%s); if [ $((now-start)) -ge "$timeout" ]; then return 1; fi
+    done
+  }
+
   case "$scenario" in
     all_up)
       wait_for_service kafka "(healthy)" || true
+      http_wait http://localhost:8081/subjects 120 || true
+      http_wait http://localhost:8088/info 120 || true
       ;;
     kafka_down)
       if [ "$DOWN_STYLE" = "pre" ]; then
         docker compose -f "$COMPOSE_FILE" stop kafka >/dev/null 2>&1 || true
         wait_for_service zookeeper "Up" || true
+        http_wait http://localhost:8081/subjects 120 || true
+        http_wait http://localhost:8088/info 120 || true
       else
         wait_for_service kafka "(healthy)" || true
         ( sleep "$DOWN_AFTER"; docker compose -f "$COMPOSE_FILE" stop kafka >/dev/null 2>&1 || true ) & echo $! >"$RUN_DIR/injector.pid"
@@ -74,6 +87,7 @@ start_infra() {
       if [ "$DOWN_STYLE" = "pre" ]; then
         wait_for_service kafka "(healthy)" || true
         docker compose -f "$COMPOSE_FILE" stop ksqldb-server >/dev/null 2>&1 || true
+        http_wait http://localhost:8081/subjects 120 || true
       else
         wait_for_service kafka "(healthy)" || true
         ( sleep "$DOWN_AFTER"; docker compose -f "$COMPOSE_FILE" stop ksqldb-server >/dev/null 2>&1 || true ) & echo $! >"$RUN_DIR/injector.pid"
@@ -83,6 +97,7 @@ start_infra() {
       if [ "$DOWN_STYLE" = "pre" ]; then
         wait_for_service kafka "(healthy)" || true
         docker compose -f "$COMPOSE_FILE" stop schema-registry >/dev/null 2>&1 || true
+        http_wait http://localhost:8088/info 120 || true
       else
         wait_for_service kafka "(healthy)" || true
         ( sleep "$DOWN_AFTER"; docker compose -f "$COMPOSE_FILE" stop schema-registry >/dev/null 2>&1 || true ) & echo $! >"$RUN_DIR/injector.pid"
