@@ -41,7 +41,7 @@ internal class TypedJoinResultEntitySet<TOuter, TInner, TResult> : IEntitySet<TR
 
     public async Task<List<TResult>> ToListAsync(CancellationToken cancellationToken = default)
     {
-        // JOIN 処理の簡易実装
+        // Simplified JOIN processing placeholder
         await Task.Delay(100, cancellationToken);
         return new List<TResult>();
     }

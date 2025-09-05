@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Kafka.Ksql.Linq.Query;
 
 /// <summary>
-/// JOIN 操作対応の EntitySet ラッパー
+/// EntitySet wrapper that supports JOIN operations.
 /// </summary>
 public class JoinableEntitySet<T> : IEntitySet<T>, IJoinableEntitySet<T> where T : class
 {

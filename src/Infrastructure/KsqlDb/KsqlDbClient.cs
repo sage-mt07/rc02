@@ -55,14 +55,14 @@ internal class KsqlDbClient : IKsqlDbClient, IDisposable
                 {
                     foreach (var element in arr.EnumerateArray())
                     {
-                        // ここを "topic" に修正
+                        // Use the "topic" field here
                         if (element.TryGetProperty("topic", out var topicEl) && topicEl.ValueKind == JsonValueKind.String)
                         {
                             var topic = topicEl.GetString();
                             if (!string.IsNullOrEmpty(topic))
-                                tableTopics.Add(topic.ToLowerInvariant()); // 小文字化が安全
+                                tableTopics.Add(topic.ToLowerInvariant()); // lowercasing is safer
                         }
-                        // 念のため "name"（テーブル名）も突合せ用に追加しておくと安心
+                        // Additionally add the "name" (table name) as a cross-check
                         if (element.TryGetProperty("name", out var nameEl) && nameEl.ValueKind == JsonValueKind.String)
                         {
                             var tableName = nameEl.GetString();
