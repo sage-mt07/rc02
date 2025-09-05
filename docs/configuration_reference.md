@@ -127,56 +127,19 @@ Consumer の設定は `ConsumerSection` クラスにそれぞれマッピング�
 
 | Consumer設定 | 説明 |
 |------------------|------|
-| `GroupId` | コンシューマーグループID |
-| `AutoOffsetReset` | `Latest` or `Earliest` |
-| `EnableAutoCommit` | 自動コミット可否。`ForEachAsync` の `autoCommit` より優先 |
-| `AutoCommitIntervalMs` | 自動コミット間隔(ms) |
-| `SessionTimeoutMs` | セッションタイムアウト(ms) |
-| `HeartbeatIntervalMs` | ハートビート送信間隔(ms) |
-| `MaxPollIntervalMs` | 最大ポーリング間隔(ms) |
-| `MaxPollRecords` | 最大ポーリングレコード数 |
-| `FetchMinBytes` | フェッチ最小バイト数 |
-| `FetchMaxWaitMs` | フェッチ最大待機(ms) |
-| `FetchMaxBytes` | フェッチ最大バイト数 |
+| `GroupId` | コンシューマグループID |
+| `AutoOffsetReset` | 既読位置制御 |
+| `EnableAutoCommit` | 自動コミット |
+| `AutoCommitIntervalMs` | 自動コミット間隔 |
+| `SessionTimeoutMs` | セッションタイムアウト |
+| `HeartbeatIntervalMs` | ハートビート間隔 |
+| `MaxPollIntervalMs` | 最大ポーリング間隔 |
+| `MaxPollRecords` | 1回の最大取得件数 |
+| `FetchMinBytes` | 最小フェッチバイト数 |
+| `FetchMaxWaitMs` | フェッチ待機最大時間 |
+| `FetchMaxBytes` | 最大フェッチバイト数 |
 | `PartitionAssignmentStrategy` | パーティション割当戦略 |
-| `IsolationLevel` | アイソレーションレベル |
-| `AdditionalProperties` | 追加Consumer設定 |
-
----
-
-### 🧬 1.3 SchemaRegistry（スキーマレジストリ設定）
-
-```json
-"SchemaRegistry": {
-  "Url": "http://localhost:8081",
-  "MaxCachedSchemas": 1000,
-  "RequestTimeoutMs": 30000,
-  "BasicAuthUserInfo": "user:pass",
-  "BasicAuthCredentialsSource": "UserInfo",
-  "AutoRegisterSchemas": true,
-  "LatestCacheTtlSecs": 300,
-  "SslCaLocation": "/path/ca.pem",
-  "SslKeystoreLocation": "/path/keystore.p12",
-  "SslKeystorePassword": "secret",
-  "SslKeyPassword": "secret",
-  "AdditionalProperties": {}
-}
-```
-
-| 項目 | 説明 |
-|------|------|
-| `Url` | スキーマレジストリURL |
-| `MaxCachedSchemas` | クライアント側でキャッシュする最大スキーマ数 |
-| `RequestTimeoutMs` | リクエストタイムアウト(ms) |
-| `BasicAuthUserInfo` | Basic認証用クレデンシャル（形式：`user:pass`） |
-| `BasicAuthCredentialsSource` | `UserInfo` or `SaslInherit` |
-| `AutoRegisterSchemas` | スキーマを自動登録するかどうか |
-| `LatestCacheTtlSecs` | 最新スキーマキャッシュTTL(sec) |
-| `SslCaLocation` | CA証明書パス |
-| `SslKeystoreLocation` | キーストア(PKCS#12)パス |
-| `SslKeystorePassword` | キーストアパスワード |
-| `SslKeyPassword` | 秘密鍵パスワード |
-| `AdditionalProperties` | 追加設定 |
+| `IsolationLevel` | 読み取り隔離レベル |
 
 ---
 
@@ -199,7 +162,6 @@ Consumer の設定は `ConsumerSection` クラスにそれぞれマッピング�
 | `Entity` | 対象POCOクラス名 |
 | `SourceTopic` | 入力元となるKafkaトピック名 |
 | `EnableCache` | キャッシュ有効化（bool） |
-| `Windows` | タンブリングウィンドウサイズ（整数：分単位） |
 | `StoreName` | キャッシュ名（省略時はトピック名を基に自動生成） |
 | `BaseDirectory` | RocksDBディレクトリのルートパス |
 
@@ -239,13 +201,6 @@ Consumer の設定は `ConsumerSection` クラスにそれぞれマッピング�
 
 ---
 
-### ⚙️ 1.7 その他オプション
-
-| 項目 | 説明 |
-|------|------|
-| `DeserializationErrorPolicy` | `Skip` / `Retry` / `DLQ` のエラーハンドリング方針 |
-| `ReadFromFinalTopicByDefault` | Finalトピックを既定で参照するか |
-
 ### 🧩 DSL記述とappsettingsの対応関係
 
 | Kafka設定項目             | DSLでの指定                          | appsettings.jsonキー                         | 補足説明 |
@@ -259,7 +214,6 @@ Consumer の設定は `ConsumerSection` クラスにそれぞれマッピング�
 | パーティション数           | `[KsqlTopic("orders", PartitionCount = 12)]` | `KsqlDsl:Topics.orders.NumPartitions` 等    | DSLと設定の併用可能 |
 | Replication Factor        | なし（構成ファイルで指定）          | `KsqlDsl:Topics.orders.ReplicationFactor`  | Kafkaクラスタ構成に依存 |
 | DLQ構成                    | `.OnError(ErrorAction.DLQ)`          | `KsqlDsl:DlqTopicName`, `DlqOptions` | DLQの有効化、保持期間指定など |
-| Windowサイズ               | `.Window(new[] { 5, 15, 60 })`       | `KsqlDsl:Entities[].Windows`              | DSL/設定どちらでも指定可（整合性が必要） |
 
 ---
 
@@ -298,52 +252,3 @@ public class MyKsqlContext : KsqlContext
         "GroupId": "orders-consumer",
         "AutoOffsetReset": "earliest"
       },
-      "order-counts-consumer": {
-        "GroupId": "order-counts-consumer",
-        "AutoOffsetReset": "latest"
-      }
-    }
-  },
-  "KsqlDsl": {
-    "SchemaRegistry": {
-      "Url": "http://localhost:8081"
-    },
-    "KsqlDbUrl": "http://localhost:8088",
-    "Topics": {
-        "orders": {
-          "NumPartitions": 3,
-          "ReplicationFactor": 1
-        },
-        "order_counts": {
-          "NumPartitions": 1,
-          "ReplicationFactor": 1,
-          "CleanupPolicy": "compact"
-        }
-      }
-    },
-    "TableCache": [
-      {
-        "Type": "Order",
-        "Windows": [5]
-      }
-    ],
-    "DlqTopicName": "dead-letter-queue",
-    "DlqOptions": {
-      "RetentionMs": 5000,
-      "NumPartitions": 1,
-      "ReplicationFactor": 1
-    }
-  }
-}
-```
-
-
-
-### 💡 備考：複数GroupId構成と整合性
-
-- Kafkaでは1つのトピックに対して複数のコンシューマグループを定義可能です。
-- 本DSLでは `Entity<T>` ごとに `GroupId` を指定することで、複数のグループ単位の並列処理や責務分離を実現できます。
-- それに対応して `appsettings.json` では `Kafka:Consumers.<name>` として複数グループの構成を記述します。
-- 各DSL定義と `Consumers` のキー名（例: `orders-consumer`）が一致している必要があります。
-
-これにより、「DSLで定義するグループID = 運用時の構成名」として論理的に整合した設計が実現されます。

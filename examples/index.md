@@ -19,20 +19,12 @@
 - From → Join → Where → Select の定義
 - 実行: `dotnet run --project examples/view-toquery`
 
-## Tumbling Window
-- 固定幅窓での集計
-- 実行: `dotnet run --project examples/tumbling-window`
-
 ## WhenEmpty + Schedule (1m→5m)
 - docs/chart.md の TimeFrame + Tumbling + WhenEmpty パターンを再現
 - 機能: 1分足で空バケットを前バーCloseで補完（O=H=L=C）、その後5分へロールアップ
 - 送信: 2分目のTickを意図的に欠損させ、WhenEmptyが動くことを検証（Tick一覧も出力）
 - 実行: `dotnet run --project examples/whenempty-schedule`
 - 期待: 1分足10本（2分目がフラット補完）、5分足2本（1分補完を反映）
-
-## Bars (OHLC)
-- WithWindow + GroupBy で OHLC を生成
-- 実行: `dotnet run --project examples/bars-ohlcv`
 
 ---
 
@@ -42,17 +34,9 @@
 - `.Where(...) + .ForEachAsync(...)`
 - 実行: `dotnet run --project examples/query-filter`
 
-## Error Handling & DLQ
-- DLQ を読んで原因調査
-- 実行: `dotnet run --project examples/error-dlq`
-
 ## Retry / OnError Handler
 - 再試行やエラー時の独自処理
 - 実行: `dotnet run --project examples/retry-onerror`
-
-## Hopping / Session Window
-- 時系列処理のバリエーション
-- 実行: `dotnet run --project examples/window-hopping-session`
 
 ## Table Cache Lookup
 - `.AsTable(useCache:true)` の使い方
