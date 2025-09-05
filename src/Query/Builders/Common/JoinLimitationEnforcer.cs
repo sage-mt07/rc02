@@ -8,14 +8,14 @@ namespace Kafka.Ksql.Linq.Query.Builders.Common;
 
 /// <summary>
 /// JOIN制限強制クラス
-/// 設計理由：ストリーム処理における2テーブル制限の厳格実装
+/// Rationale: strictly enforce the two-table limitation in stream processing.
 /// </summary>
 internal static class JoinLimitationEnforcer
 {
     public const int MaxJoinTables = 2;
 
     /// <summary>
-    /// JOIN式の検証
+    /// Validate JOIN expression
     /// </summary>
     public static void ValidateJoinExpression(Expression expression)
     {
@@ -34,7 +34,7 @@ internal static class JoinLimitationEnforcer
     }
 
     /// <summary>
-    /// JOIN型パターンの検証
+    /// Validate JOIN type patterns
     /// </summary>
     public static void ValidateJoinTypes(Expression expression)
     {
@@ -68,7 +68,7 @@ internal static class JoinLimitationEnforcer
     }
 
     /// <summary>
-    /// JOIN実行時制約の検証
+    /// Validate runtime constraints for JOIN execution
     /// </summary>
     public static void ValidateJoinConstraints(
         Type outerType,
@@ -92,7 +92,7 @@ internal static class JoinLimitationEnforcer
     }
 
     /// <summary>
-    /// パーティショニング推奨事項の検証
+    /// Validate partitioning recommendations
     /// </summary>
     private static void ValidatePartitioningRecommendations(Type outerType, Type innerType)
     {

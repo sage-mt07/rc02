@@ -4,8 +4,9 @@ using System.Linq;
 
 namespace Kafka.Ksql.Linq.Query.Pipeline;
 
-/// クエリ構造定義
-/// 設計理由：Generator層でのクエリ構造統一管理
+/// <summary>
+/// Query structure definition.
+/// Rationale: unify query structure management in the generator layer.
 /// </summary>
 internal record QueryStructure(
     string QueryType,
@@ -14,7 +15,7 @@ internal record QueryStructure(
     QueryMetadata Metadata)
 {
     /// <summary>
-    /// SELECT構造作成
+    /// Create SELECT structure.
     /// </summary>
     public static QueryStructure CreateSelect(string targetObject)
     {
@@ -26,7 +27,7 @@ internal record QueryStructure(
     }
 
     /// <summary>
-    /// CREATE STREAM AS構造作成
+    /// Create CREATE STREAM AS structure.
     /// </summary>
     public static QueryStructure CreateStreamAs(string streamName, string baseObject)
     {
@@ -38,7 +39,7 @@ internal record QueryStructure(
     }
 
     /// <summary>
-    /// CREATE TABLE AS構造作成
+    /// Create CREATE TABLE AS structure.
     /// </summary>
     public static QueryStructure CreateTableAs(string tableName, string baseObject)
     {
@@ -50,7 +51,7 @@ internal record QueryStructure(
     }
 
     /// <summary>
-    /// 句追加
+    /// Add a clause.
     /// </summary>
     private static readonly QueryClauseType[] ClauseInsertionOrder = new[]
     {
@@ -85,7 +86,7 @@ internal record QueryStructure(
     }
 
     /// <summary>
-    /// 複数句追加
+    /// Add multiple clauses.
     /// </summary>
     public QueryStructure AddClauses(params QueryClause[] clauses)
     {
@@ -98,7 +99,7 @@ internal record QueryStructure(
     }
 
     /// <summary>
-    /// 句取得（型別）
+    /// Get a clause by type.
     /// </summary>
     public QueryClause? GetClause(QueryClauseType type)
     {
@@ -106,7 +107,7 @@ internal record QueryStructure(
     }
 
     /// <summary>
-    /// 句存在チェック
+    /// Check if a clause exists.
     /// </summary>
     public bool HasClause(QueryClauseType type)
     {
@@ -114,7 +115,7 @@ internal record QueryStructure(
     }
 
     /// <summary>
-    /// 句削除
+    /// Remove a clause.
     /// </summary>
     public QueryStructure RemoveClause(QueryClauseType type)
     {
@@ -123,7 +124,7 @@ internal record QueryStructure(
     }
 
     /// <summary>
-    /// メタデータ更新
+    /// Update metadata.
     /// </summary>
     public QueryStructure WithMetadata(QueryMetadata metadata)
     {
@@ -131,13 +132,13 @@ internal record QueryStructure(
     }
 
     /// <summary>
-    /// 構造検証
+    /// Validate structure.
     /// </summary>
     public ValidationResult Validate()
     {
         var errors = new List<string>();
 
-        // 基本検証
+        // Basic validation
         if (string.IsNullOrWhiteSpace(TargetObject))
         {
             errors.Add("Target object is required");

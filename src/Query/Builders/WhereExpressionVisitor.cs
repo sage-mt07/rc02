@@ -7,7 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 
 /// <summary>
-/// WHERE句専用ExpressionVisitor
+/// ExpressionVisitor specialized for WHERE clause
 /// </summary>
 internal class WhereExpressionVisitor : ExpressionVisitor
 {
@@ -294,7 +294,7 @@ internal class WhereExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// IEnumerable.Contains から IN / NOT IN 句生成
+    /// Generate IN / NOT IN clause from IEnumerable.Contains
     /// </summary>
     private string BuildInExpression(MethodCallExpression node, bool negated)
     {
@@ -419,7 +419,7 @@ internal class WhereExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// NULL安全文字列変換
+    /// NULL-safe string conversion
     /// </summary>
     private static string SafeToString(object? value)
     {

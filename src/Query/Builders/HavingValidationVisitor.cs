@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 namespace Kafka.Ksql.Linq.Query.Builders;
 
 /// <summary>
-/// HAVING句バリデーション用Visitor
+/// Validation visitor for HAVING clause.
 /// </summary>
 internal class HavingValidationVisitor : ExpressionVisitor
 {

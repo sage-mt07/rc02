@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 
 namespace Kafka.Ksql.Linq.Query.Builders;
 /// <summary>
-/// SELECT句専用ExpressionVisitor
+/// ExpressionVisitor specialized for SELECT clause
 /// </summary>
 internal class SelectExpressionVisitor : ExpressionVisitor
 {
@@ -258,7 +258,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// NULL安全文字列変換
+    /// NULL-safe string conversion
     /// </summary>
     private static string SafeToString(object? value)
     {

@@ -1,7 +1,7 @@
 namespace Kafka.Ksql.Linq.Query.Pipeline;
 /// <summary>
-/// クエリパーツ情報
-/// 設計理由：Generator層でのKSQL文構成部品管理
+/// Query part information.
+/// Rationale: manage KSQL statement building blocks in the generator layer.
 /// </summary>
 internal record QueryPart(
     string Content,
@@ -9,12 +9,12 @@ internal record QueryPart(
     int Order = 0)
 {
     /// <summary>
-    /// 空のクエリパーツ
+    /// Empty query part
     /// </summary>
     public static QueryPart Empty => new(string.Empty, false);
 
     /// <summary>
-    /// 必須クエリパーツ作成
+    /// Create a required query part
     /// </summary>
     public static QueryPart Required(string content, int order = 0)
     {
@@ -22,7 +22,7 @@ internal record QueryPart(
     }
 
     /// <summary>
-    /// 任意クエリパーツ作成
+    /// Create an optional query part
     /// </summary>
     public static QueryPart Optional(string content, int order = 0)
     {
@@ -30,12 +30,12 @@ internal record QueryPart(
     }
 
     /// <summary>
-    /// 有効性チェック
+    /// Validity check
     /// </summary>
     public bool IsValid => IsRequired && !string.IsNullOrWhiteSpace(Content);
 
     /// <summary>
-    /// 条件付き有効性チェック
+    /// Conditional validity check
     /// </summary>
     public bool IsValidOrOptional => IsValid || (!IsRequired && !string.IsNullOrWhiteSpace(Content));
 }

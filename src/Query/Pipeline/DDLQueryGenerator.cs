@@ -16,7 +16,7 @@ namespace Kafka.Ksql.Linq.Query.Pipeline;
 
 /// <summary>
 /// DDLクエリ生成器（新Builder使用版）
-/// 設計理由：責務分離設計に準拠、Builder統合型でCREATE STREAM/TABLE文生成
+/// Rationale: separation-of-concerns; generate CREATE STREAM/TABLE via integrated builders
 /// </summary>
 internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
 {
@@ -135,7 +135,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
             var context = new QueryAssemblyContext(baseObject, false); // Push Query
             var structure = CreateStreamAsStructure(streamName, baseObject);
 
-            // LINQ式を解析してクエリ句を構築
+            // Analyze LINQ expression to build query clauses
             structure = ProcessLinqExpression(structure, linqExpression, context);
 
             var query = AssembleStructuredQuery(structure);
@@ -158,7 +158,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
             var context = new QueryAssemblyContext(baseObject, false); // Push Query
             var structure = CreateTableAsStructure(tableName, baseObject);
 
-            // LINQ式を解析してクエリ句を構築
+            // Analyze LINQ expression to build query clauses
             structure = ProcessLinqExpression(structure, linqExpression, context);
 
             var query = AssembleStructuredQuery(structure);
@@ -218,7 +218,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
     }
 
     /// <summary>
-    /// CREATE STREAM AS構造作成
+    /// Create CREATE STREAM AS structure
     /// </summary>
     private static QueryStructure CreateStreamAsStructure(string streamName, string baseObject)
     {
@@ -229,7 +229,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
     }
 
     /// <summary>
-    /// CREATE TABLE AS構造作成
+    /// Create CREATE TABLE AS structure
     /// </summary>
     private static QueryStructure CreateTableAsStructure(string tableName, string baseObject)
     {

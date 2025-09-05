@@ -4,7 +4,7 @@ using System.Linq;
 namespace Kafka.Ksql.Linq.Query.Pipeline;
 
 /// <summary>
-/// 検証結果
+/// Validation result
 /// </summary>
 internal record ValidationResult(bool IsValid, List<string> Errors)
 {

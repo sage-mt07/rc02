@@ -5,40 +5,40 @@ using System.Linq.Expressions;
 namespace Kafka.Ksql.Linq.Query.Builders.Common;
 
 /// <summary>
-/// Builder基底クラス
-/// 設計理由：責務分離設計における共通制約・バリデーションの統一実装
-/// 強制制約：readonly fields のみ、static メソッド推奨、Expression以外の外部参照禁止、副作用完全禁止
+/// Base class for builders.
+/// Rationale: centralize common constraints/validation under separation-of-concerns design.
+/// Hard constraints: readonly fields only, static methods preferred, no external refs beyond Expression, side‑effect free.
 /// </summary>
 internal abstract class BuilderBase : IKsqlBuilder
 {
     /// <summary>
-    /// ビルダー種別（派生クラスで実装必須）
+    /// Builder kind (must be implemented by derived classes)
     /// </summary>
     public abstract KsqlBuilderType BuilderType { get; }
 
     /// <summary>
-    /// 式木からKSQL構文を構築（公開インターフェース）
+    /// Build a KSQL statement from an expression (public API)
     /// </summary>
-    /// <param name="expression">対象式木</param>
-    /// <returns>KSQL構文文字列</returns>
+    /// <param name="expression">Target expression tree</param>
+    /// <returns>KSQL statement string</returns>
     public string Build(Expression expression)
     {
-        // 共通バリデーション実行
+        // Run common validations
         ValidateInput(expression);
 
         try
         {
-            // 派生クラスの実装を呼び出し
+            // Invoke derived implementation
             var result = BuildInternal(expression);
 
-            // 結果バリデーション
+            // Validate the result
             ValidateOutput(result);
 
             return result;
         }
         catch (Exception ex) when (!(ex is ArgumentException || ex is InvalidOperationException))
         {
-            // 予期しないエラーをより具体的なエラーに変換
+            // Convert unexpected errors into a more specific error
             throw new InvalidOperationException(
                 $"Failed to build {BuilderType} clause from expression. " +
                 $"Expression: {expression}. " +
@@ -47,21 +47,21 @@ internal abstract class BuilderBase : IKsqlBuilder
     }
 
     /// <summary>
-    /// 派生クラス実装の本体（保護されたメソッド）
+    /// Core implementation for derived classes (protected method)
     /// </summary>
-    /// <param name="expression">バリデーション済み式木</param>
-    /// <returns>KSQL構文文字列</returns>
+    /// <param name="expression">Validated expression tree</param>
+    /// <returns>KSQL statement string</returns>
     protected abstract string BuildInternal(Expression expression);
     /// <summary>
-    /// 必須Builderタイプ定義（派生クラスで実装）
+    /// Define required builder types (override in derived classes)
     /// </summary>
-    /// <returns>依存する他のBuilderタイプ配列</returns>
+    /// <returns>Array of dependent builder types</returns>
     protected virtual KsqlBuilderType[] GetRequiredBuilderTypes()
     {
-        return Array.Empty<KsqlBuilderType>(); // デフォルトは依存なし
+        return Array.Empty<KsqlBuilderType>(); // No dependencies by default
     }
     /// <summary>
-    /// 入力バリデーション（共通処理）
+    /// Input validation (common)
     /// </summary>
     private void ValidateInput(Expression expression)
     {
@@ -71,15 +71,15 @@ internal abstract class BuilderBase : IKsqlBuilder
                 $"{BuilderType} builder requires a non-null expression");
         }
 
-        // 共通バリデーション実行
+        // Run common validation
         BuilderValidation.ValidateExpression(expression);
 
-        // ビルダー固有のバリデーション
+        // Builder-specific validation
         ValidateBuilderSpecific(expression);
     }
 
     /// <summary>
-    /// 出力バリデーション（共通処理）
+    /// Output validation (common)
     /// </summary>
     private void ValidateOutput(string result)
     {
@@ -90,25 +90,25 @@ internal abstract class BuilderBase : IKsqlBuilder
                 "This indicates an issue with the expression processing logic.");
         }
 
-        // SQLインジェクション基本チェック
+        // Basic SQL-injection safety check
         ValidateBasicSqlSafety(result);
     }
 
     /// <summary>
-    /// ビルダー固有バリデーション（派生クラスでオーバーライド可能）
+    /// Builder-specific validation (override as needed)
     /// </summary>
-    /// <param name="expression">検証対象式木</param>
+    /// <param name="expression">Expression to validate</param>
     protected virtual void ValidateBuilderSpecific(Expression expression)
     {
-        // デフォルトは何もしない（派生クラスで必要に応じて実装）
+        // Default: no-op (override in derived classes if needed)
     }
 
     /// <summary>
-    /// SQL安全性基本チェック
+    /// Basic SQL safety checks
     /// </summary>
     private static void ValidateBasicSqlSafety(string result)
     {
-        // 基本的な危険パターンチェック
+        // Check basic dangerous patterns
         var dangerousPatterns = new[]
         {
             "--", "/*", "*/", ";--", "';", "DROP", "DELETE", "INSERT", "UPDATE",

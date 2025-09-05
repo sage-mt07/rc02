@@ -10,7 +10,7 @@ namespace Kafka.Ksql.Linq.Query.Pipeline;
 
 /// <summary>
 /// JOINクエリ生成器（新規作成）
-/// 設計理由：責務分離設計に準拠、2テーブルJOINとLEFT JOINに特化
+/// Rationale: separation-of-concerns; specialized for 2-table JOIN and LEFT JOIN
 /// </summary>
 internal class JoinQueryGenerator : GeneratorBase
 {
@@ -63,7 +63,7 @@ internal class JoinQueryGenerator : GeneratorBase
             var joinExpression = BuildJoinExpression(outerTable, innerTable, outerKeySelector, innerKeySelector, resultSelector);
             var joinContent = SafeCallBuilder(KsqlBuilderType.Join, joinExpression, "JOIN processing");
 
-            // JOIN句は完全なクエリとして返される（JoinClauseBuilderが完全なSELECT文を生成）
+            // JOIN clause is returned as a complete query (JoinClauseBuilder generates full SELECT)
             return ApplyQueryPostProcessing(joinContent, context);
         }
         catch (System.Exception ex)
@@ -139,7 +139,7 @@ internal class JoinQueryGenerator : GeneratorBase
     }
 
     /// <summary>
-    /// JOIN構造作成
+    /// Create JOIN structure
     /// </summary>
     private static QueryStructure CreateJoinStructure(string outerTable, string innerTable)
     {

@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 namespace Kafka.Ksql.Linq.Query.Pipeline;
 
 /// <summary>
-/// クエリ句定義
+/// Query clause definition
 /// </summary>
 internal record QueryClause(
     QueryClauseType Type,
@@ -12,7 +12,7 @@ internal record QueryClause(
     int Priority = 0)
 {
     /// <summary>
-    /// 必須句作成
+    /// Create a required clause
     /// </summary>
     public static QueryClause Required(QueryClauseType type, string content, Expression? sourceExpression = null)
     {
@@ -20,7 +20,7 @@ internal record QueryClause(
     }
 
     /// <summary>
-    /// 任意句作成
+    /// Create an optional clause
     /// </summary>
     public static QueryClause Optional(QueryClauseType type, string content, Expression? sourceExpression = null)
     {
@@ -28,12 +28,12 @@ internal record QueryClause(
     }
 
     /// <summary>
-    /// 空句判定
+    /// Determine if clause is empty
     /// </summary>
     public bool IsEmpty => string.IsNullOrWhiteSpace(Content);
 
     /// <summary>
-    /// 有効句判定
+    /// Determine if clause is valid
     /// </summary>
     public bool IsValid => !IsEmpty;
 }

@@ -11,7 +11,7 @@ namespace Kafka.Ksql.Linq.Query.Pipeline;
 
 /// <summary>
 /// DMLクエリ生成器（新Builder使用版）
-/// 設計理由：責務分離設計に準拠、Builder統合型でSELECT文生成
+/// Rationale: separation-of-concerns; generate SELECT via integrated builders
 /// </summary>
 internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
 {
@@ -70,7 +70,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
             var context = new QueryAssemblyContext(objectName, isPullQuery, isTableQuery);
             var structure = CreateSelectStructure(objectName);
 
-            // WHERE句追加
+            // Append WHERE clause
             var whereContent = SafeCallBuilder(KsqlBuilderType.Where, whereExpression, "WHERE condition processing");
             var whereClause = QueryClause.Required(QueryClauseType.Where, $"WHERE {whereContent}", whereExpression);
             structure = structure.AddClause(whereClause);
@@ -143,7 +143,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
             var context = new QueryAssemblyContext(objectName, isPullQuery, isTableQuery);
             var structure = CreateSelectStructure(objectName);
 
-            // LINQ式を解析してクエリ句を構築
+            // Analyze LINQ expression to build query clauses
             structure = ProcessLinqExpression(structure, linqExpression, context);
 
             var query = AssembleStructuredQuery(structure);
@@ -156,28 +156,28 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// 基本SELECT構造作成
+    /// Create basic SELECT structure
     /// </summary>
     private static QueryStructure CreateSelectStructure(string objectName)
     {
         var metadata = new QueryMetadata(DateTime.UtcNow, "DML");
         var structure = QueryStructure.CreateSelect(objectName).WithMetadata(metadata);
 
-        // デフォルトのSELECT *句とFROM句を追加
+        // Add default SELECT * and FROM clauses
         var selectClause = QueryClause.Required(QueryClauseType.Select, "*");
         var fromClause = QueryClause.Required(QueryClauseType.From, $"FROM {objectName}");
         return structure.AddClauses(selectClause, fromClause);
     }
 
     /// <summary>
-    /// COUNT構造作成
+    /// Create COUNT structure
     /// </summary>
     private static QueryStructure CreateCountStructure(string objectName)
     {
         var metadata = new QueryMetadata(DateTime.UtcNow, "DML");
         var structure = QueryStructure.CreateSelect(objectName).WithMetadata(metadata);
 
-        // COUNT(*)句とFROM句を追加
+        // Add COUNT(*) and FROM clauses
         var selectClause = QueryClause.Required(QueryClauseType.Select, "COUNT(*)");
         var fromClause = QueryClause.Required(QueryClauseType.From, $"FROM {objectName}");
         return structure.AddClauses(selectClause, fromClause);
@@ -233,7 +233,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
                 var selectContent = SafeCallBuilder(KsqlBuilderType.Select, lambdaBody, "SELECT processing");
                 var clause = QueryClause.Required(QueryClauseType.Select, selectContent, lambdaBody);
 
-                // 既存のSELECT句を置き換え
+                // Replace existing SELECT clause
                 structure = structure.RemoveClause(QueryClauseType.Select);
                 structure = structure.AddClause(clause);
             }
@@ -277,7 +277,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
                 {
                     var whereContent = SafeCallBuilder(KsqlBuilderType.Where, lambdaBody, "WHERE processing");
 
-                    // 既存のWHERE句と結合（AND条件）
+                    // Combine with existing WHERE clause (AND)
                     var existingWhere = structure.GetClause(QueryClauseType.Where);
                     if (existingWhere != null)
                     {
@@ -347,7 +347,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
             var orderByContent = SafeCallBuilder(KsqlBuilderType.OrderBy, methodCall, "ORDER BY processing");
             var clause = QueryClause.Optional(QueryClauseType.OrderBy, $"ORDER BY {orderByContent}", methodCall);
 
-            // ORDER BY は1つの句に統合するため既存句を置き換え
+            // Replace existing to unify ORDER BY into a single clause
             structure = structure.RemoveClause(QueryClauseType.OrderBy);
             structure = structure.AddClause(clause);
         }
@@ -356,7 +356,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// TAKE メソッド処理（LIMIT句）
+    /// Handle TAKE method (LIMIT clause)
     /// </summary>
     private QueryStructure ProcessTakeMethod(QueryStructure structure, MethodCallExpression methodCall)
     {

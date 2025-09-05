@@ -6,8 +6,8 @@ using System.Linq.Expressions;
 namespace Kafka.Ksql.Linq.Query.Builders;
 
 /// <summary>
-/// HAVING句内容構築ビルダー
-/// 設計理由：責務分離設計に準拠、キーワード除外で純粋な集約条件内容のみ生成
+/// Builder for HAVING clause content.
+/// Rationale: separation-of-concerns; generate only aggregate condition content without keywords.
 /// 出力例: "SUM(amount) > 100 AND COUNT(*) > 5" (HAVING除外)
 /// </summary>
 internal class HavingClauseBuilder : BuilderBase
@@ -28,13 +28,13 @@ internal class HavingClauseBuilder : BuilderBase
 
     protected override void ValidateBuilderSpecific(Expression expression)
     {
-        // HAVING句特有のバリデーション
+        // HAVING-specific validation
         BuilderValidation.ValidateNoNestedAggregates(expression);
         ValidateRequiresAggregateOrGroupByColumn(expression);
     }
 
     /// <summary>
-    /// HAVING句では集約関数またはGROUP BYカラムのみ許可
+    /// Allow only aggregate functions or GROUP BY columns in HAVING clause
     /// </summary>
     private static void ValidateRequiresAggregateOrGroupByColumn(Expression expression)
     {

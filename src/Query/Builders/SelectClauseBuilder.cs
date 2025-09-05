@@ -6,8 +6,8 @@ using System.Linq.Expressions;
 namespace Kafka.Ksql.Linq.Query.Builders;
 
 /// <summary>
-/// SELECT句内容構築ビルダー
-/// 設計理由：責務分離設計に準拠、キーワード除外で純粋な句内容のみ生成
+/// Builder for SELECT clause content.
+/// Rationale: separation-of-concerns; generate only clause content without keywords.
 /// 出力例: "col1, col2 AS alias" (SELECT除外)
 /// </summary>
 internal class SelectClauseBuilder : BuilderBase
@@ -68,7 +68,7 @@ internal class SelectClauseBuilder : BuilderBase
 
     protected override void ValidateBuilderSpecific(Expression expression)
     {
-        // SELECT句特有のバリデーション
+        // SELECT-specific validation
         BuilderValidation.ValidateNoNestedAggregates(expression);
 
         if (expression is MethodCallExpression)

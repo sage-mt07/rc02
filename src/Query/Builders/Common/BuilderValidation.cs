@@ -6,7 +6,7 @@ namespace Kafka.Ksql.Linq.Query.Builders.Common;
 
 /// <summary>
 /// Builder共通バリデーション
-/// 設計理由：全Builderクラスで統一されたバリデーションロジック提供
+/// Rationale: provide unified validation logic across all builder classes.
 /// </summary>
 internal static class BuilderValidation
 {
@@ -98,7 +98,7 @@ internal static class BuilderValidation
     }
 
     /// <summary>
-    /// Lambda式からBody抽出（安全版）
+    /// Safely extract Body from a Lambda expression
     /// </summary>
     public static Expression? ExtractLambdaBody(Expression expression)
     {
@@ -111,7 +111,7 @@ internal static class BuilderValidation
     }
 
     /// <summary>
-    /// MemberExpression抽出（安全版）
+    /// Safely extract a MemberExpression
     /// </summary>
     public static MemberExpression? ExtractMemberExpression(Expression expression)
     {
@@ -137,7 +137,7 @@ internal static class BuilderValidation
     }
 
     /// <summary>
-    /// NULL安全な文字列変換
+    /// NULL-safe string conversion
     /// </summary>
     public static string SafeToString(object? value)
     {
@@ -151,7 +151,7 @@ internal static class BuilderValidation
     }
 
     /// <summary>
-    /// CASE式の THEN/ELSE 型一致を検証
+    /// Validate THEN/ELSE type consistency in CASE expressions
     /// </summary>
     public static void ValidateConditionalTypes(Expression ifTrue, Expression ifFalse)
     {

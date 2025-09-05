@@ -7,8 +7,8 @@ using System.Threading;
 namespace Kafka.Ksql.Linq.Query.Builders;
 
 /// <summary>
-/// GROUP BY句内容構築ビルダー
-/// 設計理由：責務分離設計に準拠、キーワード除外で純粋なグループ化キー内容のみ生成
+/// Builder for GROUP BY clause content.
+/// Rationale: separation-of-concerns; generate only grouping key content without keywords.
 /// 出力例: "col1, col2" (GROUP BY除外)
 /// </summary>
 internal class GroupByClauseBuilder : BuilderBase
@@ -46,13 +46,13 @@ internal class GroupByClauseBuilder : BuilderBase
 
     protected override void ValidateBuilderSpecific(Expression expression)
     {
-        // GROUP BY句特有のバリデーション
+        // GROUP BY-specific validation
         ValidateNoAggregateInGroupBy(expression);
         ValidateGroupByKeyCount(expression);
     }
 
     /// <summary>
-    /// GROUP BY句での集約関数使用禁止チェック
+    /// Disallow aggregate functions in GROUP BY clause
     /// </summary>
     private static void ValidateNoAggregateInGroupBy(Expression expression)
     {

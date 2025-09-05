@@ -6,8 +6,8 @@ using System.Linq.Expressions;
 namespace Kafka.Ksql.Linq.Query.Builders;
 
 /// <summary>
-/// JOIN句構築ビルダー（3テーブル制限版）
-/// 設計理由：責務分離設計に準拠、完全なJOIN文出力（キーワード含む）
+/// Builder for JOIN clauses (limited to 3 tables).
+/// Rationale: separation-of-concerns; outputs a complete JOIN statement including keywords.
 /// 出力例: "JOIN table2 t2 ON t1.key = t2.key"
 /// </summary>
 internal class JoinClauseBuilder : BuilderBase
@@ -39,13 +39,13 @@ internal class JoinClauseBuilder : BuilderBase
 
     protected override void ValidateBuilderSpecific(Expression expression)
     {
-        // JOIN句特有のバリデーション
+        // JOIN-specific validation
         ValidateJoinStructure(expression);
         ValidateJoinTypes(expression);
     }
 
     /// <summary>
-    /// JOIN構造バリデーション
+    /// Validate JOIN structure
     /// </summary>
     private static void ValidateJoinStructure(Expression expression)
     {

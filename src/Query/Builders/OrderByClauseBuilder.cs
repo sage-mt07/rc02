@@ -7,8 +7,8 @@ using System.Linq.Expressions;
 namespace Kafka.Ksql.Linq.Query.Builders;
 
 /// <summary>
-/// ORDER BY句内容構築ビルダー
-/// 設計理由：責務分離設計に準拠、キーワード除外で純粋なソート内容のみ生成
+/// Builder for ORDER BY clause content.
+/// Rationale: separation-of-concerns; generate only sorting content without keywords.
 /// 出力例: "col1 ASC, col2 DESC" (ORDER BY除外)
 /// </summary>
 internal class OrderByClauseBuilder : BuilderBase
@@ -37,7 +37,7 @@ internal class OrderByClauseBuilder : BuilderBase
 
     protected override void ValidateBuilderSpecific(Expression expression)
     {
-        // ORDER BY句特有のバリデーション
+        // ORDER BY-specific validation
         ValidateOrderByLimitations(expression);
         ValidateOrderByColumns(expression);
     }

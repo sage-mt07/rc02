@@ -6,8 +6,8 @@ using System.Linq.Expressions;
 namespace Kafka.Ksql.Linq.Query.Builders;
 
 /// <summary>
-/// WHERE句内容構築ビルダー
-/// 設計理由：責務分離設計に準拠、キーワード除外で純粋な条件内容のみ生成
+/// Builder for WHERE clause content.
+/// Rationale: separation-of-concerns; generate only predicate content without keywords.
 /// 出力例: "condition1 AND condition2" (WHERE除外)
 /// </summary>
 internal class WhereClauseBuilder : BuilderBase
@@ -28,13 +28,13 @@ internal class WhereClauseBuilder : BuilderBase
 
     protected override void ValidateBuilderSpecific(Expression expression)
     {
-        // WHERE句特有のバリデーション
+        // WHERE-specific validation
         ValidateNoAggregateInWhere(expression);
         ValidateNoSelectStatements(expression);
     }
 
     /// <summary>
-    /// WHERE句での集約関数使用禁止チェック
+    /// Disallow aggregate functions in WHERE clause
     /// </summary>
     private static void ValidateNoAggregateInWhere(Expression expression)
     {
@@ -49,7 +49,7 @@ internal class WhereClauseBuilder : BuilderBase
     }
 
     /// <summary>
-    /// WHERE句でのSELECT文混入禁止チェック
+    /// Disallow SELECT statements within WHERE clause
     /// </summary>
     private static void ValidateNoSelectStatements(Expression expression)
     {

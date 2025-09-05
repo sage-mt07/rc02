@@ -8,8 +8,8 @@ namespace Kafka.Ksql.Linq.Query.Pipeline;
 
 /// <summary>
 /// Generator基底クラス
-/// 設計理由：責務分離設計におけるGenerator層の統一実装基盤
-/// 強制制約：Builder依存注入必須、文脈解釈と構文組み立ての分離、完全なKSQL文出力責任、エラーハンドリング統一
+/// Rationale: unified implementation base for the Generator layer under separation-of-concerns.
+/// Hard constraints: require builder DI, separate context analysis and syntax assembly, full KSQL output responsibility, unified error handling.
 /// </summary>
 internal abstract class GeneratorBase
 {
@@ -19,7 +19,7 @@ internal abstract class GeneratorBase
     protected readonly IReadOnlyDictionary<KsqlBuilderType, IKsqlBuilder> Builders;
 
     /// <summary>
-    /// コンストラクタ（Builder依存注入必須）
+    /// Constructor (requires builder DI)
     /// </summary>
     protected GeneratorBase(IReadOnlyDictionary<KsqlBuilderType, IKsqlBuilder> builders)
     {
@@ -28,7 +28,7 @@ internal abstract class GeneratorBase
     }
 
     /// <summary>
-    /// 必須Builderの存在確認
+    /// Ensure required builders exist
     /// </summary>
     protected virtual void ValidateRequiredBuilders()
     {
@@ -46,12 +46,12 @@ internal abstract class GeneratorBase
     }
 
     /// <summary>
-    /// 派生クラスで必須Builderタイプを定義
+    /// Define required builder types in derived classes
     /// </summary>
     protected abstract KsqlBuilderType[] GetRequiredBuilderTypes();
 
     /// <summary>
-    /// Builder取得（型安全）
+    /// Retrieve builder (type-safe)
     /// </summary>
     protected IKsqlBuilder GetBuilder(KsqlBuilderType type)
     {
@@ -97,14 +97,14 @@ internal abstract class GeneratorBase
 
         var result = string.Join(" ", validParts);
 
-        // 基本的な構文チェック
+        // Basic syntax checks
         ValidateAssembledQuery(result);
 
         return result;
     }
 
     /// <summary>
-    /// 組み立て済みクエリの基本検証
+    /// Basic validation for assembled queries
     /// </summary>
     private static void ValidateAssembledQuery(string query)
     {
@@ -113,7 +113,7 @@ internal abstract class GeneratorBase
             throw new InvalidOperationException("Assembled query is empty");
         }
 
-        // 基本的なKSQL構文チェック
+        // Basic KSQL syntax checks
         var upperQuery = query.Trim().ToUpper();
 
         if (!IsValidKsqlQueryStart(upperQuery))
@@ -141,7 +141,7 @@ internal abstract class GeneratorBase
     }
 
     /// <summary>
-    /// クエリバランス検証（括弧等）
+    /// Validate query balance (parentheses, etc.)
     /// </summary>
     private static void ValidateQueryBalance(string query)
     {
@@ -189,7 +189,7 @@ internal abstract class GeneratorBase
     }
 
     /// <summary>
-    /// 構造化クエリ組み立て
+    /// Assemble structured query
     /// </summary>
     protected string AssembleStructuredQuery(QueryStructure structure)
     {
@@ -205,7 +205,7 @@ internal abstract class GeneratorBase
         // クエリタイプに応じたプレフィックス
         parts.Add(CreateQueryPrefix(structure));
 
-        // 句を順序通りに追加
+        // Add clauses in order
         foreach (var clause in structure.Clauses.OrderBy(c => GetClauseOrder(c.Type)))
         {
             if (clause.IsValid)
@@ -232,7 +232,7 @@ internal abstract class GeneratorBase
     }
 
     /// <summary>
-    /// 句順序取得
+    /// Get clause ordering
     /// </summary>
     private static int GetClauseOrder(QueryClauseType clauseType)
     {
@@ -308,7 +308,7 @@ internal abstract class GeneratorBase
     }
 
     /// <summary>
-    /// Builder呼び出しの安全ラッパー
+    /// Safe wrapper for builder invocation
     /// </summary>
     protected string SafeCallBuilder(KsqlBuilderType builderType, System.Linq.Expressions.Expression expression, string operation)
     {
@@ -340,7 +340,7 @@ internal abstract class GeneratorBase
         }
         catch
         {
-            // 例外を無視して null を返す（任意処理のため）
+            // Ignore exception and return null (best-effort optional processing)
             return null;
         }
     }

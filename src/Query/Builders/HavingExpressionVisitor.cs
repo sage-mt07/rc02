@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 namespace Kafka.Ksql.Linq.Query.Builders;
 
 /// <summary>
-/// HAVING句専用ExpressionVisitor
+/// ExpressionVisitor specialized for HAVING clause.
 /// </summary>
 internal class HavingExpressionVisitor : ExpressionVisitor
 {
@@ -272,7 +272,7 @@ internal class HavingExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// NULL安全文字列変換
+    /// NULL-safe string conversion
     /// </summary>
     private static string SafeToString(object? value)
     {

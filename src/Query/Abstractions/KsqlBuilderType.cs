@@ -1,6 +1,6 @@
 namespace Kafka.Ksql.Linq.Query.Abstractions;
 /// <summary>
-/// ビルダー種別列挙
+/// Enumeration of builder kinds.
 /// </summary>
 public enum KsqlBuilderType
 {
