@@ -18,7 +18,7 @@ namespace Kafka.Ksql.Linq;
 /// </summary>
 public abstract class EventSet<T> : IEntitySet<T> where T : class
 {
-    // 任意実装：CommitManager が entity と meta を紐づけたい場合に実装する
+    // Optional: implement when CommitManager needs to associate entity with meta
     internal interface ICommitRegistrar
     {
         void Track(object entity, MessageMeta meta);
@@ -120,7 +120,7 @@ public abstract class EventSet<T> : IEntitySet<T> where T : class
     public virtual async Task<List<T>> ToListAsync(CancellationToken cancellationToken = default)
     {
         if (_entityModel.EntityType == typeof(Messaging.DlqEnvelope))
-            throw new InvalidOperationException("DLQは無限列挙/履歴列であり、バッチ取得・件数指定取得は現状未対応です");
+            throw new InvalidOperationException("DLQ is an unbounded/history stream; batch or count-based retrieval is not supported.");
 
         if (_entityModel.GetExplicitStreamTableType() == StreamTableType.Stream)
             throw new InvalidOperationException("ToListAsync() is not supported on a Stream source. Use ForEachAsync or subscribe for event consumption.");
@@ -156,8 +156,8 @@ public abstract class EventSet<T> : IEntitySet<T> where T : class
     }
 
     /// <summary>
-    /// 呼び出し側から手動コミットを行う（autocommit時はno-op）。
-    /// ForEachAsync で受け取った entity インスタンスを渡すこと。
+    /// Manually commit from the caller (no-op when autocommit is enabled).
+    /// Pass the entity instance received by ForEachAsync.
     /// </summary>
     public void Commit(T entity)
     {
@@ -177,12 +177,12 @@ public abstract class EventSet<T> : IEntitySet<T> where T : class
         bool autoCommit,
         CancellationToken cancellationToken)
     {
-        // 元の列挙に、必要なら "コミット追跡" を差し込む
+        // Inject commit tracking into the source enumeration when needed
         var source = context.GetConsumerManager().ConsumeAsync<T>(autoCommit: autoCommit, cancellationToken: cancellationToken);
         return autoCommit ? source : TrackCommitIfSupported(source);
     }
 
-    // _commitManager が ICommitRegistrar を実装している場合だけ entity→meta を紐づける
+    // Associate entity -> meta only when _commitManager implements ICommitRegistrar
     private async IAsyncEnumerable<(T Entity, Dictionary<string, string> Headers, MessageMeta Meta)> TrackCommitIfSupported(
         IAsyncEnumerable<(T Entity, Dictionary<string, string> Headers, MessageMeta Meta)> source,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)

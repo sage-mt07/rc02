@@ -5,7 +5,7 @@ namespace Kafka.Ksql.Linq.Core.Abstractions;
 public interface IErrorHandlingChain<T> where T : class
 {
     /// <summary>
-    /// Map変換前のエラーハンドリング設定
+    /// Configure error handling prior to Map transformation.
     /// </summary>
     IMapReadyChain<T> OnError(ErrorAction errorAction);
 }
@@ -13,7 +13,7 @@ public interface IErrorHandlingChain<T> where T : class
 public interface IMapReadyChain<T> where T : class
 {
     /// <summary>
-    /// Map変換実行（エラーハンドリング適用）
+    /// Execute Map transformation (with error handling applied).
     /// </summary>
     IRetryReadyChain<TResult> Map<TResult>(Func<T, TResult> mapper) where TResult : class;
 }
@@ -21,12 +21,12 @@ public interface IMapReadyChain<T> where T : class
 public interface IRetryReadyChain<T> where T : class
 {
     /// <summary>
-    /// リトライ設定（Mapに適用）
+    /// Configure retry (applied to Map).
     /// </summary>
     EventSet<T> WithRetry(int retryCount = 3, TimeSpan? retryInterval = null);
 
     /// <summary>
-    /// リトライなしで完了
+    /// Complete without retry.
     /// </summary>
     EventSet<T> Build();
 }

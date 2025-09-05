@@ -7,8 +7,8 @@ using Kafka.Ksql.Linq.Messaging;
 namespace Kafka.Ksql.Linq.Core.Abstractions;
 
 /// <summary>
-/// クエリ・更新共通操作の統一インターフェース
-/// LINQ互換性を維持
+/// Unified interface for query and update operations
+/// while preserving LINQ compatibility.
 /// </summary>
 public interface IEntitySet<T> : IAsyncEnumerable<T> where T : class
 {

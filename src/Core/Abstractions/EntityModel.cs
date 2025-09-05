@@ -76,9 +76,9 @@ public class EntityModel
         }
     }
     /// <summary>
-    /// Stream/Table型の明示的設定
+    /// Explicitly set the Stream/Table classification.
     /// </summary>
-    /// <param name="streamTableType">設定する型</param>
+    /// <param name="streamTableType">The classification to set.</param>
     public void SetStreamTableType(StreamTableType streamTableType)
     {
         _explicitStreamTableType = streamTableType;
@@ -87,7 +87,7 @@ public class EntityModel
     private StreamTableType? _explicitStreamTableType;
 
     /// <summary>
-    /// 明示的に設定されたStream/Table型を取得
+    /// Returns the explicitly set Stream/Table classification if present.
     /// </summary>
     public StreamTableType GetExplicitStreamTableType()
     {
@@ -95,8 +95,8 @@ public class EntityModel
     }
 
     /// <summary>
-    /// キープロパティの有無を確認
-    /// 設計理由：Stream/Table判定に必要、CoreExtensions.HasKeys()と同等機能
+    /// Checks whether key properties exist.
+    /// Rationale: needed for Stream/Table determination (same as CoreExtensions.HasKeys()).
     /// </summary>
     public bool HasKeys()
     {
@@ -104,24 +104,24 @@ public class EntityModel
     }
 
     /// <summary>
-    /// 複合キーかどうかを確認
+    /// Checks whether the key is composite.
     /// </summary>
     public bool IsCompositeKey()
     {
         return KeyProperties != null && KeyProperties.Length > 1;
     }
     /// <summary>
-    /// 処理エラー発生時のアクション
+    /// Action to take when a processing error occurs.
     /// </summary>
     public ErrorAction ErrorAction { get; set; } = ErrorAction.Skip;
 
     /// <summary>
-    /// デシリアライズ失敗時のポリシー
+    /// Policy to apply on deserialization failure.
     /// </summary>
     public DeserializationErrorPolicy DeserializationErrorPolicy { get; set; } = DeserializationErrorPolicy.Skip;
 
     /// <summary>
-    /// RocksDB キャッシュ利用フラグ
+    /// Enables RocksDB cache usage.
     /// </summary>
     public bool EnableCache { get; set; } = true;
 

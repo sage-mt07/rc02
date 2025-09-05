@@ -5,13 +5,13 @@ using System;
 
 namespace Kafka.Ksql.Linq.Core.Extensions;
 /// <summary>
-/// ILoggerFactory の汎用化拡張メソッド - Option 2完全版
-/// 設計理由: KafkaContext依存を排除し、Core層として適切なレイヤー設計を実現
+/// ILoggerFactory generalized extension methods (Option 2 complete version)
+/// Rationale: remove KafkaContext dependency and keep proper layering in Core
 /// </summary>
 public static class LoggerFactoryExtensions
 {
     /// <summary>
-    /// ILoggerFactory から型安全なロガーを作成、nullの場合はNullLoggerを返す
+    /// Create a type-safe logger from ILoggerFactory; returns NullLogger if null
     /// </summary>
     /// <typeparam name="T">ロガーのカテゴリ型</typeparam>
     /// <param name="loggerFactory">ロガーファクトリ（null許可）</param>
@@ -22,7 +22,7 @@ public static class LoggerFactoryExtensions
     }
 
     /// <summary>
-    /// カテゴリ名指定版のロガー作成
+    /// Create a logger by category name
     /// </summary>
     /// <param name="loggerFactory">ロガーファクトリ（null許可）</param>
     /// <param name="categoryName">カテゴリ名</param>
@@ -33,7 +33,7 @@ public static class LoggerFactoryExtensions
     }
 
     /// <summary>
-    /// Type指定版のロガー作成
+    /// Create a logger by Type category
     /// </summary>
     /// <param name="loggerFactory">ロガーファクトリ（null許可）</param>
     /// <param name="type">カテゴリのType</param>
@@ -44,7 +44,7 @@ public static class LoggerFactoryExtensions
     }
 
     /// <summary>
-    /// 後方互換性を考慮したデバッグログ出力 - 汎用版
+    /// Debug logging with backward compatibility (generic)
     /// </summary>
     /// <typeparam name="T">ロガーのカテゴリ型</typeparam>
     /// <param name="logger">ロガー</param>
@@ -56,12 +56,12 @@ public static class LoggerFactoryExtensions
         ILoggerFactory? loggerFactory, bool enableLegacyLogging,
         string message, params object[] args)
     {
-        // 新しいLoggerFactoryが設定されている場合
+        // If a modern LoggerFactory is provided
         if (loggerFactory != null)
         {
             logger.LogDebug(message, args);
         }
-        // 後方互換性: 既存のEnableDebugLoggingフラグ
+        // Backward compatibility: legacy EnableDebugLogging flag
         else if (enableLegacyLogging)
         {
             Console.WriteLine($"[DEBUG] {string.Format(message, args)}");
@@ -69,7 +69,7 @@ public static class LoggerFactoryExtensions
     }
 
     /// <summary>
-    /// 後方互換性を考慮したデバッグログ出力 - 非ジェネリック版
+    /// Debug logging with backward compatibility (non-generic)
     /// </summary>
     /// <param name="logger">ロガー</param>
     /// <param name="loggerFactory">ロガーファクトリ（null許可）</param>
@@ -80,12 +80,12 @@ public static class LoggerFactoryExtensions
         ILoggerFactory? loggerFactory, bool enableLegacyLogging,
         string message, params object[] args)
     {
-        // 新しいLoggerFactoryが設定されている場合
+        // If a modern LoggerFactory is provided
         if (loggerFactory != null)
         {
             logger.LogDebug(message, args);
         }
-        // 後方互換性: 既存のEnableDebugLoggingフラグ
+        // Backward compatibility: legacy EnableDebugLogging flag
         else if (enableLegacyLogging)
         {
             Console.WriteLine($"[DEBUG] {string.Format(message, args)}");
@@ -93,7 +93,7 @@ public static class LoggerFactoryExtensions
     }
 
     /// <summary>
-    /// 後方互換性を考慮したInfoログ出力 - 汎用版
+    /// Information logging with backward compatibility (generic)
     /// </summary>
     /// <typeparam name="T">ロガーのカテゴリ型</typeparam>
     /// <param name="logger">ロガー</param>
@@ -116,7 +116,7 @@ public static class LoggerFactoryExtensions
     }
 
     /// <summary>
-    /// 後方互換性を考慮したWarningログ出力 - 汎用版
+    /// Warning logging with backward compatibility (generic)
     /// </summary>
     /// <typeparam name="T">ロガーのカテゴリ型</typeparam>
     /// <param name="logger">ロガー</param>
@@ -139,7 +139,7 @@ public static class LoggerFactoryExtensions
     }
 
     /// <summary>
-    /// 後方互換性を考慮したErrorログ出力 - 汎用版
+    /// Error logging with backward compatibility (generic)
     /// </summary>
     /// <typeparam name="T">ロガーのカテゴリ型</typeparam>
     /// <param name="logger">ロガー</param>
@@ -164,10 +164,10 @@ public static class LoggerFactoryExtensions
     }
 
     /// <summary>
-    /// appsettings.json の Logging セクションから LoggerFactory を生成する
+    /// Create an ILoggerFactory from the Logging section in appsettings.json.
     /// </summary>
-    /// <param name="configuration">構成情報</param>
-    /// <returns>設定済みの ILoggerFactory</returns>
+    /// <param name="configuration">Configuration</param>
+    /// <returns>Configured ILoggerFactory</returns>
     public static ILoggerFactory CreateLoggerFactory(this IConfiguration configuration)
     {
         if (configuration == null) throw new ArgumentNullException(nameof(configuration));
@@ -180,4 +180,3 @@ public static class LoggerFactoryExtensions
         });
     }
 }
-

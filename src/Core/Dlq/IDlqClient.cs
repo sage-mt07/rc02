@@ -7,8 +7,8 @@ namespace Kafka.Ksql.Linq.Core.Dlq;
 public interface IDlqClient
 {
     /// <summary>
-    /// DLQ を逐次読み取り、人間可読な RawText を付与して返します。
-    /// エラー時もフォールバック（Base64 先頭のみ等）で 1 レコードにまとめます。
+    /// Read DLQ records sequentially and attach human-readable RawText.
+    /// On errors, still return a single record using a fallback (e.g., head of Base64).
     /// </summary>
     IAsyncEnumerable<DlqRecord> ReadAsync(
         DlqReadOptions? options = null,

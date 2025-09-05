@@ -526,14 +526,14 @@ public abstract class KsqlContext : IKsqlContext
         return _dslOptions.DlqTopicName;
     }
     /// <summary>
-    /// Kafka接続確認
+    /// Kafka connectivity validation.
     /// </summary>
     private void ValidateKafkaConnectivity()
     {
         try
         {
-            // Producer/Consumer初期化時点でKafka接続が確認される
-            // 追加の接続確認は不要（既存の初期化処理で十分）
+            // Kafka connectivity is verified during Producer/Consumer initialization.
+            // No additional checks needed beyond the existing startup sequence.
         }
         catch (Exception ex)
         {
@@ -930,7 +930,7 @@ public abstract class KsqlContext : IKsqlContext
 
 
     /// <summary>
-    /// Core層EventSet実装（上位層機能統合）
+    /// Core-level EventSet implementation (integrates higher-level services).
     /// </summary>
     protected virtual IEntitySet<T> CreateEntitySet<T>(EntityModel entityModel) where T : class
     {

@@ -7,7 +7,7 @@ namespace Kafka.Ksql.Linq.Core.Extensions;
 internal static class CoreExtensions
 {
     /// <summary>
-    /// EntityModel拡張メソッド
+    /// EntityModel helper extensions.
     /// </summary>
     public static string GetTopicName(this EntityModel entityModel)
     {
@@ -35,7 +35,7 @@ internal static class CoreExtensions
     }
 
     /// <summary>
-    /// Type拡張メソッド
+    /// Type helper extensions.
     /// </summary>
     public static bool IsKafkaEntity(this Type type)
     {
@@ -53,7 +53,7 @@ internal static class CoreExtensions
     }
 
     /// <summary>
-    /// PropertyInfo拡張メソッド
+    /// PropertyInfo helper extensions.
     /// </summary>
     public static bool IsKafkaIgnored(this PropertyInfo property)
     {

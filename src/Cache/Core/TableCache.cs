@@ -30,7 +30,7 @@ internal class TableCache<T> : ITableCache<T> where T : class
         Func<object, string> keyStringifier,
         Func<string, object, Type, object> combiner)
     {
-        _mappingRegistry = null!;            // 未使用
+        _mappingRegistry = null!;            // not used in this constructor
         _storeName = "test";
         _waitUntilRunning = waitUntilRunning;
         _enumerateLazy = enumerateLazy;
@@ -49,7 +49,7 @@ internal class TableCache<T> : ITableCache<T> where T : class
         var list = new List<T>();
         foreach (var (key, val) in _enumerateLazy.Value())
         {
-            // key は string を前提（Streamiz 側で文字列キー化）
+            // Key is expected to be a string (stringified by the Streamiz side)
             var keyStr = key as string
                           ?? _testKeyStringifier?.Invoke(key)
                           ?? key?.ToString();
