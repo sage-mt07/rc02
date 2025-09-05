@@ -98,7 +98,8 @@ public abstract class KsqlContext : IKsqlContext
 
     private void InitializeCore(ILoggerFactory? loggerFactory)
     {
-        DecimalPrecisionConfig.Configure(_dslOptions.DecimalPrecision, _dslOptions.DecimalScale, _dslOptions.Decimals);
+        // Configure only per-property decimal overrides; global precision/scale options removed from docs
+        DecimalPrecisionConfig.Configure(_dslOptions.Decimals);
 
         _schemaRegistryClient = new Lazy<ConfluentSchemaRegistry.ISchemaRegistryClient>(CreateSchemaRegistryClient);
         _ksqlDbClient = new KsqlDbClient(GetDefaultKsqlDbUrl());
@@ -242,7 +243,7 @@ public abstract class KsqlContext : IKsqlContext
 
     protected void ConfigureModel()
     {
-        var modelBuilder = new ModelBuilder(_dslOptions.ValidationMode);
+        var modelBuilder = new ModelBuilder(ValidationMode.Strict);
         InitializeEventSetProperties(modelBuilder);
         using (Kafka.Ksql.Linq.Core.Modeling.ModelCreatingScope.Enter())
         {
@@ -571,7 +572,7 @@ public abstract class KsqlContext : IKsqlContext
                 var valueSchema = Avro.Schema.Parse(mapping.AvroValueSchema!);
                 model.ValueSchemaFullName = valueSchema.Fullname;
                 schemaResults[type] = valueResult;
-                DecimalSchemaValidator.Validate(model, client, _dslOptions.ValidationMode, Logger);
+                DecimalSchemaValidator.Validate(model, client, ValidationMode.Strict, Logger);
             }
             catch (ConfluentSchemaRegistry.SchemaRegistryException ex)
             {

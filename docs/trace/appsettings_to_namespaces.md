@@ -15,7 +15,6 @@
 | `KsqlDsl:DlqTopicName` | `KsqlDslOptions.DlqTopicName` | `KafkaAdminService`, `DlqProducer` | DLQ 用トピック名 |
 | `KsqlDsl:DlqOptions.*` | `DlqOptions.*` | `KafkaAdminService` | DLQ トピック生成方針 |
 | `KsqlDsl:DeserializationErrorPolicy` | `KsqlDslOptions.DeserializationErrorPolicy` | `KafkaConsumerManager` | デシリアライズ失敗時のポリシー |
-| `KsqlDsl:DecimalPrecision`, `KsqlDsl:DecimalScale` | `KsqlDslOptions.DecimalPrecision`, `DecimalScale` | `KsqlContext` (通して `DecimalPrecisionConfig` に伝播), Query Builders | decimal 型の精度/スケール一括設定 |
 | `KsqlDsl:ReadFromFinalTopicByDefault` | `KsqlDslOptions.ReadFromFinalTopicByDefault` | 利用部位不明 | 意図不明、設計規定が不定 |
 | `Kafka:Consumers.<name>.*` | `KafkaSubscriptionOptions` へ取り込み | `KafkaConsumerManager` | 複数グループ設定に対応 |
 

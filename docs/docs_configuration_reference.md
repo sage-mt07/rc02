@@ -10,7 +10,7 @@ Kafka.Ksql.Linq では、`appsettings.json` を通じて柔軟なDSL設定が可
 ```json
 {
   "KsqlDsl": {
-    "ValidationMode": "Strict|Relaxed",
+    
     "Common": { /* 共通設定 */ },
     "Topics": { /* トピック別設定 */ },
     "SchemaRegistry": { /* スキーマレジストリ設定 */ },
@@ -18,9 +18,7 @@ Kafka.Ksql.Linq では、`appsettings.json` を通じて柔軟なDSL設定が可
     "DlqTopicName": "dead-letter-queue",
     "DlqOptions": { /* DLQ トピック設定 */ },
     "DeserializationErrorPolicy": "Skip|Retry|DLQ",
-    "ReadFromFinalTopicByDefault": false,
-    "DecimalPrecision": 38,
-    "DecimalScale": 9
+    "ReadFromFinalTopicByDefault": false
   }
 }
 ```
@@ -182,15 +180,14 @@ Consumer の設定は `ConsumerSection` クラスにそれぞれマッピング�
 
 ---
 
-### 🏪 1.4 TableCache（テーブルキャッシュ設定）
+### 🏪 1.4 Entities（Table cache settings）
 
 ```json
-"TableCache": [
+"Entities": [
   {
     "Entity": "OrderEntity",
     "SourceTopic": "orders",
     "EnableCache": true,
-    "Windows": [5, 15, 60],
     "StoreName": "orders_store",
     "BaseDirectory": "/var/lib/ksql_cache"
   }
@@ -208,16 +205,9 @@ Consumer の設定は `ConsumerSection` クラスにそれぞれマッピング�
 
 ---
 
-### 🛡️ 1.5 ValidationMode
+### 🛡️ 1.5 Validation
 
-| 値 | 説明 |
-|-----|------|
-| `Strict` | 起動時に全構成値を検証。欠落や不整合があるとエラー（推奨） |
-| `Relaxed` | 柔軟に読み込む。テスト・一時構成に使用可 |
-
-```json
-"ValidationMode": "Strict"
-```
+- Validation mode is always Strict. The configuration key has been removed.
 
 ---
 
@@ -255,8 +245,6 @@ Consumer の設定は `ConsumerSection` クラスにそれぞれマッピング�
 |------|------|
 | `DeserializationErrorPolicy` | `Skip` / `Retry` / `DLQ` のエラーハンドリング方針 |
 | `ReadFromFinalTopicByDefault` | Finalトピックを既定で参照するか |
-| `DecimalPrecision` | decimal型のprecisionを一括設定 |
-| `DecimalScale` | decimal型のscaleを一括設定 |
 
 ### 🧩 DSL記述とappsettingsの対応関係
 
@@ -290,8 +278,7 @@ public class MyKsqlContext : KsqlContext
 {
     modelBuilder.Entity<Order>()
         .WithGroupId("orders-consumer")
-        .WithAutoOffsetReset(AutoOffsetReset.Earliest)
-        .Window(new[] { 5 });
+        .WithAutoOffsetReset(AutoOffsetReset.Earliest);
 
     modelBuilder.Entity<OrderCount>()
         .WithGroupId("order-counts-consumer")
@@ -360,7 +347,3 @@ public class MyKsqlContext : KsqlContext
 - 各DSL定義と `Consumers` のキー名（例: `orders-consumer`）が一致している必要があります。
 
 これにより、「DSLで定義するグループID = 運用時の構成名」として論理的に整合した設計が実現されます。
-
-
-
-

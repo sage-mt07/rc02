@@ -30,6 +30,23 @@ public static class DecimalPrecisionConfig
         }
     }
 
+    /// <summary>
+    /// Configure only per-property decimal overrides while keeping global defaults.
+    /// Use this when global precision/scale options are not provided.
+    /// </summary>
+    public static void Configure(Dictionary<string, Dictionary<string, KsqlDslOptions.DecimalSetting>>? overrides)
+    {
+        _overrides = new();
+        if (overrides == null) return;
+        foreach (var (entity, props) in overrides)
+        {
+            foreach (var (prop, val) in props)
+            {
+                _overrides[$"{entity}.{prop}"] = (val.Precision, val.Scale);
+            }
+        }
+    }
+
     public static void Override(PropertyInfo property, int precision, int scale)
     {
         var key = $"{property.DeclaringType?.Name}.{property.Name}";
