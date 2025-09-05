@@ -1,1 +1,0 @@
-- tests/Query/Builders/JoinBuilderTests.cs はファイル末尾に改行がなく、スタイルガイド違反の可能性があります。
