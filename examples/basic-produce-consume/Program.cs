@@ -1,16 +1,17 @@
 using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Attributes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
-[Topic("basic-produce-consume")]
+[KsqlTopic("basic-produce-consume")]
 public class BasicMessage
 {
     public int Id { get; set; }
 
-    [AvroTimestamp]
+    [KsqlTimestamp]
     public DateTime CreatedAt { get; set; }
 
     public string Text { get; set; } = string.Empty;
@@ -18,9 +19,12 @@ public class BasicMessage
 
 public class BasicContext : KsqlContext
 {
+    public BasicContext(IConfiguration configuration, ILoggerFactory? loggerFactory = null)
+        : base(configuration, loggerFactory) { }
+
     protected override void OnModelCreating(IModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<BasicMessage>();
+        modelBuilder.Entity<BasicMessage>().AsStream();
     }
 }
 
@@ -32,11 +36,8 @@ class Program
             .AddJsonFile("appsettings.json")
             .Build();
 
-        var context = KsqlContextBuilder.Create()
-            .UseConfiguration(configuration)
-            .UseSchemaRegistry(configuration["KsqlDsl:SchemaRegistry:Url"]!)
-            .EnableLogging(LoggerFactory.Create(builder => builder.AddConsole()))
-            .BuildContext<BasicContext>();
+        var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+        var context = new BasicContext(configuration, loggerFactory);
 
         var message = new BasicMessage
         {
@@ -49,10 +50,11 @@ class Program
         // wait briefly for message to be published
         await Task.Delay(500);
 
+        using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromMinutes(5));
         await context.Set<BasicMessage>().ForEachAsync(m =>
         {
             Console.WriteLine($"Consumed message: {m.Text}");
             return Task.CompletedTask;
-        });
+        }, cancellationToken: cts.Token);
     }
 }

@@ -50,10 +50,11 @@ class Program
         // wait briefly for message to be published
         await Task.Delay(500);
 
+        using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromMinutes(5));
         await context.Set<HelloMessage>().ForEachAsync(m =>
         {
             Console.WriteLine($"Received: {m.Text}");
             return Task.CompletedTask;
-        });
+        }, cancellationToken: cts.Token);
     }
 }

@@ -25,6 +25,8 @@ public class EnsureSimpleEntityDdlAsyncTests
         public Task<KsqlDbResponse> ExecuteStatementAsync(string statement) => Task.FromResult(new KsqlDbResponse(false, "err"));
         public Task<KsqlDbResponse> ExecuteExplainAsync(string ksql) => Task.FromResult(new KsqlDbResponse(true, ""));
         public Task<HashSet<string>> GetTableTopicsAsync() => Task.FromResult(new HashSet<string>());
+        public Task<int> ExecuteQueryStreamCountAsync(string sql, TimeSpan? timeout = null) => Task.FromResult(0);
+        public Task<int> ExecutePullQueryCountAsync(string sql, TimeSpan? timeout = null) => Task.FromResult(0);
     }
 
     private class DummyContext : KsqlContext

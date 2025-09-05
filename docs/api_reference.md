@@ -1,190 +1,369 @@
 # API Reference
 
-`Kafka.Ksql.Linq` の公開 DSL/API を使用頻度の高い順にまとめたリファレンスです。
+このページを読み終えると、送受信とビュー定義を試せます。
 
-## 目次
-- [属性 (Attributes)](#%E5%B1%9E%E6%80%A7-attributes)
-- [Fluent API](#fluent-api)
-  - [ToQuery チェーン](#toquery-%E3%83%81%E3%82%A7%E3%83%BC%E3%83%B3)
-- [LINQ 風 DSL](#linq-%E9%A2%A8-dsl)
-- [エラーハンドリング](#%E3%82%A8%E3%83%A9%E3%83%BC%E3%83%8F%E3%83%B3%E3%83%89%E3%83%AA%E3%83%B3%E3%82%B0)
-- [コアインタフェース](#%E3%82%B3%E3%82%A2%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%95%E3%82%A7%E3%83%BC%E3%82%B9)
-- [構成オプションとビルダー](#%E6%A7%8B%E6%88%90%E3%82%AA%E3%83%97%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%A8%E3%83%93%E3%83%AB%E3%83%80%E3%83%BC)
-- [既定値の参照](#%E6%97%A2%E5%AE%9A%E5%80%A4%E3%81%AE%E5%8F%82%E7%85%A7)
+## よく使う流れ
 
-## 属性 (Attributes)
-
-POCO モデルで最も利用される属性です。
-
-| 属性 | 役割 | 主な引数 | 備考 |
-|------|------|----------|------|
-| `KsqlTopicAttribute` | トピック名・パーティション・レプリケーション指定 | `name`, `PartitionCount`, `ReplicationFactor` | モデルのトピックを構成し、設定より優先されます。 |
-| `KsqlKeyAttribute` | 複合キー順序の定義 | `order` | 小さい順にキーが並びます。 |
-| `KsqlDecimalAttribute` | `decimal` 型の精度とスケール指定 | `precision`, `scale` | Avro の `bytes` (logicalType: decimal) として生成。 |
-| `KsqlDatetimeFormatAttribute` | 日時文字列の解析フォーマット | `format` | `DateTime.ParseExact` 互換。 |
-| `KsqlTimestampAttribute` | イベントタイムとなるプロパティを指定 | - | `ROWTIME` の代替に利用。 |
-| `KsqlStreamAttribute` | クラスを Stream として扱う | - | 明示指定が必要な場合のみ使用。 |
-| `KsqlIgnoreAttribute` | スキーマから除外 | - | 無視するプロパティに付与。 |
-| `MaxLengthAttribute` | 文字列長制限 | `length` | 超過時は例外。 |
-| `ScheduleRangeAttribute` | 開始・終了プロパティ名の対指定 | `openPropertyName`, `closePropertyName` | 取引時間帯などの範囲指定。 |
-
-
-## Fluent API
-
-エンティティの登録やクエリ構築を行うための API です。
-
-| メソッド | 説明 | 主なパラメータ |
-|----------|------|----------------|
-| `Entity<T>(readOnly = false, writeOnly = false)` | エンティティを登録しアクセスモードを指定 | `readOnly`, `writeOnly` |
-| `.AsStream()` | ストリームとして登録 | - |
-| `.AsTable(topicName = null, useCache = true)` | テーブルとして登録 | `topicName`, `useCache` |
-| `.ToQuery(build)` | 新 DSL でビュー定義 | `build`: `From`/`Join`/`Where`/`Select` を連鎖 |
-
-### Fluent API ガイドライン
-
-1. `[KsqlTopic]` や `[KsqlKey]` などの属性でスキーマ情報を宣言。
-2. Fluent API はクエリ構築やモード指定に限定し、スキーマ設定は属性へ集約。
-3. エンティティ登録時は `readOnly`/`writeOnly`/`readwrite` の 3 種類。未指定は `readwrite`。
-
-#### 推奨記述例
+### 1. コンテキストを作る（設定から始める）
+- 設定を読み込み、ビルダーへ渡します。
+- スキーマレジストリの URL を指定します。
+- ログを有効化し、生成クエリを確認します。
 
 ```csharp
-[KsqlTopic("orders")]
-public class Order
-{
-    ...
-    builder.Entity<Order>(writeOnly: true);
-}
+var configuration = new ConfigurationBuilder()
+  .AddJsonFile("appsettings.json").Build();
+
+var ctx = KsqlContextBuilder.Create()
+  .UseConfiguration(configuration)
+  .UseSchemaRegistry(configuration["KsqlDsl:SchemaRegistry:Url"]!)
+  .EnableLogging(LoggerFactory.Create(b => b.AddConsole()))
+  .BuildContext<MyAppContext>();
 ```
 
-#### 既存 POCO → Fluent API 移行フロー
+- 要約: まず ctx を作り、以後の操作はここから始めます。
 
-1. POCO へ `[KsqlTopic]` と `[KsqlKey]` を付与。
-2. `OnModelCreating` では `Entity<T>()` の登録のみ行う。
-3. テストでキー順序やトピック設定を確認。
+### 2. エンティティを登録する（使う型を決める）
+- トピック名を `[Topic]` で指定します。
+- 時刻は `[AvroTimestamp]` を付けます。
+- `OnModelCreating` で `Entity<T>()` を登録します。
 
-### ToQuery チェーン
+```csharp
+[Topic("basic-produce-consume")]
+public class BasicMessage
+{
+  public int Id { get; set; }
+  [AvroTimestamp] public DateTime CreatedAt { get; set; }
+  public string Text { get; set; } = string.Empty;
+}
 
-View 定義専用の Fluent API です。
+protected override void OnModelCreating(IModelBuilder b)
+  => b.Entity<BasicMessage>().AsStream();
+```
 
-| メソッド | 説明 | 主なパラメータ | 注意点 |
-|----------|------|----------------|--------|
-| `.From<T>()` | ビュー定義の開始 | - | - |
-| `.Join<T2>(condition)` | 2 テーブルまでの内部結合 | `(left, right) => bool` | 後続に `.Where` 必須 |
-| `.Where(predicate)` | 結合条件やフィルタ | `predicate`: bool 条件式 | `.Join` 使用時は必須 |
-| `.Select(selector)` | 投影 | `selector`: 出力構造 | 呼び出し順序は `From`→`Join?`→`Where`→`Select` |
+- 要約: 登録後は `ctx.Set<BasicMessage>()` が使えます。
+
+### 3. 送って、受け取って、確かめる
+- 送信は `AddAsync` を呼びます。
+- 少し待ってから `ForEachAsync` で購読します。
+- 期待するメッセージを標準出力で確認します。
+
+```csharp
+await ctx.Set<BasicMessage>().AddAsync(new BasicMessage
+{
+  Id = Random.Shared.Next(),
+  CreatedAt = DateTime.UtcNow,
+  Text = "Basic Flow"
+});
+
+await Task.Delay(500);
+await ctx.Set<BasicMessage>().ForEachAsync(m =>
+{
+  Console.WriteLine($"Consumed: {m.Text}");
+  return Task.CompletedTask;
+});
+```
+
+- 期待結果: `Consumed: Basic Flow` が表示されます。
+- 要約: 送受信は Set<T>() の2呼び出しで完結します。
+
+### 4. ビューを定義する（ToQuery）
+- 永続ビューは `ToQuery(...)` で宣言します。
+- `From/Join/Where/Select` を順に組みます。
+- 一時的な絞り込みは LINQ を併用します。
 
 ```csharp
 modelBuilder.Entity<OrderSummary>().ToQuery(q => q
-    .From<Order>()
-    .Join<Customer>((o, c) => o.CustomerId == c.Id)
-    .Where((o, c) => c.IsActive)
-    .Select((o, c) => new OrderSummary { OrderId = o.Id, CustomerName = c.Name }));
+  .From<Order>()
+  .Join<Customer>((o, c) => o.CustomerId == c.Id)
+  .Where((o, c) => c.IsActive)
+  .Select((o, c) => new OrderSummary { OrderId = o.Id, CustomerName = c.Name }));
+
+await ctx.Set<OrderSummary>()
+  .Where(x => x.CustomerName.StartsWith("A"))
+  .ForEachAsync(x => { /* consume */ return Task.CompletedTask; });
 ```
 
-`.ToQuery(...)` で得られた `KsqlQueryModel` は `CREATE STREAM/TABLE AS SELECT` 文として利用されます。
+- 要約: 定義は ToQuery、臨時の絞り込みは LINQ です。
 
-## LINQ 風 DSL
-
-ストリーム/テーブル共通のクエリ操作を提供します。
-
-| DSL メソッド | 説明 | 戻り値型 | 対象レイヤ | 主なパラメータ | 実装状態 |
-|--------------|------|----------|------------|----------------|---------|
-| `.Where(predicate)` | 条件フィルタ | `IEventSet<T>` | Stream/Table | `predicate`: bool 式 | ✅ |
-| `.GroupBy(keySelector)` | グループ化と集約 | `IEventSet<IGrouping<TKey,T>>` | Stream/Table | `keySelector` | ✅ |
-| `.OnError(action)` | エラー処理方針 | `EventSet<T>` | Stream | `Skip`/`Retry`/`DLQ` | ✅ |
-| `.WithRetry(count)` | リトライ設定 | `EventSet<T>` | Stream | `count`: 最大回数 | ✅ |
-| `.StartErrorHandling()` | エラーチェーン開始 | `IErrorHandlingChain<T>` | Stream | - | ✅ |
-| `.Limit(count)` | **保持件数制限** | `IEntitySet<T>` | Table | `count`: 上限件数 | ✅ |
-
-- `ToList`/`ToListAsync` は Pull Query として実行されます。
-- `ForEachAsync(..., autoCommit: false)` では `Commit(entity)` による手動コミットが必要です。
-- `autoCommit` 既定値は `true` で、`ConsumerConfig.EnableAutoCommit` により自動コミットされます。
-- `ctx.Set<DlqEnvelope>()` で DLQ ストリーム取得。`Take()` や `ToListAsync()` は利用不可。
-
-## エラーハンドリング
-
-| API / Enum | 説明 | 実装状態 |
-|------------|------|---------|
-| `ErrorAction` (`Skip`/`Retry`/`DLQ`) | 基本アクション | ✅ |
-| `ErrorHandlingPolicy` | リトライ回数やカスタムハンドラ設定 | ✅ |
-| `ErrorHandlingExtensions` | `.OnError()` `.WithRetryWhen()` など | ✅ |
-| `DlqProducer` / `DlqEnvelope` | DLQ 送信処理 | ✅ |
-| `DlqOptions` | DLQ トピックの保持期間等 | ✅ |
-
-### DLQ Read API（Avro 固定）
-
-```csharp
-public interface IKsqlContext
-{
-    IDlqClient Dlq { get; }
-}
-
-public interface IDlqClient
-{
-    IAsyncEnumerable<DlqRecord> ReadAsync(
-        DlqReadOptions? options = null,
-        CancellationToken ct = default);
-}
-```
-
-**使い方サンプル**
+### 5. 失敗を拾う（DLQ で追う）
+- 失敗したレコードは DLQ に送られます。
+- `ctx.Dlq.ReadAsync()` で内容を確認します。
+- 必要なら修正して再投入します。
 
 ```csharp
 await foreach (var rec in ctx.Dlq.ReadAsync())
 {
-    Console.WriteLine(rec.RawText);
+  Console.WriteLine(rec.RawText);
 }
 ```
 
-**仕様**
+- 要約: 異常は DLQ を巡回すれば必ず見つかります。
 
-- `FromBeginning=true` で earliest へシーク。
-- `CommitOnRead=true` で 1 件ごとにコミット。
-- Avro ワイヤフォーマットから RawText を可読化。
+---
 
-**既知の制約**
+## 主要アノテーションとAPI
+- [Topic]: エンティティをトピックに結びます。
+- [AvroTimestamp]: イベント時刻を Avro 互換で扱います。
+- Entity<T>(): 型を登録して操作を可能にします。
+- AsStream()/AsTable(): Stream/Table として登録します。
+- ToQuery(...), Where(...): ビューと絞り込みを定義します。
+- OnError(...), ctx.Dlq.ReadAsync(): エラー処理と調査を担います。
 
-- `PayloadFormat` は常に `"avro"`。
-- 再投函は非対応（読むだけ）。
+---
 
-## コアインタフェース
+## API署名（要点）
 
-| インタフェース | 説明 | 主な実装 |
-|----------------|------|----------|
-| `IKsqlContext` | KSQL 操作の起点となるコンテキスト。エンティティ登録やクエリ実行を司る。 | `KsqlContext`, `KafkaContextCore` |
-| `IEventSet<T>` | ストリーム/テーブル共通のクエリ操作を定義。 | `EventSet<T>` |
-| `IErrorHandlingChain<T>` | エラー処理を段階的に構築するチェーン。 | `ErrorHandlingChain<T>` |
-| `IDlqClient` | DLQ からレコードを非同期で読み取るクライアント。 | `DlqClient` |
-| `ITableCache<T>` | キー前方一致によるキャッシュ参照を提供。 | `TableCache<T>` |
+- `IEventSet<T> AddAsync(T entity, CancellationToken ct=default)`
+  - 送信する。戻り値は `ValueTask`。失敗時は `KafkaException` を投げます。
+- `IEventSet<T> ForEachAsync(Func<T,Task> handler, CancellationToken ct=default)`
+  - 購読する。ハンドラで処理する。キャンセルで停止します。
+- `ModelBuilder.Entity<T>(bool readOnly=false, bool writeOnly=false)`
+  - 型を登録する。既定は両方 false（読み書き可）。
+- `EntityRegistration AsTable(string? topicName=null, bool useCache=true)`
+  - Table として扱う。キャッシュ既定は true。
+- `QueryBuilder ToQuery(Func<IQueryBuilder,IQueryBuilder> build)`
+  - ビューを宣言する。生成時に KSQL を適用します。
 
-## 構成オプションとビルダー
+要約: 送受信・登録・定義の要所だけを短く覚えます。
 
-| API | 説明 | 実装状態 |
-|-----|------|---------|
-| `KsqlDslOptions` | DLQ 設定や ValidationMode など DSL 全体の構成を保持 | ✅ |
-| `ModelBuilder` | POCO から `EntityModel` を構築するビルダー | ✅ |
-| `KafkaAdminService` | DLQ トピック作成などの管理操作 | ✅ |
-| `AvroOperationRetrySettings` | Avro 操作ごとのリトライ設定 | ✅ |
-| `AvroRetryPolicy` | リトライ回数や遅延などのポリシー | ✅ |
+## 設定スキーマ（最小）
 
-`KsqlDslOptions.DlqTopicName` は既定で `"dead-letter-queue"` です。
-
-### KsqlCreateStatementBuilder（テーブル名差し替え）
-
-`CREATE STREAM/TABLE AS SELECT` の生成時、FROM/JOIN のソース名を差し替えるためのオーバーロードを追加しました。
-
-```csharp
-// 既存：
-string Build(string name, KsqlQueryModel model, int? keySchemaId = null, int? valueSchemaId = null)
-
-// 追加：ソース名リゾルバを指定
-string Build(string name, KsqlQueryModel model, int? keySchemaId, int? valueSchemaId, Func<Type, string> sourceNameResolver)
+```json
+{
+  "KsqlDsl": {
+    "Common": { "BootstrapServers": "localhost:9092", "ClientId": "app" },
+    "SchemaRegistry": { "Url": "http://localhost:8085" },
+    "KsqlDbUrl": "http://localhost:8088",
+    "DlqTopicName": "dead-letter-queue",
+    "DeserializationErrorPolicy": "DLQ"
+  }
+}
 ```
 
-- `sourceNameResolver`: `typeof(エンティティ型)` を受け取り、ksqlDB 側のテーブル/ストリーム名を返します。
-- 既存シグネチャはそのまま利用可能（互換性維持）。
+- 必須: `Common.BootstrapServers`, `SchemaRegistry.Url`, `KsqlDbUrl`
+- 推奨: `DlqTopicName`, `DeserializationErrorPolicy`
 
-## 既定値の参照
+要約: 上記を入れれば最小構成で動きます。
 
-- 既定値一覧は [docs_configuration_reference.md](docs_configuration_reference.md) を参照してください。
+## 型抜粋（DLQなど）
+
+```csharp
+public sealed class DlqRecord
+{
+  public string SourceTopic { get; init; } = "";
+  public string ErrorCode  { get; init; } = "";
+  public string RawText    { get; init; } = "";
+}
+```
+
+- `RawText` を見て原因を切り分けます。
+
+要約: まず `RawText`、次に `SourceTopic` を確認します。
+
+## 生成KSQLの例（代表）
+
+```csharp
+modelBuilder.Entity<OrderView>().ToQuery(q => q
+  .From<Order>()
+  .Where(o => o.Amount > 0)
+  .Select(o => new OrderView { Id = o.Id, Amount = o.Amount }));
+```
+
+出力例（概念）
+```
+CREATE STREAM OrderView AS
+SELECT Id, Amount
+FROM Order
+WHERE Amount > 0;
+```
+
+要約: ToQuery は CSAS/CTAS 形式のKSQLを生成します。
+
+---
+
+## API リファレンス（一覧）
+
+### 属性（Attributes）
+- `[Topic(name)]`: トピック名を指定する。
+- `[AvroTimestamp]`: 時刻を Avro 互換で出力する。
+- `[KsqlDecimal(precision, scale)]`: 小数の桁数を指定する。
+- `[KsqlDatetimeFormat(format)]`: 日時の形式を指定する。
+- `[KsqlKey(order)]`: 複合キーの順序を指定する。
+- `[KsqlIgnore]`: スキーマから項目を除外する。
+- `[KsqlStream]`: Stream として扱うことを示す。
+- `[MaxLength(length)]`: 文字列の最大長を制限する。
+- `[ScheduleRange(openProp, closeProp)]`: 有効期間を示す。
+
+### コンテキストとビルダー
+- `KsqlContextBuilder.Create()`: ビルダーを作る。
+- `.UseConfiguration(IConfiguration cfg)`: 設定を渡す。
+- `.UseSchemaRegistry(string url)`: SR を設定する。
+- `.EnableLogging(ILoggerFactory lf)`: ログを有効にする。
+- `.BuildContext<TContext>()`: `IKsqlContext` を生成する。
+
+### Fluent API（モデル登録）
+- `ModelBuilder.Entity<T>(readOnly=false, writeOnly=false)`: 型を登録する。
+- `.AsStream()`: Stream として登録する。
+- `.AsTable(string? topicName=null, bool useCache=true)`: Table として登録する。
+- `.ToQuery(Func<IQueryBuilder,IQueryBuilder> build)`: ビューを定義する。
+- `From<TSource>()`: ソースを指定する。
+- `Join<TRight>(expr)`: 関連を結合する。
+- `Where(expr)`: 条件で絞り込む。
+- `Select(selector)`: 出力形を定義する。
+
+### イベント操作（送受信）
+- `IKsqlContext.Set<T>() -> IEventSet<T>`: 型のセットを得る。
+- `IEventSet<T>.AddAsync(T entity, CancellationToken? ct=null)`: 送信する。
+- `IEventSet<T>.ForEachAsync(Func<T,Task> handler, CancellationToken? ct=null)`: 購読する。
+
+### エラー処理と DLQ
+- `IEventSet<T>.WithRetry(opts)`: 再試行方針を設定する。
+- `IEventSet<T>.OnError(handler)`: 失敗時の処理を設定する。
+- `IDlqClient.ReadAsync(CancellationToken? ct=null) -> IAsyncEnumerable<DlqRecord>`: DLQ を読む。
+
+### コアインタフェース
+- `IKsqlContext`: KSQL 連携を管理する。
+- `IEventSet<T>`: 型付き操作を提供する。
+- `IDlqClient`: DLQ の読み出しを提供する。
+- `ITableCache<T>`: Table のキャッシュを提供する。
+
+### 主な構成キー（appsettings.json）
+- `KsqlDsl.Common.BootstrapServers`: Kafka 接続先を指定する。
+- `KsqlDsl.SchemaRegistry.Url`: SR の URL を指定する。
+- `KsqlDsl.KsqlDbUrl`: ksqlDB の URL を指定する。
+- `KsqlDsl.DlqTopicName`: DLQ のトピック名を指定する。
+- `KsqlDsl.DeserializationErrorPolicy`: 逆直列化時の方針を指定する。
+
+---
+
+## 詳細リファレンス（要点＋用例）
+
+### EventSet<T>.AddAsync
+- シグネチャ: `Task AddAsync(T entity, Dictionary<string,string>? headers=null, CancellationToken ct=default)`
+- 動作: レコードを送信する。任意でヘッダーを付与する。
+- 例外: 送信失敗時は例外を投げる。
+- 用例:
+  ```csharp
+  await ctx.Set<Order>().AddAsync(order, new(){["cid"]=cid});
+  ```
+- まとめ: 送信は AddAsync、ヘッダーで相関IDを渡せる。
+
+### EventSet<T>.ForEachAsync（オーバーロード）
+- シグネチャ: `Task ForEachAsync(Func<T,Task> handler, TimeSpan timeout=default, bool autoCommit=true, CancellationToken ct=default)`
+- シグネチャ: `Task ForEachAsync(Func<T,Dictionary<string,string>,Task> handler, TimeSpan timeout=default, bool autoCommit=true, CancellationToken ct=default)`
+- シグネチャ: `Task ForEachAsync(Func<T,Dictionary<string,string>,MessageMeta,Task> handler, TimeSpan timeout=default, bool autoCommit=true, CancellationToken ct=default)`
+- 動作: Push で購読し、必要に応じてヘッダー/メタ情報を受け取る。
+- 中断: `CancellationToken` で停止する。
+- 用例:
+  ```csharp
+  await ctx.Set<Order>().ForEachAsync((o,h,meta)=> Task.CompletedTask);
+  ```
+- まとめ: 目的に応じて3つのハンドラ形から選ぶ。
+
+### ModelBuilder.Entity<T>
+- シグネチャ: `Entity<T>(bool readOnly=false, bool writeOnly=false)`
+- 動作: 型を登録し、Set<T>() を有効化する。
+- 補足: 読み専用/書き専用の宣言ができる。
+- 用例:
+  ```csharp
+  b.Entity<Tick>(readOnly:true).AsStream();
+  ```
+- まとめ: 登録が無い型は操作できない。
+
+### AsStream / AsTable
+- AsStream: ストリームとして登録する。
+- AsTable: テーブルとして登録する（`useCache` でキャッシュ有効）。
+- 用例:
+  ```csharp
+  b.Entity<User>().AsTable(useCache:true);
+  ```
+- まとめ: 参照主体は Table、イベント主体は Stream。
+
+### ToQuery（ビュー定義）
+- シグネチャ: `ToQuery(Func<IQueryBuilder,IQueryBuilder> build)`
+- 動作: CSAS/CTAS 相当の KSQL を生成する。
+- 用例:
+  ```csharp
+  b.Entity<OrderView>().ToQuery(q => q.From<Order>().Where(o => o.Amount>0));
+  ```
+- まとめ: 集計や結合は ToQuery に残す。
+
+### IKsqlContext.Set<T>
+- シグネチャ: `IEventSet<T> Set<T>()`
+- 動作: 型に対する操作ハンドルを得る。
+- まとめ: 送受信と購読の起点になる。
+
+---
+
+## 設定キー（最小で使う）
+
+- 必須: `KsqlDsl.Common.BootstrapServers`
+  - 説明: Kafka の接続先を指定する。
+  - 例: `"localhost:9092"`
+- 必須: `KsqlDsl.SchemaRegistry.Url`
+  - 説明: Schema Registry の URL。
+  - 例: `"http://localhost:8085"`
+- 必須: `KsqlDsl.KsqlDbUrl`
+  - 説明: ksqlDB の URL。
+  - 例: `"http://localhost:8088"`
+- 推奨: `KsqlDsl.DlqTopicName`
+  - 説明: DLQ のトピック名。
+  - 例: `"dead-letter-queue"`
+- 推奨: `KsqlDsl.DeserializationErrorPolicy`
+  - 説明: 逆直列化エラー時の方針。
+  - 例: `"DLQ"` / `"Skip"` / `"Retry"`
+
+まとめ: 上記5つを埋めれば動作確認に進める。
+
+---
+
+## 生成 KSQL（代表パターン）
+
+### 単純な選択（CSAS/CTAS）
+```csharp
+b.Entity<ViewA>().ToQuery(q => q.From<SourceA>().Select(x => new ViewA{ Id=x.Id }));
+```
+概念出力:
+```
+CREATE STREAM ViewA AS SELECT Id FROM SourceA;
+```
+
+### 結合（JOIN）
+```csharp
+b.Entity<OrderXCustomer>().ToQuery(q => q
+  .From<Order>()
+  .Join<Customer>((o,c) => o.CustomerId==c.Id)
+  .Select((o,c) => new OrderXCustomer{ OrderId=o.Id, Name=c.Name }));
+```
+
+### 窓集計（Window）
+```csharp
+b.Entity<TickAvg1m>().ToQuery(q => q
+  .From<Tick>() /* 代表表現。実際の集計 DSL に合わせて実装 */);
+```
+
+### グループ化（GroupBy）
+```csharp
+// 代表例。詳細は実装の GroupBy 対応に合わせる。
+```
+
+まとめ: ToQuery は代表的な KSQL 生成に対応する。
+### そのほかの主要メンバー（EventSet<T>）
+- `Task<List<T>> ToListAsync(CancellationToken ct=default)`: 現在のストリーム/テーブルを列挙する。
+- `Task RemoveAsync(T entity, CancellationToken ct=default)`: レコードを削除する。
+- `void Commit(T entity)`: 明示コミットを行う。
+- `string GetTopicName()`: バインドされたトピック名を返す。
+- `EntityModel GetEntityModel()`: エンティティのモデル情報を返す。
+- `IKsqlContext GetContext()`: バックエンドのコンテキストを返す。
+- `EventSet<T> WithRetry(int maxRetries, TimeSpan? retryInterval=null)`: 再試行方針を設定する。
+- `EventSet<TResult> Map<TResult>(Func<T,Task<TResult>> mapper)` / 同同期版: メッセージを変換する。
+
+### 拡張（エラー処理関係）
+- `EntitySetErrorHandlingExtensions.OnError<T>(this IEntitySet<T>, ErrorAction)`: 失敗時の処理を設定する。
+- `EntitySetErrorHandlingExtensions.StartErrorHandling<T>(this IEntitySet<T>)`: エラーハンドリングチェーンを開始する。
+
+### ビルダー/オプション（拡張メソッド）
+- `KsqlContextOptionsExtensions.UseSchemaRegistry(...)`: スキーマレジストリを設定する。
+- `KsqlContextOptionsExtensions.EnableLogging(...)`: ログを有効化する。
+- `KsqlContextOptionsExtensions.ConfigureValidation(...)`: 検証モード等を設定する。
+- `KsqlContextOptionsExtensions.WithTimeouts(...)`: タイムアウトを設定する。

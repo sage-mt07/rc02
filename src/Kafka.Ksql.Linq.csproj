@@ -13,7 +13,9 @@
     <Version>1.0.0</Version>
     <Authors>synthaicode</Authors>
     <Description>LINQ-style DSL for Kafka ksqlDB</Description>    
-	<PackageIcon>KsqlLinq-icon-128.png</PackageIcon>
+    <PackageIcon>KsqlLinq-icon-128.png</PackageIcon>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
   
   <ItemGroup>

@@ -7,4 +7,9 @@
   <ItemGroup>
     <ProjectReference Include="../../src/Kafka.Ksql.Linq.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

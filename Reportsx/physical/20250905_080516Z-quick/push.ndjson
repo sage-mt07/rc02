@@ -1,0 +1,1 @@
+"{\"queryId\":\"transient_DEDUPRATES_638080338036920092\",\"columnNames\":[\"BROKER\",\"SYMBOL\",\"TS\",\"BID\"],\"columnTypes\":[\"STRING\",\"STRING\",\"BIGINT\",\"DOUBLE\"]}\n[\"B2\",\"S2\",1578182401000,101.0]\n"
