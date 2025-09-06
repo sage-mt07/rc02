@@ -15,6 +15,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using ConfluentSchemaRegistry = Confluent.SchemaRegistry;
 using Kafka.Ksql.Linq.Core.Extensions;
+using Avro;
+using Avro.Generic;
 
 namespace Kafka.Ksql.Linq.Messaging.Producers;
 
@@ -205,7 +207,9 @@ internal class KafkaProducerManager : IDisposable
         var mapping = _mappingRegistry.GetMapping(typeof(TPOCO));
 
         object? keyObj = mapping.AvroKeyType != null ? Activator.CreateInstance(mapping.AvroKeyType)! : null;
-        object valueObj = Activator.CreateInstance(mapping.AvroValueType!)!;
+        object valueObj = mapping.AvroValueType == typeof(GenericRecord)
+            ? new GenericRecord(mapping.AvroValueRecordSchema ?? (RecordSchema)Schema.Parse(mapping.AvroValueSchema!))
+            : Activator.CreateInstance(mapping.AvroValueType!)!;
         mapping.PopulateAvroKeyValue(entity, keyObj, valueObj);
 
         var context = new KafkaMessageContext
@@ -235,7 +239,10 @@ internal class KafkaProducerManager : IDisposable
         object? keyObj = Activator.CreateInstance(mapping.AvroKeyType!)!;
         if (mapping.KeyProperties.Length > 0)
         {
-            mapping.PopulateAvroKeyValue(entity, keyObj, Activator.CreateInstance(mapping.AvroValueType!)!);
+            var tmp = mapping.AvroValueType == typeof(GenericRecord)
+                ? new GenericRecord(mapping.AvroValueRecordSchema ?? (RecordSchema)Schema.Parse(mapping.AvroValueSchema!))
+                : Activator.CreateInstance(mapping.AvroValueType!)!;
+            mapping.PopulateAvroKeyValue(entity, keyObj, tmp);
         }
 
         var context = new KafkaMessageContext

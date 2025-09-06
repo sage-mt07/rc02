@@ -2,6 +2,7 @@ using Kafka.Ksql.Linq.Core.Models;
 using Kafka.Ksql.Linq.Mapping;
 using System.Linq;
 using Xunit;
+using Avro.Generic;
 
 namespace Kafka.Ksql.Linq.Tests.Mapping;
 
@@ -69,5 +70,24 @@ public class MappingRegistryTests
         Assert.Null(mapping.AvroKeyType);
         Assert.Null(mapping.AvroKeySchema);
         Assert.NotNull(mapping.AvroValueType);
+    }
+
+    [Fact]
+    public void Register_GenericValue_UsesGenericRecord()
+    {
+        var registry = new MappingRegistry();
+        var keyProps = new[] { PropertyMeta.FromProperty(typeof(Sample).GetProperty(nameof(Sample.Id))!) };
+        var valueProps = typeof(Sample).GetProperties()
+            .Select(p => PropertyMeta.FromProperty(p))
+            .ToArray();
+
+        var mapping = registry.Register(
+            typeof(Sample),
+            keyProps,
+            valueProps,
+            genericValue: true);
+
+        Assert.Equal(typeof(GenericRecord), mapping.AvroValueType);
+        Assert.NotNull(mapping.AvroValueSchema);
     }
 }
