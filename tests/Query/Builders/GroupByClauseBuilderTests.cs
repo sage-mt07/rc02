@@ -34,5 +34,6 @@ public class GroupByClauseBuilderTests
         var builder = new GroupByClauseBuilder(map);
         var sql = builder.Build(expr.Body);
         Assert.Equal("t.key->ID", sql);
+
     }
 }
