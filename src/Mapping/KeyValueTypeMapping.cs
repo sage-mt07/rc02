@@ -34,6 +34,7 @@ internal class KeyValueTypeMapping
     // Avro schema json strings for key and value
     public string? AvroKeySchema { get; set; }
     public string? AvroValueSchema { get; set; }
+    public RecordSchema? AvroValueRecordSchema { get; set; }
 
     private static readonly ConcurrentDictionary<(Type poco, Type avro, string fp), Action<object, object>> PlanCache = new();
 
@@ -417,31 +418,56 @@ internal class KeyValueTypeMapping
     {
         if (poco == null) throw new ArgumentNullException(nameof(poco));
         if (AvroValueType == null) throw new InvalidOperationException("AvroValueType not registered");
-        var valueInstance = Activator.CreateInstance(AvroValueType)!;
-        for (int i = 0; i < ValueProperties.Length; i++)
+        if (AvroValueType == typeof(GenericRecord))
         {
-            var meta = ValueProperties[i];
-            var value = meta.PropertyInfo!.GetValue(poco);
-            var avroProp = AvroValueType!.GetProperty(meta.PropertyInfo!.Name)!;
-            var scale = DecimalPrecisionConfig.ResolveScale(meta.Scale, meta.PropertyInfo);
-            var avroTypeVal = avroProp.PropertyType;
-            var isNullableAvroDecimalVal = avroTypeVal.IsGenericType && avroTypeVal.GetGenericTypeDefinition() == typeof(Nullable<>) && avroTypeVal.GetGenericArguments()[0] == typeof(AvroDecimal);
-            if (isNullableAvroDecimalVal && value is null)
+            var schema = AvroValueRecordSchema ??= (RecordSchema)Schema.Parse(AvroValueSchema!);
+            var record = new GenericRecord(schema);
+            for (int i = 0; i < ValueProperties.Length; i++)
             {
-                avroProp.SetValue(valueInstance, null);
+                var meta = ValueProperties[i];
+                var val = meta.PropertyInfo!.GetValue(poco);
+                var scale = DecimalPrecisionConfig.ResolveScale(meta.Scale, meta.PropertyInfo);
+                var pType = meta.PropertyInfo.PropertyType;
+                var fname = meta.PropertyInfo!.Name;
+                if ((pType == typeof(decimal) || pType == typeof(decimal?)) && val is decimal decv)
+                    record.Add(fname, ToAvroDecimal(decv, scale));
+                else if ((pType == typeof(Guid) || pType == typeof(Guid?)) && val is Guid gv)
+                    record.Add(fname, gv.ToString("D"));
+                else if ((pType == typeof(float) || pType == typeof(float?)) && val is float fv)
+                    record.Add(fname, (double)fv);
+                else
+                    record.Add(fname, val);
             }
-            else if ((avroTypeVal == typeof(AvroDecimal) || isNullableAvroDecimalVal) && value is decimal decVal)
-            {
-                avroProp.SetValue(valueInstance, ToAvroDecimal(decVal, scale));
-            }
-            else if (avroProp.PropertyType == typeof(string) && value is Guid g)
-                avroProp.SetValue(valueInstance, g.ToString("D"));
-            else if (avroProp.PropertyType == typeof(double) && value is float fv)
-                avroProp.SetValue(valueInstance, (double)fv);
-            else
-                avroProp.SetValue(valueInstance, value);
+            return record;
         }
-        return valueInstance;
+        else
+        {
+            var valueInstance = Activator.CreateInstance(AvroValueType)!;
+            for (int i = 0; i < ValueProperties.Length; i++)
+            {
+                var meta = ValueProperties[i];
+                var value = meta.PropertyInfo!.GetValue(poco);
+                var avroProp = AvroValueType!.GetProperty(meta.PropertyInfo!.Name)!;
+                var scale = DecimalPrecisionConfig.ResolveScale(meta.Scale, meta.PropertyInfo);
+                var avroTypeVal = avroProp.PropertyType;
+                var isNullableAvroDecimalVal = avroTypeVal.IsGenericType && avroTypeVal.GetGenericTypeDefinition() == typeof(Nullable<>) && avroTypeVal.GetGenericArguments()[0] == typeof(AvroDecimal);
+                if (isNullableAvroDecimalVal && value is null)
+                {
+                    avroProp.SetValue(valueInstance, null);
+                }
+                else if ((avroTypeVal == typeof(AvroDecimal) || isNullableAvroDecimalVal) && value is decimal decVal)
+                {
+                    avroProp.SetValue(valueInstance, ToAvroDecimal(decVal, scale));
+                }
+                else if (avroProp.PropertyType == typeof(string) && value is Guid g)
+                    avroProp.SetValue(valueInstance, g.ToString("D"));
+                else if (avroProp.PropertyType == typeof(double) && value is float fv)
+                    avroProp.SetValue(valueInstance, (double)fv);
+                else
+                    avroProp.SetValue(valueInstance, value);
+            }
+            return valueInstance;
+        }
     }
 
     public void PopulateAvroKeyValue(object poco, object? key, object value)
@@ -449,28 +475,51 @@ internal class KeyValueTypeMapping
         if (poco == null) throw new ArgumentNullException(nameof(poco));
         if (value == null) throw new ArgumentNullException(nameof(value));
 
-        for (int i = 0; i < ValueProperties.Length; i++)
+        if (value is GenericRecord grec)
         {
-            var meta = ValueProperties[i];
-            var val = meta.PropertyInfo!.GetValue(poco);
-            var avroProp = AvroValueType!.GetProperty(meta.PropertyInfo!.Name)!;
-            var scale = DecimalPrecisionConfig.ResolveScale(meta.Scale, meta.PropertyInfo);
-            var avroTypeValueProp = avroProp.PropertyType;
-            var isNullableAvroDecimalValueProp = avroTypeValueProp.IsGenericType && avroTypeValueProp.GetGenericTypeDefinition() == typeof(Nullable<>) && avroTypeValueProp.GetGenericArguments()[0] == typeof(AvroDecimal);
-            if (isNullableAvroDecimalValueProp && val is null)
+            AvroValueRecordSchema ??= (RecordSchema)Schema.Parse(AvroValueSchema!);
+            for (int i = 0; i < ValueProperties.Length; i++)
             {
-                avroProp.SetValue(value, null);
+                var meta = ValueProperties[i];
+                var val = meta.PropertyInfo!.GetValue(poco);
+                var scale = DecimalPrecisionConfig.ResolveScale(meta.Scale, meta.PropertyInfo);
+                var pType = meta.PropertyInfo.PropertyType;
+                var fname = meta.PropertyInfo!.Name;
+                if ((pType == typeof(decimal) || pType == typeof(decimal?)) && val is decimal decv)
+                    grec.Add(fname, ToAvroDecimal(decv, scale));
+                else if ((pType == typeof(Guid) || pType == typeof(Guid?)) && val is Guid gv)
+                    grec.Add(fname, gv.ToString("D"));
+                else if ((pType == typeof(float) || pType == typeof(float?)) && val is float fv)
+                    grec.Add(fname, (double)fv);
+                else
+                    grec.Add(fname, val);
             }
-            else if ((avroTypeValueProp == typeof(AvroDecimal) || isNullableAvroDecimalValueProp) && val is decimal decv)
+        }
+        else
+        {
+            for (int i = 0; i < ValueProperties.Length; i++)
             {
-                avroProp.SetValue(value, ToAvroDecimal(decv, scale));
+                var meta = ValueProperties[i];
+                var val = meta.PropertyInfo!.GetValue(poco);
+                var avroProp = AvroValueType!.GetProperty(meta.PropertyInfo!.Name)!;
+                var scale = DecimalPrecisionConfig.ResolveScale(meta.Scale, meta.PropertyInfo);
+                var avroTypeValueProp = avroProp.PropertyType;
+                var isNullableAvroDecimalValueProp = avroTypeValueProp.IsGenericType && avroTypeValueProp.GetGenericTypeDefinition() == typeof(Nullable<>) && avroTypeValueProp.GetGenericArguments()[0] == typeof(AvroDecimal);
+                if (isNullableAvroDecimalValueProp && val is null)
+                {
+                    avroProp.SetValue(value, null);
+                }
+                else if ((avroTypeValueProp == typeof(AvroDecimal) || isNullableAvroDecimalValueProp) && val is decimal decv)
+                {
+                    avroProp.SetValue(value, ToAvroDecimal(decv, scale));
+                }
+                else if (avroProp.PropertyType == typeof(string) && val is Guid gv)
+                    avroProp.SetValue(value, gv.ToString("D"));
+                else if (avroProp.PropertyType == typeof(double) && val is float fvv)
+                    avroProp.SetValue(value, (double)fvv);
+                else
+                    avroProp.SetValue(value, val);
             }
-            else if (avroProp.PropertyType == typeof(string) && val is Guid gv)
-                avroProp.SetValue(value, gv.ToString("D"));
-            else if (avroProp.PropertyType == typeof(double) && val is float fvv)
-                avroProp.SetValue(value, (double)fvv);
-            else
-                avroProp.SetValue(value, val);
         }
 
         if (key != null)

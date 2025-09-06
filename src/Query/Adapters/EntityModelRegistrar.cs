@@ -18,7 +18,7 @@ internal static class EntityModelRegistrar
                 m.SetStreamTableType(StreamTableType.Table);
             else
                 m.SetStreamTableType(StreamTableType.Stream);
-            registry.RegisterEntityModel(m);
+            registry.RegisterEntityModel(m, genericValue: m.StreamTableType == StreamTableType.Table);
         }
     }
 }

@@ -366,7 +366,7 @@ public abstract class KsqlContext : IKsqlContext
             }
             else
             {
-                _mappingRegistry.RegisterEntityModel(model);
+                _mappingRegistry.RegisterEntityModel(model, genericValue: model.StreamTableType == StreamTableType.Table);
             }
         }
     }
@@ -476,7 +476,7 @@ public abstract class KsqlContext : IKsqlContext
 
         model ??= CreateEntityModelFromType(entityType);
         _entityModels[entityType] = model;
-        _mappingRegistry.RegisterEntityModel(model);
+        _mappingRegistry.RegisterEntityModel(model, genericValue: model.StreamTableType == StreamTableType.Table);
 
         return model;
     }
@@ -797,7 +797,8 @@ public abstract class KsqlContext : IKsqlContext
             model.EntityType,
             model.QueryModel,
             model.KeyProperties,
-            model.GetTopicName());
+            model.GetTopicName(),
+            genericValue: model.StreamTableType == StreamTableType.Table);
     }
 
 
