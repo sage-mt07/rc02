@@ -740,13 +740,41 @@ public abstract class KsqlContext : IKsqlContext
         if (model.QueryModel != null)
             RegisterQueryModelMapping(model);
 
-        var ddl = new Kafka.Ksql.Linq.Query.Pipeline.DDLQueryGenerator().GenerateCreateTable(new EntityModelDdlAdapter(model));
-        Logger.LogInformation("KSQL DDL (query {Entity}): {Sql}", type.Name, ddl);
-        await ExecuteWithRetryAsync(ddl);
+        var isTable = model.GetExplicitStreamTableType() == StreamTableType.Table || model.QueryModel?.IsAggregateQuery == true;
+
+        if (model.QueryModel?.IsAggregateQuery == true)
+        {
+            Func<Type, string> resolver = t =>
+            {
+                var key = t?.Name ?? string.Empty;
+                if (!string.IsNullOrEmpty(key) && _dslOptions.SourceNameOverrides is { Count: > 0 } && _dslOptions.SourceNameOverrides.TryGetValue(key, out var overrideName))
+                    return overrideName;
+                if (t != null && _entityModels.TryGetValue(t, out var srcModel))
+                    return srcModel.GetTopicName().ToUpperInvariant();
+                return key;
+            };
+            var ddl = Query.Builders.KsqlCreateStatementBuilder.Build(
+                model.GetTopicName(),
+                model.QueryModel,
+                model.KeySchemaFullName,
+                model.ValueSchemaFullName,
+                resolver);
+            Logger.LogInformation("KSQL DDL (query {Entity}): {Sql}", type.Name, ddl);
+            await ExecuteWithRetryAsync(ddl);
+            return;
+        }
+
+        var generator = new Kafka.Ksql.Linq.Query.Pipeline.DDLQueryGenerator();
+        var adapter = new EntityModelDdlAdapter(model);
+        var ddlSql = isTable
+            ? generator.GenerateCreateTable(adapter)
+            : generator.GenerateCreateStream(adapter);
+        Logger.LogInformation("KSQL DDL (query {Entity}): {Sql}", type.Name, ddlSql);
+        await ExecuteWithRetryAsync(ddlSql);
 
         if (model.QueryModel != null)
         {
-            Func<Type, string>? resolver = t =>
+            Func<Type, string> resolver = t =>
             {
                 var key = t?.Name ?? string.Empty;
                 if (!string.IsNullOrEmpty(key) && _dslOptions.SourceNameOverrides is { Count: > 0 } && _dslOptions.SourceNameOverrides.TryGetValue(key, out var overrideName))
@@ -793,12 +821,13 @@ public abstract class KsqlContext : IKsqlContext
         if (model.QueryModel == null)
             return;
 
+        var isTable = model.GetExplicitStreamTableType() == StreamTableType.Table || model.QueryModel!.IsAggregateQuery;
         _mappingRegistry.RegisterQueryModel(
             model.EntityType,
-            model.QueryModel,
+            model.QueryModel!,
             model.KeyProperties,
             model.GetTopicName(),
-            genericValue: model.StreamTableType == StreamTableType.Table);
+            genericValue: isTable);
     }
 
 
