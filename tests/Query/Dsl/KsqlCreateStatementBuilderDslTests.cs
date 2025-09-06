@@ -60,6 +60,20 @@ public class KsqlCreateStatementBuilderDslTests
         Assert.DoesNotContain("PARTITION BY", sql);
     }
 
+    [Fact]
+    public void Build_AggregateQuery_UsesCreateTable()
+    {
+        var model = new KsqlQueryRoot()
+            .From<Order>()
+            .GroupBy(o => o.CustomerId)
+            .Select(g => new { g.Key, Count = g.Count() })
+            .Build();
+
+        var sql = KsqlCreateStatementBuilder.Build("agg_view", model);
+        Assert.StartsWith("CREATE TABLE", sql);
+        Assert.Contains("GROUP BY CustomerId", sql);
+    }
+
     private static KsqlQueryModel BuildAggregateModel()
     {
         return new KsqlQueryRoot()
