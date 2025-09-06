@@ -55,4 +55,24 @@ public class KsqlGroupedQueryable<T, TKey> : IKsqlQueryable
     }
 
     public KsqlQueryModel Build() => _model;
+
+    public KsqlGroupedQueryable<T, TKey> AsFinal(TimeSpan? grace = null)
+    {
+        _model.IsFinal = true;
+        if (grace.HasValue)
+            _model.GraceSeconds = (int)Math.Ceiling(grace.Value.TotalSeconds);
+        return this;
+    }
+
+    public KsqlGroupedQueryable<T, TKey> AsLive()
+    {
+        _model.IsFinal = false;
+        return this;
+    }
+
+    public KsqlGroupedQueryable<T, TKey> Grace(TimeSpan grace)
+    {
+        _model.GraceSeconds = (int)Math.Ceiling(grace.TotalSeconds);
+        return this;
+    }
 }

@@ -13,6 +13,13 @@ internal class WhereExpressionVisitor : ExpressionVisitor
 {
     private readonly Stack<string> _conditionStack = new();
     private string _result = string.Empty;
+    private readonly System.Collections.Generic.IDictionary<string, string>? _paramToAlias;
+
+    public WhereExpressionVisitor() { }
+    public WhereExpressionVisitor(System.Collections.Generic.IDictionary<string, string> paramToAlias)
+    {
+        _paramToAlias = paramToAlias;
+    }
 
     public string GetResult()
     {
@@ -388,9 +395,16 @@ internal class WhereExpressionVisitor : ExpressionVisitor
     /// <summary>
     /// メンバー名取得
     /// </summary>
-    private static string GetMemberName(MemberExpression member)
+    private string GetMemberName(MemberExpression member)
     {
-        // パラメーター接頭辞なしでプロパティ名のみ返す
+        // ルートパラメーターを特定してエイリアスを付与
+        System.Linq.Expressions.Expression? e = member;
+        while (e is MemberExpression me)
+            e = me.Expression;
+        if (e is ParameterExpression pe && _paramToAlias != null && _paramToAlias.TryGetValue(pe.Name ?? string.Empty, out var alias))
+        {
+            return $"{alias}.{member.Member.Name}";
+        }
         return member.Member.Name;
     }
 

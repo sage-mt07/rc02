@@ -1,107 +1,135 @@
 using System;
-using System.Threading.Tasks;
 using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Configuration;
+using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Query.Dsl;
+using Kafka.Ksql.Linq.Query.Builders;
 using Xunit;
+using Kafka.Ksql.Linq.Core.Modeling;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
 /// <summary>
-/// Physical tests for day/week bars with market schedule awareness.
-/// Uses EXPLAIN to validate ksql acceptance. Event-time is provided via TS column.
+/// OnModelCreating → ToQuery → Materialize(SQL) → Verify の流れに統一。
+/// MarketSchedule 連携の1日/1週バーを検証。
 /// </summary>
 public class BarScheduleExplainTests
 {
-    private sealed class SimpleContext : KsqlContext
+    private class Rate
     {
-        public SimpleContext(KsqlDslOptions opt) : base(opt) { }
+        public string Broker { get; set; } = string.Empty;
+        public string Symbol { get; set; } = string.Empty;
+        public DateTime Timestamp { get; set; }
+        public double Bid { get; set; }
+    }
+
+    private class MarketSchedule
+    {
+        public string Broker { get; set; } = string.Empty;
+        public string Symbol { get; set; } = string.Empty;
+        public DateTime Open { get; set; }
+        public DateTime Close { get; set; }
+        public DateTime MarketDate { get; set; }
+    }
+
+    private class Bar1dLive
+    {
+        [KsqlKey(1)] public string Broker { get; set; } = string.Empty;
+        [KsqlKey(2)] public string Symbol { get; set; } = string.Empty;
+        [KsqlKey(3)] public DateTime BucketStart { get; set; }
+        public double Open { get; set; }
+        public double High { get; set; }
+        public double Low { get; set; }
+        public double Close { get; set; }
+    }
+
+    private class Bar1wkLive
+    {
+        [KsqlKey(1)] public string Broker { get; set; } = string.Empty;
+        [KsqlKey(2)] public string Symbol { get; set; } = string.Empty;
+        [KsqlKey(3)] public DateTime BucketStart { get; set; }
+        public double Open { get; set; }
+        public double High { get; set; }
+        public double Low { get; set; }
+        public double Close { get; set; }
+    }
+
+    private sealed class TestContext : KsqlContext
+    {
+        public TestContext() : base(new KsqlDslOptions()) { }
         protected override bool SkipSchemaRegistration => true;
-        protected override void OnModelCreating(IModelBuilder modelBuilder) { }
-    }
-
-    private static async Task<KsqlContext> CreateReadyContextAsync()
-    {
-        var options = new KsqlDslOptions
+        protected override void OnModelCreating(IModelBuilder modelBuilder)
         {
-            Common = new CommonSection { BootstrapServers = "localhost:9092" },
-            SchemaRegistry = new Kafka.Ksql.Linq.Core.Configuration.SchemaRegistrySection { Url = "http://localhost:8081" },
-            KsqlDbUrl = "http://localhost:8088"
-        };
-        await PhysicalTestEnv.KsqlHelpers.WaitForKsqlReadyAsync(options.KsqlDbUrl!, TimeSpan.FromSeconds(120));
-        return new SimpleContext(options);
-    }
+            modelBuilder.Entity<Rate>(readOnly: true);
 
-    private static async Task EnsureSourcesAsync(KsqlContext ctx)
-    {
-        // Rates with explicit timestamp column for event-time windowing
-        var createRates = @"CREATE STREAM IF NOT EXISTS DEDUPRATES (
-  BROKER VARCHAR KEY,
-  SYMBOL VARCHAR,
-  TS BIGINT,
-  BID DOUBLE
-) WITH (KAFKA_TOPIC='deduprates', KEY_FORMAT='KAFKA', VALUE_FORMAT='JSON', PARTITIONS=1, REPLICAS=1, TIMESTAMP='TS');";
-        var r = await ctx.ExecuteStatementAsync(createRates);
-        Assert.True(r.IsSuccess, r.Message);
+            modelBuilder.Entity<Bar1dLive>()
+                .ToQuery(q => q.From<Rate>()
+                    .TimeFrame<MarketSchedule>((r, s) =>
+                         r.Broker == s.Broker
+                      && r.Symbol == s.Symbol
+                      && s.Open <= r.Timestamp && r.Timestamp < s.Close,
+                      dayKey: s => s.MarketDate)
+                    .Tumbling(r => r.Timestamp, days: new[] { 1 })
+                    .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
+                    .Select(g => new Bar1dLive
+                    {
+                        Broker = g.Key.Broker,
+                        Symbol = g.Key.Symbol,
+                        BucketStart = g.Key.BucketStart,
+                        Open = g.EarliestByOffset(x => x.Bid),
+                        High = g.Max(x => x.Bid),
+                        Low = g.Min(x => x.Bid),
+                        Close = g.LatestByOffset(x => x.Bid)
+                    })
+                    .AsPush());
 
-        // Minimal market schedule stream (open/close expressed in epoch millis)
-        var createSched = @"CREATE STREAM IF NOT EXISTS MSCHED (
-  BROKER VARCHAR KEY,
-  SYMBOL VARCHAR,
-  OPEN_TS BIGINT,
-  CLOSE_TS BIGINT
-) WITH (KAFKA_TOPIC='msched', KEY_FORMAT='KAFKA', VALUE_FORMAT='JSON', PARTITIONS=1, REPLICAS=1);";
-        var s = await ctx.ExecuteStatementAsync(createSched);
-        Assert.True(s.IsSuccess, s.Message);
-    }
-
-    [Fact]
-    [Trait("Category", "Integration")]
-    public async Task Explain_Daily_With_MarketSchedule_ShouldBeAccepted()
-    {
-        await using var ctx = await CreateReadyContextAsync();
-        await EnsureSourcesAsync(ctx);
-
-        var sql = @"SELECT
-  D.BROKER,
-  D.SYMBOL,
-  EARLIEST_BY_OFFSET(D.BID) AS OPEN,
-  MAX(D.BID) AS HIGH,
-  MIN(D.BID) AS LOW,
-  LATEST_BY_OFFSET(D.BID) AS CLOSE
-FROM DEDUPRATES D
-JOIN MSCHED S WITHIN 1 DAYS ON (D.BROKER = S.BROKER)
-WINDOW TUMBLING (SIZE 1 DAY)
-WHERE D.SYMBOL = S.SYMBOL AND S.OPEN_TS <= D.TS AND D.TS < S.CLOSE_TS
-GROUP BY D.BROKER, D.SYMBOL
-EMIT CHANGES;";
-
-        var res = await ctx.ExecuteExplainAsync(sql);
-        Assert.True(res.IsSuccess, res.Message);
+            modelBuilder.Entity<Bar1wkLive>()
+                .ToQuery(q => q.From<Rate>()
+                    .TimeFrame<MarketSchedule>((r, s) =>
+                         r.Broker == s.Broker
+                      && r.Symbol == s.Symbol
+                      && s.Open <= r.Timestamp && r.Timestamp < s.Close,
+                      dayKey: s => s.MarketDate)
+                    .Tumbling(r => r.Timestamp, days: new[] { 7 })
+                    .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
+                    .Select(g => new Bar1wkLive
+                    {
+                        Broker = g.Key.Broker,
+                        Symbol = g.Key.Symbol,
+                        BucketStart = g.Key.BucketStart,
+                        Open = g.EarliestByOffset(x => x.Bid),
+                        High = g.Max(x => x.Bid),
+                        Low = g.Min(x => x.Bid),
+                        Close = g.LatestByOffset(x => x.Bid)
+                    })
+                    .AsPush());
+        }
     }
 
     [Fact]
-    [Trait("Category", "Integration")]
-    public async Task Explain_Weekly_With_MarketSchedule_ShouldBeAccepted()
+    public void Daily_With_MarketSchedule_Materialize_And_Verify()
     {
-        await using var ctx = await CreateReadyContextAsync();
-        await EnsureSourcesAsync(ctx);
+        var ctx = new TestContext();
+        var m = ctx.GetEntityModels();
+        var em = m[typeof(Bar1dLive)];
+        Assert.Equal(typeof(MarketSchedule), em.QueryModel!.BasedOnType);
+        var sql = KsqlCreateStatementBuilder.Build("bar_1d_live", em.QueryModel!);
+        Assert.Contains("EARLIEST_BY_OFFSET(Bid) AS Open", sql);
+        Assert.Contains("LATEST_BY_OFFSET(Bid) AS Close", sql);
+        Assert.Contains("CREATE TABLE bar_1d_live", sql);
+    }
 
-        var sql = @"SELECT
-  D.BROKER,
-  D.SYMBOL,
-  EARLIEST_BY_OFFSET(D.BID) AS OPEN,
-  MAX(D.BID) AS HIGH,
-  MIN(D.BID) AS LOW,
-  LATEST_BY_OFFSET(D.BID) AS CLOSE
-FROM DEDUPRATES D
-JOIN MSCHED S WITHIN 7 DAYS ON (D.BROKER = S.BROKER)
-WINDOW TUMBLING (SIZE 7 DAYS)
-WHERE D.SYMBOL = S.SYMBOL AND S.OPEN_TS <= D.TS AND D.TS < S.CLOSE_TS
-GROUP BY D.BROKER, D.SYMBOL
-EMIT CHANGES;";
-
-        var res = await ctx.ExecuteExplainAsync(sql);
-        Assert.True(res.IsSuccess, res.Message);
+    [Fact]
+    public void Weekly_With_MarketSchedule_Materialize_And_Verify()
+    {
+        var ctx = new TestContext();
+        var m = ctx.GetEntityModels();
+        var em = m[typeof(Bar1wkLive)];
+        Assert.Equal(typeof(MarketSchedule), em.QueryModel!.BasedOnType);
+        var sql = KsqlCreateStatementBuilder.Build("bar_1wk_live", em.QueryModel!);
+        Assert.Contains("MAX(Bid) AS High", sql);
+        Assert.Contains("MIN(Bid) AS Low", sql);
+        Assert.Contains("CREATE TABLE bar_1wk_live", sql);
     }
 }

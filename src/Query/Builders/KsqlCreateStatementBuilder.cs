@@ -45,7 +45,7 @@ public static class KsqlCreateStatementBuilder
             selectClause = builder.Build(model.SelectProjection.Body);
         }
         var fromClause = BuildFromClauseCore(model, sourceNameResolver);
-        var whereClause = BuildWhereClause(model.WhereCondition);
+        var whereClause = BuildWhereClause(model.WhereCondition, model);
         var groupByClause = BuildGroupByClause(model.GroupByExpression);
         var havingClause = BuildHavingClause(model.HavingCondition);
 
@@ -118,10 +118,21 @@ public static class KsqlCreateStatementBuilder
             if (model.JoinCondition == null)
                 throw new InvalidOperationException("Join condition required for two table join");
 
-            // Enforce WITHIN for stream-stream joins: require WithinSeconds
-            if (!model.WithinSeconds.HasValue || model.WithinSeconds.Value <= 0)
-                throw new InvalidOperationException("Stream-Stream JOIN requires .Within(seconds) (e.g. Within(60)).");
-            result.Append($" WITHIN {model.WithinSeconds.Value} SECONDS");
+            // Enforce WITHIN for stream-stream joins: allow default 300s unless forbidden
+            int withinSeconds;
+            if (model.WithinSeconds.HasValue && model.WithinSeconds.Value > 0)
+            {
+                withinSeconds = model.WithinSeconds.Value;
+            }
+            else if (!model.ForbidDefaultWithin)
+            {
+                withinSeconds = 300; // default
+            }
+            else
+            {
+                throw new InvalidOperationException("Stream-Stream JOIN requires explicit Within(...) when default is disabled.");
+            }
+            result.Append($" WITHIN {withinSeconds} SECONDS");
 
             // Build a qualified join condition using aliases to avoid ambiguity
             var condition = BuildQualifiedJoinCondition(model.JoinCondition, lAlias, rAlias);
@@ -180,10 +191,18 @@ public static class KsqlCreateStatementBuilder
         return type.Name;
     }
 
-    private static string BuildWhereClause(LambdaExpression? where)
+    private static string BuildWhereClause(LambdaExpression? where, KsqlQueryModel model)
     {
         if (where == null) return string.Empty;
-        var builder = new WhereClauseBuilder();
+        // Build parameter-to-alias map: first param -> o, second -> i
+        System.Collections.Generic.IDictionary<string, string>? map = null;
+        if (where.Parameters != null && where.Parameters.Count > 0)
+        {
+            map = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.Ordinal);
+            if (where.Parameters.Count > 0) map[where.Parameters[0].Name ?? string.Empty] = "o";
+            if (where.Parameters.Count > 1) map[where.Parameters[1].Name ?? string.Empty] = "i";
+        }
+        var builder = map == null ? new WhereClauseBuilder() : new WhereClauseBuilder(map);
         var condition = builder.Build(where.Body);
         return $"WHERE {condition}";
     }

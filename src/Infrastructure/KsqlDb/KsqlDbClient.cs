@@ -147,6 +147,54 @@ internal class KsqlDbClient : IKsqlDbClient, IDisposable
         }
     }
 
+    public async Task<System.Collections.Generic.List<object?[]>> ExecutePullQueryRowsAsync(string sql, TimeSpan? timeout = null)
+    {
+        var payload = new { sql };
+        var json = JsonSerializer.Serialize(payload);
+        using var content = new StringContent(json, Encoding.UTF8, "application/json");
+        using var cts = timeout.HasValue ? new CancellationTokenSource(timeout.Value) : new CancellationTokenSource(TimeSpan.FromSeconds(15));
+        using var response = await _client.PostAsync("/query", content, cts.Token);
+        response.EnsureSuccessStatusCode();
+        var body = await response.Content.ReadAsStringAsync(cts.Token);
+        var rows = new System.Collections.Generic.List<object?[]>();
+        try
+        {
+            using var doc = JsonDocument.Parse(body);
+            if (doc.RootElement.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var el in doc.RootElement.EnumerateArray())
+                {
+                    if (el.ValueKind == JsonValueKind.Object && el.TryGetProperty("row", out var rowEl))
+                    {
+                        if (rowEl.TryGetProperty("columns", out var cols) && cols.ValueKind == JsonValueKind.Array)
+                        {
+                            var list = new object?[cols.GetArrayLength()];
+                            int i = 0;
+                            foreach (var c in cols.EnumerateArray())
+                            {
+                                list[i++] = c.ValueKind switch
+                                {
+                                    JsonValueKind.Number => c.TryGetInt64(out var l) ? l : c.GetDouble(),
+                                    JsonValueKind.String => c.GetString(),
+                                    JsonValueKind.True => true,
+                                    JsonValueKind.False => false,
+                                    JsonValueKind.Null => null,
+                                    _ => c.ToString()
+                                };
+                            }
+                            rows.Add(list);
+                        }
+                    }
+                }
+            }
+        }
+        catch
+        {
+            // best-effort parsing; return what we have
+        }
+        return rows;
+    }
+
     public void Dispose()
     {
         _client.Dispose();

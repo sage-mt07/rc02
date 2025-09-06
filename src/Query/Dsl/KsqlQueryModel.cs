@@ -22,6 +22,10 @@ public class KsqlQueryModel
     public List<string> Windows { get; } = new();
     public DayOfWeek WeekAnchor { get; set; } = DayOfWeek.Monday;
     public int? WithinSeconds { get; set; }
+    public bool ForbidDefaultWithin { get; set; }
+    public bool IsFinal { get; set; }
+    public int? GraceSeconds { get; set; }
+    public System.Collections.Generic.Dictionary<string, object?> Extras { get; } = new();
 
     /// <summary>
     /// Returns a simple string representation useful for debugging.

@@ -64,7 +64,7 @@ public class JoinIntegrationTests
             var qm = new KsqlQueryRoot()
                 .From<OrderValue>()
                 .Join<Customer>((o, c) => o.CustomerId == c.Id)
-                .Within(300)
+                .Within(TimeSpan.FromSeconds(300))
                 .Select((o, c) => new { o.CustomerId, c.Name, o.Amount })
                 .Build();
 

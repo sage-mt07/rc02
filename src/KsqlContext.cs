@@ -879,6 +879,11 @@ public abstract class KsqlContext : IKsqlContext
         return _ksqlDbClient.ExecutePullQueryCountAsync(sql, timeout);
     }
 
+    public Task<System.Collections.Generic.List<object?[]>> QueryRowsAsync(string sql, TimeSpan? timeout = null)
+    {
+        return ((Infrastructure.KsqlDb.KsqlDbClient)_ksqlDbClient).ExecutePullQueryRowsAsync(sql, timeout);
+    }
+
     private static string TryQualifySimpleJoin(string ksql)
     {
         try

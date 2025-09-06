@@ -97,10 +97,17 @@ public class KsqlQueryable2<T1, T2> : IKsqlQueryable
         return this;
     }
 
-    public KsqlQueryable2<T1, T2> Within(int seconds)
+    public KsqlQueryable2<T1, T2> Within(TimeSpan interval)
     {
-        if (seconds <= 0) throw new ArgumentOutOfRangeException(nameof(seconds), "seconds must be > 0");
+        if (interval <= TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(interval), "interval must be > 0");
+        var seconds = (int)Math.Ceiling(interval.TotalSeconds);
         _model.WithinSeconds = seconds;
+        return this;
+    }
+
+    public KsqlQueryable2<T1, T2> RequireExplicitWithin()
+    {
+        _model.ForbidDefaultWithin = true;
         return this;
     }
 

@@ -13,6 +13,13 @@ namespace Kafka.Ksql.Linq.Query.Builders;
 internal class WhereClauseBuilder : BuilderBase
 {
     public override KsqlBuilderType BuilderType => KsqlBuilderType.Where;
+    private readonly System.Collections.Generic.IDictionary<string, string>? _paramToAlias;
+
+    public WhereClauseBuilder() { }
+    public WhereClauseBuilder(System.Collections.Generic.IDictionary<string, string> paramToAlias)
+    {
+        _paramToAlias = paramToAlias;
+    }
 
     protected override KsqlBuilderType[] GetRequiredBuilderTypes()
     {
@@ -21,7 +28,7 @@ internal class WhereClauseBuilder : BuilderBase
 
     protected override string BuildInternal(Expression expression)
     {
-        var visitor = new WhereExpressionVisitor();
+        var visitor = _paramToAlias == null ? new WhereExpressionVisitor() : new WhereExpressionVisitor(_paramToAlias);
         visitor.Visit(expression);
         return visitor.GetResult();
     }

@@ -125,6 +125,26 @@ public class KsqlQueryable<T1> : IKsqlQueryable, IScheduledScope<T1>
         return this;
     }
 
+    public KsqlQueryable<T1> AsFinal(TimeSpan? grace = null)
+    {
+        _model.IsFinal = true;
+        if (grace.HasValue)
+            _model.GraceSeconds = (int)Math.Ceiling(grace.Value.TotalSeconds);
+        return this;
+    }
+
+    public KsqlQueryable<T1> AsLive()
+    {
+        _model.IsFinal = false;
+        return this;
+    }
+
+    public KsqlQueryable<T1> Grace(TimeSpan grace)
+    {
+        _model.GraceSeconds = (int)Math.Ceiling(grace.TotalSeconds);
+        return this;
+    }
+
     public KsqlQueryable2<T1, T2> Join<T2>(Expression<Func<T1, T2, bool>> condition)
     {
         if (_stage != QueryBuildStage.From)
