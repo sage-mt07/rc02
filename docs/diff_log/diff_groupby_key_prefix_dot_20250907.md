@@ -1,0 +1,2 @@
+- switch key prefix from `<entity>_key` to `<entity>.key` for ksql compatibility
+- update query builders and tests to expect `tablename.key->column` format

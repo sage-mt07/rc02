@@ -51,7 +51,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
             var arg = node.Arguments[i];
             var memberName = node.Members?[i]?.Name ?? $"col{i}";
 
-            if (IsGroupKeyAccess(arg))
+            if (IsGroupKeyObject(arg))
             {
                 AddGroupKeyColumns();
             }
@@ -59,7 +59,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
             {
                 var columnExpression = ProcessProjectionArgument(arg);
                 var alias = GenerateUniqueAlias(memberName);
-                if (columnExpression != alias)
+                if (!string.Equals(columnExpression, alias, StringComparison.OrdinalIgnoreCase))
                     _columns.Add($"{columnExpression} AS {alias}");
                 else
                     _columns.Add(columnExpression);
@@ -76,7 +76,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
         {
             var memberName = binding.Member.Name;
             var expr = binding.Expression;
-            if (IsGroupKeyAccess(expr))
+            if (IsGroupKeyObject(expr))
             {
                 AddGroupKeyColumns();
             }
@@ -84,7 +84,9 @@ internal class SelectExpressionVisitor : ExpressionVisitor
             {
                 var columnExpression = ProcessProjectionArgument(expr);
                 var alias = GenerateUniqueAlias(memberName);
-                if (columnExpression != alias)
+                var needsAlias = !string.Equals(columnExpression, alias, StringComparison.OrdinalIgnoreCase)
+                                || IsGroupKeyMember(expr);
+                if (needsAlias)
                     _columns.Add($"{columnExpression} AS {alias}");
                 else
                     _columns.Add(columnExpression);
@@ -95,7 +97,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
 
     protected override Expression VisitMember(MemberExpression node)
     {
-        if (IsGroupKeyAccess(node))
+        if (IsGroupKeyObject(node))
         {
             AddGroupKeyColumns();
         }
@@ -291,21 +293,25 @@ internal class SelectExpressionVisitor : ExpressionVisitor
         return BuilderValidation.SafeToString(value);
     }
 
-    private static bool IsGroupKeyAccess(Expression expr)
+    private static bool IsGroupKeyObject(Expression expr)
+    {
+        return expr is MemberExpression member &&
+               member.Member.Name == "Key" &&
+               member.Expression is ParameterExpression;
+    }
+
+    private static bool IsGroupKeyMember(Expression expr)
     {
         if (expr is not MemberExpression member)
             return false;
 
-        // g.Key or g.Key.Property
         if (member.Member.Name == "Key" && member.Expression is ParameterExpression)
             return true;
 
         if (member.Expression is MemberExpression inner &&
             inner.Member.Name == "Key" &&
             inner.Expression is ParameterExpression)
-        {
             return true;
-        }
 
         return false;
     }
@@ -353,7 +359,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
 
         var dtoKeyMembers = node.Arguments
             .Zip(node.Members ?? Enumerable.Empty<MemberInfo>(), (arg, mem) => new { arg, mem })
-            .Where(x => IsGroupKeyAccess(x.arg))
+            .Where(x => IsGroupKeyMember(x.arg))
             .Select(x => x.mem.Name)
             .ToList();
 
@@ -375,7 +381,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
 
         var dtoKeyMembers = node.Bindings
             .OfType<MemberAssignment>()
-            .Where(b => IsGroupKeyAccess(b.Expression))
+            .Where(b => IsGroupKeyMember(b.Expression))
             .Select(b => b.Member.Name)
             .ToList();
 

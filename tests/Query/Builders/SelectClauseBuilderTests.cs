@@ -16,7 +16,7 @@ public class SelectClauseBuilderTests
         Expression<Func<TestEntity, object>> expr = e => new { e.Id, e.Name };
         var builder = new SelectClauseBuilder();
         var sql = builder.Build(expr.Body);
-        Assert.Equal("test-topic_key->ID AS Id, Name", sql);
+        Assert.Equal("test-topic.key->ID AS Id, Name", sql);
     }
 
     [Fact]

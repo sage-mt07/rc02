@@ -1,0 +1,1 @@
+- fix: ensure group key properties in SELECT clause always emit explicit aliases with AS, preventing invalid SQL like `BROKER BROKER`
