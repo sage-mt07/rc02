@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Query.Builders.Common;
 
 namespace Kafka.Ksql.Linq.Query.Builders;
 internal class GroupByExpressionVisitor : ExpressionVisitor
@@ -134,6 +137,13 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
     /// </summary>
     private static string GetMemberName(MemberExpression member)
     {
+        if (member.Member is PropertyInfo prop && prop.GetCustomAttribute<KsqlKeyAttribute>() != null)
+        {
+            var prefix = KeyNameResolver.GetKeyPrefix(prop.DeclaringType!);
+            var name = KsqlNameUtils.Sanitize(prop.Name).ToUpperInvariant();
+            return $"{prefix}->{name}";
+        }
+
         // ネストしたプロパティの場合は最下位のプロパティ名を使用
         return member.Member.Name;
     }

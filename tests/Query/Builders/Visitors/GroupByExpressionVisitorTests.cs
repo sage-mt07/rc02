@@ -18,7 +18,7 @@ public class GroupByExpressionVisitorTests
         var visitor = new GroupByExpressionVisitor();
         visitor.Visit(expr.Body);
         var result = visitor.GetResult();
-        Assert.Equal("Id, Type", result);
+        Assert.Equal("test-topic_key->ID, Type", result);
     }
 
     [Fact]

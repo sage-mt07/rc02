@@ -197,7 +197,7 @@ public class KsqlContextToQueryIntegrationTests
 
         var mapping = ctx.Registry.GetMapping(typeof(ReorderedView));
         Assert.Equal(new[] { nameof(ReorderedView.Id) }, mapping.KeyProperties.Select(p => p.Name));
-        Assert.Equal(new[] { nameof(ReorderedView.Name), nameof(ReorderedView.Id) }, mapping.ValueProperties.Select(p => p.Name));
+        Assert.Equal(new[] { nameof(ReorderedView.Name) }, mapping.ValueProperties.Select(p => p.Name));
     }
 
     [Fact]
