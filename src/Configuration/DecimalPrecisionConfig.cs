@@ -36,6 +36,8 @@ public static class DecimalPrecisionConfig
     /// </summary>
     public static void Configure(Dictionary<string, Dictionary<string, KsqlDslOptions.DecimalSetting>>? overrides)
     {
+        DecimalPrecision = 18;
+        DecimalScale = 2;
         _overrides = new();
         if (overrides == null) return;
         foreach (var (entity, props) in overrides)
