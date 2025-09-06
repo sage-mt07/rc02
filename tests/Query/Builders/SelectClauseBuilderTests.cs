@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Query.Builders;
 using Kafka.Ksql.Linq.Tests;
 using Xunit;
@@ -51,5 +52,19 @@ public class SelectClauseBuilderTests
         var sql = builder.Build(expr.Body);
 
         Assert.Equal("COUNT(*) AS OrderCount, SUM(Amount) AS TotalAmount", sql);
+    }
+
+    private class Bar
+    {
+        public DateTime BucketStart { get; set; }
+    }
+
+    [Fact]
+    public void Build_MemberInit_WindowStart_AliasesProperty()
+    {
+        Expression<Func<IGrouping<int, TestEntity>, Bar>> expr = g => new Bar { BucketStart = g.WindowStart() };
+        var builder = new SelectClauseBuilder();
+        var sql = builder.Build(expr.Body);
+        Assert.Equal("WINDOWSTART AS BucketStart", sql);
     }
 }

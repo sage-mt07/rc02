@@ -71,7 +71,25 @@ internal class SelectExpressionVisitor : ExpressionVisitor
     protected override Expression VisitMemberInit(MemberInitExpression node)
     {
         ValidateGroupKeyDtoOrder(node);
-        return base.VisitMemberInit(node);
+        foreach (var binding in node.Bindings.OfType<MemberAssignment>())
+        {
+            var memberName = binding.Member.Name;
+            var expr = binding.Expression;
+            if (IsGroupKeyAccess(expr))
+            {
+                AddGroupKeyColumns();
+            }
+            else
+            {
+                var columnExpression = ProcessProjectionArgument(expr);
+                var alias = GenerateUniqueAlias(memberName);
+                if (columnExpression != alias)
+                    _columns.Add($"{columnExpression} AS {alias}");
+                else
+                    _columns.Add(columnExpression);
+            }
+        }
+        return node;
     }
 
     protected override Expression VisitMember(MemberExpression node)
