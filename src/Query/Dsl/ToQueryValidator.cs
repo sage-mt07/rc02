@@ -20,8 +20,10 @@ internal static class ToQueryValidator
             .Where(p => !Attribute.IsDefined(p, typeof(KsqlIgnoreAttribute), true))
             .ToArray();
 
+        var entityPropMap = entityProps.ToDictionary(p => p.Name);
+
         var projectionProps = ExtractProjectionProperties(model.SelectProjection, resultType)
-            .Where(p => !Attribute.IsDefined(p, typeof(KsqlIgnoreAttribute), true))
+            .Where(p => entityPropMap.ContainsKey(p.Name))
             .ToArray();
 
         if (entityProps.Length != projectionProps.Length)
@@ -31,6 +33,8 @@ internal static class ToQueryValidator
         {
             if (entityProps[i].Name != projectionProps[i].Name)
                 throw new InvalidOperationException("Select projection does not match POCO property order.");
+            if (entityProps[i].PropertyType != projectionProps[i].PropertyType)
+                throw new InvalidOperationException("Select projection property types do not match POCO.");
         }
 
         var entityKeys = entityProps
@@ -41,10 +45,12 @@ internal static class ToQueryValidator
             .ToArray();
 
         var projectionKeys = projectionProps
-            .Select(p => (Prop: p, Attr: p.GetCustomAttribute<KsqlKeyAttribute>(true)))
+            .Select(p => (Name: p.Name, Attr: entityPropMap.TryGetValue(p.Name, out var ep)
+                ? ep.GetCustomAttribute<KsqlKeyAttribute>(true)
+                : null))
             .Where(x => x.Attr != null)
             .OrderBy(x => x.Attr!.Order)
-            .Select(x => x.Prop.Name)
+            .Select(x => x.Name)
             .ToArray();
 
         if (!entityKeys.SequenceEqual(projectionKeys))
@@ -64,15 +70,15 @@ internal static class ToQueryValidator
             case NewExpression newExpr when newExpr.Members != null:
                 foreach (var mem in newExpr.Members.OfType<PropertyInfo>())
                 {
-                    var p = resultType.GetProperty(mem.Name);
-                    if (p != null) props.Add(p);
+                    if (resultType.GetProperty(mem.Name) != null)
+                        props.Add(mem);
                 }
                 break;
             case MemberInitExpression initExpr:
                 foreach (var binding in initExpr.Bindings.OfType<MemberAssignment>())
                 {
-                    var p = resultType.GetProperty(binding.Member.Name);
-                    if (p != null) props.Add(p);
+                    if (resultType.GetProperty(binding.Member.Name) != null)
+                        props.Add((PropertyInfo)binding.Member);
                 }
                 break;
             case ParameterExpression:
@@ -80,8 +86,8 @@ internal static class ToQueryValidator
                     .OrderBy(p => p.MetadataToken));
                 break;
             case MemberExpression me when me.Member is PropertyInfo pi:
-                var prop = resultType.GetProperty(pi.Name);
-                if (prop != null) props.Add(prop);
+                if (resultType.GetProperty(pi.Name) != null)
+                    props.Add(pi);
                 break;
         }
         return props;
