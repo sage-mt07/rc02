@@ -122,7 +122,7 @@ public class DDLQueryGeneratorTests
     }
 
     [Fact]
-    public void GenerateCreateStream_WithMultipleKeys_UsesStructKey()
+    public void GenerateCreateStream_WithMultipleKeys_UsesColumnKeys()
     {
         var model = new EntityModel
         {
@@ -131,15 +131,15 @@ public class DDLQueryGeneratorTests
             KeyProperties = new[]
             {
                 typeof(MultiKeyEntity).GetProperty(nameof(MultiKeyEntity.Id1))!,
-                typeof(MultiKeyEntity).GetProperty(nameof(MultiKeyEntity.Id2))!
+                typeof(MultiKeyEntity).GetProperty(nameof(MultiKeyEntity.Id2))!,
             },
             AllProperties = typeof(MultiKeyEntity).GetProperties()
         };
         var generator = new DDLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateCreateStream(new EntityModelDdlAdapter(model)));
-        Assert.Contains("multikeyentity_key STRUCT<Id1 INT, Id2 INT> KEY", query);
-        Assert.DoesNotContain("Id1 INT KEY", query);
-        Assert.DoesNotContain("Id2 INT KEY", query);
+        Assert.Contains("Id1 INT KEY", query);
+        Assert.Contains("Id2 INT KEY", query);
+        Assert.DoesNotContain("STRUCT", query);
     }
 
     [Fact]
