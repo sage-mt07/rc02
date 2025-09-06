@@ -90,7 +90,7 @@ public class ToQueryDslTests
             .Build();
 
         var sql = KsqlCreateStatementBuilder.Build("orders", model);
-        Assert.Contains("SELECT Id", sql);
+        Assert.Contains("SELECT o.Id AS Id", sql);
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public class ToQueryDslTests
 
         var sql = KsqlCreateStatementBuilder.Build("view", model);
         Assert.Contains("JOIN Customer", sql);
-        Assert.Contains("ON (CustomerId = Id)", sql);
+        Assert.Contains("ON (o.CustomerId = i.Id)", sql);
     }
 
     [Fact]
