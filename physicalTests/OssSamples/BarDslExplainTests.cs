@@ -16,7 +16,6 @@ namespace Kafka.Ksql.Linq.Tests.Integration;
 /// </summary>
 public class BarDslExplainTests
 {
-    [KsqlStream]
     [KsqlTopic("deduprates")]
     public class Rate
     {
@@ -54,7 +53,7 @@ public class BarDslExplainTests
         public EventSet<Rate> Rates { get; set; } = null!;
         protected override void OnModelCreating(IModelBuilder modelBuilder)
         {
-            // 入力は属性（[KsqlStream]/[KsqlTopic]/[KsqlTimestamp]）で扱う
+            // 入力は属性（[KsqlTopic]/[KsqlTimestamp]）で扱う
             // 1m/5mの足は単一DSLで展開（minutes: new[]{1,5}）
             modelBuilder.Entity<Bar>()
                 .ToQuery(q => q.From<Rate>()

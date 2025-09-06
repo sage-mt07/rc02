@@ -4,7 +4,6 @@ using Kafka.Ksql.Linq.Core.Attributes;
 
 namespace Kafka.Ksql.Linq.Messaging;
 
-[KsqlStream]
 [KsqlTopic("dead-letter-queue")]
 public class DlqEnvelope
 {

@@ -409,9 +409,9 @@ public abstract class KsqlContext : IKsqlContext
 
         };
 
-        if (entityType.GetCustomAttribute<KsqlStreamAttribute>() != null)
+        if (entityType.GetCustomAttribute<KsqlTableAttribute>() != null)
         {
-            model.SetStreamTableType(StreamTableType.Stream);
+            model.SetStreamTableType(StreamTableType.Table);
         }
 
         if (model.StreamTableType == StreamTableType.Stream)

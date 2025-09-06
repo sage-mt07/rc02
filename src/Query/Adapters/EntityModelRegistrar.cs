@@ -14,7 +14,7 @@ internal static class EntityModelRegistrar
             var force = m.AdditionalSettings.TryGetValue("forceStream", out var fs) && fs is bool b && b;
             if (force)
                 m.SetStreamTableType(StreamTableType.Stream);
-            else if (m.AdditionalSettings.TryGetValue("keys", out var k) && k is string[] arr && arr.Length > 0)
+            else if (m.GetExplicitStreamTableType() == StreamTableType.Table)
                 m.SetStreamTableType(StreamTableType.Table);
             else
                 m.SetStreamTableType(StreamTableType.Stream);

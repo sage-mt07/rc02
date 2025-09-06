@@ -164,7 +164,7 @@ public class Step1Tests
     }
 
     [Fact]
-    public void Adapter_Defaults_Table_When_HasPK_And_Respects_ForceStream_ForHB()
+    public void Adapter_Sets_ForceStream_ForHB()
     {
         var qao = TumblingAnalyzer.Analyze(BuildExpression(), typeof(Rate));
         var (entities, _) = DerivationPlanner.Plan(qao);
@@ -187,7 +187,7 @@ public class Step1Tests
     }
 
     [Fact]
-    public void Registrar_Defaults_Table_When_HasPK_And_Respects_ForceStream()
+    public void Registrar_Defaults_Stream_When_HasPK_And_Respects_ForceStream()
     {
         var qao = TumblingAnalyzer.Analyze(BuildExpression(), typeof(Rate));
         var (entities, _) = DerivationPlanner.Plan(qao);
@@ -197,7 +197,7 @@ public class Step1Tests
         var hb = models.First(m => (string)m.AdditionalSettings["role"] == "Hb");
         var live = models.First(m => (string)m.AdditionalSettings["role"] == "Live");
         Assert.Equal(StreamTableType.Stream, hb.GetExplicitStreamTableType());
-        Assert.Equal(StreamTableType.Table, live.GetExplicitStreamTableType());
+        Assert.Equal(StreamTableType.Stream, live.GetExplicitStreamTableType());
     }
 
     [Fact]
