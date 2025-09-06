@@ -1,0 +1,3 @@
+- Treat group-by queries as tables regardless of POCO stream/table attributes
+- Register query model mapping using aggregate detection to reflect table semantics
+- Test CTAS generation when explicit stream metadata is present

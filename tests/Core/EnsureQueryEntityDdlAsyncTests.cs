@@ -109,6 +109,99 @@ public class EnsureQueryEntityDdlAsyncTests
     }
 
     [Fact]
+    public async Task GroupByQuery_IgnoresExplicitStream_LogsCtas()
+    {
+        var client = new CapturingClient();
+        var logger = new ListLogger();
+        var models = new Dictionary<Type, EntityModel>();
+
+        models[typeof(Source)] = new EntityModel
+        {
+            EntityType = typeof(Source),
+            TopicName = "src",
+            KeyProperties = new[] { typeof(Source).GetProperty(nameof(Source.Id))! },
+            AllProperties = typeof(Source).GetProperties()
+        };
+
+        var targetModel = new EntityModel
+        {
+            EntityType = typeof(Target),
+            TopicName = "tgt",
+            QueryModel = new KsqlQueryRoot().From<Source>().GroupBy(s => s.Id).Select(g => new { Id = g.Key, Count = g.Count() }).Build(),
+            KeyProperties = new[] { typeof(Target).GetProperty(nameof(Target.Id))! },
+            AllProperties = typeof(Target).GetProperties(),
+            KeySchemaFullName = "k",
+            ValueSchemaFullName = "v"
+        };
+        targetModel.SetStreamTableType(StreamTableType.Stream);
+        models[typeof(Target)] = targetModel;
+
+        var ctx = CreateContext(client, logger, models);
+
+        using (Kafka.Ksql.Linq.Core.Modeling.ModelCreatingScope.Enter())
+        {
+            var task = (Task)PrivateAccessor.InvokePrivate(ctx, "EnsureQueryEntityDdlAsync", new[] { typeof(Type), typeof(EntityModel) }, args: new object[] { typeof(Target), targetModel })!;
+            await task;
+        }
+
+        Assert.Single(logger.Messages);
+        Assert.Contains("CREATE TABLE", logger.Messages[0]);
+        Assert.Contains("AS", logger.Messages[0]);
+        Assert.Single(client.Statements);
+        Assert.Contains("CREATE TABLE", client.Statements[0]);
+        Assert.DoesNotContain("INSERT INTO", string.Join("\n", client.Statements));
+
+        DecimalPrecisionConfig.Configure(18, 2, null);
+    }
+
+    [Fact]
+    public async Task ExplicitTableWithoutAggregation_LogsCreateThenInsert()
+    {
+        var client = new CapturingClient();
+        var logger = new ListLogger();
+        var models = new Dictionary<Type, EntityModel>();
+
+        models[typeof(Source)] = new EntityModel
+        {
+            EntityType = typeof(Source),
+            TopicName = "src",
+            KeyProperties = new[] { typeof(Source).GetProperty(nameof(Source.Id))! },
+            AllProperties = typeof(Source).GetProperties()
+        };
+
+        var targetModel = new EntityModel
+        {
+            EntityType = typeof(Target),
+            TopicName = "tgt",
+            QueryModel = new KsqlQueryRoot().From<Source>().Select(s => new { s.Id }).Build(),
+            KeyProperties = new[] { typeof(Target).GetProperty(nameof(Target.Id))! },
+            AllProperties = typeof(Target).GetProperties(),
+            KeySchemaFullName = "k",
+            ValueSchemaFullName = "v"
+        };
+        targetModel.SetStreamTableType(StreamTableType.Table);
+        models[typeof(Target)] = targetModel;
+
+        var ctx = CreateContext(client, logger, models);
+
+        using (Kafka.Ksql.Linq.Core.Modeling.ModelCreatingScope.Enter())
+        {
+            var task = (Task)PrivateAccessor.InvokePrivate(ctx, "EnsureQueryEntityDdlAsync", new[] { typeof(Type), typeof(EntityModel) }, args: new object[] { typeof(Target), targetModel })!;
+            await task;
+        }
+
+        Assert.Equal(2, logger.Messages.Count);
+        Assert.Contains("CREATE TABLE", logger.Messages[0]);
+        Assert.DoesNotContain("CREATE TABLE AS", logger.Messages[0]);
+        Assert.Contains("INSERT INTO", logger.Messages[1]);
+        Assert.Equal(2, client.Statements.Count);
+        Assert.Contains("CREATE TABLE", client.Statements[0]);
+
+        Assert.Contains("INSERT INTO", client.Statements[1]);
+        Assert.Contains("EMIT CHANGES", client.Statements[1]);
+    }
+
+    [Fact]
     public async Task LogsCtasForTable()
     {
         var client = new CapturingClient();

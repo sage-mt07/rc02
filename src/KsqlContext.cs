@@ -742,7 +742,8 @@ public abstract class KsqlContext : IKsqlContext
 
         var isTable = model.GetExplicitStreamTableType() == StreamTableType.Table || model.QueryModel?.IsAggregateQuery == true;
 
-        if (model.QueryModel != null && isTable)
+        if (model.QueryModel?.IsAggregateQuery == true)
+
         {
             Func<Type, string> resolver = t =>
             {
@@ -821,12 +822,13 @@ public abstract class KsqlContext : IKsqlContext
         if (model.QueryModel == null)
             return;
 
+        var isTable = model.GetExplicitStreamTableType() == StreamTableType.Table || model.QueryModel!.IsAggregateQuery;
         _mappingRegistry.RegisterQueryModel(
             model.EntityType,
-            model.QueryModel,
+            model.QueryModel!,
             model.KeyProperties,
             model.GetTopicName(),
-            genericValue: model.StreamTableType == StreamTableType.Table);
+            genericValue: isTable);
     }
 
 
