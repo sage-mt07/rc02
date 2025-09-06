@@ -24,6 +24,8 @@ public static class KsqlCreateStatementBuilder
         if (model == null)
             throw new ArgumentNullException(nameof(model));
 
+        var groupByClause = BuildGroupByClause(model.GroupByExpression);
+
         string selectClause;
         if (model.SelectProjection == null)
         {
@@ -31,22 +33,20 @@ public static class KsqlCreateStatementBuilder
         }
         else
         {
-            // Map projection parameter names to resolved source names for qualification
             var map = new System.Collections.Generic.Dictionary<string, string>(StringComparer.Ordinal);
             var parameters = model.SelectProjection.Parameters;
             for (int i = 0; i < parameters.Count && i < (model.SourceTypes?.Length ?? 0); i++)
             {
                 var pname = parameters[i].Name ?? string.Empty;
-                // Use the same aliases as FROM/JOIN (o/i) for qualification
                 var alias = i == 0 ? "o" : "i";
                 map[pname] = alias;
             }
             var builder = new SelectClauseBuilder(map);
             selectClause = builder.Build(model.SelectProjection.Body);
         }
+
         var fromClause = BuildFromClauseCore(model, sourceNameResolver);
         var whereClause = BuildWhereClause(model.WhereCondition, model);
-        var groupByClause = BuildGroupByClause(model.GroupByExpression);
         var havingClause = BuildHavingClause(model.HavingCondition);
 
         var createType = model.IsAggregateQuery ? "CREATE TABLE" : "CREATE STREAM";
