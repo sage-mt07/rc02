@@ -190,7 +190,7 @@ WHERE Amount > 0;
 - `[KsqlDatetimeFormat(format)]`: 日時の形式を指定する。
 - `[KsqlKey(order)]`: 複合キーの順序を指定する。
 - `[KsqlIgnore]`: スキーマから項目を除外する。
-- `[KsqlStream]`: Stream として扱うことを示す。
+ - `[KsqlTable]`: Table として扱うことを示す（デフォルトは Stream）。
 - `[MaxLength(length)]`: 文字列の最大長を制限する。
 - `[ScheduleRange(openProp, closeProp)]`: 有効期間を示す。
 

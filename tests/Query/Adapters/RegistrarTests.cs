@@ -10,16 +10,20 @@ namespace Kafka.Ksql.Linq.Tests.Query.Adapters;
 public class RegistrarTests
 {
     [Fact]
-    public void Registrar_Defaults_Table_When_HasPK_And_ForceStream_For_HB()
+    public void Registrar_Defaults_Stream_When_HasPK()
     {
         var hb = new EntityModel { EntityType = typeof(object) };
         hb.AdditionalSettings["keys"] = new[] { "K" };
         hb.AdditionalSettings["forceStream"] = true;
         var live = new EntityModel { EntityType = typeof(object) };
         live.AdditionalSettings["keys"] = new[] { "K" };
+        live.SetStreamTableType(StreamTableType.Table);
+        var plain = new EntityModel { EntityType = typeof(object) };
+        plain.AdditionalSettings["keys"] = new[] { "K" };
         var registry = new MappingRegistry();
-        EntityModelRegistrar.Register(registry, new List<EntityModel> { hb, live });
+        EntityModelRegistrar.Register(registry, new List<EntityModel> { hb, live, plain });
         Assert.Equal(StreamTableType.Stream, hb.GetExplicitStreamTableType());
         Assert.Equal(StreamTableType.Table, live.GetExplicitStreamTableType());
+        Assert.Equal(StreamTableType.Stream, plain.GetExplicitStreamTableType());
     }
 }

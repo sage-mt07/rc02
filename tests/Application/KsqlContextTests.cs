@@ -5,6 +5,7 @@ using Kafka.Ksql.Linq.Messaging.Consumers;
 using Kafka.Ksql.Linq.Messaging.Producers;
 using Kafka.Ksql.Linq.Core.Configuration;
 using Kafka.Ksql.Linq.Cache.Core;
+using Kafka.Ksql.Linq.Query.Abstractions;
 using System;
 using System.Net.Http;
 using Xunit;
@@ -55,6 +56,7 @@ public class KsqlContextTests
             KeyProperties = new[] { typeof(TestEntity).GetProperty(nameof(TestEntity.Id))! },
             AllProperties = typeof(TestEntity).GetProperties()
         };
+        model.SetStreamTableType(StreamTableType.Table);
         var set = ctx.CallCreateEntitySet<TestEntity>(model);
         Assert.IsType<ReadCachedEntitySet<TestEntity>>(set);
     }

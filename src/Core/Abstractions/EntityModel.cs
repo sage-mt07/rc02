@@ -69,9 +69,6 @@ public class EntityModel
             if (_explicitStreamTableType.HasValue)
                 return _explicitStreamTableType.Value;
 
-            if (HasKeys())
-                return StreamTableType.Table;
-
             return StreamTableType.Stream;
         }
     }

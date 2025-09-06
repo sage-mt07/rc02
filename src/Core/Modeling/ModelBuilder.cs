@@ -2,6 +2,7 @@ using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Core.Extensions;
+using Kafka.Ksql.Linq.Query.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -142,6 +143,11 @@ internal class ModelBuilder : IModelBuilder
             AllProperties = allProperties,
             KeyProperties = keyProperties
         };
+
+        if (entityType.GetCustomAttribute<KsqlTableAttribute>() != null)
+        {
+            model.SetStreamTableType(StreamTableType.Table);
+        }
 
         var topicAttr = entityType.GetCustomAttribute<KsqlTopicAttribute>();
         if (topicAttr != null)

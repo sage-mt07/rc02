@@ -3,7 +3,6 @@ using Kafka.Ksql.Linq.Core.Attributes;
 
 namespace Examples.Contracts;
 
-[KsqlStream]
 [KsqlTopic("deduprates")]
 public class DedupRateRecord
 {

@@ -25,7 +25,7 @@
 ```markdown
 ## 2025-07-11 21:20 JST [naruse]
 EntityBuilder実装のPRを開始。削除対象の属性クラス棚卸し中。
-- KsqlStreamAttribute, TopicAttribute など依存コード洗い出し進行
+- KsqlTableAttribute, TopicAttribute など依存コード洗い出し進行
 - 削除対象の一覧と依存箇所マッピングを進行中
 ```
 
