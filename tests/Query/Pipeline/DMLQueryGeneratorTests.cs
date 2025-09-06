@@ -1,6 +1,7 @@
 using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Core.Modeling;
 using Kafka.Ksql.Linq.Query.Pipeline;
+using Kafka.Ksql.Linq.Core.Attributes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -106,6 +107,26 @@ public class DMLQueryGeneratorTests
         var query = ExecuteInScope(() => generator.GenerateAggregateQuery("t1", expr.Body));
         Assert.Equal("SELECT WINDOWSTART AS Start FROM t1;", query);
         File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
+    }
+
+    private class DedupRate
+    {
+        [KsqlKey(order: 0)] public string Broker { get; set; } = string.Empty;
+        [KsqlKey(order: 1)] public string Symbol { get; set; } = string.Empty;
+    }
+
+    [Fact]
+    public void GenerateLinqQuery_GroupByKeys_UsesEntityPrefix()
+    {
+        IQueryable<DedupRate> src = new List<DedupRate>().AsQueryable();
+        var expr = src
+            .GroupBy(r => new { r.Broker, r.Symbol })
+            .Select(g => new { g.Key.Broker, g.Key.Symbol, Count = g.Count() });
+
+        var generator = new DMLQueryGenerator();
+        var query = ExecuteInScope(() => generator.GenerateLinqQuery("deduprate", expr.Expression, false));
+
+        Assert.Contains("GROUP BY deduprate_key->BROKER, deduprate_key->SYMBOL", query);
     }
 
     [Fact]

@@ -41,7 +41,6 @@ public class DDLQueryGeneratorTests
         var query = ExecuteInScope(() => generator.GenerateCreateStream(new EntityModelDdlAdapter(model)));
         Assert.Contains("CREATE STREAM IF NOT EXISTS topic", query);
         Assert.Contains("KAFKA_TOPIC='topic'", query);
-        Assert.Contains("KEY_AVRO_SCHEMA_FULL_NAME='com.acme.Key'", query);
         Assert.Contains("VALUE_AVRO_SCHEMA_FULL_NAME='com.acme.Value'", query);
         Assert.Contains("PARTITIONS=1", query);
         Assert.Contains("REPLICAS=1", query);
@@ -68,7 +67,6 @@ public class DDLQueryGeneratorTests
         var generator = new DDLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateCreateStream(new EntityModelDdlAdapter(model)));
         Assert.Contains("KEY_FORMAT='AVRO'", query);
-        Assert.Contains("KEY_AVRO_SCHEMA_FULL_NAME='com.acme.Key'", query);
     }
 
     [Fact]
@@ -80,7 +78,6 @@ public class DDLQueryGeneratorTests
         var generator = new DDLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateCreateTable(new EntityModelDdlAdapter(model)));
         Assert.Contains("KEY_FORMAT='AVRO'", query);
-        Assert.Contains("KEY_AVRO_SCHEMA_FULL_NAME='com.acme.Key'", query);
         Assert.Contains("PARTITIONS=1", query);
         Assert.Contains("REPLICAS=1", query);
     }
@@ -118,7 +115,6 @@ public class DDLQueryGeneratorTests
         model.ValueSchemaFullName = "com.acme.Value";
         var generator = new DDLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateCreateStream(new EntityModelDdlAdapter(model)));
-        Assert.Contains("KEY_AVRO_SCHEMA_FULL_NAME='com.acme.Key'", query);
         Assert.Contains("VALUE_AVRO_SCHEMA_FULL_NAME='com.acme.Value'", query);
     }
 

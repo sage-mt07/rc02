@@ -1,4 +1,3 @@
-using Kafka.Ksql.Linq.Query.Builders.Common;
 using Kafka.Ksql.Linq.Query.Builders.Functions;
 using System;
 using System.Collections.Generic;
@@ -6,6 +5,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Query.Builders.Common;
 
 namespace Kafka.Ksql.Linq.Query.Builders;
 /// <summary>
@@ -219,6 +220,13 @@ internal class SelectExpressionVisitor : ExpressionVisitor
         if (expr is not ParameterExpression pe)
             throw new InvalidOperationException("Unqualified column access is not allowed. Use source parameter properties.");
 
+        if (member.Member is PropertyInfo prop && prop.GetCustomAttribute<KsqlKeyAttribute>() != null)
+        {
+            var prefix = KeyNameResolver.GetKeyPrefix(prop.DeclaringType!);
+            var name = KsqlNameUtils.Sanitize(prop.Name).ToUpperInvariant();
+            return $"{prefix}->{name}";
+        }
+
         var path = stack.ToArray();
         // g.Key.X のようなアクセスでは "Key" プレフィックスを除外
         if (path.Length > 0 && path[0] == "Key")
@@ -311,7 +319,11 @@ internal class SelectExpressionVisitor : ExpressionVisitor
         var visitor = new GroupByExpressionVisitor();
         visitor.Visit(expr);
         var result = visitor.GetResult();
-        return result.Split(',').Select(s => s.Trim()).Where(s => s.Length > 0);
+        return result
+            .Split(',')
+            .Select(s => s.Trim())
+            .Select(s => s.Contains("->") ? s.Split("->")[1] : s)
+            .Where(s => s.Length > 0);
     }
 
     private void AddGroupKeyColumns()
@@ -345,7 +357,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
             .Select(x => x.mem.Name)
             .ToList();
 
-        if (dtoKeyMembers.Count != groupKeys.Count || !dtoKeyMembers.SequenceEqual(groupKeys))
+        if (dtoKeyMembers.Count != groupKeys.Count || !dtoKeyMembers.SequenceEqual(groupKeys, StringComparer.OrdinalIgnoreCase))
         {
             throw new InvalidOperationException(
                 "The order of GroupBy keys does not match the output DTO definition. Please ensure they are the same order.");
@@ -367,7 +379,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
             .Select(b => b.Member.Name)
             .ToList();
 
-        if (dtoKeyMembers.Count != groupKeys.Count || !dtoKeyMembers.SequenceEqual(groupKeys))
+        if (dtoKeyMembers.Count != groupKeys.Count || !dtoKeyMembers.SequenceEqual(groupKeys, StringComparer.OrdinalIgnoreCase))
         {
             throw new InvalidOperationException(
                 "The order of GroupBy keys does not match the output DTO definition. Please ensure they are the same order.");

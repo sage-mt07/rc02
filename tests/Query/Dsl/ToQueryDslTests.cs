@@ -90,7 +90,7 @@ public class ToQueryDslTests
             .Build();
 
         var sql = KsqlCreateStatementBuilder.Build("orders", model);
-        Assert.Contains("SELECT o.Id AS Id", sql);
+        Assert.Contains("SELECT order_key->ID AS Id", sql);
     }
 
     [Fact]

@@ -1,0 +1,3 @@
+- add entity key prefix handling in GroupBy and Select visitors
+- when `[KsqlKey]` property encountered, emit `<entity>_KEY->PROPERTY`
+- unit test covering group by key prefix for deduprate entity

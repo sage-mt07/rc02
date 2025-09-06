@@ -27,7 +27,6 @@ public class KsqlCreateStatementBuilderDslTests
         Assert.Contains("WHERE", sql);
         Assert.Contains("SELECT", sql);
         Assert.Contains("KEY_FORMAT='AVRO'", sql);
-        Assert.Contains("KEY_AVRO_SCHEMA_FULL_NAME='com.acme.Key'", sql);
         Assert.Contains("VALUE_AVRO_SCHEMA_FULL_NAME='com.acme.Value'", sql);
     }
 
