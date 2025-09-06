@@ -64,7 +64,7 @@ public class BarDslExplainTests
                         {
                             Broker = g.Key.Broker,
                             Symbol = g.Key.Symbol,
-                            BucketStart = g.Min(x=>x.Timestamp),
+                            BucketStart = g.WindowStart(),
                             Open = g.EarliestByOffset(x => x.Bid),
                             High = g.Max(x => x.Bid),
                             Low = g.Min(x => x.Bid),
