@@ -99,6 +99,16 @@ public class DMLQueryGeneratorTests
     }
 
     [Fact]
+    public void GenerateAggregateQuery_WindowStart()
+    {
+        Expression<Func<IGrouping<int, TestEntity>, object>> expr = g => new { Start = g.WindowStart() };
+        var generator = new DMLQueryGenerator();
+        var query = ExecuteInScope(() => generator.GenerateAggregateQuery("t1", expr.Body));
+        Assert.Equal("SELECT WINDOWSTART AS Start FROM t1;", query);
+        File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
+    }
+
+    [Fact]
     public void GenerateLinqQuery_FullClauseCombination()
     {
         IQueryable<TestEntity> src = new List<TestEntity>().AsQueryable();
