@@ -1,5 +1,7 @@
 using Kafka.Ksql.Linq.Query.Ddl;
 using Kafka.Ksql.Linq.Query.Pipeline;
+using Kafka.Ksql.Linq.Core.Modeling;
+using Kafka.Ksql.Linq.Core.Attributes;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query;
@@ -76,6 +78,27 @@ public class DdlColumnDefinitionsTests
             var sql = gen.GenerateCreateStream(new SchemaProvider(schema));
             Assert.Contains("VALUE_AVRO_SCHEMA_FULL_NAME='my.value.FullName'", sql);
             Assert.DoesNotContain("KEY_AVRO_SCHEMA_FULL_NAME", sql);
+        }
+    }
+
+    private class Bar
+    {
+        [KsqlKey]
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+    }
+
+    [Fact]
+    public void CreateTable_FromModelBuilder_UsesEntityShape()
+    {
+        var mb = new ModelBuilder();
+        mb.Entity<Bar>();
+        var model = mb.GetEntityModel<Bar>()!;
+        var gen = new DDLQueryGenerator();
+        using (ModelCreatingScope.Enter())
+        {
+            var sql = gen.GenerateCreateTable(new EntityModelDdlAdapter(model));
+            Assert.Contains("CREATE TABLE IF NOT EXISTS bar (Id INT PRIMARY KEY, Name VARCHAR)", sql);
         }
     }
 }
