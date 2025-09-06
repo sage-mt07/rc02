@@ -21,6 +21,6 @@ public class SelectExpressionVisitorKeyDuplicateTests
         var visitor = new SelectExpressionVisitor();
         visitor.Visit(select.Body);
         var result = visitor.GetResult();
-        Assert.Equal("test-topic.key->ID AS ID", result);
+        Assert.Equal("test-topic.ID AS ID", result);
     }
 }

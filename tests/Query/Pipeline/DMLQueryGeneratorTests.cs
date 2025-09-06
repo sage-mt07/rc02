@@ -126,7 +126,7 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateLinqQuery("deduprate", expr.Expression, false));
 
-        Assert.Contains("GROUP BY deduprate.key->BROKER, deduprate.key->SYMBOL", query);
+        Assert.Contains("GROUP BY deduprate.BROKER, deduprate.SYMBOL", query);
     }
 
     [Fact]

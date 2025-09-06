@@ -90,7 +90,7 @@ public class ToQueryDslTests
             .Build();
 
         var sql = KsqlCreateStatementBuilder.Build("orders", model);
-        Assert.Contains("SELECT o.key->ID AS Id", sql);
+        Assert.Contains("SELECT o.ID AS Id", sql);
     }
 
     [Fact]
@@ -268,8 +268,8 @@ public class ToQueryDslTests
             .Build();
 
         var sql = KsqlCreateStatementBuilder.Build("orders", model);
-        Assert.Contains("GROUP BY o.key->ID", sql);
-        Assert.Contains("SELECT o.key->ID AS ID", sql);
+        Assert.Contains("GROUP BY o.ID", sql);
+        Assert.Contains("SELECT o.ID AS ID", sql);
     }
 
     [Fact]

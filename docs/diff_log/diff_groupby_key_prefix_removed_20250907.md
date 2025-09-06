@@ -1,0 +1,2 @@
+- eliminate `key->` notation in GROUP BY and related SELECT projections
+- now reference key columns as `tablename.COLUMN` or aliased form

@@ -155,15 +155,17 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
                 _paramToSource != null &&
                 _paramToSource.TryGetValue(pe.Name ?? string.Empty, out var source))
             {
-                prefix = $"{source}.key";
+                prefix = source;
             }
             else
             {
-                prefix = KeyNameResolver.GetKeyPrefix(prop.DeclaringType!);
+                prefix = KeyNameResolver
+                    .GetKeyPrefix(prop.DeclaringType!)
+                    .Replace(".key", string.Empty);
             }
 
             var name = KsqlNameUtils.Sanitize(prop.Name).ToUpperInvariant();
-            return $"{prefix}->{name}";
+            return $"{prefix}.{name}";
         }
 
         // ネストしたプロパティの場合は最下位のプロパティ名を使用

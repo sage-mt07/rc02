@@ -232,14 +232,14 @@ internal class SelectExpressionVisitor : ExpressionVisitor
             for (int i = 0; i < cols.Length; i++)
                 cols[i] = KsqlNameUtils.Sanitize(cols[i]).ToUpperInvariant();
             var name = string.Join('.', cols);
-            return $"{prefix}->{name}";
+            return $"{prefix}.{name}";
         }
 
         if (member.Member is PropertyInfo prop && prop.GetCustomAttribute<KsqlKeyAttribute>() != null)
         {
             var prefix = GetKeyPrefix(pe);
             var name = KsqlNameUtils.Sanitize(prop.Name).ToUpperInvariant();
-            return $"{prefix}->{name}";
+            return $"{prefix}.{name}";
         }
 
         // 通常プロパティアクセス
@@ -335,7 +335,11 @@ internal class SelectExpressionVisitor : ExpressionVisitor
             .Split(',')
             .Select(s => s.Trim())
             .Where(s => s.Length > 0)
-            .Select(s => (s, s.Contains("->") ? s.Split("->")[1] : s));
+            .Select(s =>
+            {
+                var alias = s.Contains('.') ? s.Split('.').Last() : s;
+                return (s, alias);
+            });
     }
 
     private void AddGroupKeyColumns()
@@ -352,10 +356,10 @@ internal class SelectExpressionVisitor : ExpressionVisitor
     private string GetKeyPrefix(ParameterExpression pe)
     {
         if (_paramToSource != null && _paramToSource.TryGetValue(pe.Name ?? string.Empty, out var alias))
-            return $"{alias}.key";
+            return alias;
 
         var type = GetGroupingElementType(pe.Type);
-        return KeyNameResolver.GetKeyPrefix(type);
+        return KeyNameResolver.GetKeyPrefix(type).Replace(".key", string.Empty);
     }
 
     private static Type GetGroupingElementType(Type type)
