@@ -15,6 +15,7 @@ using Kafka.Ksql.Linq.Runtime.Heartbeat;
 using Confluent.Kafka;
 using Kafka.Ksql.Linq.Query.Abstractions;
 using Kafka.Ksql.Linq.Query.Adapters;
+using Kafka.Ksql.Linq.Query.Ddl;
 using Kafka.Ksql.Linq.SchemaRegistryTools;
 using Kafka.Ksql.Linq.Core.Dlq;
 using Microsoft.Extensions.Configuration;
@@ -734,39 +735,33 @@ public abstract class KsqlContext : IKsqlContext
         }
     }
 
-    /// <summary>
-    /// Generate and execute CREATE TABLE/STREAM AS statements for query entities.
-    /// </summary>
     private async Task EnsureQueryEntityDdlAsync(Type type, EntityModel model)
     {
         if (model.QueryModel != null)
-        {
             RegisterQueryModelMapping(model);
-            // Resolve FROM/JOIN object names:
-            // 1) SourceNameOverrides (by type name) > 2) EntityModel.TopicName > 3) type.Name
-            Func<Type, string>? resolver = (Type t) =>
+
+        var ddl = new Kafka.Ksql.Linq.Query.Pipeline.DDLQueryGenerator().GenerateCreateTable(new EntityModelDdlAdapter(model));
+        Logger.LogInformation("KSQL DDL (query {Entity}): {Sql}", type.Name, ddl);
+        await ExecuteWithRetryAsync(ddl);
+
+        if (model.QueryModel != null)
+        {
+            Func<Type, string>? resolver = t =>
             {
                 var key = t?.Name ?? string.Empty;
-                if (!string.IsNullOrEmpty(key) && _dslOptions.SourceNameOverrides is { Count: > 0 } &&
-                    _dslOptions.SourceNameOverrides.TryGetValue(key, out var overrideName))
-                {
+                if (!string.IsNullOrEmpty(key) && _dslOptions.SourceNameOverrides is { Count: > 0 } && _dslOptions.SourceNameOverrides.TryGetValue(key, out var overrideName))
                     return overrideName;
-                }
                 if (t != null && _entityModels.TryGetValue(t, out var srcModel))
-                {
-                    // Use the configured topic/entity name (uppercase for KSQL identifiers)
                     return srcModel.GetTopicName().ToUpperInvariant();
-                }
                 return key;
             };
-            var topicName = model.GetTopicName();
-            var sql = Query.Builders.KsqlCreateStatementBuilder.Build(
-                    topicName,
-                    model.QueryModel,
-                    model.KeySchemaFullName,
-                    model.ValueSchemaFullName,
-                    resolver);
-            Logger.LogInformation("KSQL DDL (query {Entity}): {Sql}", type.Name, sql);
+            var insert = Query.Builders.KsqlInsertStatementBuilder.Build(model.GetTopicName(), model.QueryModel, resolver);
+            Logger.LogInformation("KSQL DDL (query {Entity}): {Sql}", type.Name, insert);
+            await ExecuteWithRetryAsync(insert);
+        }
+
+        async Task ExecuteWithRetryAsync(string sql)
+        {
             var attempts = 0;
             var maxAttempts = Math.Max(0, _dslOptions.KsqlDdlRetryCount) + 1;
             var delayMs = Math.Max(0, _dslOptions.KsqlDdlRetryInitialDelayMs);
@@ -787,10 +782,7 @@ public abstract class KsqlContext : IKsqlContext
                 await _delay(TimeSpan.FromMilliseconds(delayMs), default);
                 delayMs = Math.Min(delayMs * 2, 8000);
             }
-            return;
         }
-
-        // QueryModel が指定されていない場合は何もしない
     }
 
     /// <summary>
