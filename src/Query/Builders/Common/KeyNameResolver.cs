@@ -16,7 +16,7 @@ internal static class KeyNameResolver
             var builder = new ModelBuilder();
             builder.AddEntityModel(t);
             var model = builder.GetEntityModel(t)!;
-            return $"{model.GetTopicName()}_key";
+            return $"{model.GetTopicName()}.key";
         });
     }
 }

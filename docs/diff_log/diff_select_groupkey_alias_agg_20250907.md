@@ -1,0 +1,2 @@
+- ensure SelectExpressionVisitor emits AS for group key members even when alias matches column
+- add unit test verifying aliasing for group keys and aggregate functions

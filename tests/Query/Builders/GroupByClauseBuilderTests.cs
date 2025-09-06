@@ -23,6 +23,6 @@ public class GroupByClauseBuilderTests
         Expression<Func<TestEntity, object>> expr = e => new { e.Id, e.Type };
         var builder = new GroupByClauseBuilder();
         var sql = builder.Build(expr.Body);
-        Assert.Equal("test-topic_key->ID, Type", sql);
+        Assert.Equal("test-topic.key->ID, Type", sql);
     }
 }
