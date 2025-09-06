@@ -125,6 +125,7 @@ internal static class KsqlFunctionRegistry
         ["Sha1"] = new("SHA1", 1),
         ["Sha256"] = new("SHA256", 1),
 
+        ["WindowStart"] = new("WINDOWSTART", 0, "WINDOWSTART"),
         ["RowTime"] = new("ROWTIME", 0),
         ["RowKey"] = new("ROWKEY", 0)
     };
@@ -171,7 +172,7 @@ internal static class KsqlFunctionRegistry
             ["URL"] = ["UrlExtractHost", "UrlExtractPath", "UrlExtractQuery", "UrlExtractProtocol"],
             ["GEO"] = ["GeoDistance", "AsGeoJson"],
             ["Crypto"] = ["Md5", "Sha1", "Sha256"],
-            ["Window"] = ["RowTime", "RowKey"]
+            ["Window"] = ["WindowStart", "RowTime", "RowKey"]
         };
     }
 
