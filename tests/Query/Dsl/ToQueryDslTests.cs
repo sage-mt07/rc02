@@ -90,7 +90,7 @@ public class ToQueryDslTests
             .Build();
 
         var sql = KsqlCreateStatementBuilder.Build("orders", model);
-        Assert.Contains("SELECT order.key->ID AS Id", sql);
+        Assert.Contains("SELECT o.key->ID AS Id", sql);
     }
 
     [Fact]
@@ -256,6 +256,20 @@ public class ToQueryDslTests
         var sql = KsqlCreateStatementBuilder.Build("orders", model);
         Assert.Contains("GROUP BY CustomerId", sql);
         Assert.Contains("COUNT(", sql);
+    }
+
+    [Fact]
+    public void GroupByKey_UsesAliasPrefix()
+    {
+        var model = new KsqlQueryRoot()
+            .From<Order>()
+            .GroupBy(o => o.Id)
+            .Select(g => new { g.Key })
+            .Build();
+
+        var sql = KsqlCreateStatementBuilder.Build("orders", model);
+        Assert.Contains("GROUP BY o.key->ID", sql);
+        Assert.Contains("SELECT o.key->ID AS ID", sql);
     }
 
     [Fact]

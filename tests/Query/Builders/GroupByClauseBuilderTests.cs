@@ -25,4 +25,15 @@ public class GroupByClauseBuilderTests
         var sql = builder.Build(expr.Body);
         Assert.Equal("test-topic.key->ID, Type", sql);
     }
+
+    [Fact]
+    public void Build_WithAlias_UsesAliasForKeyPrefix()
+    {
+        Expression<Func<TestEntity, object>> expr = e => e.Id;
+        var map = new System.Collections.Generic.Dictionary<string, string> { ["e"] = "t" };
+        var builder = new GroupByClauseBuilder(map);
+        var sql = builder.Build(expr.Body);
+        Assert.Equal("t.key->ID", sql);
+
+    }
 }

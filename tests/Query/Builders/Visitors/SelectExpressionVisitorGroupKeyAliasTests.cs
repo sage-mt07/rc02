@@ -31,7 +31,7 @@ public class SelectExpressionVisitorGroupKeyAliasTests
         var visitor = new SelectExpressionVisitor();
         visitor.Visit(select.Body);
         var result = visitor.GetResult();
-        Assert.Equal("Broker", result);
+        Assert.Equal("quote.key->BROKER AS Broker", result);
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class SelectExpressionVisitorGroupKeyAliasTests
         var visitor = new SelectExpressionVisitor();
         visitor.Visit(select.Body);
         var result = visitor.GetResult();
-        Assert.Equal("Broker AS b", result);
+        Assert.Equal("quote.key->BROKER AS b", result);
     }
 
     private class QuoteFull
@@ -96,6 +96,47 @@ public class SelectExpressionVisitorGroupKeyAliasTests
         var visitor = new SelectExpressionVisitor();
         visitor.Visit(select.Body);
         var result = visitor.GetResult();
-        Assert.Equal("Broker AS Broker, Symbol AS Symbol, WINDOWSTART AS BucketStart, EARLIEST_BY_OFFSET(Bid) AS Open, MAX(Bid) AS High, MIN(Bid) AS Low, LATEST_BY_OFFSET(Bid) AS Close", result);
+        Assert.Equal("quotefull.key->BROKER AS Broker, quotefull.key->SYMBOL AS Symbol, WINDOWSTART AS BucketStart, EARLIEST_BY_OFFSET(Bid) AS Open, MAX(Bid) AS High, MIN(Bid) AS Low, LATEST_BY_OFFSET(Bid) AS Close", result);
+    }
+
+    [Fact]
+    public void VisitMemberInit_GroupKeysAndAggregates_WithSourceAlias()
+    {
+        Expression<Func<QuoteFull, QuoteKeyFull>> groupExpr = q => new QuoteKeyFull { Broker = q.Broker, Symbol = q.Symbol };
+        var map = new System.Collections.Generic.Dictionary<string, string> { ["q"] = "dedup" };
+        var groupBuilder = new GroupByClauseBuilder(map);
+        var groupClause = groupBuilder.Build(groupExpr.Body);
+        Assert.Equal("dedup.key->BROKER, dedup.key->SYMBOL", groupClause);
+
+        Expression<Func<IGrouping<QuoteKeyFull, QuoteFull>, Ohlc>> select = g => new Ohlc
+        {
+            Broker = g.Key.Broker,
+            Symbol = g.Key.Symbol,
+            BucketStart = g.WindowStart(),
+            Open = g.EarliestByOffset(x => x.Bid),
+            High = g.Max(x => x.Bid),
+            Low = g.Min(x => x.Bid),
+            Close = g.LatestByOffset(x => x.Bid)
+        };
+
+        var visitor = new SelectExpressionVisitor(new System.Collections.Generic.Dictionary<string, string> { ["g"] = "dedup" });
+        visitor.Visit(select.Body);
+        var result = visitor.GetResult();
+        Assert.Equal("dedup.key->BROKER AS Broker, dedup.key->SYMBOL AS Symbol, WINDOWSTART AS BucketStart, EARLIEST_BY_OFFSET(Bid) AS Open, MAX(Bid) AS High, MIN(Bid) AS Low, LATEST_BY_OFFSET(Bid) AS Close", result);
+    }
+
+    [Fact]
+    public void VisitMember_GroupKeyObject_WithAlias_UsesAliasPrefix()
+    {
+        Expression<Func<QuoteFull, QuoteKeyFull>> groupExpr = q => new QuoteKeyFull { Broker = q.Broker, Symbol = q.Symbol };
+        var map = new System.Collections.Generic.Dictionary<string, string> { ["q"] = "dedup" };
+        var groupBuilder = new GroupByClauseBuilder(map);
+        groupBuilder.Build(groupExpr.Body);
+
+        Expression<Func<IGrouping<QuoteKeyFull, QuoteFull>, object>> select = g => g.Key;
+        var visitor = new SelectExpressionVisitor(new System.Collections.Generic.Dictionary<string, string> { ["g"] = "dedup" });
+        visitor.Visit(select.Body);
+        var result = visitor.GetResult();
+        Assert.Equal("dedup.key->BROKER AS BROKER, dedup.key->SYMBOL AS SYMBOL", result);
     }
 }

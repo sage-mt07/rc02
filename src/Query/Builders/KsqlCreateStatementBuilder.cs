@@ -24,7 +24,7 @@ public static class KsqlCreateStatementBuilder
         if (model == null)
             throw new ArgumentNullException(nameof(model));
 
-        var groupByClause = BuildGroupByClause(model.GroupByExpression);
+        var groupByClause = BuildGroupByClause(model.GroupByExpression, model.SourceTypes);
 
         string selectClause;
         if (model.SelectProjection == null)
@@ -207,10 +207,19 @@ public static class KsqlCreateStatementBuilder
         return $"WHERE {condition}";
     }
 
-    private static string BuildGroupByClause(LambdaExpression? groupBy)
+    private static string BuildGroupByClause(LambdaExpression? groupBy, Type[]? sourceTypes)
     {
         if (groupBy == null) return string.Empty;
-        var builder = new GroupByClauseBuilder();
+
+        var map = new System.Collections.Generic.Dictionary<string, string>(StringComparer.Ordinal);
+        var parameters = groupBy.Parameters;
+        for (int i = 0; i < parameters.Count && i < (sourceTypes?.Length ?? 0); i++)
+        {
+            var pname = parameters[i].Name ?? string.Empty;
+            var alias = i == 0 ? "o" : "i";
+            map[pname] = alias;
+        }
+        var builder = new GroupByClauseBuilder(map);
         var keys = builder.Build(groupBy.Body);
         return $"GROUP BY {keys}";
     }

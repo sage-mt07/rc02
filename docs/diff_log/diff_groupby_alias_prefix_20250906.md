@@ -1,0 +1,2 @@
+- add support for resolving key prefixes using table aliases in GroupByClauseBuilder and SelectExpressionVisitor
+- add unit tests verifying `alias.key->column` format for group-by with aggregates
