@@ -33,6 +33,13 @@ public class ToQueryDslTests
         public string Name { get; set; } = string.Empty;
     }
 
+    private class OrderAmountString
+    {
+        [KsqlKey]
+        public int Id { get; set; }
+        public string Amount { get; set; } = string.Empty;
+    }
+
     private class KeylessView
     {
         public string Name { get; set; } = string.Empty;
@@ -150,6 +157,18 @@ public class ToQueryDslTests
         Assert.Throws<InvalidOperationException>(() =>
             entityBuilder.ToQuery(q => q.From<Order>()
                 .Select(o => new { o.CustomerId }))); 
+    }
+
+    [Fact]
+    public void TypeMismatch_Throws()
+    {
+        var builder = new ModelBuilder();
+        builder.Entity<Order>();
+        var entityBuilder = builder.Entity<OrderAmountString>();
+
+        Assert.Throws<InvalidOperationException>(() =>
+            entityBuilder.ToQuery(q => q.From<Order>()
+                .Select(o => new { o.Id, o.Amount })));
     }
 
     [Fact]
