@@ -33,6 +33,29 @@ public class ToQueryDslTests
         public string Name { get; set; } = string.Empty;
     }
 
+    private class OrderAmountString
+    {
+        [KsqlKey]
+        public int Id { get; set; }
+        public string Amount { get; set; } = string.Empty;
+    }
+
+    private class OrderDecimal
+    {
+        [KsqlKey]
+        public int Id { get; set; }
+        [KsqlDecimal(18, 2)]
+        public decimal Amount { get; set; }
+    }
+
+    private class OrderDecimalScaled
+    {
+        [KsqlKey]
+        public int Id { get; set; }
+        [KsqlDecimal(18, 4)]
+        public decimal Amount { get; set; }
+    }
+
     private class KeylessView
     {
         public string Name { get; set; } = string.Empty;
@@ -150,6 +173,30 @@ public class ToQueryDslTests
         Assert.Throws<InvalidOperationException>(() =>
             entityBuilder.ToQuery(q => q.From<Order>()
                 .Select(o => new { o.CustomerId }))); 
+    }
+
+    [Fact]
+    public void TypeMismatch_Throws()
+    {
+        var builder = new ModelBuilder();
+        builder.Entity<Order>();
+        var entityBuilder = builder.Entity<OrderAmountString>();
+
+        Assert.Throws<InvalidOperationException>(() =>
+            entityBuilder.ToQuery(q => q.From<Order>()
+                .Select(o => new { o.Id, o.Amount }))); 
+    }
+
+    [Fact]
+    public void DecimalPrecisionMismatch_Throws()
+    {
+        var builder = new ModelBuilder();
+        builder.Entity<OrderDecimal>();
+        var entityBuilder = builder.Entity<OrderDecimalScaled>();
+
+        Assert.Throws<InvalidOperationException>(() =>
+            entityBuilder.ToQuery(q => q.From<OrderDecimal>()
+                .Select(o => new { o.Id, o.Amount })));
     }
 
     [Fact]
