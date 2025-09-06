@@ -180,7 +180,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
 
         var columns = new List<string>();
 
-        if (keyColumns.Count > 1)
+        if (keyColumns.Count > 1 && !isStream)
         {
             var fields = keyColumns.Select(c => $"{QuoteIfReserved(c.Name)} {c.Type}");
             var structDef = $"STRUCT<{string.Join(", ", fields)}>";

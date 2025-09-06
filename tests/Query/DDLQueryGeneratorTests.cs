@@ -47,7 +47,7 @@ public class DdlColumnDefinitionsTests
     }
 
     [Fact]
-    public void CreateStream_MultiKey_StructKey_QuotesReservedFields()
+    public void CreateStream_MultiKey_QuotesReservedFields()
     {
         var schema = new DdlSchemaBuilder("dead_letter_queue", DdlObjectType.Stream, "dead-letter-queue", 1, 1)
             .AddColumn("Topic", "VARCHAR", isKey: true)
@@ -59,7 +59,9 @@ public class DdlColumnDefinitionsTests
         using (Kafka.Ksql.Linq.Core.Modeling.ModelCreatingScope.Enter())
         {
             var sql = gen.GenerateCreateStream(new SchemaProvider(schema));
-            Assert.Contains("STRUCT<`Topic` VARCHAR, `Partition` INT, `Offset` BIGINT> KEY", sql);
+            Assert.Contains("`Topic` VARCHAR KEY", sql);
+            Assert.Contains("`Partition` INT KEY", sql);
+            Assert.Contains("`Offset` BIGINT KEY", sql);
             Assert.Contains("ErrorMessage VARCHAR", sql);
         }
     }
