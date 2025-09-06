@@ -17,7 +17,7 @@ public class KsqlCreateStatementBuilderDslTests
         var model = new KsqlQueryRoot()
             .From<Order>()
             .Join<Customer>((o, c) => o.CustomerId == c.Id)
-            .Within(5)
+            .Within(TimeSpan.FromSeconds(5))
             .Where((o, c) => c.IsActive)
             .Select((o, c) => new { o.Id, c.Name })
             .Build();
@@ -37,7 +37,7 @@ public class KsqlCreateStatementBuilderDslTests
         var model = new KsqlQueryRoot()
             .From<Order>()
             .Join<Customer>((o, c) => o.CustomerId == c.Id)
-            .Within(5)
+            .Within(TimeSpan.FromSeconds(5))
             .Select((o, c) => new { o.Id, c.Name })
             .Build();
 

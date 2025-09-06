@@ -45,7 +45,7 @@ public class KsqlQueryable2Tests
     {
         var queryable = new KsqlQueryable<Order>()
             .Join<Payment>((o, p) => o.Id == p.OrderId)
-            .Within(300)
+            .Within(TimeSpan.FromSeconds(300))
             .Select((o, p) => new { o.Id, p.Paid });
         var model = queryable.Build();
         var sql = KsqlCreateStatementBuilder.Build("JoinTest", model);
@@ -71,7 +71,7 @@ public class KsqlQueryable2Tests
         var outside = new Order();
         var queryable = new KsqlQueryable<Order>()
             .Join<Payment>((o, p) => o.Id == p.OrderId)
-            .Within(5)
+            .Within(TimeSpan.FromSeconds(5))
             .Select((o, p) => new { outside.Id, p.Paid });
         var model = queryable.Build();
         Assert.Throws<InvalidOperationException>(() => KsqlCreateStatementBuilder.Build("JoinTest", model));
@@ -83,7 +83,7 @@ public class KsqlQueryable2Tests
         var outside = new Order();
         var queryable = new KsqlQueryable<Order>()
             .Join<Payment>((o, p) => outside.Id == p.OrderId)
-            .Within(5)
+            .Within(TimeSpan.FromSeconds(5))
             .Select((o, p) => new { o.Id, p.Paid });
         var model = queryable.Build();
         Assert.Throws<InvalidOperationException>(() => KsqlCreateStatementBuilder.Build("JoinTest", model));
