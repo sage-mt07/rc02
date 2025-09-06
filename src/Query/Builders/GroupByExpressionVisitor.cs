@@ -10,6 +10,13 @@ namespace Kafka.Ksql.Linq.Query.Builders;
 internal class GroupByExpressionVisitor : ExpressionVisitor
 {
     private readonly List<string> _keys = new();
+    private readonly IDictionary<string, string>? _paramToSource;
+
+    public GroupByExpressionVisitor() { }
+    public GroupByExpressionVisitor(IDictionary<string, string> paramToSource)
+    {
+        _paramToSource = paramToSource;
+    }
 
     public string GetResult()
     {
@@ -135,11 +142,26 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
     /// <summary>
     /// メンバー名取得
     /// </summary>
-    private static string GetMemberName(MemberExpression member)
+    private string GetMemberName(MemberExpression member)
     {
         if (member.Member is PropertyInfo prop && prop.GetCustomAttribute<KsqlKeyAttribute>() != null)
         {
-            var prefix = KeyNameResolver.GetKeyPrefix(prop.DeclaringType!);
+            Expression? expr = member;
+            while (expr is MemberExpression m)
+                expr = m.Expression;
+
+            string prefix;
+            if (expr is ParameterExpression pe &&
+                _paramToSource != null &&
+                _paramToSource.TryGetValue(pe.Name ?? string.Empty, out var source))
+            {
+                prefix = $"{source}.key";
+            }
+            else
+            {
+                prefix = KeyNameResolver.GetKeyPrefix(prop.DeclaringType!);
+            }
+
             var name = KsqlNameUtils.Sanitize(prop.Name).ToUpperInvariant();
             return $"{prefix}->{name}";
         }

@@ -14,11 +14,25 @@ namespace Kafka.Ksql.Linq.Query.Builders;
 internal class GroupByClauseBuilder : BuilderBase
 {
     private static readonly AsyncLocal<Expression?> _lastGroupByExpression = new();
+    private static readonly AsyncLocal<string?> _lastBuiltKeys = new();
+    private readonly System.Collections.Generic.IDictionary<string, string>? _paramToSource;
+
+    public GroupByClauseBuilder() { }
+    public GroupByClauseBuilder(System.Collections.Generic.IDictionary<string, string> paramToSource)
+    {
+        _paramToSource = paramToSource;
+    }
 
     internal static Expression? LastGroupByExpression
     {
         get => _lastGroupByExpression.Value;
         private set => _lastGroupByExpression.Value = value;
+    }
+
+    internal static string? LastBuiltKeys
+    {
+        get => _lastBuiltKeys.Value;
+        private set => _lastBuiltKeys.Value = value;
     }
 
     public override KsqlBuilderType BuilderType => KsqlBuilderType.GroupBy;
@@ -31,10 +45,13 @@ internal class GroupByClauseBuilder : BuilderBase
     protected override string BuildInternal(Expression expression)
     {
         LastGroupByExpression = expression;
-        var visitor = new GroupByExpressionVisitor();
+        var visitor = _paramToSource == null
+            ? new GroupByExpressionVisitor()
+            : new GroupByExpressionVisitor(_paramToSource);
         visitor.Visit(expression);
 
         var result = visitor.GetResult();
+        LastBuiltKeys = result;
 
         if (string.IsNullOrWhiteSpace(result))
         {

@@ -1,0 +1,3 @@
+- ensure GroupBy clause builder in KsqlCreateStatementBuilder resolves table aliases for key prefixes
+- allow SelectExpressionVisitor to reuse alias mappings when projecting entire group-key objects
+- verify alias-prefixed key references in DSL and visitor tests
