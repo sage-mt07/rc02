@@ -7,6 +7,9 @@ using Kafka.Ksql.Linq.Query.Pipeline;
 using Kafka.Ksql.Linq.Query.Ddl;
 using Kafka.Ksql.Linq.Core.Modeling;
 using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Configuration;
+using Kafka.Ksql.Linq.Configuration.Messaging;
+using Kafka.Ksql.Linq.Query.Dsl;
 using Xunit;
 using System.IO;
 namespace Kafka.Ksql.Linq.Tests.Query.Pipeline;
@@ -166,5 +169,98 @@ public class DDLQueryGeneratorTests
             generator.GenerateCreateStream(new EntityModelDdlAdapter(model)));
 
         Assert.Contains("Where/GroupBy/Select", ex.Message);
+    }
+
+    [KsqlTopic("attr_entity", PartitionCount = 3, ReplicationFactor = 2)]
+    private class AttrEntity
+    {
+        [KsqlKey]
+        public int Id { get; set; }
+    }
+
+    [KsqlTopic("attr_view", PartitionCount = 4, ReplicationFactor = 3)]
+    private class AttrView
+    {
+        [KsqlKey]
+        public int Id { get; set; }
+    }
+
+    private class ConfigView
+    {
+        [KsqlKey]
+        public int Id { get; set; }
+    }
+
+    private static string GenerateDdl(EntityModel model)
+    {
+        var generator = new DDLQueryGenerator();
+        return ExecuteInScope(() => generator.GenerateCreateStream(new EntityModelDdlAdapter(model)));
+    }
+
+    private static void ApplyTopicConfig(EntityModel model, KsqlDslOptions options)
+    {
+        if (options.Topics.TryGetValue(model.TopicName!, out var topic) && topic.Creation != null)
+        {
+            model.Partitions = topic.Creation.NumPartitions;
+            model.ReplicationFactor = topic.Creation.ReplicationFactor;
+        }
+    }
+
+    [Fact]
+    public void AttributeEntity_EmitsConfiguredPartitionsAndReplicas()
+    {
+        var builder = new ModelBuilder();
+        builder.Entity<AttrEntity>();
+        var model = builder.GetEntityModel<AttrEntity>()!;
+        var sql = GenerateDdl(model);
+        Assert.Contains("PARTITIONS=3", sql);
+        Assert.Contains("REPLICAS=2", sql);
+    }
+
+    [Fact]
+    public void AttributeToQuery_EmitsConfiguredPartitionsAndReplicas()
+    {
+        var builder = new ModelBuilder();
+        builder.Entity<TestEntity>();
+        builder.Entity<AttrView>().ToQuery(q => q.From<TestEntity>().Select(e => new AttrView { Id = e.Id }));
+        var model = builder.GetEntityModel<AttrView>()!;
+        var sql = GenerateDdl(model);
+        Assert.Contains("PARTITIONS=4", sql);
+        Assert.Contains("REPLICAS=3", sql);
+    }
+
+    [Fact]
+    public void ConfigEntity_EmitsConfiguredPartitionsAndReplicas()
+    {
+        var options = new KsqlDslOptions();
+        options.Topics["test-topic"] = new TopicSection
+        {
+            Creation = new TopicCreationSection { NumPartitions = 5, ReplicationFactor = 2 }
+        };
+        var builder = new ModelBuilder();
+        builder.Entity<TestEntity>();
+        var model = builder.GetEntityModel<TestEntity>()!;
+        ApplyTopicConfig(model, options);
+        var sql = GenerateDdl(model);
+        Assert.Contains("PARTITIONS=5", sql);
+        Assert.Contains("REPLICAS=2", sql);
+    }
+
+    [Fact]
+    public void ConfigToQuery_EmitsConfiguredPartitionsAndReplicas()
+    {
+        var options = new KsqlDslOptions();
+        options.Topics["configview"] = new TopicSection
+        {
+            Creation = new TopicCreationSection { NumPartitions = 6, ReplicationFactor = 1 }
+        };
+        var builder = new ModelBuilder();
+        builder.Entity<TestEntity>();
+        builder.Entity<ConfigView>().ToQuery(q => q.From<TestEntity>().Select(e => new ConfigView { Id = e.Id }));
+        var model = builder.GetEntityModel<ConfigView>()!;
+        ApplyTopicConfig(model, options);
+        var sql = GenerateDdl(model);
+        Assert.Contains("PARTITIONS=6", sql);
+        Assert.Contains("REPLICAS=1", sql);
     }
 }
