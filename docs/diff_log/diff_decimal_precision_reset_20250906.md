@@ -1,0 +1,1 @@
+- `DecimalPrecisionConfig.Configure(overrides)` now resets global precision and scale to 18 and 2 before applying overrides.
