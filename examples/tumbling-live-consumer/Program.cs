@@ -21,12 +21,12 @@ class Program
 
         var unit = minutes == 1 ? "MINUTE" : "MINUTES";
         var sql = "SELECT " +
-                  " dedupraterecord.key->Broker AS BROKER, " +
-                  " dedupraterecord.key->Symbol AS SYMBOL, " +
+                  " dedupraterecord.Broker AS BROKER, " +
+                  " dedupraterecord.Symbol AS SYMBOL, " +
                   " WINDOWSTART AS WS, WINDOWEND AS WE, " +
                   " EARLIEST_BY_OFFSET(Bid) AS OPEN, MAX(Bid) AS HIGH, MIN(Bid) AS LOW, LATEST_BY_OFFSET(Bid) AS CLOSE " +
                   " FROM DEDUPRATES WINDOW TUMBLING (SIZE " + minutes + " " + unit + ") " +
-                  " GROUP BY dedupraterecord.key->Broker, dedupraterecord.key->Symbol " +
+                  " GROUP BY dedupraterecord.Broker, dedupraterecord.Symbol " +
                   " EMIT CHANGES;";
 
         using var http = new HttpClient { Timeout = Timeout.InfiniteTimeSpan };
