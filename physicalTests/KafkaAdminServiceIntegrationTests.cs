@@ -33,7 +33,7 @@ public class KafkaAdminServiceIntegrationTests
         await svc.EnsureTopicExistsAsync("it.topic");
         using var admin = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = EnvKafkaAdminServiceIntegrationTests.KafkaBootstrapServers }).Build();
         var meta = admin.GetMetadata("it.topic", TimeSpan.FromSeconds(10));
-        Assert.Equal(1, meta.Topics[0].Partitions.Count);
+        Assert.Single(meta.Topics[0].Partitions);
     }
 }
 

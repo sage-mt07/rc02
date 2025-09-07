@@ -24,7 +24,7 @@ internal class DerivedEntity
 {
     public string Id { get; init; } = string.Empty;
     public Role Role { get; init; }
-    public Timeframe Timeframe { get; init; }
+    public Timeframe Timeframe { get; init; } = default!;
     public IReadOnlyList<ColumnShape> KeyShape { get; init; } = Array.Empty<ColumnShape>();
     public IReadOnlyList<ColumnShape> ValueShape { get; init; } = Array.Empty<ColumnShape>();
     public MaterializationHint MaterializationHint { get; init; } = MaterializationHint.Table;

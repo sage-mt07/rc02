@@ -1,0 +1,3 @@
+- clean integration tests and unit tests warnings
+- add System.Linq and #nullable enable directives
+- async fix for PortConnectivityTests and Assert.Single usage

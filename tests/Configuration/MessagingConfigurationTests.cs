@@ -86,7 +86,7 @@ public class MessagingConfigurationTests
     [Fact]
     public void TopicConfig_DeepMerge_DoesNotErase_Unspecified_Sections()
     {
-        var dict = new Dictionary<string, string>
+        var dict = new Dictionary<string, string?>
         {
             ["KsqlDsl:Topics:foo:Producer:Acks"] = "1"
         };
@@ -103,7 +103,7 @@ public class MessagingConfigurationTests
     [Fact]
     public void RetentionMs_Parses_NegativeOne_And_LongValues_Invariant()
     {
-        var dict = new Dictionary<string, string>
+        var dict = new Dictionary<string, string?>
         {
             ["KsqlDsl:DlqOptions:RetentionMs"] = "-1"
         };

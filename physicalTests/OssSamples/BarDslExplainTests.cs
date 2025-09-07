@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Attributes;
@@ -10,6 +11,8 @@ using System.Threading.Tasks;
 using Kafka.Ksql.Linq.Core.Modeling;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
+
+#nullable enable
 
 /// <summary>
 /// OnModelCreating → ToQuery → Materialize(SQL) → Verify の流れに統一したDSLテスト。

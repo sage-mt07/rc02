@@ -13,7 +13,7 @@ internal static class ConfigLoggingExtensions
     private static bool IsSensitive(string key)
         => SensitiveKeys.Any(k => key.IndexOf(k, StringComparison.OrdinalIgnoreCase) >= 0);
 
-    private static IEnumerable<(string Key, object? Value)> ReflectProps(object config)
+    private static IEnumerable<(string Key, object Value)> ReflectProps(object config)
     {
         var type = config.GetType();
         var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
@@ -26,7 +26,7 @@ internal static class ConfigLoggingExtensions
             try { val = p.GetValue(config); }
             catch { continue; }
             if (val is null) continue;
-            yield return (p.Name, val);
+            yield return (p.Name, val!);
         }
     }
 

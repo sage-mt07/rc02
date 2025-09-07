@@ -9,6 +9,8 @@ using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
+#nullable enable
+
 [Collection("Connectivity")]
 public class KafkaConnectivityTests
 {

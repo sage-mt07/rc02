@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 namespace PhysicalTestEnv;
 
+#nullable enable
+
 public static class KsqlHelpers
 {
     public static async Task<KsqlDbResponse> ExecuteStatementWithRetryAsync(KsqlContext ctx, string statement, int retries = 3, int delayMs = 1000)

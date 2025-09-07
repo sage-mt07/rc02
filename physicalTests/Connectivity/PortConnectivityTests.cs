@@ -18,9 +18,9 @@ public class PortConnectivityTests
 {
 [Fact]
 //[TestPriority(1)]
-    public void Kafka_Broker_Should_Be_Reachable()
+    public async Task Kafka_Broker_Should_Be_Reachable()
     {
-        EnvPortConnectivityTests.SetupAsync().GetAwaiter().GetResult();
+        await EnvPortConnectivityTests.SetupAsync();
         using var admin = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = EnvPortConnectivityTests.KafkaBootstrapServers }).Build();
         var meta = admin.GetMetadata(TimeSpan.FromSeconds(10));
         Assert.NotEmpty(meta.Brokers);

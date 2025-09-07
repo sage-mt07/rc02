@@ -1,0 +1,1 @@
+- add unit test ensuring tumbling query derives bar_x tables without creating base Bar table
