@@ -134,6 +134,35 @@ public class KsqlCreateWindowedStatementBuilderTests
     }
 
     [Fact]
+    public void Build_NoWindow_Creates_Stream()
+    {
+        var model = new KsqlQueryRoot()
+            .From<Rate>()
+            .Select(r => r)
+            .AsPush()
+            .Build();
+
+        var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateStatementBuilder.Build("rates", model);
+        Assert.StartsWith("CREATE STREAM rates", sql);
+    }
+
+    [Fact]
+    public void Build_WithWindow_Creates_Table()
+    {
+        var model = new KsqlQueryRoot()
+            .From<Rate>()
+            .Tumbling(r => r.Timestamp, minutes: new[] { 1 })
+            .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
+            .Select(g => new { g.Key.Broker, g.Key.Symbol, g.Key.BucketStart, Open = g.EarliestByOffset(x => x.Bid) })
+            .AsPush()
+            .Build();
+
+        var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.Build("bar_1m", model, "1m");
+        Assert.StartsWith("CREATE TABLE bar_1m", sql);
+        Assert.Contains("WINDOW TUMBLING", sql);
+    }
+
+    [Fact]
     public void DetermineType_Tumbling_Returns_Table()
     {
         var model = new KsqlQueryRoot()

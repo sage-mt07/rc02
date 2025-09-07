@@ -1,0 +1,3 @@
+- add unit tests verifying DerivationPlanner creates role-specific entities
+- verify CREATE STREAM/TABLE generation with and without windows
+- ensure DerivedTumblingPipeline emits distinct DDL per role
