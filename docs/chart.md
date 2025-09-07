@@ -67,7 +67,7 @@ EventSet<Rate>()
     .Select(g => new {
         g.Key.Broker,
         g.Key.Symbol,
-        g.Key.BucketStart,
+        g.WindowStart(),
         Open  = g.EarliestByOffset(x => x.Bid),
         High  = g.Max(x => x.Bid),
         Low   = g.Min(x => x.Bid),
@@ -117,7 +117,7 @@ EventSet<Rate>()
     .Select(g => new {
         g.Key.Broker,
         g.Key.Symbol,
-        g.Key.BucketStart,
+        g.WindowStart(),
         Open  = g.EarliestByOffset(x => x.Bid),
         High  = g.Max(x => x.Bid),
         Low   = g.Min(x => x.Bid),
