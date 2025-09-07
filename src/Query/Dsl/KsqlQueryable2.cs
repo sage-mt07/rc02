@@ -50,10 +50,6 @@ public class KsqlQueryable2<T1, T2> : IKsqlQueryable
 
         var visitor = new Kafka.Ksql.Linq.Query.Builders.AggregateDetectionVisitor();
         visitor.Visit(projection.Body);
-        if (visitor.HasAggregates)
-        {
-            _model.IsAggregateQuery = true;
-        }
 
         return this;
     }
@@ -67,7 +63,6 @@ public class KsqlQueryable2<T1, T2> : IKsqlQueryable
         DayOfWeek? week = null,
         TimeSpan? grace = null)
     {
-        _model.HasTumbling = true;
         if (minutes != null) foreach (var m in minutes) _model.Windows.Add($"{m}m");
         if (hours != null) foreach (var h in hours) _model.Windows.Add($"{h}h");
         if (days != null) foreach (var d in days) _model.Windows.Add($"{d}d");

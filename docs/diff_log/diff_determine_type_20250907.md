@@ -1,0 +1,5 @@
+- KsqlQueryModel gains DetermineType(), HasGroupBy(), HasTumbling(), HasAggregates(), IsAggregateQuery().
+- Removed external IsAggregateQuery/HasTumbling flags; inference is internal.
+- KsqlCreateStatementBuilder and windowed builder rely on DetermineType.
+- KsqlContext.SchemaRegistration and DerivedTumblingPipeline use DetermineType instead of local isTable/forceTable logic.
+- Added tests verifying type inference.

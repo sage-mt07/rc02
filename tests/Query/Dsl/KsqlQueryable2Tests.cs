@@ -27,7 +27,7 @@ public class KsqlQueryable2Tests
         Expression<Func<Order, Payment, object>> projection = (o, p) => new { Total = o.Amount + p.Paid, Sum = Enumerable.Sum(new[] { o.Amount, p.Paid }) };
         var queryable = new KsqlQueryable2<Order, Payment>().Select(projection);
         var model = queryable.Build();
-        Assert.True(model.IsAggregateQuery);
+        Assert.True(model.IsAggregateQuery());
     }
 
     [Fact(Skip = "Requires join condition setup")]

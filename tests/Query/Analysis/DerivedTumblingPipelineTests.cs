@@ -38,7 +38,6 @@ public class DerivedTumblingPipelineTests
         var model = new KsqlQueryModel
         {
             SourceTypes = new[] { typeof(TestSource) },
-            HasTumbling = true,
             Windows = { "5m" }
         };
         var registry = new Dictionary<Type, EntityModel>();

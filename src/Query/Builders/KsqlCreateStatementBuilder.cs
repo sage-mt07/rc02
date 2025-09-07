@@ -1,5 +1,6 @@
 using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Query.Dsl;
+using Kafka.Ksql.Linq.Query.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,7 +60,7 @@ public static class KsqlCreateStatementBuilder
         whereClause = ApplyKeyStyle(whereClause, keyMap);
         havingClause = ApplyKeyStyle(havingClause, keyMap);
 
-        var createType = model.IsAggregateQuery ? "CREATE TABLE" : "CREATE STREAM";
+        var createType = model.DetermineType() == StreamTableType.Table ? "CREATE TABLE" : "CREATE STREAM";
 
         var sb = new StringBuilder();
         sb.Append($"{createType} {streamName}");

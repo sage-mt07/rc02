@@ -37,8 +37,6 @@ public class KsqlGroupedQueryable<T, TKey> : IKsqlQueryable
         _stage = QueryBuildStage.Select;
         var visitor = new Kafka.Ksql.Linq.Query.Builders.AggregateDetectionVisitor();
         visitor.Visit(projection.Body);
-        if (visitor.HasAggregates)
-            _model.IsAggregateQuery = true;
         return this;
     }
 

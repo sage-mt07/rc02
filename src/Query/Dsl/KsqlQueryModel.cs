@@ -1,4 +1,6 @@
 using Kafka.Ksql.Linq.Query.Pipeline;
+using Kafka.Ksql.Linq.Query.Builders;
+using Kafka.Ksql.Linq.Query.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,9 +16,7 @@ public class KsqlQueryModel
     public LambdaExpression? SelectProjection { get; set; }
     public LambdaExpression? GroupByExpression { get; set; }
     public LambdaExpression? HavingCondition { get; set; }
-    public bool IsAggregateQuery { get; set; }
     public QueryExecutionMode ExecutionMode { get; set; } = QueryExecutionMode.Unspecified;
-    public bool HasTumbling { get; set; }
     public Type? BasedOnType { get; set; }
     public LambdaExpression? BasedOnDayKey { get; set; }
     public List<string> Windows { get; } = new();
@@ -37,9 +37,7 @@ public class KsqlQueryModel
             SelectProjection = SelectProjection,
             GroupByExpression = GroupByExpression,
             HavingCondition = HavingCondition,
-            IsAggregateQuery = IsAggregateQuery,
             ExecutionMode = ExecutionMode,
-            HasTumbling = HasTumbling,
             BasedOnType = BasedOnType,
             BasedOnDayKey = BasedOnDayKey,
             WeekAnchor = WeekAnchor,
@@ -60,6 +58,22 @@ public class KsqlQueryModel
     public string Dump()
     {
         var sources = string.Join(",", SourceTypes.Select(t => t.Name));
-        return $"Sources:[{sources}] Join:{JoinCondition} Where:{WhereCondition} Select:{SelectProjection} Aggregate:{IsAggregateQuery} Mode:{ExecutionMode}";
+        return $"Sources:[{sources}] Join:{JoinCondition} Where:{WhereCondition} Select:{SelectProjection} Aggregate:{IsAggregateQuery()} Mode:{ExecutionMode}";
     }
+
+    public bool HasGroupBy() => GroupByExpression != null;
+
+    public bool HasTumbling() => Windows.Count > 0;
+
+    public bool HasAggregates()
+    {
+        if (SelectProjection == null) return false;
+        var visitor = new AggregateDetectionVisitor();
+        visitor.Visit(SelectProjection.Body);
+        return visitor.HasAggregates;
+    }
+
+    public bool IsAggregateQuery() => HasGroupBy() || HasTumbling() || HasAggregates();
+
+    public StreamTableType DetermineType() => IsAggregateQuery() ? StreamTableType.Table : StreamTableType.Stream;
 }
