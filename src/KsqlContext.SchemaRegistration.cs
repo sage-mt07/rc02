@@ -325,6 +325,7 @@ public abstract partial class KsqlContext
                 model.QueryModel,
                 ExecuteWithRetryAsync,
                 n => GetDerivedType(n),
+                _mappingRegistry,
                 _entityModels,
                 Logger);
             return;

@@ -1,0 +1,4 @@
+- Added namespace generation in EntityModelAdapter for derived entities.
+- MappingRegistry.RegisterEntityModel accepts overrideNamespace.
+- DerivedTumblingPipeline passes overrideNamespace when registering models.
+- Added unit test verifying namespace override.

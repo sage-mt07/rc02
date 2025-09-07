@@ -18,7 +18,8 @@ internal static class EntityModelRegistrar
                 m.SetStreamTableType(StreamTableType.Table);
             else
                 m.SetStreamTableType(StreamTableType.Stream);
-            registry.RegisterEntityModel(m, genericValue: m.StreamTableType == StreamTableType.Table);
+            var ns = m.AdditionalSettings.TryGetValue("namespace", out var n) ? n?.ToString() : null;
+            registry.RegisterEntityModel(m, genericValue: m.StreamTableType == StreamTableType.Table, overrideNamespace: ns);
         }
     }
 }

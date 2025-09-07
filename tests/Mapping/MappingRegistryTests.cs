@@ -1,4 +1,5 @@
 using Avro.Generic;
+using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Models;
 using Kafka.Ksql.Linq.Mapping;
 using System.Linq;
@@ -89,5 +90,26 @@ public class MappingRegistryTests
 
         Assert.Equal(typeof(GenericRecord), mapping.AvroValueType);
         Assert.NotNull(mapping.AvroValueSchema);
+    }
+
+    [Fact]
+    public void RegisterEntityModel_OverrideNamespace_UsesOverride()
+    {
+        var model = new EntityModel
+        {
+            EntityType = typeof(object),
+            TopicName = "sample",
+            KeyProperties = new[] { typeof(Sample).GetProperty(nameof(Sample.Id))! },
+            AllProperties = typeof(Sample).GetProperties()
+        };
+
+        var r1 = new MappingRegistry();
+        var m1 = r1.RegisterEntityModel(model);
+        Assert.Equal("system", m1.KeyType.Namespace);
+
+        var r2 = new MappingRegistry();
+        var m2 = r2.RegisterEntityModel(model, overrideNamespace: "custom_ns");
+        Assert.Equal("custom_ns", m2.KeyType.Namespace);
+        Assert.Equal("custom_ns", m2.ValueType.Namespace);
     }
 }
