@@ -89,8 +89,8 @@ public class ToQueryDslTests
             .Select(o => new { o.Id })
             .Build();
 
-        var sql = KsqlCreateStatementBuilder.Build("orders", model);
-        Assert.Contains("SELECT o.ID AS Id", sql);
+        var sql = KsqlCreateStatementBuilder.Build("orders", model, options: new RenderOptions());
+        Assert.Contains("SELECT ID AS Id", sql);
     }
 
     [Fact]
@@ -259,7 +259,7 @@ public class ToQueryDslTests
     }
 
     [Fact]
-    public void GroupByKey_UsesAliasPrefix()
+    public void GroupByKey_RendersKeyWithoutAlias()
     {
         var model = new KsqlQueryRoot()
             .From<Order>()
@@ -267,9 +267,23 @@ public class ToQueryDslTests
             .Select(g => new { g.Key })
             .Build();
 
-        var sql = KsqlCreateStatementBuilder.Build("orders", model);
-        Assert.Contains("GROUP BY o.ID", sql);
-        Assert.Contains("SELECT o.ID AS ID", sql);
+        var sql = KsqlCreateStatementBuilder.Build("orders", model, options: new RenderOptions());
+        Assert.Contains("GROUP BY ID", sql);
+        Assert.Contains("SELECT ID AS ID", sql);
+    }
+
+    [Fact]
+    public void KeyPathStyle_Arrow_RendersKeyArrowForTable()
+    {
+        var model = new KsqlQueryRoot()
+            .From<Order>()
+            .GroupBy(o => o.Id)
+            .Select(g => new { g.Key })
+            .Build();
+
+        var sql = KsqlCreateStatementBuilder.Build("orders", model, options: new RenderOptions { KeyPathStyle = KeyPathStyle.Arrow });
+        Assert.Contains("GROUP BY KEY->ID", sql);
+        Assert.Contains("SELECT KEY->ID AS ID", sql);
     }
 
     [Fact]
