@@ -11,7 +11,7 @@ MarketSchedule の日付列を明示し、長期足作成時の基準日を決�
 
 ## 追加・修正内容（反映先: oss_design_combined.md）
 - `KsqlQueryable.TimeFrame` に `dayKey` 引数を追加
-- `MethodCallCollectorVisitor` と `TumblingAnalyzer` が dayKey を解析・検証
+- `MethodCallCollectorVisitor` が dayKey を解析・検証（2025-09-07 に `TumblingAnalyzer` を削除）
 - `BasedOnSpec` と各アダプターに dayKey を格納
 - 単体テストとドキュメントを dayKey 対応に更新
 
