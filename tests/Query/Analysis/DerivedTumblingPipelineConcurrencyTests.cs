@@ -6,7 +6,6 @@ using Kafka.Ksql.Linq.Mapping;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
@@ -15,21 +14,21 @@ using Xunit;
 namespace Kafka.Ksql.Linq.Tests.Query.Analysis;
 
 [KsqlTopic("test-topic")]
-class TestSource
+class ConcurrencySource
 {
     public int Id { get; set; }
 }
 
-public class DerivedTumblingPipelineTests
+public class DerivedTumblingPipelineConcurrencyTests
 {
     [Fact]
-    public async Task Live_and_Final_emit_different_ddl()
+    public async Task RunAsync_registers_all_models_without_conflict()
     {
         var qao = new TumblingQao
         {
-            BaseTopicName = typeof(TestSource).GetCustomAttribute<KsqlTopicAttribute>()!.Name,
+            BaseTopicName = typeof(ConcurrencySource).GetCustomAttribute<KsqlTopicAttribute>()!.Name,
             TimeKey = "Timestamp",
-            Windows = new[] { new Timeframe(1, "m") },
+            Windows = new[] { new Timeframe(1, "m"), new Timeframe(5, "m") },
             Keys = new[] { "Id" },
             Projection = new[] { "Id" },
             PocoShape = new[] { new ColumnShape("Id", typeof(int), false) },
@@ -38,17 +37,15 @@ public class DerivedTumblingPipelineTests
         };
         var model = new KsqlQueryModel
         {
-            SourceTypes = new[] { typeof(TestSource) },
-            Windows = { "1m" }
+            SourceTypes = new[] { typeof(ConcurrencySource) },
+            Windows = { "1m", "5m" }
         };
-
         var ddls = new ConcurrentBag<string>();
         Task Exec(string sql)
         {
             ddls.Add(sql);
             return Task.CompletedTask;
         }
-
         var mapping = new MappingRegistry();
         var registry = new ConcurrentDictionary<Type, EntityModel>();
         var asm = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("dyn"), AssemblyBuilderAccess.Run);
@@ -57,9 +54,8 @@ public class DerivedTumblingPipelineTests
 
         await DerivedTumblingPipeline.RunAsync(qao, model, Exec, Resolver, mapping, registry, new LoggerFactory().CreateLogger("test"));
 
-        var live = ddls.Single(s => s.Contains("_1m_live"));
-        var final = ddls.Single(s => s.Contains("_1m_final"));
-        Assert.Contains("EMIT CHANGES", live);
-        Assert.Contains("EMIT FINAL", final);
+        var expected = 8; // 2 windows -> AggFinal/Live/Final each + Prev1m/Hb
+        Assert.Equal(expected, registry.Count);
+        Assert.Equal(expected, ddls.Count);
     }
 }

@@ -1,0 +1,3 @@
+- Converted DerivedTumblingPipeline registry to ConcurrentDictionary for thread-safe writes.
+- Parallelized RunAsync with Parallel.ForEachAsync and refactored BuildDdlAndRegister to return data without side effects.
+- Added concurrency test ensuring parallel path registers all models without conflict.

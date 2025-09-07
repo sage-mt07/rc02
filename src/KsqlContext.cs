@@ -15,6 +15,7 @@ using Kafka.Ksql.Linq.Runtime.Heartbeat;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -31,7 +32,7 @@ namespace Kafka.Ksql.Linq;
 public abstract partial class KsqlContext : IKsqlContext
 {
     private KafkaProducerManager _producerManager = null!;
-    private readonly Dictionary<Type, EntityModel> _entityModels = new();
+    private readonly ConcurrentDictionary<Type, EntityModel> _entityModels = new();
     private readonly Dictionary<Type, object> _entitySets = new();
     private readonly Dictionary<Type, Configuration.ResolvedEntityConfig> _resolvedConfigs = new();
     private bool _disposed = false;

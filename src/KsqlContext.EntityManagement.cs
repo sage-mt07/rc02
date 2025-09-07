@@ -5,6 +5,7 @@ using Kafka.Ksql.Linq.Core.Modeling;
 using Kafka.Ksql.Linq.Query.Abstractions;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -203,7 +204,7 @@ public abstract partial class KsqlContext
             if (model.QueryModel != null)
             {
                 RegisterQueryModelMapping(model);
-                _entityModels.Remove(type);
+            _entityModels.TryRemove(type, out _);
                 continue;
             }
 
