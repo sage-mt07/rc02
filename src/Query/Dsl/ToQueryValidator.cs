@@ -105,7 +105,7 @@ internal static class ToQueryValidator
             case ParameterExpression:
                 props.AddRange(resultType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                     .OrderBy(p => p.MetadataToken)
-                    .Select(p => (p, p, p.PropertyType)));
+                    .Select(p => (p, (PropertyInfo?)p, p.PropertyType)));
                 break;
             case MemberExpression me when me.Member is PropertyInfo pi:
                 if (resultType.GetProperty(pi.Name) != null)

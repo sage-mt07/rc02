@@ -199,7 +199,7 @@ internal class KeyValueTypeMapping
                         throw new InvalidOperationException($"Field '{name}' not found in key schema '{rs.Fullname}'");
                 }
                 var raw = krec.GetValue(pos);
-                parts[i] = ToSortableString(raw, meta.PropertyInfo.PropertyType);
+                parts[i] = ToSortableString(raw, meta.PropertyInfo!.PropertyType);
             }
             return string.Join(KeySep, parts);
         }
@@ -211,7 +211,7 @@ internal class KeyValueTypeMapping
             var p = avroKey.GetType().GetProperty(meta.PropertyInfo!.Name)
                     ?? throw new InvalidOperationException($"Key property '{meta.PropertyInfo!.Name}' not found on {avroKey.GetType().Name}");
             var raw = p.GetValue(avroKey);
-            fallback[i] = ToSortableString(raw, meta.PropertyInfo.PropertyType);
+              fallback[i] = ToSortableString(raw, meta.PropertyInfo!.PropertyType);
         }
         return string.Join(KeySep, fallback);
     }

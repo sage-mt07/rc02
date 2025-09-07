@@ -1,0 +1,1 @@
+- fix nullability warnings in ConfigLoggingExtensions, KafkaProducerManager, KeyValueTypeMapping, DerivedEntity, ToQueryValidator

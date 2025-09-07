@@ -141,12 +141,12 @@ internal class KafkaProducerManager : IDisposable
         return new ProducerHolder(
             topicName,
             (k, v, ctx, ct) =>
-            {
-                var msg = new Message<Null, TValue> { Key = default, Value = (TValue?)v! };
+                {
+                var msg = new Message<Null, TValue> { Key = default!, Value = (TValue?)v! };
                 if (ctx?.Headers?.Count > 0)
                     msg.Headers = BuildHeaders(ctx);
                 return prod.ProduceAsync(topicName, msg, ct);
-            },
+                },
             t => prod.Flush(t),
             () => { prod.Flush(System.TimeSpan.FromSeconds(5)); prod.Dispose(); });
     }
