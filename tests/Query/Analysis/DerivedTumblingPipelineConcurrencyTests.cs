@@ -26,7 +26,6 @@ public class DerivedTumblingPipelineConcurrencyTests
     {
         var qao = new TumblingQao
         {
-            BaseTopicName = typeof(ConcurrencySource).GetCustomAttribute<KsqlTopicAttribute>()!.Name,
             TimeKey = "Timestamp",
             Windows = new[] { new Timeframe(1, "m"), new Timeframe(5, "m") },
             Keys = new[] { "Id" },
@@ -35,6 +34,7 @@ public class DerivedTumblingPipelineConcurrencyTests
             BasedOn = new BasedOnSpec(new[] { "Id" }, string.Empty, string.Empty, string.Empty),
             WeekAnchor = DayOfWeek.Monday
         };
+        var baseModel = new EntityModel { EntityType = typeof(ConcurrencySource) };
         var model = new KsqlQueryModel
         {
             SourceTypes = new[] { typeof(ConcurrencySource) },
@@ -52,7 +52,7 @@ public class DerivedTumblingPipelineConcurrencyTests
         var mod = asm.DefineDynamicModule("m");
         Type Resolver(string _) => mod.DefineType("T" + Guid.NewGuid().ToString("N")).CreateType()!;
 
-        await DerivedTumblingPipeline.RunAsync(qao, model, Exec, Resolver, mapping, registry, new LoggerFactory().CreateLogger("test"));
+        await DerivedTumblingPipeline.RunAsync(qao, baseModel, model, Exec, Resolver, mapping, registry, new LoggerFactory().CreateLogger("test"));
 
         var expected = 8; // 2 windows -> AggFinal/Live/Final each + Prev1m/Hb
         Assert.Equal(expected, registry.Count);
