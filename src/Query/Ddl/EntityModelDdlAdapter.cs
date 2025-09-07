@@ -1,11 +1,10 @@
-using System;
-using System.Linq;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Extensions;
 using Kafka.Ksql.Linq.Core.Models;
 using Kafka.Ksql.Linq.Query.Abstractions;
 using Kafka.Ksql.Linq.Query.Builders.Common;
-using Kafka.Ksql.Linq.Query.Schema;
+using System;
+using System.Linq;
 
 namespace Kafka.Ksql.Linq.Query.Ddl;
 

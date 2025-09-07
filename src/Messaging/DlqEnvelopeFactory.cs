@@ -55,8 +55,8 @@ public static class DlqEnvelopeFactory
 
             PayloadFormatKey = (r.Message.Key as byte[]) is not null ? "avro" : "none",
             PayloadFormatValue = (r.Message.Value as byte[]) is not null ? "avro" : "none",
-            SchemaIdKey = ToStrOrEmpty( TryGetSchemaId(r.Message.Key as byte[])),
-            SchemaIdValue = ToStrOrEmpty( TryGetSchemaId(r.Message.Value as byte[])),
+            SchemaIdKey = ToStrOrEmpty(TryGetSchemaId(r.Message.Key as byte[])),
+            SchemaIdValue = ToStrOrEmpty(TryGetSchemaId(r.Message.Value as byte[])),
             KeyIsNull = r.Message.Key is null,
 
             ErrorType = ex.GetType().Name,
@@ -100,8 +100,8 @@ public static class DlqEnvelopeFactory
 
             PayloadFormatKey = meta.SchemaIdKey is null ? "none" : "avro",
             PayloadFormatValue = meta.SchemaIdValue is null ? "none" : "avro",
-            SchemaIdKey = ToStrOrEmpty( meta.SchemaIdKey),
-            SchemaIdValue = ToStrOrEmpty( meta.SchemaIdValue),
+            SchemaIdKey = ToStrOrEmpty(meta.SchemaIdKey),
+            SchemaIdValue = ToStrOrEmpty(meta.SchemaIdValue),
             KeyIsNull = meta.KeyIsNull,
 
             ErrorType = ex.GetType().Name,

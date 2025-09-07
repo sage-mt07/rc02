@@ -1,8 +1,7 @@
-using System;
-using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Configuration;
-using Kafka.Ksql.Linq.Core.Modeling;
+using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Entities.Samples.Models;
+using System;
 
 namespace Kafka.Ksql.Linq.Entities.Samples;
 

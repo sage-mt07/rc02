@@ -1,3 +1,5 @@
+using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Query.Builders.Common;
 using Kafka.Ksql.Linq.Query.Builders.Functions;
 using System;
 using System.Collections.Generic;
@@ -5,8 +7,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Kafka.Ksql.Linq.Core.Attributes;
-using Kafka.Ksql.Linq.Query.Builders.Common;
 
 namespace Kafka.Ksql.Linq.Query.Builders;
 /// <summary>

@@ -1,36 +1,27 @@
+using Confluent.Kafka;
 using Kafka.Ksql.Linq.Cache.Core;
 using Kafka.Ksql.Linq.Cache.Extensions;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Core.Dlq;
 using Kafka.Ksql.Linq.Core.Extensions;
-using Kafka.Ksql.Linq.Core.Modeling;
 using Kafka.Ksql.Linq.Infrastructure.Admin;
 using Kafka.Ksql.Linq.Infrastructure.KsqlDb;
 using Kafka.Ksql.Linq.Mapping;
 using Kafka.Ksql.Linq.Messaging.Consumers;
 using Kafka.Ksql.Linq.Messaging.Producers;
-using Kafka.Ksql.Linq.Messaging;
-using Kafka.Ksql.Linq.Runtime.Heartbeat;
-using Confluent.Kafka;
 using Kafka.Ksql.Linq.Query.Abstractions;
-using Kafka.Ksql.Linq.Query.Adapters;
-using Kafka.Ksql.Linq.Query.Ddl;
-using Kafka.Ksql.Linq.Query.Analysis;
-using Kafka.Ksql.Linq.SchemaRegistryTools;
-using Kafka.Ksql.Linq.Core.Dlq;
+using Kafka.Ksql.Linq.Runtime.Heartbeat;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ConfluentSchemaRegistry = Confluent.SchemaRegistry;
-using Avro;
 
 namespace Kafka.Ksql.Linq;
 /// <summary>
@@ -39,7 +30,7 @@ namespace Kafka.Ksql.Linq;
 /// </summary>
 public abstract partial class KsqlContext : IKsqlContext
 {
-    private  KafkaProducerManager _producerManager = null!;
+    private KafkaProducerManager _producerManager = null!;
     private readonly Dictionary<Type, EntityModel> _entityModels = new();
     private readonly Dictionary<Type, object> _entitySets = new();
     private readonly Dictionary<Type, Configuration.ResolvedEntityConfig> _resolvedConfigs = new();
@@ -81,12 +72,12 @@ public abstract partial class KsqlContext : IKsqlContext
 
     public const string DefaultSectionName = "KsqlDsl";
 
-    protected KsqlContext(IConfiguration configuration,ILoggerFactory? loggerFactory=null)
-        : this(configuration, DefaultSectionName,loggerFactory)
+    protected KsqlContext(IConfiguration configuration, ILoggerFactory? loggerFactory = null)
+        : this(configuration, DefaultSectionName, loggerFactory)
     {
     }
 
-    protected KsqlContext(IConfiguration configuration, string sectionName,ILoggerFactory? loggerFactory=null)
+    protected KsqlContext(IConfiguration configuration, string sectionName, ILoggerFactory? loggerFactory = null)
     {
         _dslOptions = new KsqlDslOptions();
         configuration.GetSection(sectionName).Bind(_dslOptions);
@@ -96,7 +87,7 @@ public abstract partial class KsqlContext : IKsqlContext
 
     }
 
-    protected KsqlContext(KsqlDslOptions options,ILoggerFactory? loggerFactory=null)
+    protected KsqlContext(KsqlDslOptions options, ILoggerFactory? loggerFactory = null)
     {
         _dslOptions = options;
         DefaultValueBinder.ApplyDefaults(_dslOptions);

@@ -1,8 +1,8 @@
+using Confluent.Kafka;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Confluent.Kafka;
 
 namespace Kafka.Ksql.Linq.Runtime.Heartbeat;
 

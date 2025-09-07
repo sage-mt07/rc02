@@ -1,17 +1,16 @@
 namespace Kafka.Ksql.Linq.Mapping;
 
-using Kafka.Ksql.Linq.Core.Models;
-using Kafka.Ksql.Linq.Configuration;
-using System;
-using System.Reflection;
 using Avro;
 using Avro.Generic;
 using Avro.Specific;
+using Kafka.Ksql.Linq.Configuration;
+using Kafka.Ksql.Linq.Core.Models;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Globalization;
+using System.Linq.Expressions;
+using System.Reflection;
 
 /// <summary>
 /// Holds generated key/value types and their associated PropertyMeta information.
@@ -211,7 +210,7 @@ internal class KeyValueTypeMapping
             var p = avroKey.GetType().GetProperty(meta.PropertyInfo!.Name)
                     ?? throw new InvalidOperationException($"Key property '{meta.PropertyInfo!.Name}' not found on {avroKey.GetType().Name}");
             var raw = p.GetValue(avroKey);
-              fallback[i] = ToSortableString(raw, meta.PropertyInfo!.PropertyType);
+            fallback[i] = ToSortableString(raw, meta.PropertyInfo!.PropertyType);
         }
         return string.Join(KeySep, fallback);
     }

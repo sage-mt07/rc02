@@ -1,29 +1,24 @@
 using Confluent.Kafka;
 using Kafka.Ksql.Linq.Cache.Core;
-using Kafka.Ksql.Linq.Cache.Extensions;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Extensions;
 using Kafka.Ksql.Linq.Mapping;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Newtonsoft.Json.Linq;
-using RocksDbSharp;
 using Streamiz.Kafka.Net;
 using Streamiz.Kafka.Net.Crosscutting;
+using Streamiz.Kafka.Net.Processors;
 using Streamiz.Kafka.Net.SchemaRegistry.SerDes.Avro;
 using Streamiz.Kafka.Net.SerDes;
 using Streamiz.Kafka.Net.State;
 using Streamiz.Kafka.Net.Stream;
 using Streamiz.Kafka.Net.Table;
-using Streamiz.Kafka.Net.Processors;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Kafka.Ksql.Linq.Cache.Extensions;
@@ -107,7 +102,7 @@ internal static class KsqlContextCacheExtensions
             {
                 await task;
             }
-        }  ;
+        };
     }
 
     // ks.Store(...).All() を型安全に閉じた列挙関数にする
@@ -130,10 +125,10 @@ internal static class KsqlContextCacheExtensions
             var parameters = StoreQueryParameters.FromNameAndType(
                 storeName, QueryableStoreTypes.KeyValueStore<TKey, TValue>());
             var store = ks.Store(parameters);
-            var test=store.All();
+            var test = store.All();
             static IEnumerable<(object key, object val)> Enumerate(IReadOnlyKeyValueStore<TKey, TValue> s)
             {
-                foreach(var it in s.All())
+                foreach (var it in s.All())
                 {
                     yield return ((object)it.Key!, (object)it.Value!);
                 }

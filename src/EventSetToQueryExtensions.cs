@@ -1,5 +1,4 @@
 using Kafka.Ksql.Linq.Query.Dsl;
-using Kafka.Ksql.Linq.Core.Abstractions;
 using System;
 
 namespace Kafka.Ksql.Linq;

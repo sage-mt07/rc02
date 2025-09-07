@@ -1,6 +1,6 @@
+using Kafka.Ksql.Linq.Configuration;
 using System.Collections.Generic;
 using System.Linq;
-using Kafka.Ksql.Linq.Configuration;
 
 namespace Kafka.Ksql.Linq.Query.Builders.Functions;
 

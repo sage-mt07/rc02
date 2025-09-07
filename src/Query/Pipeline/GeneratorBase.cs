@@ -1,5 +1,5 @@
-using Kafka.Ksql.Linq.Query.Abstractions;
 using Kafka.Ksql.Linq.Configuration;
+using Kafka.Ksql.Linq.Query.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

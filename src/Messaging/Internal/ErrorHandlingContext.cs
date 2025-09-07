@@ -1,7 +1,7 @@
 using Kafka.Ksql.Linq.Core.Abstractions;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 namespace Kafka.Ksql.Linq.Messaging.Internal;
 public class ErrorHandlingContext

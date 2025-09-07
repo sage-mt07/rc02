@@ -1,8 +1,8 @@
 using Avro;
 using Confluent.SchemaRegistry;
-using Kafka.Ksql.Linq.Core.Models;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Extensions;
+using Kafka.Ksql.Linq.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

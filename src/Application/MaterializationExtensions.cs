@@ -1,13 +1,11 @@
-using Kafka.Ksql.Linq.Core.Models;
-using Kafka.Ksql.Linq.Core.Extensions;
-using Kafka.Ksql.Linq.SchemaRegistryTools;
-using System.Collections.Generic;
-using System;
-using System.Threading.Tasks;
 using Chr.Avro.Abstract;
 using Chr.Avro.Representation;
+using Kafka.Ksql.Linq.Core.Extensions;
+using Kafka.Ksql.Linq.SchemaRegistryTools;
+using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Kafka.Ksql.Linq.Application;
 

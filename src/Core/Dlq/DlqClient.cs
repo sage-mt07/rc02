@@ -1,11 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Messaging.Consumers;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Kafka.Ksql.Linq.Core.Dlq;
 

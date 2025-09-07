@@ -1,7 +1,7 @@
-using System.Collections.Generic;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Mapping;
 using Kafka.Ksql.Linq.Query.Abstractions;
+using System.Collections.Generic;
 
 namespace Kafka.Ksql.Linq.Query.Adapters;
 

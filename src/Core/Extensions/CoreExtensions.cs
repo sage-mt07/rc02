@@ -1,6 +1,5 @@
-﻿using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Abstractions;
 using System;
-using System.Linq;
 using System.Reflection;
 
 namespace Kafka.Ksql.Linq.Core.Extensions;

@@ -1,7 +1,6 @@
 using Confluent.Kafka;
 using Confluent.Kafka.Admin;
 using Kafka.Ksql.Linq.Configuration;
-using Kafka.Ksql.Linq.Core.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;

@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using Kafka.Ksql.Linq.Query.Analysis;
+using System.Collections.Generic;
 
 namespace Kafka.Ksql.Linq.Query.Adapters;
 

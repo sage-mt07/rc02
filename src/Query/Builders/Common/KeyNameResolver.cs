@@ -1,7 +1,7 @@
-using System;
-using System.Collections.Concurrent;
 using Kafka.Ksql.Linq.Core.Extensions;
 using Kafka.Ksql.Linq.Core.Modeling;
+using System;
+using System.Collections.Concurrent;
 
 namespace Kafka.Ksql.Linq.Query.Builders.Common;
 

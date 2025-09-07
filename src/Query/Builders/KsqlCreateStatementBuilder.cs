@@ -1,5 +1,5 @@
-using Kafka.Ksql.Linq.Query.Dsl;
 using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Query.Dsl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -161,17 +161,17 @@ public static class KsqlCreateStatementBuilder
                 case BinaryExpression be when be.NodeType == ExpressionType.Equal:
                     return $"({Build(be.Left)} = {Build(be.Right)})";
                 case MemberExpression me:
-                {
-                    var param = GetRootParameter(me);
-                    if (param != null)
                     {
-                        if (joinExpr.Parameters.Count > 0 && param == joinExpr.Parameters[0])
-                            return $"{leftAlias}.{me.Member.Name}";
-                        if (joinExpr.Parameters.Count > 1 && param == joinExpr.Parameters[1])
-                            return $"{rightAlias}.{me.Member.Name}";
+                        var param = GetRootParameter(me);
+                        if (param != null)
+                        {
+                            if (joinExpr.Parameters.Count > 0 && param == joinExpr.Parameters[0])
+                                return $"{leftAlias}.{me.Member.Name}";
+                            if (joinExpr.Parameters.Count > 1 && param == joinExpr.Parameters[1])
+                                return $"{rightAlias}.{me.Member.Name}";
+                        }
+                        throw new InvalidOperationException("Unqualified column access in JOIN condition is not allowed.");
                     }
-                    throw new InvalidOperationException("Unqualified column access in JOIN condition is not allowed.");
-                }
                 case UnaryExpression ue:
                     return Build(ue.Operand);
                 case ConstantExpression ce:

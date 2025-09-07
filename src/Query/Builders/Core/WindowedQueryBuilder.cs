@@ -1,7 +1,7 @@
-using System.Text;
 using Kafka.Ksql.Linq.Query.Analysis;
 using Kafka.Ksql.Linq.Query.Builders.Utils;
 using Kafka.Ksql.Linq.Query.Pipeline;
+using System.Text;
 
 namespace Kafka.Ksql.Linq.Query.Builders.Core;
 

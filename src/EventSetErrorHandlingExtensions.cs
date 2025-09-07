@@ -1,5 +1,4 @@
 using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Messaging;
 using System;
 
 namespace Kafka.Ksql.Linq;

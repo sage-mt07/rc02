@@ -1,14 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Core.Modeling;
-using Kafka.Ksql.Linq.Mapping;
 using Kafka.Ksql.Linq.Query.Abstractions;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Kafka.Ksql.Linq;
 
@@ -120,7 +119,7 @@ public abstract partial class KsqlContext
 
             var defaultCache = model.EnableCache;
             bool enableCache = false;
-            if (model.StreamTableType== StreamTableType.Table)
+            if (model.StreamTableType == StreamTableType.Table)
             {
                 enableCache = config?.EnableCache ?? defaultCache;
             }

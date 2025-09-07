@@ -1,7 +1,7 @@
+using Confluent.Kafka;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Confluent.Kafka;
 
 namespace Kafka.Ksql.Linq.Messaging.Consumers;
 

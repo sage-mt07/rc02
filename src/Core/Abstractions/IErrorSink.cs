@@ -1,4 +1,3 @@
-using Kafka.Ksql.Linq.Core.Abstractions;
 using System.Threading.Tasks;
 
 namespace Kafka.Ksql.Linq.Core.Abstractions;

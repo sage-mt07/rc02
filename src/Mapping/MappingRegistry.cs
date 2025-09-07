@@ -1,17 +1,17 @@
 
-using Kafka.Ksql.Linq.Core.Models;
 using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Core.Extensions;
-using Kafka.Ksql.Linq.Query.Dsl;
 using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Core.Extensions;
+using Kafka.Ksql.Linq.Core.Models;
+using Kafka.Ksql.Linq.Query.Dsl;
 using System;
 using System.Collections.Concurrent;
-using System.Reflection;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Reflection.Emit;
-using System.Linq.Expressions;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Reflection.Emit;
+using System.Text.RegularExpressions;
 
 namespace Kafka.Ksql.Linq.Mapping;
 

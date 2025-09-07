@@ -1,5 +1,5 @@
-using System;
 using Kafka.Ksql.Linq.Configuration;
+using System;
 
 namespace Kafka.Ksql.Linq.Core.Dlq;
 

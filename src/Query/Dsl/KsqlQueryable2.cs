@@ -1,12 +1,12 @@
+using Kafka.Ksql.Linq.Query.Pipeline;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using Kafka.Ksql.Linq.Query.Pipeline;
 
 namespace Kafka.Ksql.Linq.Query.Dsl;
 
 public class KsqlQueryable2<T1, T2> : IKsqlQueryable
-{ 
+{
     private readonly KsqlQueryModel _model;
     private QueryBuildStage _stage = QueryBuildStage.Join;
 

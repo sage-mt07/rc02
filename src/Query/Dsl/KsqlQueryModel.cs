@@ -1,8 +1,8 @@
+using Kafka.Ksql.Linq.Query.Pipeline;
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Linq;
-using Kafka.Ksql.Linq.Query.Pipeline;
+using System.Linq.Expressions;
 
 namespace Kafka.Ksql.Linq.Query.Dsl;
 

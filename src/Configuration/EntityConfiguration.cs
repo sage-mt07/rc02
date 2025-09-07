@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Kafka.Ksql.Linq.Configuration
 {
     public class EntityConfiguration

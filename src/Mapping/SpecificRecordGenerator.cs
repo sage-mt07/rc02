@@ -1,13 +1,13 @@
 using Avro;
 using Avro.Specific;
+using Kafka.Ksql.Linq.Configuration;
+using Kafka.Ksql.Linq.Core.Attributes;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
-using Kafka.Ksql.Linq.Configuration;
-using Kafka.Ksql.Linq.Core.Attributes;
 
 namespace Kafka.Ksql.Linq.Mapping;
 

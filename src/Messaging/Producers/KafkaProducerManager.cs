@@ -1,10 +1,13 @@
+using Avro;
+using Avro.Generic;
 using Confluent.Kafka;
 using Confluent.Kafka.SyncOverAsync;
 using Confluent.SchemaRegistry.Serdes;
 using Kafka.Ksql.Linq.Configuration;
-using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Mapping;
 using Kafka.Ksql.Linq.Configuration.Messaging;
+using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Extensions;
+using Kafka.Ksql.Linq.Mapping;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -14,9 +17,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using ConfluentSchemaRegistry = Confluent.SchemaRegistry;
-using Kafka.Ksql.Linq.Core.Extensions;
-using Avro;
-using Avro.Generic;
 
 namespace Kafka.Ksql.Linq.Messaging.Producers;
 
@@ -26,7 +26,7 @@ internal class KafkaProducerManager : IDisposable
     private readonly ILogger? _logger;
     private readonly Lazy<ConfluentSchemaRegistry.ISchemaRegistryClient> _schemaRegistryClient;
     private readonly ConcurrentDictionary<Type, ProducerHolder> _producers = new();
-    private readonly ConcurrentDictionary<(Type,string), ProducerHolder> _topicProducers = new();
+    private readonly ConcurrentDictionary<(Type, string), ProducerHolder> _topicProducers = new();
     private bool _disposed;
     private readonly MappingRegistry _mappingRegistry;
 
@@ -59,7 +59,7 @@ internal class KafkaProducerManager : IDisposable
 
         public void Dispose() => _dispose();
     }
-    public KafkaProducerManager(MappingRegistry mapping,IOptions<KsqlDslOptions> options, ILoggerFactory? loggerFactory = null)
+    public KafkaProducerManager(MappingRegistry mapping, IOptions<KsqlDslOptions> options, ILoggerFactory? loggerFactory = null)
     {
         _mappingRegistry = mapping;
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
@@ -112,7 +112,7 @@ internal class KafkaProducerManager : IDisposable
     }
 
 
-    private ProducerHolder CreateKeyedProducer<TKey,TValue>(string topicName) where TKey : class where TValue : class
+    private ProducerHolder CreateKeyedProducer<TKey, TValue>(string topicName) where TKey : class where TValue : class
     {
         var config = BuildProducerConfig(topicName);
         var prod = new ProducerBuilder<TKey, TValue>(config)
@@ -142,10 +142,10 @@ internal class KafkaProducerManager : IDisposable
             topicName,
             (k, v, ctx, ct) =>
                 {
-                var msg = new Message<Null, TValue> { Key = default!, Value = (TValue?)v! };
-                if (ctx?.Headers?.Count > 0)
-                    msg.Headers = BuildHeaders(ctx);
-                return prod.ProduceAsync(topicName, msg, ct);
+                    var msg = new Message<Null, TValue> { Key = default!, Value = (TValue?)v! };
+                    if (ctx?.Headers?.Count > 0)
+                        msg.Headers = BuildHeaders(ctx);
+                    return prod.ProduceAsync(topicName, msg, ct);
                 },
             t => prod.Flush(t),
             () => { prod.Flush(System.TimeSpan.FromSeconds(5)); prod.Dispose(); });
@@ -200,7 +200,7 @@ internal class KafkaProducerManager : IDisposable
     }
 
 
-    public async Task SendAsync<TPOCO>(string topicName, TPOCO entity, Dictionary<string,string>? headers = null, CancellationToken cancellationToken = default) where TPOCO : class
+    public async Task SendAsync<TPOCO>(string topicName, TPOCO entity, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default) where TPOCO : class
     {
         if (entity == null) throw new ArgumentNullException(nameof(entity));
         var producer = await GetProducerAsync<TPOCO>(topicName);

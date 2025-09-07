@@ -1,7 +1,7 @@
-using System;
-using System.Text.RegularExpressions;
-using System.Collections.Generic;
 using Kafka.Ksql.Linq.Query.Dsl;
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Kafka.Ksql.Linq.Query.Builders;
 

@@ -46,7 +46,7 @@ internal class TypedJoinResultEntitySet<TOuter, TInner, TResult> : IEntitySet<TR
         return new List<TResult>();
     }
 
-    public Task AddAsync(TResult entity, Dictionary<string,string>? headers = null, CancellationToken cancellationToken = default)
+    public Task AddAsync(TResult entity, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
     {
         throw new NotSupportedException("Cannot add entities to a join result set");
     }
@@ -60,10 +60,10 @@ internal class TypedJoinResultEntitySet<TOuter, TInner, TResult> : IEntitySet<TR
         => throw new NotSupportedException("ForEachAsync not supported on join result sets");
 
     [Obsolete("Use ForEachAsync(Func<TResult, Dictionary<string,string>, MessageMeta, Task>)")]
-    public Task ForEachAsync(Func<TResult, Dictionary<string,string>, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default)
+    public Task ForEachAsync(Func<TResult, Dictionary<string, string>, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default)
         => throw new NotSupportedException("ForEachAsync not supported on join result sets");
 
-    public Task ForEachAsync(Func<TResult, Dictionary<string,string>, MessageMeta, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default)
+    public Task ForEachAsync(Func<TResult, Dictionary<string, string>, MessageMeta, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default)
         => throw new NotSupportedException("ForEachAsync not supported on join result sets");
 
     public string GetTopicName() => (_entityModel.TopicName ?? typeof(TResult).Name).ToLowerInvariant();

@@ -1,8 +1,8 @@
 using Kafka.Ksql.Linq.Query.Abstractions;
 using System;
-using System.Reflection;
-using System.Linq.Expressions;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Kafka.Ksql.Linq.Core.Abstractions;
 

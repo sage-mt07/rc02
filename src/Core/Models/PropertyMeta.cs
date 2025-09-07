@@ -1,5 +1,5 @@
-using Kafka.Ksql.Linq.Core.Extensions;
 using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Core.Extensions;
 using System;
 using System.Linq;
 using System.Reflection;

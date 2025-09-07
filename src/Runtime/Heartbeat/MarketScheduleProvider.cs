@@ -1,11 +1,10 @@
+using Kafka.Ksql.Linq.Core.Models;
+using Kafka.Ksql.Linq.Mapping;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Kafka.Ksql.Linq.Core.Models;
-using Kafka.Ksql.Linq.Mapping;
 
 namespace Kafka.Ksql.Linq.Runtime.Heartbeat;
 

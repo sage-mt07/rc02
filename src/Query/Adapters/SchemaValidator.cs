@@ -1,9 +1,9 @@
+using Kafka.Ksql.Linq.Core.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using Kafka.Ksql.Linq.Core.Abstractions;
 
 namespace Kafka.Ksql.Linq.Query.Adapters;
 

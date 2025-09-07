@@ -20,7 +20,7 @@ public class JoinableEntitySet<T> : IEntitySet<T>, IJoinableEntitySet<T> where T
         _baseEntitySet = baseEntitySet ?? throw new ArgumentNullException(nameof(baseEntitySet));
     }
 
-    public Task AddAsync(T entity, Dictionary<string,string>? headers = null, CancellationToken cancellationToken = default)
+    public Task AddAsync(T entity, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
     {
         return _baseEntitySet.AddAsync(entity, headers, cancellationToken);
     }
@@ -41,10 +41,10 @@ public class JoinableEntitySet<T> : IEntitySet<T>, IJoinableEntitySet<T> where T
     }
 
     [Obsolete("Use ForEachAsync(Func<T, Dictionary<string,string>, MessageMeta, Task>)")]
-    public Task ForEachAsync(Func<T, Dictionary<string,string>, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default)
+    public Task ForEachAsync(Func<T, Dictionary<string, string>, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default)
         => _baseEntitySet.ForEachAsync((e, h, _) => action(e, h), timeout, autoCommit, cancellationToken);
 
-    public Task ForEachAsync(Func<T, Dictionary<string,string>, MessageMeta, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default)
+    public Task ForEachAsync(Func<T, Dictionary<string, string>, MessageMeta, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default)
     {
         return _baseEntitySet.ForEachAsync(action, timeout, autoCommit, cancellationToken);
     }

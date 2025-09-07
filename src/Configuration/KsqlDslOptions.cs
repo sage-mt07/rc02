@@ -1,6 +1,6 @@
+using Kafka.Ksql.Linq.Configuration.Messaging;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Configuration;
-using Kafka.Ksql.Linq.Configuration.Messaging;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -89,7 +89,7 @@ public class KsqlDslOptions
     public record DecimalSetting
     {
         public int Precision { get; init; }
-        public int Scale   { get; init; }
+        public int Scale { get; init; }
     }
 
     /// <summary>

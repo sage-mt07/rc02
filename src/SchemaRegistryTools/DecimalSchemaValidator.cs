@@ -1,10 +1,10 @@
-using System;
-using System.Linq;
 using Confluent.SchemaRegistry;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Models;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
 
 namespace Kafka.Ksql.Linq.SchemaRegistryTools;
 

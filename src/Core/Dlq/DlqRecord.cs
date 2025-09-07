@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace Kafka.Ksql.Linq.Core.Dlq;

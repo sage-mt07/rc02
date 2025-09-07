@@ -1,16 +1,12 @@
-using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Modeling;
 using Kafka.Ksql.Linq.Query.Abstractions;
 using Kafka.Ksql.Linq.Query.Builders;
 using Kafka.Ksql.Linq.Query.Builders.Common;
-using Kafka.Ksql.Linq.Core.Modeling;
 using Kafka.Ksql.Linq.Query.Ddl;
-using Kafka.Ksql.Linq.Query.Schema;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Kafka.Ksql.Linq.Configuration;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace Kafka.Ksql.Linq.Query.Pipeline;
 

@@ -1,7 +1,7 @@
-﻿//using Kafka.Ksql.Linq.Core.Modeling;
+//using Kafka.Ksql.Linq.Core.Modeling;
+using Kafka.Ksql.Linq.Core.Dlq;
 using System;
 using System.Collections.Generic;
-using Kafka.Ksql.Linq.Core.Dlq;
 
 namespace Kafka.Ksql.Linq.Core.Abstractions;
 

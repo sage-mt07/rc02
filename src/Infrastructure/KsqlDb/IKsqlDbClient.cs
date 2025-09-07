@@ -1,8 +1,8 @@
 namespace Kafka.Ksql.Linq.Infrastructure.KsqlDb;
 
+using System; // for TimeSpan
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System; // for TimeSpan
 
 public interface IKsqlDbClient
 {

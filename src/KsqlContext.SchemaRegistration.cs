@@ -1,24 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Core.Modeling;
+using Kafka.Ksql.Linq.Core.Extensions;
 using Kafka.Ksql.Linq.Query.Abstractions;
 using Kafka.Ksql.Linq.Query.Adapters;
 using Kafka.Ksql.Linq.Query.Analysis;
-using Kafka.Ksql.Linq.Query.Builders;
 using Kafka.Ksql.Linq.Query.Ddl;
-using Kafka.Ksql.Linq.Query.Pipeline;
-using Kafka.Ksql.Linq.Mapping;
-using Microsoft.Extensions.Logging;
-using ConfluentSchemaRegistry = Confluent.SchemaRegistry;
-using Avro;
-using System.Reflection;
-using Kafka.Ksql.Linq.Core.Extensions;
 using Kafka.Ksql.Linq.SchemaRegistryTools;
-using Kafka.Ksql.Linq.Configuration;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using ConfluentSchemaRegistry = Confluent.SchemaRegistry;
 
 namespace Kafka.Ksql.Linq;
 

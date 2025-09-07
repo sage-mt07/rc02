@@ -1,6 +1,6 @@
+using Kafka.Ksql.Linq.Core.Abstractions;
 using System;
 using System.Collections.Generic;
-using Kafka.Ksql.Linq.Core.Abstractions;
 
 namespace Kafka.Ksql.Linq.Cache.Core;
 

@@ -1,5 +1,5 @@
-using Kafka.Ksql.Linq.Query.Builders.Common;
 using Kafka.Ksql.Linq.Configuration;
+using Kafka.Ksql.Linq.Query.Builders.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;

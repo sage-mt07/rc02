@@ -1,9 +1,9 @@
 using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Core.Extensions;
-using Kafka.Ksql.Linq.Messaging.Internal;
-using Kafka.Ksql.Linq.Messaging;
-using Kafka.Ksql.Linq.Query.Abstractions;
 using Kafka.Ksql.Linq.Core.Dlq;
+using Kafka.Ksql.Linq.Core.Extensions;
+using Kafka.Ksql.Linq.Messaging;
+using Kafka.Ksql.Linq.Messaging.Internal;
+using Kafka.Ksql.Linq.Query.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -255,10 +255,10 @@ public abstract class EventSet<T> : IEntitySet<T> where T : class
     }
 
     [Obsolete("Use ForEachAsync(Func<T, Dictionary<string,string>, MessageMeta, Task>)")]
-    public virtual Task ForEachAsync(Func<T, Dictionary<string,string>, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default)
+    public virtual Task ForEachAsync(Func<T, Dictionary<string, string>, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default)
         => ForEachAsync((e, h, _) => action(e, h), timeout, autoCommit, cancellationToken);
 
-    public virtual async Task ForEachAsync(Func<T, Dictionary<string,string>, MessageMeta, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default)
+    public virtual async Task ForEachAsync(Func<T, Dictionary<string, string>, MessageMeta, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default)
     {
         if (action == null)
             throw new ArgumentNullException(nameof(action));

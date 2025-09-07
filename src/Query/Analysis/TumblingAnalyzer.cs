@@ -1,9 +1,8 @@
+using Kafka.Ksql.Linq.Query.Pipeline;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Kafka.Ksql.Linq.Query.Pipeline;
 
 namespace Kafka.Ksql.Linq.Query.Analysis;
 
@@ -32,7 +31,8 @@ internal static class TumblingAnalyzer
         var nullCtx = new NullabilityInfoContext();
         var pocoShape = sourceType.GetProperties()
             .OrderBy(p => p.MetadataToken)
-            .Select(p => {
+            .Select(p =>
+            {
                 var nullable = nullCtx.Create(p).WriteState == NullabilityState.Nullable;
                 return new ColumnShape(p.Name, p.PropertyType, nullable);
             })

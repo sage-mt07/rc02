@@ -3,11 +3,11 @@ using Confluent.Kafka.SyncOverAsync;
 using Confluent.SchemaRegistry.Serdes;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Configuration.Abstractions;
+using Kafka.Ksql.Linq.Configuration.Messaging;
 using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Dlq;
 using Kafka.Ksql.Linq.Core.Extensions;
 using Kafka.Ksql.Linq.Mapping;
-using Kafka.Ksql.Linq.Configuration.Messaging;
-using Kafka.Ksql.Linq.Core.Dlq;
 using Kafka.Ksql.Linq.Messaging.Producers;
 using Kafka.Ksql.Linq.Runtime.Heartbeat;
 using Microsoft.Extensions.Logging;
@@ -231,7 +231,7 @@ internal class KafkaConsumerManager : IDisposable
         // When using Ignore as TKey (key-less topics), do not attach Avro deserializer for the key.
         if (typeof(TKey) == typeof(Confluent.Kafka.Ignore))
         {
-            return (IConsumer<TKey, TValue>) (object) new ConsumerBuilder<Confluent.Kafka.Ignore, TValue>(config)
+            return (IConsumer<TKey, TValue>)(object)new ConsumerBuilder<Confluent.Kafka.Ignore, TValue>(config)
                 .SetValueDeserializer(new AvroDeserializer<TValue>(_schemaRegistryClient.Value).AsSyncOverAsync())
                 .Build();
         }
