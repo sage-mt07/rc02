@@ -1,0 +1,2 @@
+# diff_remove_entity_model_registrar_20250907
+- Query.Adapters.EntityModelRegistrar.cs を削除。MappingRegistry で直接モデル登録を行うため不要になった
