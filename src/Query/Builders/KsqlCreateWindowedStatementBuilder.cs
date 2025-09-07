@@ -18,6 +18,11 @@ internal static class KsqlCreateWindowedStatementBuilder
         if (string.IsNullOrWhiteSpace(timeframe)) throw new ArgumentException("timeframe required", nameof(timeframe));
 
         var baseSql = KsqlCreateStatementBuilder.Build(name, model);
+        if (model.IsFinal)
+        {
+            baseSql = Regex.Replace(baseSql, @",\s*[^,]*?AS BucketStart", string.Empty, RegexOptions.IgnoreCase);
+            baseSql = baseSql.Replace("SELECT ", "SELECT WINDOWSTART AS BucketStart, ");
+        }
         var window = FormatWindow(model, timeframe);
         var sql = InjectWindowAfterFrom(baseSql, window);
         sql = InjectEmitMode(sql, model);

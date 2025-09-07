@@ -60,15 +60,17 @@ internal static class DerivationPlanner
                 Timeframe = tf,
                 KeyShape = keyShapes,
                 ValueShape = valueShapes,
-                InputHint = tf.Unit == "m" && tf.Value == 1 ? "bar_1m_agg_final ⟂ bar_prev_1m" : $"bar_{tfStr}_agg_final ⟂ bar_prev_1m",
+                InputHint = tf.Unit == "m" && tf.Value == 1 ? "10sAgg" : tf.Unit == "wk" ? "bar_1m_final" : "bar_1m_live",
                 SyncHint = tf.Unit == "m" && tf.Value == 1 ? "HB_1m" : null,
                 BasedOnSpec = qao.BasedOn,
                 WeekAnchor = qao.WeekAnchor
             };
             entities.Add(final); dag.AddNode(finalId);
 
-            dag.AddEdge(aggId, finalId);
-            dag.AddEdge("bar_prev_1m", finalId);
+            if (tf.Unit == "wk")
+                dag.AddEdge("bar_1m_final", finalId);
+            else if (!(tf.Unit == "m" && tf.Value == 1))
+                dag.AddEdge("bar_1m_live", finalId);
             if (tf.Unit == "wk")
                 dag.AddEdge("bar_1m_final", liveId);
             else if (!(tf.Unit == "m" && tf.Value == 1))
