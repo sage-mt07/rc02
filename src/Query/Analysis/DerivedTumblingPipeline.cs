@@ -30,7 +30,7 @@ internal static class DerivedTumblingPipeline
     }
 
     public static IReadOnlyList<DerivedEntity> PlanDerivedEntities(TumblingQao qao)
-        => DerivationPlanner.Plan(qao).Item1;
+        => DerivationPlanner.Plan(qao);
 
     public static IReadOnlyList<EntityModel> AdaptModels(IReadOnlyList<DerivedEntity> entities)
         => EntityModelAdapter.Adapt(entities);
