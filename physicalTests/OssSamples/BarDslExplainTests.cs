@@ -3,6 +3,7 @@ using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Core.Modeling;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
@@ -38,12 +39,15 @@ public class BarDslExplainTests
 
     private sealed class TestContext : KsqlContext
     {
+        private static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(b =>
+            b.AddConsole().SetMinimumLevel(LogLevel.Debug));
+
         public TestContext() : base(new KsqlDslOptions
         {
             Common = new CommonSection { BootstrapServers = "localhost:9092" },
             SchemaRegistry = new Kafka.Ksql.Linq.Core.Configuration.SchemaRegistrySection { Url = "http://localhost:8081" },
             KsqlDbUrl = "http://localhost:8088"
-        })
+        }, _loggerFactory)
         { }
         // 物理テスト: スキーマ登録を有効化
         protected override bool SkipSchemaRegistration => false;
