@@ -23,7 +23,7 @@ class TestSource
 public class DerivedTumblingPipelineTests
 {
     [Fact]
-    public async Task Live_and_Final_emit_different_ddl()
+    public async Task Live_and_Final_emit_different_ddl_without_mutating_model()
     {
         var qao = new TumblingQao
         {
@@ -61,5 +61,6 @@ public class DerivedTumblingPipelineTests
         var final = ddls.Single(s => s.Contains("_1m_final"));
         Assert.Contains("EMIT CHANGES", live);
         Assert.Contains("EMIT FINAL", final);
+        Assert.False(model.IsFinal);
     }
 }
