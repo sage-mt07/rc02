@@ -6,10 +6,9 @@ namespace Kafka.Ksql.Linq.Query.Analysis;
 
 internal static class DerivationPlanner
 {
-    public static (IReadOnlyList<DerivedEntity>, DerivationDag) Plan(TumblingQao qao)
+    public static IReadOnlyList<DerivedEntity> Plan(TumblingQao qao)
     {
         var entities = new List<DerivedEntity>();
-        var dag = new DerivationDag();
 
         var keyShapes = qao.Keys.Select(k =>
         {
@@ -37,7 +36,7 @@ internal static class DerivationPlanner
                 BasedOnSpec = qao.BasedOn,
                 WeekAnchor = qao.WeekAnchor
             };
-            entities.Add(agg); dag.AddNode(aggId);
+            entities.Add(agg);
 
             var live = new DerivedEntity
             {
@@ -51,7 +50,7 @@ internal static class DerivationPlanner
                 BasedOnSpec = qao.BasedOn,
                 WeekAnchor = qao.WeekAnchor
             };
-            entities.Add(live); dag.AddNode(liveId);
+            entities.Add(live);
 
             var final = new DerivedEntity
             {
@@ -65,16 +64,7 @@ internal static class DerivationPlanner
                 BasedOnSpec = qao.BasedOn,
                 WeekAnchor = qao.WeekAnchor
             };
-            entities.Add(final); dag.AddNode(finalId);
-
-            if (tf.Unit == "wk")
-                dag.AddEdge("bar_1m_final", finalId);
-            else if (!(tf.Unit == "m" && tf.Value == 1))
-                dag.AddEdge("bar_1m_live", finalId);
-            if (tf.Unit == "wk")
-                dag.AddEdge("bar_1m_final", liveId);
-            else if (!(tf.Unit == "m" && tf.Value == 1))
-                dag.AddEdge("bar_1m_live", liveId);
+            entities.Add(final);
 
             if (tf.Unit == "m" && tf.Value == 1 && prev == null)
             {
@@ -88,7 +78,7 @@ internal static class DerivationPlanner
                     BasedOnSpec = qao.BasedOn,
                     WeekAnchor = qao.WeekAnchor
                 };
-                entities.Add(prev); dag.AddNode(prev.Id);
+                entities.Add(prev);
 
                 var hb = new DerivedEntity
                 {
@@ -101,9 +91,9 @@ internal static class DerivationPlanner
                     BasedOnSpec = qao.BasedOn,
                     WeekAnchor = qao.WeekAnchor
                 };
-                entities.Add(hb); dag.AddNode(hb.Id);
+                entities.Add(hb);
             }
         }
-        return (entities, dag);
+        return entities;
     }
 }
