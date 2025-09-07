@@ -27,7 +27,6 @@ public class DerivedTumblingPipelineTests
     {
         var qao = new TumblingQao
         {
-            BaseTopicName = typeof(TestSource).GetCustomAttribute<KsqlTopicAttribute>()!.Name,
             TimeKey = "Timestamp",
             Windows = new[] { new Timeframe(1, "m") },
             Keys = new[] { "Id" },
@@ -36,6 +35,7 @@ public class DerivedTumblingPipelineTests
             BasedOn = new BasedOnSpec(new[] { "Id" }, string.Empty, string.Empty, string.Empty),
             WeekAnchor = DayOfWeek.Monday
         };
+        var baseModel = new EntityModel { EntityType = typeof(TestSource) };
         var model = new KsqlQueryModel
         {
             SourceTypes = new[] { typeof(TestSource) },
@@ -55,7 +55,7 @@ public class DerivedTumblingPipelineTests
         var mod = asm.DefineDynamicModule("m");
         Type Resolver(string _) => mod.DefineType("T" + Guid.NewGuid().ToString("N")).CreateType()!;
 
-        await DerivedTumblingPipeline.RunAsync(qao, model, Exec, Resolver, mapping, registry, new LoggerFactory().CreateLogger("test"));
+        await DerivedTumblingPipeline.RunAsync(qao, baseModel, model, Exec, Resolver, mapping, registry, new LoggerFactory().CreateLogger("test"));
 
         var live = ddls.Single(s => s.Contains("_1m_live"));
         var final = ddls.Single(s => s.Contains("_1m_final"));

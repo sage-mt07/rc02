@@ -1,4 +1,5 @@
 using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Query.Adapters;
 using Kafka.Ksql.Linq.Query.Builders;
 using Kafka.Ksql.Linq.Query.Dsl;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Kafka.Ksql.Linq.Query.Analysis;
@@ -16,6 +18,7 @@ internal static class DerivedTumblingPipeline
 {
     public static async Task RunAsync(
         TumblingQao qao,
+        EntityModel baseModel,
         KsqlQueryModel queryModel,
         Func<string, Task> execute,
         Func<string, Type> resolveType,
@@ -23,14 +26,16 @@ internal static class DerivedTumblingPipeline
         ConcurrentDictionary<Type, EntityModel> registry,
         ILogger logger)
     {
-        var entities = PlanDerivedEntities(qao);
+        var baseAttr = baseModel.EntityType.GetCustomAttribute<KsqlTopicAttribute>();
+        var baseName = (baseAttr?.Name ?? baseModel.TopicName ?? baseModel.EntityType.Name).ToLowerInvariant();
+        var entities = PlanDerivedEntities(qao, baseModel);
         var models = AdaptModels(entities);
         await Parallel.ForEachAsync(models, async (m, _) =>
         {
             var role = Enum.Parse<Role>((string)m.AdditionalSettings["role"]);
             var qm = queryModel.Clone();
             qm.IsFinal = role is Role.Final or Role.AggFinal;
-            var (ddl, dt, ns) = BuildDdlAndRegister(qao.BaseTopicName, qm, m, role, resolveType);
+            var (ddl, dt, ns) = BuildDdlAndRegister(baseName, qm, m, role, resolveType);
             logger.LogInformation("KSQL DDL (derived {Entity}): {Sql}", m.TopicName, ddl);
             await execute(ddl);
             mapping.RegisterEntityModel(m, genericValue: true, overrideNamespace: ns);
@@ -38,8 +43,8 @@ internal static class DerivedTumblingPipeline
         });
     }
 
-    public static IReadOnlyList<DerivedEntity> PlanDerivedEntities(TumblingQao qao)
-        => DerivationPlanner.Plan(qao);
+    public static IReadOnlyList<DerivedEntity> PlanDerivedEntities(TumblingQao qao, EntityModel model)
+        => DerivationPlanner.Plan(qao, model);
 
     public static IReadOnlyList<EntityModel> AdaptModels(IReadOnlyList<DerivedEntity> entities)
         => EntityModelAdapter.Adapt(entities);

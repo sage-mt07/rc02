@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Attributes;
 
 namespace Kafka.Ksql.Linq.Query.Analysis;
 
 internal static class DerivationPlanner
 {
-    public static IReadOnlyList<DerivedEntity> Plan(TumblingQao qao)
+    public static IReadOnlyList<DerivedEntity> Plan(TumblingQao qao, EntityModel model)
     {
         var entities = new List<DerivedEntity>();
 
@@ -22,7 +25,8 @@ internal static class DerivationPlanner
         foreach (var tf in qao.Windows)
         {
             var tfStr = $"{tf.Value}{tf.Unit}";
-            var baseId = qao.BaseTopicName;
+            var topicAttr = model.EntityType.GetCustomAttribute<KsqlTopicAttribute>();
+            var baseId = (topicAttr?.Name ?? model.TopicName ?? model.EntityType.Name).ToLowerInvariant();
             var aggId = $"{baseId}_{tfStr}_agg_final";
             var liveId = $"{baseId}_{tfStr}_live";
             var finalId = $"{baseId}_{tfStr}_final";
