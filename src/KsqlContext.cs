@@ -16,6 +16,7 @@ using Confluent.Kafka;
 using Kafka.Ksql.Linq.Query.Abstractions;
 using Kafka.Ksql.Linq.Query.Adapters;
 using Kafka.Ksql.Linq.Query.Ddl;
+using Kafka.Ksql.Linq.Query.Analysis;
 using Kafka.Ksql.Linq.SchemaRegistryTools;
 using Kafka.Ksql.Linq.Core.Dlq;
 using Microsoft.Extensions.Configuration;
@@ -65,6 +66,11 @@ public abstract class KsqlContext : IKsqlContext
     private ILoggerFactory? _loggerFactory;
 
     internal ILogger Logger => _logger;
+
+    private static readonly System.Reflection.Emit.ModuleBuilder _derivedModule = System.Reflection.Emit.AssemblyBuilder
+        .DefineDynamicAssembly(new System.Reflection.AssemblyName("KafkaKsqlLinq.Derived"), System.Reflection.Emit.AssemblyBuilderAccess.Run)
+        .DefineDynamicModule("Main");
+    private static readonly Dictionary<string, Type> _derivedTypes = new();
 
 
 
@@ -709,6 +715,15 @@ public abstract class KsqlContext : IKsqlContext
             || m.Contains("statement_error");
     }
 
+    private static Type GetDerivedType(string name)
+    {
+        if (_derivedTypes.TryGetValue(name, out var t)) return t;
+        var tb = _derivedModule.DefineType(name, System.Reflection.TypeAttributes.Public | System.Reflection.TypeAttributes.Class);
+        t = tb.CreateType()!;
+        _derivedTypes[name] = t;
+        return t;
+    }
+
     private async Task WaitForEntityDdlAsync(EntityModel model, TimeSpan timeout)
     {
         var deadline = DateTime.UtcNow + timeout;
@@ -738,6 +753,27 @@ public abstract class KsqlContext : IKsqlContext
     {
         if (model.QueryModel != null)
             RegisterQueryModelMapping(model);
+
+        if (model.QueryModel?.HasTumbling == true && model.QueryModel.Windows.Count > 0)
+        {
+            var qao = BuildQao(model);
+            var (entities, _) = DerivationPlanner.Plan(qao);
+            var derived = EntityModelAdapter.Adapt(entities);
+            foreach (var dm in derived)
+            {
+                var tf = (string)dm.AdditionalSettings["timeframe"];
+                var name = (string)dm.AdditionalSettings["id"];
+                var ddl = Query.Builders.KsqlCreateWindowedStatementBuilder.Build(name, model.QueryModel, tf);
+                Logger.LogInformation("KSQL DDL (derived {Entity}): {Sql}", name, ddl);
+                await ExecuteWithRetryAsync(ddl);
+                var dt = GetDerivedType(name);
+                dm.EntityType = dt;
+                dm.TopicName = name;
+                dm.SetStreamTableType(StreamTableType.Table);
+                _entityModels[dt] = dm;
+            }
+            return;
+        }
 
         var isTable = model.GetExplicitStreamTableType() == StreamTableType.Table || model.QueryModel?.IsAggregateQuery == true;
 
@@ -810,6 +846,35 @@ public abstract class KsqlContext : IKsqlContext
                 await _delay(TimeSpan.FromMilliseconds(delayMs), default);
                 delayMs = Math.Min(delayMs * 2, 8000);
             }
+        }
+
+        TumblingQao BuildQao(EntityModel m)
+        {
+            var ctx = new NullabilityInfoContext();
+            var shape = m.AllProperties.Select(p => new ColumnShape(p.Name, p.PropertyType, ctx.Create(p).WriteState == NullabilityState.Nullable)).ToArray();
+            var frames = m.QueryModel!.Windows.Select(ParseWindow).ToList();
+            var keys = m.KeyProperties.Select(p => p.Name).ToArray();
+            return new TumblingQao
+            {
+                TimeKey = "Timestamp",
+                Windows = frames,
+                Keys = keys,
+                Projection = keys,
+                PocoShape = shape,
+                BasedOn = new BasedOnSpec(keys, string.Empty, string.Empty, string.Empty),
+                WeekAnchor = m.QueryModel!.WeekAnchor
+            };
+        }
+
+        Timeframe ParseWindow(string w)
+        {
+            if (w.EndsWith("mo", StringComparison.OrdinalIgnoreCase))
+                return new Timeframe(int.Parse(w[..^2]), "mo");
+            if (w.EndsWith("wk", StringComparison.OrdinalIgnoreCase))
+                return new Timeframe(int.Parse(w[..^2]), "wk");
+            var unit = w[^1].ToString();
+            var value = int.Parse(w[..^1]);
+            return new Timeframe(value, unit);
         }
     }
 

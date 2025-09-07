@@ -1,0 +1,2 @@
+- EnsureQueryEntityDdlAsync now detects tumbling windows and generates windowed tables (e.g., bar_1m_live).
+- Derived EntityModels are planned via DerivationPlanner and registered for later lookup.
