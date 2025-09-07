@@ -20,9 +20,14 @@ public class EnsureQueryEntityDdlAsyncTests
     private class CapturingClient : IKsqlDbClient
     {
         public List<string> Statements { get; } = new();
+        public string Topic { get; set; } = "tgt";
         public Task<KsqlDbResponse> ExecuteStatementAsync(string statement)
         {
             Statements.Add(statement);
+            if (statement.StartsWith("SHOW QUERIES", StringComparison.OrdinalIgnoreCase))
+                return Task.FromResult(new KsqlDbResponse(true, $"Q1|{Topic}|PERSISTENT|RUNNING"));
+            if (statement.StartsWith("SHOW TOPICS", StringComparison.OrdinalIgnoreCase))
+                return Task.FromResult(new KsqlDbResponse(true, $"{Topic}|1"));
             return Task.FromResult(new KsqlDbResponse(true, string.Empty));
         }
         public Task<KsqlDbResponse> ExecuteExplainAsync(string ksql) => Task.FromResult(new KsqlDbResponse(true, string.Empty));
@@ -129,7 +134,8 @@ public class EnsureQueryEntityDdlAsyncTests
             KeyProperties = new[] { typeof(Target).GetProperty(nameof(Target.Id))! },
             AllProperties = typeof(Target).GetProperties(),
             KeySchemaFullName = "k",
-            ValueSchemaFullName = "v"
+            ValueSchemaFullName = "v",
+            Partitions = 1
         };
         targetModel.SetStreamTableType(StreamTableType.Stream);
         models[typeof(Target)] = targetModel;
@@ -145,8 +151,10 @@ public class EnsureQueryEntityDdlAsyncTests
         Assert.Single(logger.Messages);
         Assert.Contains("CREATE TABLE", logger.Messages[0]);
         Assert.Contains("AS", logger.Messages[0]);
-        Assert.Single(client.Statements);
+        Assert.Equal(3, client.Statements.Count);
         Assert.Contains("CREATE TABLE", client.Statements[0]);
+        Assert.Contains("SHOW QUERIES", client.Statements[1]);
+        Assert.Contains("SHOW TOPICS", client.Statements[2]);
         Assert.DoesNotContain("INSERT INTO", string.Join("\n", client.Statements));
 
         DecimalPrecisionConfig.Configure(18, 2, null);
@@ -222,7 +230,8 @@ public class EnsureQueryEntityDdlAsyncTests
             KeyProperties = new[] { typeof(Target).GetProperty(nameof(Target.Id))! },
             AllProperties = typeof(Target).GetProperties(),
             KeySchemaFullName = "k",
-            ValueSchemaFullName = "v"
+            ValueSchemaFullName = "v",
+            Partitions = 1
         };
         targetModel.SetStreamTableType(StreamTableType.Table);
         models[typeof(Target)] = targetModel;
@@ -238,8 +247,10 @@ public class EnsureQueryEntityDdlAsyncTests
         Assert.Single(logger.Messages);
         Assert.Contains("CREATE TABLE", logger.Messages[0]);
         Assert.Contains("AS", logger.Messages[0]);
-        Assert.Single(client.Statements);
+        Assert.Equal(3, client.Statements.Count);
         Assert.Contains("CREATE TABLE", client.Statements[0]);
+        Assert.Contains("SHOW QUERIES", client.Statements[1]);
+        Assert.Contains("SHOW TOPICS", client.Statements[2]);
         Assert.DoesNotContain("INSERT INTO", string.Join("\n", client.Statements));
 
         DecimalPrecisionConfig.Configure(18, 2, null);
