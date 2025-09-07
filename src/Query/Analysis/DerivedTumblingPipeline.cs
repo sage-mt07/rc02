@@ -33,9 +33,7 @@ internal static class DerivedTumblingPipeline
         await Parallel.ForEachAsync(models, async (m, _) =>
         {
             var role = Enum.Parse<Role>((string)m.AdditionalSettings["role"]);
-            var qm = queryModel.Clone();
-            qm.IsFinal = role is Role.Final or Role.AggFinal;
-            var (ddl, dt, ns) = BuildDdlAndRegister(baseName, qm, m, role, resolveType);
+            var (ddl, dt, ns) = BuildDdlAndRegister(baseName, queryModel, m, role, resolveType);
             logger.LogInformation("KSQL DDL (derived {Entity}): {Sql}", m.TopicName, ddl);
             await execute(ddl);
             mapping.RegisterEntityModel(m, genericValue: true, overrideNamespace: ns);
@@ -56,6 +54,8 @@ internal static class DerivedTumblingPipeline
         Role role,
         Func<string, Type> resolveType)
     {
+        var qm = queryModel.Clone();
+        qm.IsFinal = role is Role.Final or Role.AggFinal;
         var tf = (string)model.AdditionalSettings["timeframe"];
         var name = role switch
         {
@@ -66,11 +66,11 @@ internal static class DerivedTumblingPipeline
             Role.Hb => $"{baseName}_hb_1m",
             _ => $"{baseName}_{tf}"
         };
-        var ddl = KsqlCreateWindowedStatementBuilder.Build(name, queryModel, tf);
+        var ddl = KsqlCreateWindowedStatementBuilder.Build(name, qm, tf);
         var dt = resolveType(name);
         model.EntityType = dt;
         model.TopicName = name;
-        model.SetStreamTableType(queryModel.DetermineType());
+        model.SetStreamTableType(qm.DetermineType());
         var ns = model.AdditionalSettings.TryGetValue("namespace", out var nsObj) ? nsObj?.ToString() : null;
         return (ddl, dt, ns);
     }
