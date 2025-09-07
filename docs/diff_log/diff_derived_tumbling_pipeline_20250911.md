@@ -1,0 +1,3 @@
+- Introduced DerivedTumblingPipeline to handle tumbling query derivation and DDL registration.
+- KsqlContext.SchemaRegistration now delegates tumbling DDL generation to the pipeline.
+- Added tests ensuring live, final and agg_final roles emit correct DDL.

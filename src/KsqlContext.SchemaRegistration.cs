@@ -319,21 +319,13 @@ public abstract partial class KsqlContext
         if (model.QueryModel?.HasTumbling == true && model.QueryModel.Windows.Count > 0)
         {
             var qao = BuildQao(model);
-            var (entities, _) = DerivationPlanner.Plan(qao);
-            var derived = EntityModelAdapter.Adapt(entities);
-            foreach (var dm in derived)
-            {
-                var tf = (string)dm.AdditionalSettings["timeframe"];
-                var name = (string)dm.AdditionalSettings["id"];
-                var ddl = Query.Builders.KsqlCreateWindowedStatementBuilder.Build(name, model.QueryModel, tf);
-                Logger.LogInformation("KSQL DDL (derived {Entity}): {Sql}", name, ddl);
-                await ExecuteWithRetryAsync(ddl);
-                var dt = GetDerivedType(name);
-                dm.EntityType = dt;
-                dm.TopicName = name;
-                dm.SetStreamTableType(StreamTableType.Table);
-                _entityModels[dt] = dm;
-            }
+            await DerivedTumblingPipeline.RunAsync(
+                qao,
+                model.QueryModel,
+                ExecuteWithRetryAsync,
+                n => GetDerivedType(n),
+                _entityModels,
+                Logger);
             return;
         }
 
