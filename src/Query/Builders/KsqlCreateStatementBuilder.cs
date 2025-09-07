@@ -1,4 +1,5 @@
 using Kafka.Ksql.Linq.Query.Dsl;
+using Kafka.Ksql.Linq.Core.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,15 +10,15 @@ namespace Kafka.Ksql.Linq.Query.Builders;
 
 public static class KsqlCreateStatementBuilder
 {
-    public static string Build(string streamName, KsqlQueryModel model, string? keySchemaFullName = null, string? valueSchemaFullName = null, string? partitionBy = null)
+    public static string Build(string streamName, KsqlQueryModel model, string? keySchemaFullName = null, string? valueSchemaFullName = null, string? partitionBy = null, RenderOptions? options = null)
     {
-        return Build(streamName, model, keySchemaFullName, valueSchemaFullName, ResolveSourceName, partitionBy);
+        return Build(streamName, model, keySchemaFullName, valueSchemaFullName, ResolveSourceName, partitionBy, options);
     }
 
     /// <summary>
     /// Build a CREATE statement with an optional source name resolver for FROM/JOIN tables.
     /// </summary>
-    public static string Build(string streamName, KsqlQueryModel model, string? keySchemaFullName, string? valueSchemaFullName, Func<Type, string> sourceNameResolver, string? partitionBy = null)
+    public static string Build(string streamName, KsqlQueryModel model, string? keySchemaFullName, string? valueSchemaFullName, Func<Type, string> sourceNameResolver, string? partitionBy = null, RenderOptions? options = null)
     {
         if (string.IsNullOrWhiteSpace(streamName))
             throw new ArgumentException("Stream name is required", nameof(streamName));
@@ -48,6 +49,13 @@ public static class KsqlCreateStatementBuilder
         var fromClause = BuildFromClauseCore(model, sourceNameResolver);
         var whereClause = BuildWhereClause(model.WhereCondition, model);
         var havingClause = BuildHavingClause(model.HavingCondition);
+
+        var keyMap = BuildKeyAliasMap(model);
+        var style = options?.KeyPathStyle ?? KeyPathStyle.None;
+        selectClause = ApplyKeyStyle(selectClause, keyMap, style);
+        groupByClause = ApplyKeyStyle(groupByClause, keyMap, style);
+        whereClause = ApplyKeyStyle(whereClause, keyMap, style);
+        havingClause = ApplyKeyStyle(havingClause, keyMap, style);
 
         var createType = model.IsAggregateQuery ? "CREATE TABLE" : "CREATE STREAM";
 
@@ -230,6 +238,47 @@ public static class KsqlCreateStatementBuilder
         var builder = new HavingClauseBuilder();
         var condition = builder.Build(having.Body);
         return $"HAVING {condition}";
+    }
+
+    private static System.Collections.Generic.Dictionary<string, System.Collections.Generic.HashSet<string>> BuildKeyAliasMap(KsqlQueryModel model)
+    {
+        var map = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+        var types = model.SourceTypes ?? Array.Empty<Type>();
+        if (types.Length > 0)
+            map["o"] = ExtractKeyNames(types[0]);
+        if (types.Length > 1)
+            map["i"] = ExtractKeyNames(types[1]);
+        return map;
+    }
+
+    private static System.Collections.Generic.HashSet<string> ExtractKeyNames(Type type)
+    {
+        return type
+            .GetProperties()
+            .Where(p => p.GetCustomAttributes(true).OfType<KsqlKeyAttribute>().Any())
+            .Select(p => p.Name.ToUpperInvariant())
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+    }
+
+    private static string ApplyKeyStyle(string clause, System.Collections.Generic.Dictionary<string, System.Collections.Generic.HashSet<string>> map, KeyPathStyle style)
+    {
+        if (string.IsNullOrEmpty(clause)) return clause;
+        foreach (var kv in map)
+        {
+            var alias = kv.Key;
+            foreach (var key in kv.Value)
+            {
+                var pattern = $@"\b{alias}\.{key}\b";
+                var replacement = style switch
+                {
+                    KeyPathStyle.Dot => $"key.{key}",
+                    KeyPathStyle.Arrow => $"KEY->{key}",
+                    _ => key
+                };
+                clause = System.Text.RegularExpressions.Regex.Replace(clause, pattern, replacement);
+            }
+        }
+        return clause;
     }
 
     private static string FormatTimeSpan(TimeSpan timeSpan)
