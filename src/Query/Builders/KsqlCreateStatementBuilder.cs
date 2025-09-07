@@ -50,12 +50,14 @@ public static class KsqlCreateStatementBuilder
         var whereClause = BuildWhereClause(model.WhereCondition, model);
         var havingClause = BuildHavingClause(model.HavingCondition);
 
-        var keyMap = BuildKeyAliasMap(model);
-        var style = options?.KeyPathStyle ?? KeyPathStyle.None;
-        selectClause = ApplyKeyStyle(selectClause, keyMap, style);
-        groupByClause = ApplyKeyStyle(groupByClause, keyMap, style);
-        whereClause = ApplyKeyStyle(whereClause, keyMap, style);
-        havingClause = ApplyKeyStyle(havingClause, keyMap, style);
+        var keyMap = BuildKeyAliasMap(model, options?.KeyPathStyle ?? KeyPathStyle.None);
+        var mapForFrom = keyMap.Where(kv => kv.Value.Style != KeyPathStyle.None)
+            .ToDictionary(kv => kv.Key, kv => kv.Value);
+        fromClause = ApplyKeyStyle(fromClause, mapForFrom);
+        selectClause = ApplyKeyStyle(selectClause, keyMap);
+        groupByClause = ApplyKeyStyle(groupByClause, keyMap);
+        whereClause = ApplyKeyStyle(whereClause, keyMap);
+        havingClause = ApplyKeyStyle(havingClause, keyMap);
 
         var createType = model.IsAggregateQuery ? "CREATE TABLE" : "CREATE STREAM";
 
@@ -240,15 +242,26 @@ public static class KsqlCreateStatementBuilder
         return $"HAVING {condition}";
     }
 
-    private static System.Collections.Generic.Dictionary<string, System.Collections.Generic.HashSet<string>> BuildKeyAliasMap(KsqlQueryModel model)
+    private static System.Collections.Generic.Dictionary<string, (System.Collections.Generic.HashSet<string> Keys, KeyPathStyle Style)> BuildKeyAliasMap(KsqlQueryModel model, KeyPathStyle overrideStyle)
     {
-        var map = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+        var map = new System.Collections.Generic.Dictionary<string, (System.Collections.Generic.HashSet<string>, KeyPathStyle)>(StringComparer.OrdinalIgnoreCase);
         var types = model.SourceTypes ?? Array.Empty<Type>();
         if (types.Length > 0)
-            map["o"] = ExtractKeyNames(types[0]);
+            map["o"] = (ExtractKeyNames(types[0]), DetermineStyle(types[0], overrideStyle));
         if (types.Length > 1)
-            map["i"] = ExtractKeyNames(types[1]);
+            map["i"] = (ExtractKeyNames(types[1]), DetermineStyle(types[1], overrideStyle));
+        // TODO: future model-provided aliases should feed this map instead of fixed o/i.
         return map;
+    }
+
+    private static KeyPathStyle DetermineStyle(Type type, KeyPathStyle overrideStyle)
+    {
+        if (overrideStyle != KeyPathStyle.None)
+            return overrideStyle;
+        // Auto-detection only yields Arrow for tables; Dot is reserved for explicit overrides.
+        return type.GetCustomAttributes(true).OfType<KsqlTableAttribute>().Any()
+            ? KeyPathStyle.Arrow
+            : KeyPathStyle.None;
     }
 
     private static System.Collections.Generic.HashSet<string> ExtractKeyNames(Type type)
@@ -260,22 +273,45 @@ public static class KsqlCreateStatementBuilder
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
     }
 
-    private static string ApplyKeyStyle(string clause, System.Collections.Generic.Dictionary<string, System.Collections.Generic.HashSet<string>> map, KeyPathStyle style)
+    private static string ApplyKeyStyle(string clause, System.Collections.Generic.Dictionary<string, (System.Collections.Generic.HashSet<string> Keys, KeyPathStyle Style)> map)
     {
         if (string.IsNullOrEmpty(clause)) return clause;
         foreach (var kv in map)
         {
             var alias = kv.Key;
-            foreach (var key in kv.Value)
+            var keys = kv.Value.Keys;
+            var style = kv.Value.Style;
+            if (style != KeyPathStyle.None && keys.Count == 1)
             {
-                var pattern = $@"\b{alias}\.{key}\b";
+                var lone = keys.First();
+                var standAlonePattern = @"\bKEY\b";
+                var standAloneReplacement = style switch
+                {
+                    KeyPathStyle.Dot => $"key.{lone}",
+                    KeyPathStyle.Arrow => $"KEY->{lone}",
+                    _ => lone
+                };
+                clause = System.Text.RegularExpressions.Regex.Replace(
+                    clause,
+                    standAlonePattern,
+                    standAloneReplacement,
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Compiled | System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+            }
+            foreach (var key in keys)
+            {
+                // Skip tokens already prefixed (KEY-> or key.) and any inside quotes/backticks.
+                var pattern = $@"(?<!KEY->)(?<!key\.)(?<![`'""])\b{alias}\.{key}\b(?![`'""])";
                 var replacement = style switch
                 {
                     KeyPathStyle.Dot => $"key.{key}",
                     KeyPathStyle.Arrow => $"KEY->{key}",
                     _ => key
                 };
-                clause = System.Text.RegularExpressions.Regex.Replace(clause, pattern, replacement);
+                clause = System.Text.RegularExpressions.Regex.Replace(
+                    clause,
+                    pattern,
+                    replacement,
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Compiled | System.Text.RegularExpressions.RegexOptions.CultureInvariant);
             }
         }
         return clause;
