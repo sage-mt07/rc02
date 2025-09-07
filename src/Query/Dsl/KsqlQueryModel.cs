@@ -27,6 +27,33 @@ public class KsqlQueryModel
     public int? GraceSeconds { get; set; }
     public System.Collections.Generic.Dictionary<string, object?> Extras { get; } = new();
 
+    public KsqlQueryModel Clone()
+    {
+        var clone = new KsqlQueryModel
+        {
+            SourceTypes = (Type[])SourceTypes.Clone(),
+            JoinCondition = JoinCondition,
+            WhereCondition = WhereCondition,
+            SelectProjection = SelectProjection,
+            GroupByExpression = GroupByExpression,
+            HavingCondition = HavingCondition,
+            IsAggregateQuery = IsAggregateQuery,
+            ExecutionMode = ExecutionMode,
+            HasTumbling = HasTumbling,
+            BasedOnType = BasedOnType,
+            BasedOnDayKey = BasedOnDayKey,
+            WeekAnchor = WeekAnchor,
+            WithinSeconds = WithinSeconds,
+            ForbidDefaultWithin = ForbidDefaultWithin,
+            IsFinal = IsFinal,
+            GraceSeconds = GraceSeconds
+        };
+        clone.Windows.AddRange(Windows);
+        foreach (var kv in Extras)
+            clone.Extras[kv.Key] = kv.Value;
+        return clone;
+    }
+
     /// <summary>
     /// Returns a simple string representation useful for debugging.
     /// </summary>
