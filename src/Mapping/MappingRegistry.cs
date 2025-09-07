@@ -48,14 +48,15 @@ internal class MappingRegistry
         PropertyMeta[] valueProperties,
         string? topicName = null,
         bool genericKey = false,
-        bool genericValue = false)
+        bool genericValue = false,
+        string? overrideNamespace = null)
     {
         if (_mappings.TryGetValue(pocoType, out var existing))
         {
             return existing;
         }
 
-        string ns = AvroSanitizeName(pocoType.Namespace?.ToLower() ?? string.Empty);
+        string ns = AvroSanitizeName((overrideNamespace ?? pocoType.Namespace)?.ToLower() ?? string.Empty);
 
         var baseName = AvroSanitizeName((topicName ?? pocoType.Name).ToLower());
 
@@ -121,9 +122,10 @@ internal class MappingRegistry
         (PropertyMeta[] KeyProperties, PropertyMeta[] ValueProperties) meta,
         string? topicName = null,
         bool genericKey = false,
-        bool genericValue = false)
+        bool genericValue = false,
+        string? overrideNamespace = null)
     {
-        return Register(pocoType, meta.KeyProperties, meta.ValueProperties, topicName, genericKey, genericValue);
+        return Register(pocoType, meta.KeyProperties, meta.ValueProperties, topicName, genericKey, genericValue, overrideNamespace);
     }
 
     /// <summary>
@@ -131,7 +133,7 @@ internal class MappingRegistry
     /// Convenience wrapper so callers don't need to manually convert
     /// PropertyInfo to <see cref="PropertyMeta"/> arrays.
     /// </summary>
-    public KeyValueTypeMapping RegisterEntityModel(EntityModel model, bool genericKey = false, bool genericValue = false)
+    public KeyValueTypeMapping RegisterEntityModel(EntityModel model, bool genericKey = false, bool genericValue = false, string? overrideNamespace = null)
     {
         if (model == null) throw new ArgumentNullException(nameof(model));
 
@@ -142,7 +144,7 @@ internal class MappingRegistry
             .Select(p => PropertyMeta.FromProperty(p))
             .ToArray();
 
-        return Register(model.EntityType, keyMeta, valueMeta, model.GetTopicName(), genericKey, genericValue);
+        return Register(model.EntityType, keyMeta, valueMeta, model.GetTopicName(), genericKey, genericValue, overrideNamespace);
     }
 
     /// <summary>
@@ -156,7 +158,8 @@ internal class MappingRegistry
         PropertyInfo[] keyProperties,
         string? topicName = null,
         bool genericKey = false,
-        bool genericValue = false)
+        bool genericValue = false,
+        string? overrideNamespace = null)
     {
         if (resultType == null) throw new ArgumentNullException(nameof(resultType));
         if (model == null) throw new ArgumentNullException(nameof(model));
@@ -175,7 +178,7 @@ internal class MappingRegistry
             .ToArray();
         var keyMeta = keyProperties.Select(p => PropertyMeta.FromProperty(p)).ToArray();
 
-        return Register(resultType, keyMeta, valueProps, topicName ?? resultType.Name.ToLowerInvariant(), genericKey, genericValue);
+        return Register(resultType, keyMeta, valueProps, topicName ?? resultType.Name.ToLowerInvariant(), genericKey, genericValue, overrideNamespace);
     }
 
     private static List<PropertyInfo> ExtractProjectionProperties(LambdaExpression? projection, Type resultType)

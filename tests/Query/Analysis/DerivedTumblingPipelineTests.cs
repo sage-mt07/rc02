@@ -3,6 +3,7 @@ using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Query.Analysis;
 using Kafka.Ksql.Linq.Query.Dsl;
 using Microsoft.Extensions.Logging;
+using Kafka.Ksql.Linq.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -41,6 +42,7 @@ public class DerivedTumblingPipelineTests
             Windows = { "5m" }
         };
         var registry = new Dictionary<Type, EntityModel>();
+        var mapping = new MappingRegistry();
         var asm = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("dyn"), AssemblyBuilderAccess.Run);
         var mod = asm.DefineDynamicModule("m");
         Type Resolver(string n) => mod.DefineType("T" + Guid.NewGuid().ToString("N")).CreateType()!;
@@ -49,6 +51,7 @@ public class DerivedTumblingPipelineTests
             model,
             _ => Task.CompletedTask,
             Resolver,
+            mapping,
             registry,
             new LoggerFactory().CreateLogger("test"));
         var topics = new List<string>();

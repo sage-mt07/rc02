@@ -3,6 +3,7 @@ using Kafka.Ksql.Linq.Query.Adapters;
 using Kafka.Ksql.Linq.Query.Builders;
 using Kafka.Ksql.Linq.Query.Dsl;
 using Kafka.Ksql.Linq.Query.Abstractions;
+using Kafka.Ksql.Linq.Mapping;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ internal static class DerivedTumblingPipeline
         KsqlQueryModel queryModel,
         Func<string, Task> execute,
         Func<string, Type> resolveType,
+        MappingRegistry mapping,
         IDictionary<Type, EntityModel> registry,
         ILogger logger)
     {
@@ -27,7 +29,7 @@ internal static class DerivedTumblingPipeline
             var role = Enum.Parse<Role>((string)m.AdditionalSettings["role"]);
             var qm = queryModel.Clone();
             qm.IsFinal = role is Role.Final or Role.AggFinal;
-            await BuildDdlAndRegister(qao.BaseTopicName, qm, m, role, execute, resolveType, registry, logger);
+            await BuildDdlAndRegister(qao.BaseTopicName, qm, m, role, execute, resolveType, mapping, registry, logger);
         }
     }
 
@@ -44,6 +46,7 @@ internal static class DerivedTumblingPipeline
         Role role,
         Func<string, Task> execute,
         Func<string, Type> resolveType,
+        MappingRegistry mapping,
         IDictionary<Type, EntityModel> registry,
         ILogger logger)
     {
@@ -64,6 +67,8 @@ internal static class DerivedTumblingPipeline
         model.EntityType = dt;
         model.TopicName = name;
         model.SetStreamTableType(StreamTableType.Table);
+        var ns = model.AdditionalSettings.TryGetValue("namespace", out var nsObj) ? nsObj?.ToString() : null;
+        mapping.RegisterEntityModel(model, genericValue: true, overrideNamespace: ns);
         registry[dt] = model;
     }
 }

@@ -190,7 +190,8 @@ public abstract partial class KsqlContext
             dlqModel.TopicName = GetDlqTopicName();
             dlqModel.AccessMode = Core.Abstractions.EntityAccessMode.ReadOnly;
             _entityModels[typeof(Messaging.DlqEnvelope)] = dlqModel;
-            _mappingRegistry.RegisterEntityModel(dlqModel);
+            var ns = dlqModel.AdditionalSettings.TryGetValue("namespace", out var n) ? n?.ToString() : null;
+            _mappingRegistry.RegisterEntityModel(dlqModel, overrideNamespace: ns);
         }
     }
 
@@ -219,7 +220,8 @@ public abstract partial class KsqlContext
                 _entityModels[type] = model;
             }
 
-            _mappingRegistry.RegisterEntityModel(model, genericValue: model.StreamTableType == StreamTableType.Table);
+            var ns = model.AdditionalSettings.TryGetValue("namespace", out var n1) ? n1?.ToString() : null;
+            _mappingRegistry.RegisterEntityModel(model, genericValue: model.StreamTableType == StreamTableType.Table, overrideNamespace: ns);
         }
     }
 
@@ -328,7 +330,8 @@ public abstract partial class KsqlContext
 
         model ??= CreateEntityModelFromType(entityType);
         _entityModels[entityType] = model;
-        _mappingRegistry.RegisterEntityModel(model, genericValue: model.StreamTableType == StreamTableType.Table);
+        var ns2 = model.AdditionalSettings.TryGetValue("namespace", out var n2) ? n2?.ToString() : null;
+        _mappingRegistry.RegisterEntityModel(model, genericValue: model.StreamTableType == StreamTableType.Table, overrideNamespace: ns2);
 
         return model;
     }

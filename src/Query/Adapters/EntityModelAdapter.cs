@@ -3,6 +3,7 @@ using Kafka.Ksql.Linq.Query.Analysis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Kafka.Ksql.Linq.Query.Adapters;
 
@@ -37,6 +38,12 @@ internal static class EntityModelAdapter
             if (e.SyncHint != null) model.AdditionalSettings[$"sync"] = e.SyncHint;
             if (e.InputHint != null) model.AdditionalSettings[$"input"] = e.InputHint;
             if (e.TopicHint != null) model.AdditionalSettings[$"topicCandidate"] = e.TopicHint;
+            var nsSource = e.TopicHint ?? e.Id;
+            if (!string.IsNullOrWhiteSpace(nsSource))
+            {
+                var ns = Regex.Replace(nsSource.ToLowerInvariant(), "[^a-z0-9_]", "_");
+                model.AdditionalSettings["namespace"] = ns;
+            }
             if (e.Role == Role.Hb) model.AdditionalSettings["forceStream"] = true;
             list.Add(model);
         }
