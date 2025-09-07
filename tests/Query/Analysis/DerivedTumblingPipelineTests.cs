@@ -2,10 +2,11 @@ using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Query.Analysis;
 using Kafka.Ksql.Linq.Query.Dsl;
-using Microsoft.Extensions.Logging;
 using Kafka.Ksql.Linq.Mapping;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
@@ -22,13 +23,13 @@ class TestSource
 public class DerivedTumblingPipelineTests
 {
     [Fact]
-    public async Task DerivedTopicsUseBaseTopicName()
+    public async Task Live_and_Final_emit_different_ddl()
     {
         var qao = new TumblingQao
         {
             BaseTopicName = typeof(TestSource).GetCustomAttribute<KsqlTopicAttribute>()!.Name,
             TimeKey = "Timestamp",
-            Windows = new[] { new Timeframe(5, "m") },
+            Windows = new[] { new Timeframe(1, "m") },
             Keys = new[] { "Id" },
             Projection = new[] { "Id" },
             PocoShape = new[] { new ColumnShape("Id", typeof(int), false) },
@@ -38,25 +39,27 @@ public class DerivedTumblingPipelineTests
         var model = new KsqlQueryModel
         {
             SourceTypes = new[] { typeof(TestSource) },
-            Windows = { "5m" }
+            Windows = { "1m" }
         };
-        var registry = new Dictionary<Type, EntityModel>();
+
+        var ddls = new List<string>();
+        Task Exec(string sql)
+        {
+            ddls.Add(sql);
+            return Task.CompletedTask;
+        }
+
         var mapping = new MappingRegistry();
+        var registry = new Dictionary<Type, EntityModel>();
         var asm = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("dyn"), AssemblyBuilderAccess.Run);
         var mod = asm.DefineDynamicModule("m");
-        Type Resolver(string n) => mod.DefineType("T" + Guid.NewGuid().ToString("N")).CreateType()!;
-        await DerivedTumblingPipeline.RunAsync(
-            qao,
-            model,
-            _ => Task.CompletedTask,
-            Resolver,
-            mapping,
-            registry,
-            new LoggerFactory().CreateLogger("test"));
-        var topics = new List<string>();
-        foreach (var em in registry.Values)
-            topics.Add(em.TopicName!);
-        Assert.Contains("test-topic_5m_live", topics);
-        Assert.Contains("test-topic_5m_final", topics);
+        Type Resolver(string _) => mod.DefineType("T" + Guid.NewGuid().ToString("N")).CreateType()!;
+
+        await DerivedTumblingPipeline.RunAsync(qao, model, Exec, Resolver, mapping, registry, new LoggerFactory().CreateLogger("test"));
+
+        var live = ddls.Single(s => s.Contains("_1m_live"));
+        var final = ddls.Single(s => s.Contains("_1m_final"));
+        Assert.Contains("EMIT CHANGES", live);
+        Assert.Contains("EMIT FINAL", final);
     }
 }
