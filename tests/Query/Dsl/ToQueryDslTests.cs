@@ -5,6 +5,7 @@ using Kafka.Ksql.Linq.Query.Builders;
 using Kafka.Ksql.Linq.Core.Modeling;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query.Dsl;
@@ -56,6 +57,14 @@ public class ToQueryDslTests
         public decimal Amount { get; set; }
     }
 
+    [KsqlTable]
+    private class OrderTable
+    {
+        [KsqlKey]
+        public int Id { get; set; }
+        public double Amount { get; set; }
+    }
+
     private class KeylessView
     {
         public string Name { get; set; } = string.Empty;
@@ -89,7 +98,7 @@ public class ToQueryDslTests
             .Select(o => new { o.Id })
             .Build();
 
-        var sql = KsqlCreateStatementBuilder.Build("orders", model, options: new RenderOptions());
+        var sql = KsqlCreateStatementBuilder.Build("orders", model);
         Assert.Contains("SELECT ID AS Id", sql);
     }
 
@@ -267,7 +276,7 @@ public class ToQueryDslTests
             .Select(g => new { g.Key })
             .Build();
 
-        var sql = KsqlCreateStatementBuilder.Build("orders", model, options: new RenderOptions());
+        var sql = KsqlCreateStatementBuilder.Build("orders", model);
         Assert.Contains("GROUP BY ID", sql);
         Assert.Contains("SELECT ID AS ID", sql);
     }
@@ -284,6 +293,67 @@ public class ToQueryDslTests
         var sql = KsqlCreateStatementBuilder.Build("orders", model, options: new RenderOptions { KeyPathStyle = KeyPathStyle.Arrow });
         Assert.Contains("GROUP BY KEY->ID", sql);
         Assert.Contains("SELECT KEY->ID AS ID", sql);
+    }
+
+    [Fact]
+    public void TableKey_RendersKeyArrowAutomatically()
+    {
+        var model = new KsqlQueryRoot()
+            .From<OrderTable>()
+            .GroupBy(o => o.Id)
+            .Select(g => new { g.Key })
+            .Build();
+
+        var sql = KsqlCreateStatementBuilder.Build("orders", model);
+        Assert.Contains("GROUP BY KEY->ID", sql);
+        Assert.Contains("SELECT KEY->ID AS ID", sql);
+    }
+
+    [Fact]
+    public void StreamTableJoin_AppliesArrowOnlyToTableSide()
+    {
+        var model = new KsqlQueryModel
+        {
+            SourceTypes = new[] { typeof(OrderTable), typeof(Customer) },
+            JoinCondition = (Expression<Func<OrderTable, Customer, bool>>)((o, c) => o.Id == c.Id),
+            GroupByExpression = (Expression<Func<OrderTable, Customer, object>>)((o, c) => new { o.Id, c.Name }),
+            SelectProjection = (Expression<Func<OrderTable, Customer, object>>)((o, c) => new { o.Id, c.Name }),
+            WithinSeconds = 300,
+            IsAggregateQuery = true
+        };
+
+        var sql = KsqlCreateStatementBuilder.Build("view", model);
+        Assert.Contains("ON (KEY->ID = i.Id)", sql);
+        Assert.Contains("SELECT KEY->ID AS Id", sql);
+        Assert.Contains("GROUP BY KEY->ID, Name", sql);
+        Assert.DoesNotContain("KEY->Name", sql);
+    }
+
+    [Fact]
+    public void WhereClause_KeyArrowApplied()
+    {
+        var model = new KsqlQueryRoot()
+            .From<OrderTable>()
+            .Where(o => o.Id > 0)
+            .Select(o => new { o.Amount })
+            .Build();
+
+        var sql = KsqlCreateStatementBuilder.Build("orders", model);
+        Assert.Contains("WHERE (KEY->ID > 0)", sql);
+    }
+
+    [Fact]
+    public void HavingClause_KeyArrowApplied()
+    {
+        var model = new KsqlQueryRoot()
+            .From<OrderTable>()
+            .GroupBy(o => o.Id)
+            .Having(g => g.Key > 1)
+            .Select(g => new { g.Key })
+            .Build();
+
+        var sql = KsqlCreateStatementBuilder.Build("orders", model);
+        Assert.Contains("HAVING (KEY->ID > 1)", sql);
     }
 
     [Fact]
