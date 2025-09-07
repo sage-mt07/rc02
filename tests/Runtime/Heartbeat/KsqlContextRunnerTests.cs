@@ -1,9 +1,14 @@
+using Confluent.SchemaRegistry;
 using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Dlq;
 using Kafka.Ksql.Linq.Core.Modeling;
-using Kafka.Ksql.Linq.Query.Dsl;
-using Confluent.SchemaRegistry;
+using Kafka.Ksql.Linq.Mapping;
+using Kafka.Ksql.Linq.Messaging.Consumers;
+using Kafka.Ksql.Linq.Messaging.Producers;
+using Kafka.Ksql.Linq.Runtime.Heartbeat;
+using Microsoft.Extensions.Options;
 using Moq;
 using System;
 using System.Collections;
@@ -11,12 +16,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using Kafka.Ksql.Linq.Messaging.Consumers;
-using Kafka.Ksql.Linq.Messaging.Producers;
-using Kafka.Ksql.Linq.Mapping;
-using Kafka.Ksql.Linq.Runtime.Heartbeat;
-using Kafka.Ksql.Linq.Core.Dlq;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Runtime.Heartbeat;
@@ -80,7 +79,7 @@ public class KsqlContextRunnerTests
         }
     }
 
-    [Fact(Skip="Tumbling entities removed from context")]
+    [Fact(Skip = "Tumbling entities removed from context")]
     public void KsqlContext_StartsLeaderElection_Then_Runner_WhenHasTumbling()
     {
         var ctx = new TumblingContext();
@@ -98,7 +97,7 @@ public class KsqlContextRunnerTests
         Assert.True(fake.Called);
     }
 
-    [Fact(Skip="Tumbling entities removed from context")]
+    [Fact(Skip = "Tumbling entities removed from context")]
     public void ToQuery_WithTumbling_Triggers_MarketSchedule_Load_Once()
     {
         var ctx = new TumblingContext();
@@ -116,7 +115,7 @@ public class KsqlContextRunnerTests
         setMock.Verify(s => s.ToListAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
-    [Fact(Skip="Tumbling entities removed from context")]
+    [Fact(Skip = "Tumbling entities removed from context")]
     public void StartsDailyRefresh_And_RefreshesProvider()
     {
         var ctx = new TumblingContext();
@@ -140,7 +139,7 @@ public class KsqlContextRunnerTests
         var tcs = new TaskCompletionSource();
         providerMock.Setup(p => p.RefreshAsync(typeof(MarketSchedule), rows, It.IsAny<CancellationToken>())).Returns(() => { tcs.SetResult(); cts.Cancel(); return Task.CompletedTask; });
         typeof(KsqlContext).GetField("_now", BindingFlags.NonPublic | BindingFlags.Instance)!
-            .SetValue(ctx, (Func<DateTime>)(() => new DateTime(2025,1,1,0,0,0,DateTimeKind.Utc)));
+            .SetValue(ctx, (Func<DateTime>)(() => new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)));
         typeof(KsqlContext).GetField("_delay", BindingFlags.NonPublic | BindingFlags.Instance)!
             .SetValue(ctx, (Func<TimeSpan, CancellationToken, Task>)((t, c) => { captured = t; return Task.CompletedTask; }));
 
@@ -150,7 +149,7 @@ public class KsqlContextRunnerTests
         Assert.Equal(TimeSpan.FromMinutes(5), captured);
     }
 
-    [Fact(Skip="Tumbling entities removed from context")]
+    [Fact(Skip = "Tumbling entities removed from context")]
     public void ToListAsync_DoesNotRequire_AppLevel_PK_Hardcode()
     {
         var ctx = new TumblingContext();

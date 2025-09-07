@@ -1,17 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using Confluent.Kafka;
-using Confluent.Kafka.Admin;
-using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Infrastructure.Admin;
 using Kafka.Ksql.Linq.Infrastructure.KsqlDb;
 using Kafka.Ksql.Linq.Mapping;
 using Microsoft.Extensions.Logging.Abstractions;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Xunit;
 
 #nullable enable

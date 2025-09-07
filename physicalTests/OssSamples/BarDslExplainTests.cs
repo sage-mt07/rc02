@@ -1,14 +1,9 @@
-using System;
-using System.Linq;
 using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Configuration;
-using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Query.Dsl;
-using Kafka.Ksql.Linq.Query.Builders;
-using Xunit;
-using System.Threading.Tasks;
+using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Core.Modeling;
+using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
@@ -48,7 +43,8 @@ public class BarDslExplainTests
             Common = new CommonSection { BootstrapServers = "localhost:9092" },
             SchemaRegistry = new Kafka.Ksql.Linq.Core.Configuration.SchemaRegistrySection { Url = "http://localhost:8081" },
             KsqlDbUrl = "http://localhost:8088"
-        }) { }
+        })
+        { }
         // 物理テスト: スキーマ登録を有効化
         protected override bool SkipSchemaRegistration => false;
 
@@ -63,15 +59,15 @@ public class BarDslExplainTests
                     .Tumbling(r => r.Timestamp, minutes: new[] { 1, 5 })
                     .GroupBy(r => new { r.Broker, r.Symbol })
                     .Select(g => new Bar
-                        {
-                            Broker = g.Key.Broker,
-                            Symbol = g.Key.Symbol,
-                            BucketStart = g.WindowStart(),
-                            Open = g.EarliestByOffset(x => x.Bid),
-                            High = g.Max(x => x.Bid),
-                            Low = g.Min(x => x.Bid),
-                            Close = g.LatestByOffset(x => x.Bid)
-                        }));
+                    {
+                        Broker = g.Key.Broker,
+                        Symbol = g.Key.Symbol,
+                        BucketStart = g.WindowStart(),
+                        Open = g.EarliestByOffset(x => x.Bid),
+                        High = g.Max(x => x.Bid),
+                        Low = g.Min(x => x.Bid),
+                        Close = g.LatestByOffset(x => x.Bid)
+                    }));
 
         }
     }
@@ -87,12 +83,12 @@ public class BarDslExplainTests
         var t0 = new DateTime(2020, 1, 6, 0, 0, 0, DateTimeKind.Utc);
         // 物理投入（Rate トピックへ）: 1m×2本, 5m×1本を検証できる十分なティックを投入
         // 1分バケット [00:00,00:01): O=100, H=110, L=90, C=105
-        await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = t0.AddSeconds(1),  Bid = 100 });
+        await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = t0.AddSeconds(1), Bid = 100 });
         await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = t0.AddSeconds(15), Bid = 110 });
-        await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = t0.AddSeconds(30), Bid = 90  });
+        await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = t0.AddSeconds(30), Bid = 90 });
         await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = t0.AddSeconds(59), Bid = 105 });
         // 1分バケット [00:01,00:02): O=200, H=210, L=195, C=195
-        await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = t0.AddMinutes(1).AddSeconds(5),  Bid = 200 });
+        await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = t0.AddMinutes(1).AddSeconds(5), Bid = 200 });
         await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = t0.AddMinutes(1).AddSeconds(20), Bid = 210 });
         await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = t0.AddMinutes(1).AddSeconds(50), Bid = 195 });
         // 5分バケット [00:00,00:05) の充実（追加ティック）
@@ -136,8 +132,8 @@ public class BarDslExplainTests
             var h = Convert.ToDouble(r[2]!);
             var l = Convert.ToDouble(r[3]!);
             var c = Convert.ToDouble(r[4]!);
-            if (b == bs00 && o==100 && h==110 && l==90 && c==105) ok1 = true;
-            if (b == bs01 && o==200 && h==210 && l==195 && c==195) ok2 = true;
+            if (b == bs00 && o == 100 && h == 110 && l == 90 && c == 105) ok1 = true;
+            if (b == bs01 && o == 200 && h == 210 && l == 195 && c == 195) ok2 = true;
         }
         Assert.True(ok1, "1m OHLC for 00:00 mismatch");
         Assert.True(ok2, "1m OHLC for 00:01 mismatch");
@@ -151,7 +147,7 @@ public class BarDslExplainTests
             var h = Convert.ToDouble(r[2]!);
             var l = Convert.ToDouble(r[3]!);
             var c = Convert.ToDouble(r[4]!);
-            if (b == bs00 && o==100 && h==220 && l==90 && c==205) ok5 = true;
+            if (b == bs00 && o == 100 && h == 220 && l == 90 && c == 205) ok5 = true;
         }
         Assert.True(ok5, "5m OHLC mismatch");
 

@@ -1,6 +1,5 @@
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Extensions;
-using System.Reflection;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Core;

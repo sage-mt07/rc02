@@ -1,19 +1,14 @@
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Runtime.Serialization;
 using Confluent.Kafka;
-using Confluent.SchemaRegistry;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Configuration.Messaging;
-using Kafka.Ksql.Linq.Core.Configuration;
+using Kafka.Ksql.Linq.Mapping;
 using Kafka.Ksql.Linq.Messaging.Producers;
 using Microsoft.Extensions.Logging.Abstractions;
-using Kafka.Ksql.Linq.Mapping;
 using Microsoft.Extensions.Options;
-using static Kafka.Ksql.Linq.Tests.PrivateAccessor;
+using System;
+using System.Collections.Generic;
 using Xunit;
+using static Kafka.Ksql.Linq.Tests.PrivateAccessor;
 
 #nullable enable
 
@@ -27,7 +22,7 @@ public class KafkaProducerManagerTests
     }
 
 
-    [Fact(Skip="Requires full producer configuration")]
+    [Fact(Skip = "Requires full producer configuration")]
     public void BuildProducerConfig_ReturnsConfiguredValues()
     {
         var options = new KsqlDslOptions

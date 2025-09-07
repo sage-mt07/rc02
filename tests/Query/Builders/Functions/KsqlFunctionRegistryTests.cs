@@ -1,5 +1,5 @@
-using System.Linq;
 using Kafka.Ksql.Linq.Query.Builders.Functions;
+using System.Linq;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query.Builders.Functions;

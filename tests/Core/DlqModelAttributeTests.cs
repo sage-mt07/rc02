@@ -1,20 +1,15 @@
-using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Attributes;
-using Kafka.Ksql.Linq.Core.Models;
-using Kafka.Ksql.Linq.Query.Abstractions;
-using Kafka.Ksql.Linq.Tests;
 using Kafka.Ksql.Linq.Mapping;
 using Kafka.Ksql.Linq.Messaging;
+using Kafka.Ksql.Linq.Query.Abstractions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-
 using Xunit;
 
 #nullable enable
@@ -47,7 +42,7 @@ public class DlqModelAttributeTests
         public int Id { get; set; }
     }
 
-    [Fact(Skip="Requires full context initialization")]
+    [Fact(Skip = "Requires full context initialization")]
     public void DlqEnvelope_ShouldBeStream()
     {
         var ctx = CreateContext(new KsqlDslOptions());
@@ -66,7 +61,7 @@ public class DlqModelAttributeTests
         Assert.Equal("config-topic", model.TopicName);
     }
 
-    [Fact(Skip="Requires DlqOptions configuration")]
+    [Fact(Skip = "Requires DlqOptions configuration")]
     public void DlqConfigOverridesAttribute()
     {
         var options = new KsqlDslOptions();
@@ -108,7 +103,7 @@ public class DlqModelAttributeTests
             bool autoCommit,
             [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            var meta = new MessageMeta("t",0,0,DateTime.UtcNow,null,null,false,new Dictionary<string,string>());
+            var meta = new MessageMeta("t", 0, 0, DateTime.UtcNow, null, null, false, new Dictionary<string, string>());
             yield return (_item, new Dictionary<string, string>(), meta);
             await Task.CompletedTask;
         }

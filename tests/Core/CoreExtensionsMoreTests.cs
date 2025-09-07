@@ -1,7 +1,6 @@
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Extensions;
 using System;
-using System.Linq;
 using Xunit;
 
 #nullable enable

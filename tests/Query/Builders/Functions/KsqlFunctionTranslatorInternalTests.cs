@@ -1,8 +1,8 @@
+using Kafka.Ksql.Linq.Configuration;
+using Kafka.Ksql.Linq.Query.Builders.Functions;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using Kafka.Ksql.Linq.Query.Builders.Functions;
-using Kafka.Ksql.Linq.Configuration;
 using Xunit;
 using static Kafka.Ksql.Linq.Tests.PrivateAccessor;
 

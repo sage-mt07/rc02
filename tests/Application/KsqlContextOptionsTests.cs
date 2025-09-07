@@ -1,7 +1,6 @@
-using System;
-using Kafka.Ksql.Linq;
-using Kafka.Ksql.Linq.Application;
 using Confluent.SchemaRegistry;
+using Kafka.Ksql.Linq.Application;
+using System;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Application;

@@ -1,6 +1,6 @@
-using System;
-using Kafka.Ksql.Linq.Query.Dsl;
 using Kafka.Ksql.Linq.Query.Builders;
+using Kafka.Ksql.Linq.Query.Dsl;
+using System;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query.Builders;
@@ -15,9 +15,9 @@ public class JoinWithinBuilderTests
     {
         var model = new KsqlQueryRoot()
             .From<L>()
-            .Join<R>((o,i) => o.FK == i.Id)
+            .Join<R>((o, i) => o.FK == i.Id)
             .Within(TimeSpan.FromSeconds(42))
-            .Select((o,i) => new { o.Id })
+            .Select((o, i) => new { o.Id })
             .Build();
 
         var sql = KsqlCreateStatementBuilder.Build("t", model);
@@ -29,8 +29,8 @@ public class JoinWithinBuilderTests
     {
         var model = new KsqlQueryRoot()
             .From<L>()
-            .Join<R>((o,i) => o.FK == i.Id)
-            .Select((o,i) => new { o.Id })
+            .Join<R>((o, i) => o.FK == i.Id)
+            .Select((o, i) => new { o.Id })
             .Build();
 
         var sql = KsqlCreateStatementBuilder.Build("t", model);
@@ -42,9 +42,9 @@ public class JoinWithinBuilderTests
     {
         var query = new KsqlQueryRoot()
             .From<L>()
-            .Join<R>((o,i) => o.FK == i.Id)
+            .Join<R>((o, i) => o.FK == i.Id)
             .RequireExplicitWithin()
-            .Select((o,i) => new { o.Id });
+            .Select((o, i) => new { o.Id });
 
         var model = query.Build();
         Assert.Throws<InvalidOperationException>(() => KsqlCreateStatementBuilder.Build("t", model));
@@ -57,8 +57,8 @@ public class JoinWithinBuilderTests
         int external = 1;
         var query = new KsqlQueryRoot()
             .From<L>()
-            .Join<R>((o,i) => o.FK == external) // RHS not from i-parameter
-            .Select((o,i) => new { o.Id });
+            .Join<R>((o, i) => o.FK == external) // RHS not from i-parameter
+            .Select((o, i) => new { o.Id });
 
         var model = query.Build();
         Assert.Throws<InvalidOperationException>(() => KsqlCreateStatementBuilder.Build("t", model));

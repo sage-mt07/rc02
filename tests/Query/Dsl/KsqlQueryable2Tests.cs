@@ -1,5 +1,5 @@
-using Kafka.Ksql.Linq.Query.Dsl;
 using Kafka.Ksql.Linq.Query.Builders;
+using Kafka.Ksql.Linq.Query.Dsl;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -30,7 +30,7 @@ public class KsqlQueryable2Tests
         Assert.True(model.IsAggregateQuery);
     }
 
-    [Fact(Skip="Requires join condition setup")]
+    [Fact(Skip = "Requires join condition setup")]
     public void BuildCreateStatement_UsesCreateTableForAggregates()
     {
         Expression<Func<Order, Payment, object>> projection = (o, p) => new { Count = new int[] { o.Amount }.Count() };
@@ -54,7 +54,7 @@ public class KsqlQueryable2Tests
         Assert.Contains("ON (o.Id = i.OrderId)", sql);
     }
 
-    [Fact(Skip="Within check not enforced")]
+    [Fact(Skip = "Within check not enforced")]
     public void Join_WithoutWithin_Throws()
     {
         var queryable = new KsqlQueryable<Order>()

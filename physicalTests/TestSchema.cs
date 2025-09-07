@@ -1,8 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using Xunit;
-using Kafka.Ksql.Linq.Configuration;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 

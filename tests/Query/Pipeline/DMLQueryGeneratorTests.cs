@@ -1,9 +1,7 @@
-using Kafka.Ksql.Linq;
+using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Core.Modeling;
 using Kafka.Ksql.Linq.Query.Pipeline;
-using Kafka.Ksql.Linq.Core.Attributes;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

@@ -1,13 +1,10 @@
-using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Core.Modeling;
 using Kafka.Ksql.Linq.Core.Attributes;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
-using Kafka.Ksql.Linq.Tests;
 
 namespace Kafka.Ksql.Linq.Tests.Validation;
 
@@ -32,7 +29,7 @@ public class KafkaRestProxyValidationTests
         }
     }
 
-    [Fact(Skip="Requires Kafka REST proxy")]
+    [Fact(Skip = "Requires Kafka REST proxy")]
     public async Task Appsettings_ShouldMapCorrectly_AndSendKafkaMessage()
     {
         var config = new ConfigurationBuilder()

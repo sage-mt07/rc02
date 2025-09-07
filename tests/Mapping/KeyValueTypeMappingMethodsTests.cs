@@ -1,9 +1,9 @@
+using Avro;
+using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Core.Models;
 using Kafka.Ksql.Linq.Mapping;
-using Kafka.Ksql.Linq.Core.Attributes;
-using System.Linq;
 using System;
-using Avro;
+using System.Linq;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Mapping;

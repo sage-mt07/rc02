@@ -1,18 +1,17 @@
+using Confluent.SchemaRegistry;
 using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Configuration;
-using Kafka.Ksql.Linq.Core.Modeling;
 using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Mapping;
-using Kafka.Ksql.Linq.Query.Dsl;
-using Kafka.Ksql.Linq.Query.Builders;
-using Confluent.SchemaRegistry;
 using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Core.Extensions;
+using Kafka.Ksql.Linq.Core.Modeling;
+using Kafka.Ksql.Linq.Mapping;
+using Kafka.Ksql.Linq.Query.Builders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Kafka.Ksql.Linq.Core.Extensions;
 using Xunit;
 
 #nullable enable
@@ -77,7 +76,7 @@ public class KsqlContextToQueryIntegrationTests
         public string ConstructValueSubjectName(string subject, string topic) => throw new NotImplementedException();
         public Task<Compatibility> GetCompatibilityAsync(string subject) => throw new NotImplementedException();
         public Task<Compatibility> UpdateCompatibilityAsync(Compatibility compatibility, string subject) => throw new NotImplementedException();
-        public IEnumerable<KeyValuePair<string, string>> Config => Array.Empty<KeyValuePair<string,string>>();
+        public IEnumerable<KeyValuePair<string, string>> Config => Array.Empty<KeyValuePair<string, string>>();
         public IAuthenticationHeaderValueProvider? AuthHeaderProvider => null;
         public System.Net.IWebProxy? Proxy => null;
         public int MaxCachedSchemas => 1000;
@@ -172,7 +171,7 @@ public class KsqlContextToQueryIntegrationTests
         }
     }
 
-    [Fact(Skip="Requires full query pipeline")]
+    [Fact(Skip = "Requires full query pipeline")]
     public void ToQuery_Model_IsRegisteredAndSqlGenerated()
     {
         var client = new StubSchemaRegistry();

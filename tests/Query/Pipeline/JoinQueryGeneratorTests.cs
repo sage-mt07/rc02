@@ -1,9 +1,8 @@
+using Kafka.Ksql.Linq.Query.Pipeline;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Kafka.Ksql.Linq.Query.Pipeline;
-using Kafka.Ksql.Linq.Tests;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query.Pipeline;

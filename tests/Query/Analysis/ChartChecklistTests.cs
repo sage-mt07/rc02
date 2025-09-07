@@ -1,13 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Core.Modeling;
 using Kafka.Ksql.Linq.Query.Adapters;
 using Kafka.Ksql.Linq.Query.Analysis;
 using Kafka.Ksql.Linq.Query.Dsl;
 using Kafka.Ksql.Linq.Query.Pipeline;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query.Analysis;
@@ -117,9 +116,9 @@ public class ChartChecklistTests
     {
         Expression<Func<IGrouping<int, Rate>, object>> expr = g => new
         {
-            Open  = g.EarliestByOffset(x => x.Open),
-            High  = g.Max(x => x.High),
-            Low   = g.Min(x => x.Low),
+            Open = g.EarliestByOffset(x => x.Open),
+            High = g.Max(x => x.High),
+            Low = g.Min(x => x.Low),
             Close = g.LatestByOffset(x => x.Close)
         };
 

@@ -1,6 +1,6 @@
+using Kafka.Ksql.Linq.Query.Schema;
 using System;
 using System.Collections.Generic;
-using Kafka.Ksql.Linq.Query.Schema;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.KsqlSchema;

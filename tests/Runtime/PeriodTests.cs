@@ -1,6 +1,6 @@
+using Kafka.Ksql.Linq.Runtime;
 using System;
 using Xunit;
-using Kafka.Ksql.Linq.Runtime;
 
 namespace Kafka.Ksql.Linq.Tests.Runtime;
 

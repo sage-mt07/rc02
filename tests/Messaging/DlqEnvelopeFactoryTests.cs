@@ -1,8 +1,8 @@
+using Confluent.Kafka;
+using Kafka.Ksql.Linq.Messaging;
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
-using Confluent.Kafka;
-using Kafka.Ksql.Linq.Messaging;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Messaging;
@@ -23,15 +23,15 @@ public class DlqEnvelopeFactoryTests
             {
                 Key = value,
                 Value = value,
-                Timestamp = new Timestamp(new DateTime(2020,1,1), TimestampType.CreateTime)
+                Timestamp = new Timestamp(new DateTime(2020, 1, 1), TimestampType.CreateTime)
             }
         };
-        var headers = new Dictionary<string,string>
+        var headers = new Dictionary<string, string>
         {
             ["x-correlation-id"] = "abc",
             ["binary"] = "base64:AAEC"
         };
-        var env = DlqEnvelopeFactory.From(cr, new Exception("err"), "app","cg","host", headers);
+        var env = DlqEnvelopeFactory.From(cr, new Exception("err"), "app", "cg", "host", headers);
         Assert.Equal("10", env.SchemaIdValue);
         Assert.Equal("avro", env.PayloadFormatValue);
         Assert.Equal("abc", env.Headers["x-correlation-id"]);
@@ -53,7 +53,7 @@ public class DlqEnvelopeFactoryTests
                 Timestamp = new Timestamp(DateTime.UtcNow, TimestampType.CreateTime)
             }
         };
-        var env = DlqEnvelopeFactory.From(cr, new Exception("e"), null, null, null, new Dictionary<string,string>());
+        var env = DlqEnvelopeFactory.From(cr, new Exception("e"), null, null, null, new Dictionary<string, string>());
         Assert.Empty(env.SchemaIdKey);
         Assert.Equal("none", env.PayloadFormatKey);
         Assert.Equal("none", env.PayloadFormatValue);
@@ -62,16 +62,16 @@ public class DlqEnvelopeFactoryTests
     [Fact]
     public void FromMessageMeta_TrimsLongMessage()
     {
-        var meta = new MessageMeta("t",0,0,DateTimeOffset.UnixEpoch,null,null,false,new Dictionary<string,string>());
+        var meta = new MessageMeta("t", 0, 0, DateTimeOffset.UnixEpoch, null, null, false, new Dictionary<string, string>());
         var longMsg = new string('a', 50);
-        var env = DlqEnvelopeFactory.From(meta, new Exception(longMsg), null, null, null, maxMsg:10);
+        var env = DlqEnvelopeFactory.From(meta, new Exception(longMsg), null, null, null, maxMsg: 10);
         Assert.Equal(10, env.ErrorMessageShort.Length);
     }
 
     [Fact]
     public void FromMessageMeta_StacklessStillHasFingerprint()
     {
-        var meta = new MessageMeta("t",0,0,DateTimeOffset.UnixEpoch,null,null,false,new Dictionary<string,string>());
+        var meta = new MessageMeta("t", 0, 0, DateTimeOffset.UnixEpoch, null, null, false, new Dictionary<string, string>());
         var ex = new Exception("e");
         var env = DlqEnvelopeFactory.From(meta, ex, null, null, null);
         Assert.Null(env.StackTraceShort);

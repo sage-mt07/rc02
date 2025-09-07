@@ -1,10 +1,9 @@
-using Kafka.Ksql.Linq;
-using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Cache.Core;
 using Kafka.Ksql.Linq.Configuration;
+using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Configuration;
 using Kafka.Ksql.Linq.Messaging.Consumers;
 using Kafka.Ksql.Linq.Messaging.Producers;
-using Kafka.Ksql.Linq.Core.Configuration;
-using Kafka.Ksql.Linq.Cache.Core;
 using Kafka.Ksql.Linq.Query.Abstractions;
 using System;
 using System.Net.Http;
@@ -75,7 +74,7 @@ public class KsqlContextTests
         Assert.NotNull(ctx.CallGetDlqProducer());
     }
 
-    [Fact(Skip="Requires HTTP client wiring")]
+    [Fact(Skip = "Requires HTTP client wiring")]
     public void KsqlDbUrl_OverridesSchemaRegistryPort()
     {
         var opt = new KsqlDslOptions

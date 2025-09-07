@@ -1,5 +1,3 @@
-using Kafka.Ksql.Linq;
-using Kafka.Ksql.Linq.Application;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using System;
@@ -46,7 +44,7 @@ public class WaitForReadyTests
 
     private class TestEntity { public int Id { get; set; } }
 
-    [Fact(Skip="Requires KsqlDb client")]
+    [Fact(Skip = "Requires KsqlDb client")]
     public async Task WaitForEntityReadyAsync_ReturnsWhenExists()
     {
         var json = "[{\"@type\":\"streams\",\"streams\":[{\"name\":\"TESTENTITY\"}]}]";
@@ -54,7 +52,7 @@ public class WaitForReadyTests
         await ctx.WaitForEntityReadyAsync<TestEntity>(TimeSpan.FromSeconds(1));
     }
 
-    [Fact(Skip="Requires KsqlDb client")]
+    [Fact(Skip = "Requires KsqlDb client")]
     public async Task WaitForEntityReadyAsync_ThrowsOnTimeout()
     {
         var json = "[{\"@type\":\"streams\",\"streams\":[]}]";

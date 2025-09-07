@@ -1,15 +1,14 @@
-using Kafka.Ksql.Linq;
+using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Modeling;
-using Kafka.Ksql.Linq.Configuration;
+using Kafka.Ksql.Linq.Messaging;
+using Kafka.Ksql.Linq.Messaging.Internal;
+using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
-using System;
-using System.Reflection;
-using Kafka.Ksql.Linq.Messaging.Internal;
-using Kafka.Ksql.Linq.Messaging;
 using Xunit;
 
 #nullable enable
@@ -26,14 +25,14 @@ public class ForEachAsyncRetryTests
 
     private class RetrySet : EventSet<TestEntity>
     {
-        private readonly List<(TestEntity, Dictionary<string,string>)> _items;
-        public RetrySet(TestContext ctx, EntityModel model, params (TestEntity, Dictionary<string,string>)[] items)
+        private readonly List<(TestEntity, Dictionary<string, string>)> _items;
+        public RetrySet(TestContext ctx, EntityModel model, params (TestEntity, Dictionary<string, string>)[] items)
             : base(ctx, model)
         {
-            _items = new List<(TestEntity, Dictionary<string,string>)>(items);
+            _items = new List<(TestEntity, Dictionary<string, string>)>(items);
         }
 
-        private RetrySet(List<(TestEntity, Dictionary<string,string>)> items, IKsqlContext ctx, EntityModel model, ErrorHandlingContext errorCtx)
+        private RetrySet(List<(TestEntity, Dictionary<string, string>)> items, IKsqlContext ctx, EntityModel model, ErrorHandlingContext errorCtx)
             : base(ctx, model)
         {
             _items = items;
@@ -46,7 +45,7 @@ public class ForEachAsyncRetryTests
         {
             foreach (var (e, h) in _items)
             {
-                var meta = new MessageMeta("t",0,0,DateTime.UtcNow,null,null,false,new Dictionary<string,string>());
+                var meta = new MessageMeta("t", 0, 0, DateTime.UtcNow, null, null, false, new Dictionary<string, string>());
                 yield return (e, h, meta);
                 await Task.Yield();
             }
@@ -80,7 +79,7 @@ public class ForEachAsyncRetryTests
         var ctx = new TestContext();
         var model = CreateModel();
         var item = new TestEntity { Id = 1 };
-        var set = new RetrySet(ctx, model, (item, new Dictionary<string,string>()));
+        var set = new RetrySet(ctx, model, (item, new Dictionary<string, string>()));
 
         var attempts = 0;
         await set.OnError(ErrorAction.Retry)

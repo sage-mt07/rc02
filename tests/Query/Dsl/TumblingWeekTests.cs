@@ -1,8 +1,8 @@
+using Kafka.Ksql.Linq.Query.Dsl;
+using Kafka.Ksql.Linq.Query.Pipeline;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using Kafka.Ksql.Linq.Query.Dsl;
-using Kafka.Ksql.Linq.Query.Pipeline;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query.Dsl;

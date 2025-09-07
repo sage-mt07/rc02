@@ -1,24 +1,13 @@
-using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Core.Modeling;
-using Kafka.Ksql.Linq.Query.Pipeline;
-using Kafka.Ksql.Linq.Query.Abstractions;
-using Kafka.Ksql.Linq.Query.Ddl;
-using Kafka.Ksql.Linq.Application;
-using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Configuration;
+using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Core.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Net.Http;
+using Kafka.Ksql.Linq.Core.Modeling;
+using Kafka.Ksql.Linq.Query.Abstractions;
+using Kafka.Ksql.Linq.Query.Ddl;
+using Kafka.Ksql.Linq.Query.Pipeline;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Sdk;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
@@ -228,7 +217,7 @@ public class DynamicKsqlGenerationTests
     //    //    .Select(g => new { RegionUpper = g.Key, TotalAmount = g.Sum(x => (double)x.Amount) })
     //    //    .ToQueryString());
     //}
-//}
+    //}
 
     // OnModelCreating で生成したモデルから DDL/DML が正しく実行できるか検証
     //[Fact]

@@ -1,10 +1,8 @@
-using Kafka.Ksql.Linq.Core.Modeling;
-using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Modeling;
 using Kafka.Ksql.Linq.Messaging.Internal;
 using System;
 using System.Collections.Generic;
-using Kafka.Ksql.Linq.Core.Attributes;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;

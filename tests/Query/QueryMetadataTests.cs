@@ -1,5 +1,4 @@
 using Kafka.Ksql.Linq.Query.Pipeline;
-using Kafka.Ksql.Linq.Query;
 using System;
 using Xunit;
 
@@ -19,7 +18,7 @@ public class QueryMetadataTests
     [Fact]
     public void GetProperty_ReturnsTypedValue()
     {
-        var meta = new QueryMetadata(DateTime.UtcNow, "DML", null, new System.Collections.Generic.Dictionary<string, object>{{"val", 5}});
+        var meta = new QueryMetadata(DateTime.UtcNow, "DML", null, new System.Collections.Generic.Dictionary<string, object> { { "val", 5 } });
         int? val = meta.GetProperty<int>("val");
         Assert.Equal(5, val);
         Assert.Null(meta.GetProperty<string>("missing"));

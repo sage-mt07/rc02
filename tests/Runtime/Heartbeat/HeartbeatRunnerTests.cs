@@ -1,9 +1,9 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Confluent.Kafka;
 using Kafka.Ksql.Linq.Runtime.Heartbeat;
 using Moq;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Runtime.Heartbeat;
@@ -23,9 +23,9 @@ public class HeartbeatRunnerTests
         TimeSpan? observed = null;
         Func<TimeSpan, CancellationToken, Task> delay = (t, _) => { observed = t; clock.Now += t; return Task.CompletedTask; };
         var start = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        var item = new HeartbeatItem(new[]{"b","s"}, start);
+        var item = new HeartbeatItem(new[] { "b", "s" }, start);
         var provider = new Mock<IMarketScheduleProvider>();
-        provider.Setup(p => p.IsInSession(new[]{"b","s"}, start)).Returns(true);
+        provider.Setup(p => p.IsInSession(new[] { "b", "s" }, start)).Returns(true);
         var planner = new HeartbeatPlanner(TimeSpan.Zero, new[] { item }, provider.Object);
         var flag = new LeadershipFlag();
         flag.Enable();

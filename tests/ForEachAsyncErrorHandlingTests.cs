@@ -1,7 +1,5 @@
-using Kafka.Ksql.Linq.Core.Modeling;
-using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Core.Modeling;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -67,7 +65,7 @@ public class ForEachAsyncErrorHandlingTests
         return builder.GetEntityModel<TestEntity>()!;
     }
 
-    [Fact(Skip="Requires KsqlContext")]
+    [Fact(Skip = "Requires KsqlContext")]
     public async Task EnumeratorException_IsSkipped()
     {
         var items = new List<TestEntity>

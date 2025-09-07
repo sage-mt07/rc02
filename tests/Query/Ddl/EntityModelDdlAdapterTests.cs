@@ -1,7 +1,7 @@
-using System.Linq;
 using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Query.Ddl;
 using Kafka.Ksql.Linq.Query.Abstractions;
+using Kafka.Ksql.Linq.Query.Ddl;
+using System.Linq;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query.Ddl;

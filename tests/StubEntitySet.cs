@@ -1,5 +1,4 @@
 using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Core.Models;
 using Kafka.Ksql.Linq.Messaging;
 using System;
 using System.Collections.Generic;
@@ -12,7 +11,7 @@ namespace Kafka.Ksql.Linq.Tests;
 
 internal class StubEntitySet<T> : IEntitySet<T> where T : class
 {
-    public List<(T Entity, Dictionary<string,string>? Headers)> Added { get; } = new();
+    public List<(T Entity, Dictionary<string, string>? Headers)> Added { get; } = new();
     public Task AddAsync(T entity, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
     {
         Added.Add((entity, headers));
@@ -23,9 +22,9 @@ internal class StubEntitySet<T> : IEntitySet<T> where T : class
     public Task ForEachAsync(Func<T, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default) => Task.CompletedTask;
 
     [Obsolete("Use ForEachAsync(Func<T, Dictionary<string,string>, MessageMeta, Task>)")]
-    public Task ForEachAsync(Func<T, Dictionary<string,string>, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default) => Task.CompletedTask;
+    public Task ForEachAsync(Func<T, Dictionary<string, string>, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default) => Task.CompletedTask;
 
-    public Task ForEachAsync(Func<T, Dictionary<string,string>, MessageMeta, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default) => Task.CompletedTask;
+    public Task ForEachAsync(Func<T, Dictionary<string, string>, MessageMeta, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default) => Task.CompletedTask;
     public string GetTopicName() => "stub";
     public EntityModel GetEntityModel() => new EntityModel { EntityType = typeof(T) };
     public IKsqlContext GetContext() => throw new NotImplementedException();

@@ -75,7 +75,7 @@ public class SimpleKafkaProducerTests
         var producer = new DummyKeylessProducer();
         var kp = new KafkaProducerManager.ProducerHolder(
             "orders",
-            (k,v,c,ct) => producer.ProduceAsync("orders", new Message<Null, string>{ Value = (string)v! }, ct),
+            (k, v, c, ct) => producer.ProduceAsync("orders", new Message<Null, string> { Value = (string)v! }, ct),
             _ => producer.Flush(_),
             () => producer.Dispose());
 
@@ -92,7 +92,7 @@ public class SimpleKafkaProducerTests
         var producer = new DummyKeyedProducer();
         var kp = new KafkaProducerManager.ProducerHolder(
             "orders",
-            (k,v,c,ct) => producer.ProduceAsync("orders", new Message<string, string>{ Key = (string)k!, Value = (string)v! }, ct),
+            (k, v, c, ct) => producer.ProduceAsync("orders", new Message<string, string> { Key = (string)k!, Value = (string)v! }, ct),
             _ => producer.Flush(_),
             () => producer.Dispose());
 

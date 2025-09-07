@@ -1,21 +1,21 @@
-using System;
-using System.Collections.Generic;
 using Kafka.Ksql.Linq.Configuration;
-using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Core.Models;
 using Kafka.Ksql.Linq.SchemaRegistryTools;
 using Microsoft.Extensions.Logging.Abstractions;
+using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Configuration;
 
-class Sample { [KsqlDecimal(20,5)] public decimal Amount { get; set; } }
+class Sample { [KsqlDecimal(20, 5)] public decimal Amount { get; set; } }
 
 public class DecimalPrecisionConfigTests
 {
 
-    [Fact(Skip="Decimal precision overrides not part of current scope")]
+    [Fact(Skip = "Decimal precision overrides not part of current scope")]
     public void AppsettingsOverrideWins()
     {
         var overrides = new Dictionary<string, Dictionary<string, KsqlDslOptions.DecimalSetting>>
@@ -47,7 +47,7 @@ public class DecimalSchemaValidatorTests
         Assert.Throws<InvalidOperationException>(() => DecimalSchemaValidator.Validate(model, client, ValidationMode.Strict, NullLogger.Instance));
     }
 
-    [Fact(Skip="Requires schema registry")]
+    [Fact(Skip = "Requires schema registry")]
     public void RelaxedAdjustsScale()
     {
         var client = new FakeSchemaRegistryClient();

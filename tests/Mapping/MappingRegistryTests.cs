@@ -1,8 +1,8 @@
+using Avro.Generic;
 using Kafka.Ksql.Linq.Core.Models;
 using Kafka.Ksql.Linq.Mapping;
 using System.Linq;
 using Xunit;
-using Avro.Generic;
 
 namespace Kafka.Ksql.Linq.Tests.Mapping;
 

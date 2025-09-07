@@ -1,14 +1,7 @@
-using Kafka.Ksql.Linq.Core.Modeling;
+using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Configuration;
-using Kafka.Ksql.Linq.Configuration;
-using Kafka.Ksql.Linq;
-using System;
-using Kafka.Ksql.Linq.Application;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
-using Xunit.Sdk;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
@@ -24,7 +17,7 @@ public class InvalidQueryTests
     {
         try { await EnvInvalidQueryTests.ResetAsync(); } catch { }
         try { await EnvInvalidQueryTests.SetupAsync(); } catch { }
- 
+
         await using var ctx = EnvInvalidQueryTests.CreateContext();
         var response = await ctx.ExecuteExplainAsync(ksql);
         Assert.False(response.IsSuccess, $"{ksql} unexpectedly succeeded");

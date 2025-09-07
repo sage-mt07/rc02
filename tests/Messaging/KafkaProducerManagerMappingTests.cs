@@ -1,17 +1,15 @@
+using Kafka.Ksql.Linq.Configuration;
+using Kafka.Ksql.Linq.Core.Configuration;
+using Kafka.Ksql.Linq.Core.Models;
 using Kafka.Ksql.Linq.Mapping;
 using Kafka.Ksql.Linq.Messaging.Producers;
-using Kafka.Ksql.Linq.Configuration;
-using Kafka.Ksql.Linq.Core.Models;
-
-using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Core.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System;
 using Xunit;
 
 #nullable enable
@@ -89,7 +87,7 @@ public class KafkaProducerManagerMappingTests
             () => { });
     }
 
-    [Fact(Skip="Requires Schema Registry")]
+    [Fact(Skip = "Requires Schema Registry")]
     public async Task SendAsync_PopulatesKeyAndValueObjects()
     {
         var registry = SetupRegistryForKeyed();

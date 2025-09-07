@@ -1,8 +1,8 @@
-using System.Collections.Generic;
-using Kafka.Ksql.Linq.Configuration.Messaging;
 using Kafka.Ksql.Linq.Configuration;
+using Kafka.Ksql.Linq.Configuration.Messaging;
 using Kafka.Ksql.Linq.Core.Configuration;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Configuration;

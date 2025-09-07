@@ -1,8 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using Kafka.Ksql.Linq.Query.Builders.Schema;
 using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Query.Builders.Schema;
+using System;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query.Builders.Schema;

@@ -1,18 +1,9 @@
-using Kafka.Ksql.Linq.Core.Modeling;
+using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Configuration;
-using Kafka.Ksql.Linq.Configuration;
-using Kafka.Ksql.Linq;
-using System;
-using System.Linq;
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using Kafka.Ksql.Linq.Application;
 using Xunit;
-using Xunit.Sdk;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
@@ -99,7 +90,7 @@ public class SchemaRegistryResetTests
 
         JsonElement latest;
         // Retry fetching latest schema
-        for (var i = 0;; i++)
+        for (var i = 0; ; i++)
         {
             try
             {
@@ -113,7 +104,7 @@ public class SchemaRegistryResetTests
         }
         var schema = latest.GetProperty("schema").GetString();
         // Retry re-registering same schema
-        for (var i = 0;; i++)
+        for (var i = 0; ; i++)
         {
             try
             {
@@ -206,7 +197,7 @@ public class EnvSchemaRegistryResetTests
         await PhysicalTestEnv.Health.WaitForHttpOkAsync($"{KsqlDbUrl}/info", TimeSpan.FromSeconds(120));
         using var client = new HttpClient();
         var subjects = TestSchema.AllTopicNames
-            .SelectMany(t => new[] {$"{t}-value", $"{t}-key"})
+            .SelectMany(t => new[] { $"{t}-value", $"{t}-key" })
             .Concat(new[] { "source-value" })
             .Distinct()
             .ToArray();

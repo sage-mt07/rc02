@@ -1,6 +1,6 @@
-using System;
 using Kafka.Ksql.Linq.Query.Builders;
 using Kafka.Ksql.Linq.Query.Pipeline;
+using System;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query.Builders;

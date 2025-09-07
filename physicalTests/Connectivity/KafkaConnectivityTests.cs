@@ -3,8 +3,6 @@ using Confluent.Kafka.Admin;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Configuration;
-using System;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
@@ -69,13 +67,13 @@ public class KafkaConnectivityTests
         var result = await ctx.ExecuteStatementAsync("SHOW TOPICS;");
         Assert.True(result.IsSuccess);
 
- 
+
     }
 }
 
 
 // local environment helpers
-public  class EnvKafkaConnectivityTests
+public class EnvKafkaConnectivityTests
 {
     internal const string SchemaRegistryUrl = "http://localhost:8081";
     internal const string KsqlDbUrl = "http://localhost:8088";

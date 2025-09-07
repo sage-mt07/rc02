@@ -1,9 +1,8 @@
+using Kafka.Ksql.Linq.Query.Analysis;
+using Kafka.Ksql.Linq.Query.Dsl;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using Kafka.Ksql.Linq;
-using Kafka.Ksql.Linq.Query.Analysis;
-using Kafka.Ksql.Linq.Query.Dsl;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query.Analysis;

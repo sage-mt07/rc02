@@ -1,15 +1,8 @@
-using Kafka.Ksql.Linq.Core.Modeling;
-using Kafka.Ksql.Linq.Application;
-using Kafka.Ksql.Linq;
+using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Attributes;
-using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
-using Xunit.Sdk;
 
 #nullable enable
 

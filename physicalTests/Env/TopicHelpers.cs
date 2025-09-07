@@ -1,10 +1,5 @@
 using Confluent.Kafka;
-using Confluent.Kafka.Admin;
-using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PhysicalTestEnv;
 

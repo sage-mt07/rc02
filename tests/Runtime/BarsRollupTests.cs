@@ -1,3 +1,6 @@
+using Kafka.Ksql.Linq.Core.Models;
+using Kafka.Ksql.Linq.Mapping;
+using Kafka.Ksql.Linq.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -5,9 +8,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Kafka.Ksql.Linq.Core.Models;
-using Kafka.Ksql.Linq.Mapping;
-using Kafka.Ksql.Linq.Runtime;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Runtime;
@@ -109,7 +109,7 @@ public class BarsRollupTests
         return m.FormatKeyForPrefix(m.ExtractAvroKey(row));
     }
 
-    [Fact(Skip="Disabled after key prefix changes")]
+    [Fact(Skip = "Disabled after key prefix changes")]
     public async Task FiveMinuteBars_Are_Rollup_Of_OneMinuteBars()
     {
         var map = RegisterRate();

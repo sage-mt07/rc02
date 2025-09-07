@@ -1,10 +1,6 @@
-using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
-using Kafka.Ksql.Linq.Tests;
 using Xunit;
 #nullable enable
 
@@ -29,7 +25,7 @@ public class KsqlContextBindingEventTests
         public int Id { get; set; }
     }
 
-    [Fact(Skip="Requires cache infrastructure")]
+    [Fact(Skip = "Requires cache infrastructure")]
     public void TableCacheRegistry_IsInitialized()
     {
         var ctx = new BindingContext();

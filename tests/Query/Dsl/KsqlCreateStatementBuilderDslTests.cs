@@ -1,5 +1,5 @@
-using Kafka.Ksql.Linq.Query.Dsl;
 using Kafka.Ksql.Linq.Query.Builders;
+using Kafka.Ksql.Linq.Query.Dsl;
 using System;
 using System.Linq;
 using Xunit;

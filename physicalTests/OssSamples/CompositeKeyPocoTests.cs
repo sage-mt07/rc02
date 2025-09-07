@@ -1,13 +1,8 @@
-using Kafka.Ksql.Linq;
-using Kafka.Ksql.Linq.Application;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Configuration;
-using Kafka.Ksql.Linq.Core.Modeling;
 using Kafka.Ksql.Linq.Entities.Samples.Models;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
@@ -20,10 +15,10 @@ public class CompositeKeyPocoTests
     {
         public EventSet<Order> Orders { get; set; }
         public OrderContext() : base(new KsqlDslOptions()) { }
-        public OrderContext(KsqlDslOptions options,ILoggerFactory loggerFactory) : base(options, loggerFactory) { }
+        public OrderContext(KsqlDslOptions options, ILoggerFactory loggerFactory) : base(options, loggerFactory) { }
         protected override void OnModelCreating(IModelBuilder modelBuilder)
         {
-           // modelBuilder.Entity<Order>();
+            // modelBuilder.Entity<Order>();
         }
         protected override bool SkipSchemaRegistration => true;
     }
@@ -47,10 +42,11 @@ public class CompositeKeyPocoTests
         {
             Common = new CommonSection { BootstrapServers = EnvCompositeKeyPocoTests.KafkaBootstrapServers },
             SchemaRegistry = new SchemaRegistrySection { Url = EnvCompositeKeyPocoTests.SchemaRegistryUrl }
-             
+
         };
         options.Entities.Add(new EntityConfiguration { Entity = nameof(Order), EnableCache = true, SourceTopic = "orders_compkey" });
-        options.Topics.Add("orders_compkey", new Configuration.Messaging.TopicSection {
+        options.Topics.Add("orders_compkey", new Configuration.Messaging.TopicSection
+        {
             Consumer = new Configuration.Messaging.ConsumerSection { AutoOffsetReset = "Earliest", GroupId = Guid.NewGuid().ToString() },
             Creation = new Kafka.Ksql.Linq.Configuration.Messaging.TopicCreationSection { NumPartitions = 1, ReplicationFactor = 1 }
         });

@@ -1,9 +1,8 @@
+using Avro;
+using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Mapping;
 using System;
 using System.Collections.Generic;
-using Avro;
-using Kafka.Ksql.Linq.Mapping;
-using Kafka.Ksql.Linq.Core.Attributes;
-using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Mapping;
@@ -101,7 +100,7 @@ public class SpecificRecordGeneratorTests
         var originalScale = Kafka.Ksql.Linq.Configuration.DecimalPrecisionConfig.DecimalScale;
         try
         {
-            Kafka.Ksql.Linq.Configuration.DecimalPrecisionConfig.Configure(10,3,null);
+            Kafka.Ksql.Linq.Configuration.DecimalPrecisionConfig.Configure(10, 3, null);
             var type = SpecificRecordGenerator.Generate(typeof(DecimalRecord));
             var instance = (Avro.Specific.ISpecificRecord)Activator.CreateInstance(type)!;
             var schema = (RecordSchema)instance.Schema;
@@ -125,7 +124,7 @@ public class SpecificRecordGeneratorTests
         var originalScale = Kafka.Ksql.Linq.Configuration.DecimalPrecisionConfig.DecimalScale;
         try
         {
-            Kafka.Ksql.Linq.Configuration.DecimalPrecisionConfig.Configure(8,2,null);
+            Kafka.Ksql.Linq.Configuration.DecimalPrecisionConfig.Configure(8, 2, null);
             var type = SpecificRecordGenerator.Generate(typeof(AttributeDecimalRecord));
             var instance = (Avro.Specific.ISpecificRecord)Activator.CreateInstance(type)!;
             var schema = (RecordSchema)instance.Schema;

@@ -1,14 +1,12 @@
+using Kafka.Ksql.Linq.Mapping;
+using Kafka.Ksql.Linq.Query.Abstractions;
+using Kafka.Ksql.Linq.Query.Adapters;
+using Kafka.Ksql.Linq.Query.Analysis;
+using Kafka.Ksql.Linq.Query.Dsl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Kafka.Ksql.Linq.Query.Analysis;
-using Kafka.Ksql.Linq.Query.Adapters;
-using Kafka.Ksql.Linq.Query.Dsl;
-using Kafka.Ksql.Linq.Query.Pipeline;
-using Kafka.Ksql.Linq.Mapping;
-using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Query.Abstractions;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query.Analysis;
@@ -128,7 +126,7 @@ public class Step1Tests
         Assert.Equal(MaterializationHint.Stream, hb.MaterializationHint);
         Assert.NotEmpty(hb.BasedOnSpec.JoinKeys);
     }
-    
+
     [Fact]
     public void Planner_Clones_ValueShape_FromPoco()
     {

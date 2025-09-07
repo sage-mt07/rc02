@@ -1,13 +1,7 @@
-using Kafka.Ksql.Linq.Core.Modeling;
+using Confluent.Kafka;
+using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Configuration;
-using Kafka.Ksql.Linq.Configuration;
-using Kafka.Ksql.Linq;
-using Confluent.Kafka;
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Kafka.Ksql.Linq.Application;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
@@ -16,8 +10,8 @@ namespace Kafka.Ksql.Linq.Tests.Integration;
 [Collection("Connectivity")]
 public class PortConnectivityTests
 {
-[Fact]
-//[TestPriority(1)]
+    [Fact]
+    //[TestPriority(1)]
     public async Task Kafka_Broker_Should_Be_Reachable()
     {
         await EnvPortConnectivityTests.SetupAsync();
@@ -26,8 +20,8 @@ public class PortConnectivityTests
         Assert.NotEmpty(meta.Brokers);
     }
 
-[Fact]
-//[TestPriority(2)]
+    [Fact]
+    //[TestPriority(2)]
     public async Task SchemaRegistry_Should_Be_Reachable()
     {
         await EnvPortConnectivityTests.SetupAsync();
@@ -36,8 +30,8 @@ public class PortConnectivityTests
         Assert.True(resp.IsSuccessStatusCode);
     }
 
-[Fact]
-//[TestPriority(3)]
+    [Fact]
+    //[TestPriority(3)]
     public async Task KsqlDb_Should_Be_Reachable()
     {
         await EnvPortConnectivityTests.SetupAsync();

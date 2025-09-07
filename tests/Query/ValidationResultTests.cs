@@ -1,5 +1,4 @@
 using Kafka.Ksql.Linq.Query.Pipeline;
-using System.Linq;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query;

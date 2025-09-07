@@ -1,7 +1,6 @@
-using Kafka.Ksql.Linq.Core.Modeling;
-using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Core.Modeling;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -69,7 +68,7 @@ public class EventSetMapTests
         return builder.GetEntityModel<Sample>()!;
     }
 
-    [Fact(Skip="Requires KsqlContext")]
+    [Fact(Skip = "Requires KsqlContext")]
     public async Task Map_ForEachAsync_ReturnsMappedValues()
     {
         var items = new List<Sample> { new Sample { Id = 1, Name = "A" } };

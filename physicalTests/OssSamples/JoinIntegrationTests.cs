@@ -1,16 +1,10 @@
-using Kafka.Ksql.Linq.Core.Modeling;
-using Kafka.Ksql.Linq;
-using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Application;
 using Kafka.Ksql.Linq.Configuration;
+using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Core.Configuration;
 using Kafka.Ksql.Linq.Query.Dsl;
-using Kafka.Ksql.Linq.Query.Builders;
-using System;
-using System.Threading.Tasks;
-using Xunit;
 using Microsoft.Extensions.Logging;
+using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 

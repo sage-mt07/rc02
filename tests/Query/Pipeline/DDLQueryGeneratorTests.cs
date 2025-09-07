@@ -1,17 +1,15 @@
-using Kafka.Ksql.Linq.Core.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using Kafka.Ksql.Linq.Query.Pipeline;
-using Kafka.Ksql.Linq.Query.Ddl;
-using Kafka.Ksql.Linq.Core.Modeling;
-using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Configuration.Messaging;
-using Kafka.Ksql.Linq.Query.Dsl;
-using Xunit;
+using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Core.Modeling;
+using Kafka.Ksql.Linq.Query.Ddl;
+using Kafka.Ksql.Linq.Query.Pipeline;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using Xunit;
 namespace Kafka.Ksql.Linq.Tests.Query.Pipeline;
 
 public class DDLQueryGeneratorTests

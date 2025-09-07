@@ -1,8 +1,5 @@
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Configuration;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 #nullable enable

@@ -1,8 +1,6 @@
 using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Core.Modeling;
-using Kafka.Ksql.Linq;
-using Kafka.Ksql.Linq.Query.Abstractions;
 using Kafka.Ksql.Linq.Messaging;
+using Kafka.Ksql.Linq.Query.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,11 +51,11 @@ public class EventSetLimitExtensionsTests
         public Task ForEachAsync(Func<RateCandle, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default) => Task.WhenAll(_items.Select(action));
 
         [Obsolete("Use ForEachAsync(Func<RateCandle, Dictionary<string,string>, MessageMeta, Task>)")]
-        public Task ForEachAsync(Func<RateCandle, Dictionary<string,string>, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default)
-            => Task.WhenAll(_items.Select(i => action(i, new Dictionary<string,string>())));
+        public Task ForEachAsync(Func<RateCandle, Dictionary<string, string>, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default)
+            => Task.WhenAll(_items.Select(i => action(i, new Dictionary<string, string>())));
 
-        public Task ForEachAsync(Func<RateCandle, Dictionary<string,string>, MessageMeta, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default)
-            => Task.WhenAll(_items.Select(i => action(i, new Dictionary<string,string>(), new MessageMeta("t",0,0,DateTimeOffset.UnixEpoch,null,null,false,new Dictionary<string,string>()))));
+        public Task ForEachAsync(Func<RateCandle, Dictionary<string, string>, MessageMeta, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default)
+            => Task.WhenAll(_items.Select(i => action(i, new Dictionary<string, string>(), new MessageMeta("t", 0, 0, DateTimeOffset.UnixEpoch, null, null, false, new Dictionary<string, string>()))));
         public string GetTopicName() => _model.TopicName!;
         public EntityModel GetEntityModel() => _model;
         public IKsqlContext GetContext() => new DummyContext();
@@ -91,9 +89,9 @@ public class EventSetLimitExtensionsTests
         var result = await set.Limit(2);
 
         Assert.Equal(2, result.Count);
-        Assert.Equal(new DateTime(2024,1,1,3,0,0), result[0].BarTime);
-        Assert.Equal(new DateTime(2024,1,1,2,0,0), result[1].BarTime);
+        Assert.Equal(new DateTime(2024, 1, 1, 3, 0, 0), result[0].BarTime);
+        Assert.Equal(new DateTime(2024, 1, 1, 2, 0, 0), result[1].BarTime);
         Assert.Single(set.Removed);
-        Assert.Equal(new DateTime(2024,1,1,1,0,0), set.Removed[0].BarTime);
+        Assert.Equal(new DateTime(2024, 1, 1, 1, 0, 0), set.Removed[0].BarTime);
     }
 }

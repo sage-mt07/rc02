@@ -1,14 +1,12 @@
-using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Core.Modeling;
 using Kafka.Ksql.Linq.Query.Abstractions;
 using System;
 using System.Collections.Generic;
-using Kafka.Ksql.Linq.Core.Attributes;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
 using Xunit;
 
 #nullable enable
@@ -80,7 +78,7 @@ public class ForEachAsyncStreamingTests
         }
     }
 
-    [Fact(Skip="Requires KsqlContext")]
+    [Fact(Skip = "Requires KsqlContext")]
     public async Task ForEachAsync_Processes_NewData_Until_Inactivity()
     {
         var channel = Channel.CreateUnbounded<TestEvent>();
@@ -105,7 +103,7 @@ public class ForEachAsyncStreamingTests
         Assert.Equal(new[] { 1, 2 }, results);
     }
 
-    [Fact(Skip="Requires KsqlContext")]
+    [Fact(Skip = "Requires KsqlContext")]
     public async Task ForEachAsync_Cancels_With_Token()
     {
         var channel = Channel.CreateUnbounded<TestEvent>();

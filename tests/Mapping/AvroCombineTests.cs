@@ -1,8 +1,8 @@
-using System;
 using Avro;
 using Avro.Specific;
 using Kafka.Ksql.Linq.Core.Models;
 using Kafka.Ksql.Linq.Mapping;
+using System;
 using Xunit;
 
 #nullable enable

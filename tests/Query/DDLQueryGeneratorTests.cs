@@ -1,7 +1,7 @@
+using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Core.Modeling;
 using Kafka.Ksql.Linq.Query.Ddl;
 using Kafka.Ksql.Linq.Query.Pipeline;
-using Kafka.Ksql.Linq.Core.Modeling;
-using Kafka.Ksql.Linq.Core.Attributes;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query;

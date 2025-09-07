@@ -1,17 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using Confluent.Kafka;
 using Confluent.Kafka.Admin;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Configuration.Messaging;
 using Kafka.Ksql.Linq.Infrastructure.Admin;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Xunit;
 using static Kafka.Ksql.Linq.Tests.PrivateAccessor;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Kafka.Ksql.Linq.Tests.Infrastructure;
 #nullable enable

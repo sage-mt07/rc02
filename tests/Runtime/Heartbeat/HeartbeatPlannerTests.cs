@@ -1,6 +1,5 @@
-using System;
 using Kafka.Ksql.Linq.Runtime.Heartbeat;
-using Moq;
+using System;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Runtime.Heartbeat;
@@ -18,9 +17,9 @@ public class HeartbeatPlannerTests
             new HeartbeatItem(new[]{"b","x"}, k)
         };
         var provider = new Moq.Mock<IMarketScheduleProvider>();
-        provider.Setup(p => p.IsInSession(new[]{"b","s"}, k)).Returns(true);
-        provider.Setup(p => p.IsInSession(new[]{"b","s"}, k.AddMinutes(1))).Returns(true);
-        provider.Setup(p => p.IsInSession(new[]{"b","x"}, k)).Returns(false);
+        provider.Setup(p => p.IsInSession(new[] { "b", "s" }, k)).Returns(true);
+        provider.Setup(p => p.IsInSession(new[] { "b", "s" }, k.AddMinutes(1))).Returns(true);
+        provider.Setup(p => p.IsInSession(new[] { "b", "x" }, k)).Returns(false);
         var planner = new HeartbeatPlanner(TimeSpan.FromMinutes(1), items, provider.Object);
         var now = k.AddMinutes(2);
         var result = planner.Plan(now);

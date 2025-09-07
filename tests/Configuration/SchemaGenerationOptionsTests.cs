@@ -1,6 +1,3 @@
-using Kafka.Ksql.Linq.Configuration.Abstractions;
-using Xunit;
-
 namespace Kafka.Ksql.Linq.Tests.Configuration;
 
 //public class SchemaGenerationOptionsTests

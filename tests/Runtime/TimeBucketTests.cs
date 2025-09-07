@@ -1,13 +1,13 @@
+using Kafka.Ksql.Linq.Core.Models;
+using Kafka.Ksql.Linq.Mapping;
+using Kafka.Ksql.Linq.Runtime;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Kafka.Ksql.Linq.Core.Models;
-using Kafka.Ksql.Linq.Mapping;
-using Kafka.Ksql.Linq.Runtime;
-using System.Globalization;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Runtime;
@@ -55,7 +55,7 @@ public class TimeBucketTests
             var val = m.ExtractAvroValue(r);
             rocks.Add("rate_5m_final", key, val);
         }
-        var live = new Rate{ Broker="B", Symbol="S", BucketStart=new DateTime(2025,8,23,10,10,0,DateTimeKind.Utc), Value=4 };
+        var live = new Rate { Broker = "B", Symbol = "S", BucketStart = new DateTime(2025, 8, 23, 10, 10, 0, DateTimeKind.Utc), Value = 4 };
         var lkey = m.FormatKeyForPrefix(m.ExtractAvroKey(live));
         var lval = m.ExtractAvroValue(live);
         rocks.Add("rate_5m_live", lkey, lval);
@@ -92,7 +92,7 @@ public class TimeBucketTests
         var (map, rocks, bucket) = CreateBucket();
         Seed(map, rocks);
         var m = map.GetMapping(typeof(Rate));
-        var sample = new Rate{Broker="B",Symbol="S",BucketStart=new DateTime(2025,8,23,10,0,0,DateTimeKind.Utc)};
+        var sample = new Rate { Broker = "B", Symbol = "S", BucketStart = new DateTime(2025, 8, 23, 10, 0, 0, DateTimeKind.Utc) };
         var key = m.FormatKeyForPrefix(m.ExtractAvroKey(sample));
         var parts = key.Split(KeyValueTypeMapping.KeySep);
         var list = await bucket.ToListAsync(parts, CancellationToken.None);
@@ -152,7 +152,7 @@ public class TimeBucketTests
             var val = m.ExtractAvroValue(r);
             rocks.Add("rate_1wk_final", key, val);
         }
-        var live = new Rate{ Broker="B", Symbol="S", BucketStart=new DateTime(2025,8,25,0,0,0,DateTimeKind.Utc), Value=4 };
+        var live = new Rate { Broker = "B", Symbol = "S", BucketStart = new DateTime(2025, 8, 25, 0, 0, 0, DateTimeKind.Utc), Value = 4 };
         var lkey = m.FormatKeyForPrefix(m.ExtractAvroKey(live));
         var lval = m.ExtractAvroValue(live);
         rocks.Add("rate_1wk_live", lkey, lval);
@@ -167,7 +167,7 @@ public class TimeBucketTests
         Seed(map, rocks);
         var list = await bucket.ToListAsync(new[] { "B", "S", "2025-08-23T10:03:00Z" }, CancellationToken.None);
         Assert.Single(list);
-        Assert.Equal(new DateTime(2025,8,23,10,0,0,DateTimeKind.Utc), list[0].BucketStart);
+        Assert.Equal(new DateTime(2025, 8, 23, 10, 0, 0, DateTimeKind.Utc), list[0].BucketStart);
     }
 
     private class InMemoryRocks

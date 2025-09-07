@@ -1,9 +1,8 @@
+using Kafka.Ksql.Linq.Query.Adapters;
+using Kafka.Ksql.Linq.Query.Analysis;
+using Kafka.Ksql.Linq.Query.Dsl;
 using System;
 using System.Linq;
-using Kafka.Ksql.Linq.Query.Analysis;
-using Kafka.Ksql.Linq.Query.Adapters;
-using Kafka.Ksql.Linq.Query.Dsl;
-using Kafka.Ksql.Linq.Query.Pipeline;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query.Analysis;

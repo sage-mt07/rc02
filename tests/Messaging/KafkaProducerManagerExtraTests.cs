@@ -1,15 +1,14 @@
-using Confluent.SchemaRegistry;
 using Confluent.Kafka;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Configuration.Messaging;
 using Kafka.Ksql.Linq.Core.Configuration;
-using Kafka.Ksql.Linq.Messaging.Producers;
 using Kafka.Ksql.Linq.Mapping;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Reflection;
-using System;
+using Kafka.Ksql.Linq.Messaging.Producers;
 using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Reflection;
 using Xunit;
 using static Kafka.Ksql.Linq.Tests.PrivateAccessor;
 
@@ -27,7 +26,7 @@ public class KafkaProducerManagerExtraTests
                 Url = "u",
                 MaxCachedSchemas = 5,
                 RequestTimeoutMs = 10,
-                AdditionalProperties = new System.Collections.Generic.Dictionary<string,string>{{"p","v"}},
+                AdditionalProperties = new System.Collections.Generic.Dictionary<string, string> { { "p", "v" } },
                 SslKeyPassword = "pw"
             }
         };
@@ -36,7 +35,7 @@ public class KafkaProducerManagerExtraTests
         Assert.Equal("CachedSchemaRegistryClient", client!.GetType().Name);
     }
 
-    [Fact(Skip="Requires full configuration")]
+    [Fact(Skip = "Requires full configuration")]
     public void BuildProducerConfig_WithSecurityAndPartitioner()
     {
         var options = new KsqlDslOptions
@@ -107,7 +106,7 @@ public class KafkaProducerManagerExtraTests
         Assert.NotNull(client);
     }
 
-    [Fact(Skip="Requires internal serializer access")]
+    [Fact(Skip = "Requires internal serializer access")]
     public void SerializerCaching_WorksPerType()
     {
         var options = new KsqlDslOptions

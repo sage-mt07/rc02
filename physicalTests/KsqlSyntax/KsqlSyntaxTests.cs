@@ -1,18 +1,9 @@
-using Kafka.Ksql.Linq.Core.Modeling;
+using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Configuration;
-using Kafka.Ksql.Linq.Configuration;
-using Kafka.Ksql.Linq;
-using Confluent.Kafka;
-using System;
-using Kafka.Ksql.Linq.Application;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
-using Xunit.Sdk;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 

@@ -1,21 +1,15 @@
+using Confluent.SchemaRegistry;
 using Kafka.Ksql.Linq.Configuration;
-using Kafka.Ksql.Linq.Core.Abstractions;
-
-using Kafka.Ksql.Linq.Configuration.Messaging;
-using Kafka.Ksql.Linq.Core.Configuration;
-using Kafka.Ksql.Linq.Messaging.Producers;
-using Kafka.Ksql.Linq.Mapping;
 using Kafka.Ksql.Linq.Core.Models;
+using Kafka.Ksql.Linq.Mapping;
+using Kafka.Ksql.Linq.Messaging.Producers;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
-using Confluent.SchemaRegistry;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Messaging;

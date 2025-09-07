@@ -1,17 +1,8 @@
-using Kafka.Ksql.Linq.Core.Modeling;
-using Kafka.Ksql.Linq.Application;
-using Confluent.Kafka;
-using Kafka.Ksql.Linq;
-using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Configuration;
-using Kafka.Ksql.Linq.Core.Configuration;
+using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+using Kafka.Ksql.Linq.Core.Configuration;
 using Xunit;
-using Xunit.Sdk;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
@@ -26,10 +17,10 @@ public class AdvancedDataTypeTests
     {
         [KsqlKey(Order = 0)]
         public int Id { get; set; }
-        [KsqlDecimal(18,4)]
+        [KsqlDecimal(18, 4)]
         public decimal Price { get; set; }
         public DateTime Created { get; set; }
-      //  public Status State { get; set; }
+        //  public Status State { get; set; }
     }
 
     public class RecordContext : KsqlContext
@@ -39,7 +30,7 @@ public class AdvancedDataTypeTests
         public RecordContext(KsqlDslOptions options) : base(options) { }
         protected override void OnModelCreating(IModelBuilder modelBuilder)
         {
-          //  modelBuilder.Entity<Record>();
+            //  modelBuilder.Entity<Record>();
         }
     }
 

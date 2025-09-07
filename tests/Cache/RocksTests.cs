@@ -1,10 +1,10 @@
+using Kafka.Ksql.Linq.Cache.Core;
+using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Query.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Kafka.Ksql.Linq.Cache.Core;
-using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Query.Abstractions;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Cache;

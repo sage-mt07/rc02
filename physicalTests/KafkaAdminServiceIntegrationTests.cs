@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Confluent.Kafka;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Configuration.Messaging;

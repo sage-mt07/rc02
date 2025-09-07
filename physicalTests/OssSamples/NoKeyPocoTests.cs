@@ -1,15 +1,8 @@
-using Kafka.Ksql.Linq.Core.Modeling;
-using Kafka.Ksql.Linq;
-using Kafka.Ksql.Linq.Application;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Core.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
-using Xunit.Sdk;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
@@ -25,7 +18,7 @@ public class NoKeyPocoTests
 
     public class RecordContext : KsqlContext
     {
-        public EventSet<Record> Records { get; set; }    
+        public EventSet<Record> Records { get; set; }
         public RecordContext() : base(new KsqlDslOptions()) { }
         public RecordContext(KsqlDslOptions options) : base(options) { }
         protected override void OnModelCreating(IModelBuilder modelBuilder)
@@ -46,9 +39,9 @@ public class NoKeyPocoTests
         {
             Common = new CommonSection { BootstrapServers = EnvNoKeyPocoTests.KafkaBootstrapServers },
             SchemaRegistry = new SchemaRegistrySection { Url = EnvNoKeyPocoTests.SchemaRegistryUrl },
-            Topics =new Dictionary<string, Configuration.Messaging.TopicSection>()
+            Topics = new Dictionary<string, Configuration.Messaging.TopicSection>()
         };
-        options.Topics.Add("records_no_key",new Configuration.Messaging.TopicSection { Consumer=new Configuration.Messaging.ConsumerSection { AutoOffsetReset="Earliest", GroupId=Guid.NewGuid().ToString() } });
+        options.Topics.Add("records_no_key", new Configuration.Messaging.TopicSection { Consumer = new Configuration.Messaging.ConsumerSection { AutoOffsetReset = "Earliest", GroupId = Guid.NewGuid().ToString() } });
         await using var ctx = new RecordContext(options);
         // Ensure topic is clean and ready
         using (var admin = new Confluent.Kafka.AdminClientBuilder(new Confluent.Kafka.AdminClientConfig { BootstrapServers = EnvNoKeyPocoTests.KafkaBootstrapServers }).Build())

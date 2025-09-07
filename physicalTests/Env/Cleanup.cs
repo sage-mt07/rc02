@@ -1,15 +1,6 @@
-using Confluent.Kafka.Admin;
 using Confluent.Kafka;
-using Confluent.SchemaRegistry;
-using Kafka.Ksql.Linq.Tests.Integration;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
+using Confluent.Kafka.Admin;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PhysicalTestEnv;
 

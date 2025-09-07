@@ -1,8 +1,8 @@
+using Kafka.Ksql.Linq.Cache.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Kafka.Ksql.Linq.Cache.Core;
 using Xunit;
 
 public class TableCacheTests
@@ -69,7 +69,7 @@ public class TableCacheTests
             (K("DUKA","USDJPY","20250821T000000Z"), 9),
         });
 
-        var list = await cache.ToListAsync(new List<string>{ "OANDA" });
+        var list = await cache.ToListAsync(new List<string> { "OANDA" });
         Assert.Single(list);
         Assert.Equal("OANDA", list[0].Broker);
     }
@@ -83,7 +83,7 @@ public class TableCacheTests
             (K("OANDA","EURUSD","20250821T000000Z"), 2),
         });
 
-        var list = await cache.ToListAsync(new List<string>{ "OANDA", "USDJPY" });
+        var list = await cache.ToListAsync(new List<string> { "OANDA", "USDJPY" });
         Assert.Single(list);
         Assert.Equal("USDJPY", list[0].Symbol);
     }
@@ -97,7 +97,7 @@ public class TableCacheTests
             (K("OANDA","USDJPY","20250821T010000Z"), 2),
         });
 
-        var list = await cache.ToListAsync(new List<string>{ "OANDA", "USDJPY", "20250821T000000Z" });
+        var list = await cache.ToListAsync(new List<string> { "OANDA", "USDJPY", "20250821T000000Z" });
         Assert.Single(list);
         Assert.Equal("20250821T000000Z", list[0].Ts);
     }
@@ -123,7 +123,7 @@ public class TableCacheTests
             (K("OANDA","USDJPY","T"), 1),
         });
 
-        var list = await cache.ToListAsync(new List<string>{ "DUKA" });
+        var list = await cache.ToListAsync(new List<string> { "DUKA" });
         Assert.Empty(list);
     }
 

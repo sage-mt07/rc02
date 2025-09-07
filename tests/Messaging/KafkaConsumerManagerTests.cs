@@ -1,26 +1,24 @@
+using Confluent.Kafka;
+using Kafka.Ksql.Linq.Configuration;
+using Kafka.Ksql.Linq.Configuration.Abstractions;
+using Kafka.Ksql.Linq.Configuration.Messaging;
+using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Dlq;
+using Kafka.Ksql.Linq.Mapping;
+using Kafka.Ksql.Linq.Messaging;
+using Kafka.Ksql.Linq.Messaging.Consumers;
+using Kafka.Ksql.Linq.Messaging.Producers;
+using Kafka.Ksql.Linq.Runtime.Heartbeat;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.Serialization;
-using Confluent.Kafka;
-using Confluent.SchemaRegistry;
-using Kafka.Ksql.Linq.Configuration;
-using Kafka.Ksql.Linq.Configuration.Abstractions;
-using Kafka.Ksql.Linq.Core.Dlq;
-using Kafka.Ksql.Linq.Messaging.Producers;
-using Kafka.Ksql.Linq.Messaging.Consumers;
-using Kafka.Ksql.Linq.Configuration.Messaging;
-using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Mapping;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
-using static Kafka.Ksql.Linq.Tests.PrivateAccessor;
-using Moq;
-using Xunit;
-using Kafka.Ksql.Linq.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
-using Kafka.Ksql.Linq.Runtime.Heartbeat;
+using Xunit;
+using static Kafka.Ksql.Linq.Tests.PrivateAccessor;
 
 #nullable enable
 

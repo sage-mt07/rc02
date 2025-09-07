@@ -1,10 +1,10 @@
-using System;
-using System.Linq.Expressions;
+using Kafka.Ksql.Linq.Query.Analysis;
 using Kafka.Ksql.Linq.Query.Builders;
 using Kafka.Ksql.Linq.Query.Builders.Core;
 using Kafka.Ksql.Linq.Query.Dsl;
 using Kafka.Ksql.Linq.Query.Pipeline;
-using Kafka.Ksql.Linq.Query.Analysis;
+using System;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query.Builders;

@@ -1,18 +1,16 @@
+using Kafka.Ksql.Linq.Configuration;
+using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Infrastructure.KsqlDb;
+using Kafka.Ksql.Linq.Mapping;
+using Kafka.Ksql.Linq.Query.Abstractions;
+using Kafka.Ksql.Linq.Query.Dsl;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Linq;
-using Kafka.Ksql.Linq;
-using Kafka.Ksql.Linq.Configuration;
-using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Core.Modeling;
-using Kafka.Ksql.Linq.Mapping;
-using Kafka.Ksql.Linq.Query.Dsl;
-using Kafka.Ksql.Linq.Query.Abstractions;
-using Kafka.Ksql.Linq.Infrastructure.KsqlDb;
-using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Core;

@@ -1,16 +1,15 @@
-using Kafka.Ksql.Linq.Core.Modeling;
-using Kafka.Ksql.Linq;
-using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Messaging.Consumers;
-using Kafka.Ksql.Linq.Messaging;
 using Kafka.Ksql.Linq.Configuration;
+using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Modeling;
+using Kafka.Ksql.Linq.Messaging;
+using Kafka.Ksql.Linq.Messaging.Consumers;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Reflection;
 using Xunit;
 
 #nullable enable
@@ -36,16 +35,16 @@ public class ManualCommitTests
 
     private class ManualCommitSet : EventSet<TestEntity>
     {
-        private readonly (TestEntity, Dictionary<string,string>, MessageMeta) _item;
+        private readonly (TestEntity, Dictionary<string, string>, MessageMeta) _item;
         public ManualCommitSet(TestContext ctx, EntityModel model, ICommitManager cm)
             : base(ctx, model, commitManager: cm)
         {
-            _item = (new TestEntity{ Id = 1 }, new(), new MessageMeta("t",0,1,DateTime.UtcNow,null,null,false,new Dictionary<string,string>()));
+            _item = (new TestEntity { Id = 1 }, new(), new MessageMeta("t", 0, 1, DateTime.UtcNow, null, null, false, new Dictionary<string, string>()));
         }
 
-        protected override Task SendEntityAsync(TestEntity entity, Dictionary<string,string>? headers, CancellationToken cancellationToken) => Task.CompletedTask;
+        protected override Task SendEntityAsync(TestEntity entity, Dictionary<string, string>? headers, CancellationToken cancellationToken) => Task.CompletedTask;
 
-        protected override async IAsyncEnumerable<(TestEntity Entity, Dictionary<string,string> Headers, MessageMeta Meta)> ConsumeAsync(KsqlContext context, bool autoCommit, [EnumeratorCancellation] CancellationToken cancellationToken)
+        protected override async IAsyncEnumerable<(TestEntity Entity, Dictionary<string, string> Headers, MessageMeta Meta)> ConsumeAsync(KsqlContext context, bool autoCommit, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             yield return _item;
             await Task.CompletedTask;

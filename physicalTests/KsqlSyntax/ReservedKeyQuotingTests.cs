@@ -1,6 +1,3 @@
-using System;
-using System.Threading.Tasks;
-using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Query.Ddl;

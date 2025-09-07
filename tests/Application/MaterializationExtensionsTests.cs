@@ -1,15 +1,12 @@
+using Confluent.SchemaRegistry;
 using Kafka.Ksql.Linq.Application;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Core.Configuration;
-using Kafka.Ksql.Linq.Core.Modeling;
-using Kafka.Ksql.Linq.Tests;
 using Kafka.Ksql.Linq.Core.Attributes;
-using Confluent.SchemaRegistry;
-using System.Collections.Generic;
+using Kafka.Ksql.Linq.Core.Configuration;
+using System;
 using System.Threading.Tasks;
 using Xunit;
-using System;
 
 #nullable enable
 

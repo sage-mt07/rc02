@@ -1,13 +1,10 @@
-using Kafka.Ksql.Linq.Core.Modeling;
-using Kafka.Ksql.Linq.Query;
 using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Tests;
+using Kafka.Ksql.Linq.Core.Modeling;
 using Kafka.Ksql.Linq.Messaging;
+using Kafka.Ksql.Linq.Query;
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Threading;
-using Kafka.Ksql.Linq.Core.Attributes;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -35,9 +32,9 @@ public class JoinableEntitySetTests
         public Task ForEachAsync(Func<T, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default) => Task.CompletedTask;
 
         [Obsolete("Use ForEachAsync(Func<T, Dictionary<string,string>, MessageMeta, Task>)")]
-        public Task ForEachAsync(Func<T, Dictionary<string,string>, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default) => Task.CompletedTask;
+        public Task ForEachAsync(Func<T, Dictionary<string, string>, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default) => Task.CompletedTask;
 
-        public Task ForEachAsync(Func<T, Dictionary<string,string>, MessageMeta, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default) => Task.CompletedTask;
+        public Task ForEachAsync(Func<T, Dictionary<string, string>, MessageMeta, Task> action, TimeSpan timeout = default, bool autoCommit = true, CancellationToken cancellationToken = default) => Task.CompletedTask;
         public string GetTopicName() => typeof(T).Name;
         public EntityModel GetEntityModel()
         {

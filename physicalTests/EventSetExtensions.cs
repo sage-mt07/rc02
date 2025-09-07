@@ -1,13 +1,8 @@
-using Kafka.Ksql.Linq;
-using Kafka.Ksql.Linq.Application;
 using Kafka.Ksql.Linq.Messaging.Producers;
 using Kafka.Ksql.Linq.Core.Abstractions;
-using System;
 
 #nullable enable
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 

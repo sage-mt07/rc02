@@ -1,11 +1,8 @@
+using Kafka.Ksql.Linq.Configuration;
+using Kafka.Ksql.Linq.Core.Configuration;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Reflection;
-using Kafka.Ksql.Linq;
-using Kafka.Ksql.Linq.Configuration;
-using Kafka.Ksql.Linq.Configuration.Messaging;
-using Kafka.Ksql.Linq.Core.Configuration;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Application;

@@ -1,8 +1,8 @@
 using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Core.Attributes;
-using Kafka.Ksql.Linq.Query.Dsl;
-using Kafka.Ksql.Linq.Query.Builders;
 using Kafka.Ksql.Linq.Core.Modeling;
+using Kafka.Ksql.Linq.Query.Builders;
+using Kafka.Ksql.Linq.Query.Dsl;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -191,7 +191,7 @@ public class ToQueryDslTests
 
         Assert.Throws<InvalidOperationException>(() =>
             entityBuilder.ToQuery(q => q.From<Order>()
-                .Select(o => new { o.CustomerId }))); 
+                .Select(o => new { o.CustomerId })));
     }
 
     [Fact]
@@ -203,7 +203,7 @@ public class ToQueryDslTests
 
         Assert.Throws<InvalidOperationException>(() =>
             entityBuilder.ToQuery(q => q.From<Order>()
-                .Select(o => new { o.Id, o.Amount }))); 
+                .Select(o => new { o.Id, o.Amount })));
     }
 
     [Fact]

@@ -10,11 +10,7 @@ using Streamiz.Kafka.Net.SchemaRegistry.SerDes.Avro;
 using Streamiz.Kafka.Net.SerDes;
 using Streamiz.Kafka.Net.State;
 using Streamiz.Kafka.Net.Table;
-using System;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Xunit;
 
 #nullable enable
@@ -68,7 +64,8 @@ public class StreamizRocksDbTests
                 .AddConsole();
         });
         var logger = loggerFactory.CreateLogger<StreamizRocksDbTests>();
-        stream.StateChanged += (@old, @new) => {
+        stream.StateChanged += (@old, @new) =>
+        {
             logger.LogInformation($" StateChanged {@new}");
         };
         await RetryAsync(async () =>
@@ -132,7 +129,7 @@ public class StreamizRocksDbTests
             SchemaRegistryUrl = "http://localhost:8081",
             StateDir = stateDir,
             AutoOffsetReset = AutoOffsetReset.Earliest,
-            Logger=loggerFactory
+            Logger = loggerFactory
         };
 
         var stream = new KafkaStream(builder.Build(), config);
@@ -185,9 +182,9 @@ public class StreamizRocksDbTests
             BootstrapServers = "localhost:9092",
             StateDir = stateDir,
             AutoOffsetReset = AutoOffsetReset.Earliest,
-            Logger= loggerFactory
+            Logger = loggerFactory
         };
-        _logger=loggerFactory.CreateLogger<StringSerDes>();
+        _logger = loggerFactory.CreateLogger<StringSerDes>();
 
         var stream = new KafkaStream(builder.Build(), config);
         try
@@ -295,7 +292,7 @@ public class StreamizRocksDbTests
 
         await Task.Delay(TimeSpan.FromSeconds(5));
         var store = stream.Store(StoreQueryParameters.FromNameAndType(storeName, QueryableStoreTypes.KeyValueStore<string, User>()));
-       
+
         var stored = store.Get("u1");
         Assert.Equal("alice", stored.name);
         Assert.Equal(30, stored.age);

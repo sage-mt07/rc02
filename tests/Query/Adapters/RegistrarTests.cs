@@ -1,8 +1,8 @@
-using System.Collections.Generic;
 using Kafka.Ksql.Linq.Core.Abstractions;
-using Kafka.Ksql.Linq.Query.Abstractions;
 using Kafka.Ksql.Linq.Mapping;
+using Kafka.Ksql.Linq.Query.Abstractions;
 using Kafka.Ksql.Linq.Query.Adapters;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query.Adapters;

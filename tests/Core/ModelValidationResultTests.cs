@@ -1,6 +1,4 @@
 using Kafka.Ksql.Linq.Core.Modeling;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Core;

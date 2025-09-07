@@ -1,6 +1,4 @@
-using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
