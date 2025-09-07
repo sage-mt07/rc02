@@ -2,6 +2,8 @@ using Avro.Generic;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Models;
 using Kafka.Ksql.Linq.Mapping;
+using Kafka.Ksql.Linq.Query.Adapters;
+using Kafka.Ksql.Linq.Query.Analysis;
 using System.Linq;
 using Xunit;
 
@@ -111,5 +113,35 @@ public class MappingRegistryTests
         var m2 = r2.RegisterEntityModel(model, overrideNamespace: "custom_ns");
         Assert.Equal("custom_ns", m2.KeyType.Namespace);
         Assert.Equal("custom_ns", m2.ValueType.Namespace);
+    }
+
+    [Fact]
+    public void RegisterDerivedModel_UsesSanitizedNamespace()
+    {
+        var derived = new DerivedEntity
+        {
+            Id = "bar_5m_live",
+            Role = Role.Live,
+            Timeframe = new Timeframe(5, "m"),
+            KeyShape = new[] { new ColumnShape("Id", typeof(int), false) },
+            ValueShape = new[] { new ColumnShape("Name", typeof(string), true) },
+            BasedOnSpec = new BasedOnSpec(new[] { "Id" }, string.Empty, string.Empty, string.Empty)
+        };
+        var model = EntityModelAdapter.Adapt(new[] { derived })[0];
+        model.EntityType = typeof(Sample);
+        model.TopicName = derived.Id;
+        model.KeyProperties = new[] { typeof(Sample).GetProperty(nameof(Sample.Id))! };
+        model.AllProperties = typeof(Sample).GetProperties();
+
+        Assert.Equal("bar_ksql", model.AdditionalSettings["namespace"]);
+
+        var registry = new MappingRegistry();
+        var mapping = registry.RegisterEntityModel(
+            model,
+            genericValue: true,
+            overrideNamespace: model.AdditionalSettings["namespace"]?.ToString());
+
+        Assert.Equal("bar_ksql", mapping.KeyType.Namespace);
+        Assert.Equal("bar_ksql", mapping.ValueType.Namespace);
     }
 }

@@ -40,7 +40,20 @@ internal static class EntityModelAdapter
             var nsSource = e.TopicHint ?? e.Id;
             if (!string.IsNullOrWhiteSpace(nsSource))
             {
-                var ns = Regex.Replace(nsSource.ToLowerInvariant(), "[^a-z0-9_]", "_");
+                var baseNs = e.TopicHint ?? e.Id;
+                if (e.TopicHint == null)
+                {
+                    baseNs = e.Role switch
+                    {
+                        Role.AggFinal => TrimSuffix(baseNs, $"_{e.Timeframe.Value}{e.Timeframe.Unit}_agg_final"),
+                        Role.Live => TrimSuffix(baseNs, $"_{e.Timeframe.Value}{e.Timeframe.Unit}_live"),
+                        Role.Final => TrimSuffix(baseNs, $"_{e.Timeframe.Value}{e.Timeframe.Unit}_final"),
+                        Role.Prev1m => TrimSuffix(baseNs, "_prev_1m"),
+                        Role.Hb => TrimSuffix(baseNs, "_hb_1m"),
+                        _ => baseNs
+                    };
+                }
+                var ns = Regex.Replace($"{baseNs}_ksql".ToLowerInvariant(), "[^a-z0-9_]", "_");
                 model.AdditionalSettings["namespace"] = ns;
             }
             if (e.Role == Role.Hb) model.AdditionalSettings["forceStream"] = true;
@@ -48,4 +61,7 @@ internal static class EntityModelAdapter
         }
         return list;
     }
+
+    private static string TrimSuffix(string value, string suffix)
+        => value.EndsWith(suffix, StringComparison.Ordinal) ? value[..^suffix.Length] : value;
 }
