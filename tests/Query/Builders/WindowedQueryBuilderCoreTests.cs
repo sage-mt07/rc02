@@ -50,12 +50,14 @@ public class WindowedQueryBuilderCoreTests
         Assert.Contains("WINDOW TUMBLING(1m)", q1);
         Assert.Contains("EMIT FINAL", q1);
         Assert.Contains("SYNC HB_1m", q1);
+        Assert.DoesNotContain("COMPOSE(", q1);
 
         var md5 = BaseMd().WithProperty("input/5mFinal", "src5");
         var q5 = FinalBuilder.Build(md5, "5m");
         Assert.StartsWith("TABLE src5", q5);
         Assert.Contains("WINDOW TUMBLING(5m)", q5);
         Assert.DoesNotContain("SYNC", q5);
+        Assert.DoesNotContain("COMPOSE(", q5);
     }
 
     [Fact]

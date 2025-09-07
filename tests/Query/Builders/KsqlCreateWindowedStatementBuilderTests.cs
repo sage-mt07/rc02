@@ -2,6 +2,8 @@ using System;
 using Kafka.Ksql.Linq.Query.Dsl;
 using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Query.Pipeline;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query.Builders;
@@ -80,6 +82,7 @@ public class KsqlCreateWindowedStatementBuilderTests
         Assert.Contains("EMIT FINAL", sql);
         Assert.Contains("GROUP BY KEY->BROKER, KEY->SYMBOL", sql);
         Assert.Contains("KEY->BROKER AS Broker, KEY->SYMBOL AS Symbol", sql);
+        Assert.DoesNotContain("COMPOSE(", sql);
     }
 
     [Fact]
@@ -104,6 +107,32 @@ public class KsqlCreateWindowedStatementBuilderTests
         Assert.Contains("EMIT FINAL", sql);
         Assert.Contains("GROUP BY KEY->BROKER, KEY->SYMBOL", sql);
         Assert.Contains("KEY->BROKER AS Broker, KEY->SYMBOL AS Symbol", sql);
+        Assert.DoesNotContain("COMPOSE(", sql);
+    }
+
+    [Fact]
+    public void Build_Final_StreamTableJoin_Applies_Arrow_To_Table_Side()
+    {
+        var model = new KsqlQueryModel
+        {
+            SourceTypes = new[] { typeof(RateTable), typeof(Rate) },
+            JoinCondition = (Expression<Func<RateTable, Rate, bool>>)((t, s) => t.Broker == s.Broker && t.Symbol == s.Symbol),
+            WhereCondition = (Expression<Func<RateTable, Rate, bool>>)((t, s) => t.Broker != string.Empty && s.Symbol != string.Empty),
+            GroupByExpression = (Expression<Func<RateTable, Rate, object>>)((t, s) => new { t.Broker, s.Symbol }),
+            SelectProjection = (Expression<Func<RateTable, Rate, object>>)((t, s) => new { t.Broker, s.Symbol }),
+            IsAggregateQuery = true,
+            HasTumbling = true,
+            IsFinal = true,
+            ExecutionMode = QueryExecutionMode.PushQuery
+        };
+        model.Windows.Add("1m");
+
+        var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.Build("mix_1m_final", model, "1m");
+        Assert.Contains("SELECT WINDOWSTART AS BucketStart, KEY->BROKER AS Broker, i.Symbol AS Symbol", sql);
+        Assert.Contains("GROUP BY KEY->BROKER, Symbol", sql);
+        Assert.Contains("WHERE ((KEY->BROKER != Empty) AND (i.Symbol != Empty))", sql);
+        Assert.DoesNotContain("KEY->SYMBOL", sql);
+        Assert.DoesNotContain("COMPOSE(", sql);
     }
 }
 

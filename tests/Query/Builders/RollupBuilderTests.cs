@@ -99,9 +99,11 @@ public class RollupBuilderTests
         Assert.Contains("TABLE bar_1m_live WINDOW TUMBLING(5m)", sql);
         Assert.Contains("EMIT FINAL", sql);
         Assert.DoesNotContain("HB_1m", sql);
+        Assert.DoesNotContain("COMPOSE(", sql);
         var sql1 = FinalBuilder.Build(md, "1m");
         Assert.Contains("TABLE 10sAgg WINDOW TUMBLING(1m)", sql1);
         Assert.Contains("SYNC HB_1m", sql1);
+        Assert.DoesNotContain("COMPOSE(", sql1);
     }
 
     [Fact]

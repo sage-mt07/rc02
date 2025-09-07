@@ -20,6 +20,8 @@ internal static class KsqlCreateWindowedStatementBuilder
         var baseSql = KsqlCreateStatementBuilder.Build(name, model);
         if (model.IsFinal)
         {
+            // remove any existing BucketStart alias from the SELECT list; regex scope is limited to SELECT
+            // TODO: anchor to the SELECT segment explicitly if the builder ever rewrites other clauses
             baseSql = Regex.Replace(baseSql, @",\s*[^,]*?AS BucketStart", string.Empty, RegexOptions.IgnoreCase);
             baseSql = baseSql.Replace("SELECT ", "SELECT WINDOWSTART AS BucketStart, ");
         }
