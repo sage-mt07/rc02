@@ -256,9 +256,7 @@ public abstract partial class KsqlContext
     {
         var deadline = DateTime.UtcNow + timeout;
         var entity = model.GetTopicName().ToUpperInvariant();
-        var stmt = model.StreamTableType == StreamTableType.Table
-            ? $"DESCRIBE {entity};"
-            : $"DESCRIBE {entity};";
+        var stmt = $"DESCRIBE EXTENDED {entity};";
 
         while (DateTime.UtcNow < deadline)
         {
@@ -267,14 +265,50 @@ public abstract partial class KsqlContext
                 var res = await ExecuteStatementAsync(stmt);
                 if (res.IsSuccess && !string.IsNullOrWhiteSpace(res.Message))
                 {
-                    var msg = res.Message.ToUpperInvariant();
-                    if (!msg.Contains("STATEMENT_ERROR"))
+                    var msg = res.Message;
+                    if (!msg.ToUpperInvariant().Contains("STATEMENT_ERROR") && HasDescribeInfo(msg))
+                    {
+                        await AssertTopicPartitionsAsync(model);
                         return;
+                    }
                 }
             }
             catch { }
             await Task.Delay(500);
         }
+
+        static bool HasDescribeInfo(string message)
+        {
+            var lines = message.Split('\n');
+            bool hasKey = lines.Any(l => l.Contains("Key format", StringComparison.OrdinalIgnoreCase));
+            bool hasValue = lines.Any(l => l.Contains("Value format", StringComparison.OrdinalIgnoreCase));
+            bool hasTs = lines.Any(l => l.Contains("Timestamp column", StringComparison.OrdinalIgnoreCase));
+            bool hasStats = lines.Any(l => l.Contains("Runtime statistics", StringComparison.OrdinalIgnoreCase));
+            bool hasSchema = lines.Any(l => l.Contains("|"));
+            return hasKey && hasValue && hasTs && hasStats && hasSchema;
+        }
+    }
+
+    private async Task AssertTopicPartitionsAsync(EntityModel model)
+    {
+        var res = await ExecuteStatementAsync("SHOW TOPICS;");
+        if (!res.IsSuccess || string.IsNullOrWhiteSpace(res.Message))
+            throw new InvalidOperationException("SHOW TOPICS failed");
+
+        var lines = res.Message.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+        foreach (var line in lines)
+        {
+            if (!line.Contains('|')) continue;
+            var parts = line.Split('|', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length < 2) continue;
+            if (parts[0].Trim().Equals(model.GetTopicName(), StringComparison.OrdinalIgnoreCase))
+            {
+                if (int.TryParse(parts[1].Trim(), out var partitions) && partitions == model.Partitions)
+                    return;
+                throw new InvalidOperationException($"Topic {model.GetTopicName()} partition mismatch");
+            }
+        }
+        throw new InvalidOperationException($"Topic {model.GetTopicName()} not found");
     }
 
     private async Task EnsureQueryEntityDdlAsync(Type type, EntityModel model)
@@ -325,7 +359,28 @@ public abstract partial class KsqlContext
                 resolver);
             Logger.LogInformation("KSQL DDL (query {Entity}): {Sql}", type.Name, ddl);
             await ExecuteWithRetryAsync(ddl);
+
+            var qs = await ExecuteStatementAsync("SHOW QUERIES;");
+            if (!qs.IsSuccess || string.IsNullOrWhiteSpace(qs.Message) || !QueryRunning(qs.Message))
+                throw new InvalidOperationException($"CTAS query for {model.GetTopicName()} not running");
+
+            await AssertTopicPartitionsAsync(model);
             return;
+
+            bool QueryRunning(string message)
+            {
+                var lines = message.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                foreach (var line in lines)
+                {
+                    if (!line.Contains('|')) continue;
+                    var parts = line.Split('|', StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length > 3 &&
+                        parts[1].Trim().Equals(model.GetTopicName(), StringComparison.OrdinalIgnoreCase) &&
+                        parts[3].Trim().Equals("RUNNING", StringComparison.OrdinalIgnoreCase))
+                        return true;
+                }
+                return false;
+            }
         }
 
         var generator = new Kafka.Ksql.Linq.Query.Pipeline.DDLQueryGenerator();
