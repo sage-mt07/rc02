@@ -25,7 +25,9 @@ internal static class DerivedTumblingPipeline
         foreach (var m in models)
         {
             var role = Enum.Parse<Role>((string)m.AdditionalSettings["role"]);
-            await BuildDdlAndRegister(qao.BaseTopicName, queryModel, m, role, execute, resolveType, registry, logger);
+            var qm = queryModel.Clone();
+            qm.IsFinal = role is Role.Final or Role.AggFinal;
+            await BuildDdlAndRegister(qao.BaseTopicName, qm, m, role, execute, resolveType, registry, logger);
         }
     }
 
@@ -55,10 +57,7 @@ internal static class DerivedTumblingPipeline
             Role.Hb => $"{baseName}_hb_1m",
             _ => $"{baseName}_{tf}"
         };
-        var orig = queryModel.IsFinal;
-        queryModel.IsFinal = role is Role.Final or Role.AggFinal;
         var ddl = KsqlCreateWindowedStatementBuilder.Build(name, queryModel, tf);
-        queryModel.IsFinal = orig;
         logger.LogInformation("KSQL DDL (derived {Entity}): {Sql}", name, ddl);
         await execute(ddl);
         var dt = resolveType(name);
