@@ -82,13 +82,12 @@ internal class KsqlDbClient : IKsqlDbClient, IDisposable
 
     public async Task<int> ExecuteQueryStreamCountAsync(string sql, TimeSpan? timeout = null)
     {
-        // Include streamsProperties to ensure we consume from the beginning in tests
         var payload = new
         {
             sql,
-            streamsProperties = new System.Collections.Generic.Dictionary<string, object>
+            properties = new System.Collections.Generic.Dictionary<string, object>
             {
-                ["auto.offset.reset"] = "earliest"
+                ["ksql.streams.auto.offset.reset"] = "earliest"
             }
         };
         var json = JsonSerializer.Serialize(payload);
