@@ -16,7 +16,8 @@ internal static class KsqlCreateWindowedStatementBuilder
         if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("name required", nameof(name));
         if (model is null) throw new ArgumentNullException(nameof(model));
         if (string.IsNullOrWhiteSpace(timeframe)) throw new ArgumentException("timeframe required", nameof(timeframe));
-
+        // Tumbling queries always represent aggregations; force table generation
+        model.IsAggregateQuery = true;
         var baseSql = KsqlCreateStatementBuilder.Build(name, model);
         if (model.IsFinal)
         {
