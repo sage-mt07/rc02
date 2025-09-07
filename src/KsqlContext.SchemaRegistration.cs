@@ -1,5 +1,6 @@
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Core.Extensions;
 using Kafka.Ksql.Linq.Query.Abstractions;
 using Kafka.Ksql.Linq.Query.Adapters;
@@ -429,8 +430,10 @@ public abstract partial class KsqlContext
             var shape = m.AllProperties.Select(p => new ColumnShape(p.Name, p.PropertyType, ctx.Create(p).WriteState == NullabilityState.Nullable)).ToArray();
             var frames = m.QueryModel!.Windows.Select(ParseWindow).ToList();
             var keys = m.KeyProperties.Select(p => p.Name).ToArray();
+            var baseName = type.GetCustomAttribute<KsqlTopicAttribute>()?.Name ?? m.GetTopicName();
             return new TumblingQao
             {
+                BaseTopicName = baseName,
                 TimeKey = "Timestamp",
                 Windows = frames,
                 Keys = keys,

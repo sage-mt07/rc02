@@ -25,7 +25,7 @@ internal static class DerivedTumblingPipeline
         foreach (var m in models)
         {
             var role = Enum.Parse<Role>((string)m.AdditionalSettings["role"]);
-            await BuildDdlAndRegister(queryModel, m, role, execute, resolveType, registry, logger);
+            await BuildDdlAndRegister(qao.BaseTopicName, queryModel, m, role, execute, resolveType, registry, logger);
         }
     }
 
@@ -36,6 +36,7 @@ internal static class DerivedTumblingPipeline
         => EntityModelAdapter.Adapt(entities);
 
     private static async Task BuildDdlAndRegister(
+        string baseName,
         KsqlQueryModel queryModel,
         EntityModel model,
         Role role,
@@ -45,7 +46,15 @@ internal static class DerivedTumblingPipeline
         ILogger logger)
     {
         var tf = (string)model.AdditionalSettings["timeframe"];
-        var name = (string)model.AdditionalSettings["id"];
+        var name = role switch
+        {
+            Role.AggFinal => $"{baseName}_{tf}_agg_final",
+            Role.Live => $"{baseName}_{tf}_live",
+            Role.Final => $"{baseName}_{tf}_final",
+            Role.Prev1m => $"{baseName}_prev_1m",
+            Role.Hb => $"{baseName}_hb_1m",
+            _ => $"{baseName}_{tf}"
+        };
         var orig = queryModel.IsFinal;
         queryModel.IsFinal = role is Role.Final or Role.AggFinal;
         var ddl = KsqlCreateWindowedStatementBuilder.Build(name, queryModel, tf);

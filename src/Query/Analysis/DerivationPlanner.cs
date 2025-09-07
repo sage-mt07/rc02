@@ -22,9 +22,10 @@ internal static class DerivationPlanner
         foreach (var tf in qao.Windows)
         {
             var tfStr = $"{tf.Value}{tf.Unit}";
-            var aggId = $"bar_{tfStr}_agg_final";
-            var liveId = $"bar_{tfStr}_live";
-            var finalId = $"bar_{tfStr}_final";
+            var baseId = qao.BaseTopicName;
+            var aggId = $"{baseId}_{tfStr}_agg_final";
+            var liveId = $"{baseId}_{tfStr}_live";
+            var finalId = $"{baseId}_{tfStr}_final";
 
             var agg = new DerivedEntity
             {
@@ -45,8 +46,8 @@ internal static class DerivationPlanner
                 Timeframe = tf,
                 KeyShape = keyShapes,
                 ValueShape = valueShapes,
-                InputHint = tf.Unit == "m" && tf.Value == 1 ? "10sAgg" : tf.Unit == "wk" ? "bar_1m_final" : "bar_1m_live",
-                SyncHint = tf.Unit == "m" && tf.Value == 1 ? "HB_1m" : null,
+                InputHint = tf.Unit == "m" && tf.Value == 1 ? "10sAgg" : tf.Unit == "wk" ? $"{baseId}_1m_final" : $"{baseId}_1m_live",
+                SyncHint = tf.Unit == "m" && tf.Value == 1 ? $"{baseId}_hb_1m".ToUpperInvariant() : null,
                 BasedOnSpec = qao.BasedOn,
                 WeekAnchor = qao.WeekAnchor
             };
@@ -59,8 +60,8 @@ internal static class DerivationPlanner
                 Timeframe = tf,
                 KeyShape = keyShapes,
                 ValueShape = valueShapes,
-                InputHint = tf.Unit == "m" && tf.Value == 1 ? "10sAgg" : tf.Unit == "wk" ? "bar_1m_final" : "bar_1m_live",
-                SyncHint = tf.Unit == "m" && tf.Value == 1 ? "HB_1m" : null,
+                InputHint = tf.Unit == "m" && tf.Value == 1 ? "10sAgg" : tf.Unit == "wk" ? $"{baseId}_1m_final" : $"{baseId}_1m_live",
+                SyncHint = tf.Unit == "m" && tf.Value == 1 ? $"{baseId}_hb_1m".ToUpperInvariant() : null,
                 BasedOnSpec = qao.BasedOn,
                 WeekAnchor = qao.WeekAnchor
             };
@@ -70,7 +71,7 @@ internal static class DerivationPlanner
             {
                 prev = new DerivedEntity
                 {
-                    Id = "bar_prev_1m",
+                    Id = $"{baseId}_prev_1m",
                     Role = Role.Prev1m,
                     Timeframe = tf,
                     KeyShape = keyShapes,
@@ -82,7 +83,7 @@ internal static class DerivationPlanner
 
                 var hb = new DerivedEntity
                 {
-                    Id = "hb_1m",
+                    Id = $"{baseId}_hb_1m",
                     Role = Role.Hb,
                     Timeframe = tf,
                     KeyShape = keyShapes,
