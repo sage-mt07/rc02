@@ -102,7 +102,7 @@ public class Step1Tests
         var live = specs.First(s => s.TargetId.StartsWith("bar_1m_live"));
         Assert.Contains("CHANGES", live.Operation);
         var final = specs.First(s => s.TargetId.StartsWith("bar_1m_final"));
-        Assert.Contains("Compose", final.Operation);
+        Assert.Contains("FINAL", final.Operation);
         Assert.NotEmpty(agg.BasedOnRef.JoinKeys);
     }
 
