@@ -26,7 +26,7 @@ public class TableAttributeTests
     {
         var builder = new ModelBuilder();
         builder.Entity<TableEntity>();
-        var model = builder.GetEntityModel<TableEntity>();
+        var model = builder.GetEntityModel<TableEntity>()!;
         Assert.Equal(StreamTableType.Table, model.StreamTableType);
     }
 
@@ -35,7 +35,7 @@ public class TableAttributeTests
     {
         var builder = new ModelBuilder();
         builder.Entity<KeyedEntity>();
-        var model = builder.GetEntityModel<KeyedEntity>();
+        var model = builder.GetEntityModel<KeyedEntity>()!;
         Assert.Equal(StreamTableType.Stream, model.StreamTableType);
     }
 }

@@ -16,6 +16,8 @@ using Xunit.Sdk;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
+#nullable enable
+
 [Collection("Schema")]
 public class SchemaRegistryResetTests
 {

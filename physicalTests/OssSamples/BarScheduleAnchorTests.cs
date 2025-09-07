@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Attributes;

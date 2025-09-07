@@ -27,9 +27,9 @@ public class TableCacheTests
             var parts = key.Split(NUL);
             return new Dummy
             {
-                Broker = parts.ElementAtOrDefault(0),
-                Symbol = parts.ElementAtOrDefault(1),
-                Ts = parts.ElementAtOrDefault(2),
+                Broker = parts.ElementAtOrDefault(0) ?? string.Empty,
+                Symbol = parts.ElementAtOrDefault(1) ?? string.Empty,
+                Ts = parts.ElementAtOrDefault(2) ?? string.Empty,
                 V = (int)val
             };
         }
