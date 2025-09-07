@@ -6,25 +6,30 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Kafka.Ksql.Linq.Infrastructure.KsqlDb;
 
 internal class KsqlDbClient : IKsqlDbClient, IDisposable
 {
     private readonly HttpClient _client;
+    private readonly ILogger<KsqlDbClient> _logger;
 
-    public KsqlDbClient(Uri baseAddress)
+    public KsqlDbClient(Uri baseAddress, ILogger<KsqlDbClient>? logger = null)
     {
         _client = new HttpClient { BaseAddress = baseAddress };
+        _logger = logger ?? Microsoft.Extensions.Logging.Abstractions.NullLogger<KsqlDbClient>.Instance;
     }
 
     public async Task<KsqlDbResponse> ExecuteStatementAsync(string statement)
     {
+        _logger.LogDebug("Executing KSQL statement: {Statement}", statement);
         var payload = new { ksql = statement, streamsProperties = new { } };
         var json = JsonSerializer.Serialize(payload);
         using var content = new StringContent(json, Encoding.UTF8, "application/json");
         using var response = await _client.PostAsync("/ksql", content);
         var body = await response.Content.ReadAsStringAsync();
+        _logger.LogDebug("KSQL response ({StatusCode}): {Body}", (int)response.StatusCode, body);
         var success = response.IsSuccessStatusCode && !body.Contains("\"error_code\"");
         return new KsqlDbResponse(success, body);
     }

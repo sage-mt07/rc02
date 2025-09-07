@@ -100,7 +100,7 @@ public abstract partial class KsqlContext : IKsqlContext
         DecimalPrecisionConfig.Configure(_dslOptions.Decimals);
 
         _schemaRegistryClient = new Lazy<ConfluentSchemaRegistry.ISchemaRegistryClient>(CreateSchemaRegistryClient);
-        _ksqlDbClient = new KsqlDbClient(GetDefaultKsqlDbUrl());
+        _ksqlDbClient = new KsqlDbClient(GetDefaultKsqlDbUrl(), loggerFactory?.CreateLogger<KsqlDbClient>());
 
         _loggerFactory = loggerFactory;
         _logger = _loggerFactory.CreateLoggerOrNull<KsqlContext>();
