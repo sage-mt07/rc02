@@ -33,7 +33,7 @@ internal class ModelBuilder : IModelBuilder
                            writeOnly ? EntityAccessMode.WriteOnly :
                            EntityAccessMode.ReadWrite;
 
-        return new EntityModelBuilder<T>(model);
+        return new EntityModelBuilder<T>(model, this);
     }
     public EntityModel? GetEntityModel<T>() where T : class
     {
@@ -58,6 +58,16 @@ internal class ModelBuilder : IModelBuilder
 
         var entityModel = CreateEntityModelFromType(entityType);
         _entityModels[entityType] = entityModel;
+    }
+
+    public void RemoveEntityModel<T>() where T : class
+    {
+        RemoveEntityModel(typeof(T));
+    }
+
+    public void RemoveEntityModel(Type entityType)
+    {
+        _entityModels.Remove(entityType);
     }
 
     public Dictionary<Type, EntityModel> GetAllEntityModels()

@@ -8,10 +8,12 @@ namespace Kafka.Ksql.Linq.Core.Modeling;
 public class EntityModelBuilder<T> : IEntityBuilder<T> where T : class
 {
     private readonly EntityModel _entityModel;
+    internal ModelBuilder Owner { get; }
 
-    internal EntityModelBuilder(EntityModel entityModel)
+    internal EntityModelBuilder(EntityModel entityModel, ModelBuilder owner)
     {
         _entityModel = entityModel ?? throw new ArgumentNullException(nameof(entityModel));
+        Owner = owner;
     }
     public IEntityBuilder<T> AsTable(string? topicName = null, bool useCache = true)
     {

@@ -1,0 +1,2 @@
+- remove original entity registration after QueryModel assignment so only derived bar_* models remain
+- ensure KsqlCreateStatementBuilder resolves sources via provided derived IDs

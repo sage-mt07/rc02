@@ -74,6 +74,26 @@ public class KsqlCreateStatementBuilderDslTests
         Assert.Contains("GROUP BY CustomerId", sql);
     }
 
+    [Fact]
+    public void Build_Uses_DerivedEntityIds()
+    {
+        var model = new KsqlQueryRoot()
+            .From<Order>()
+            .Select(o => new { o.Id })
+            .Build();
+
+        var sql = KsqlCreateStatementBuilder.Build(
+            "bar_1m_live",
+            model,
+            null,
+            null,
+            _ => "bar_1m_final");
+
+        Assert.Contains("CREATE STREAM bar_1m_live", sql);
+        Assert.Contains("FROM bar_1m_final", sql);
+        Assert.DoesNotContain("Order", sql);
+    }
+
     private static KsqlQueryModel BuildAggregateModel()
     {
         return new KsqlQueryRoot()

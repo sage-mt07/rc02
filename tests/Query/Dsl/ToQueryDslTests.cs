@@ -173,12 +173,12 @@ public class ToQueryDslTests
     {
         var builder = new ModelBuilder();
         builder.Entity<Order>();
-        var entityBuilder = builder.Entity<KeylessView>();
+        var entityBuilder = (EntityModelBuilder<KeylessView>)builder.Entity<KeylessView>();
 
         entityBuilder.ToQuery(q => q.From<Order>()
             .Select(o => new KeylessView { Name = "x" }));
 
-        var model = builder.GetEntityModel<KeylessView>()!;
+        var model = entityBuilder.GetModel();
         Assert.NotNull(model.QueryModel);
     }
 

@@ -346,6 +346,13 @@ public abstract class KsqlContext : IKsqlContext
         var models = modelBuilder.GetAllEntityModels();
         foreach (var (type, model) in models)
         {
+            if (model.QueryModel != null)
+            {
+                RegisterQueryModelMapping(model);
+                _entityModels.Remove(type);
+                continue;
+            }
+
             if (_entityModels.TryGetValue(type, out var existing))
             {
                 existing.SetStreamTableType(model.GetExplicitStreamTableType());
@@ -359,15 +366,7 @@ public abstract class KsqlContext : IKsqlContext
                 _entityModels[type] = model;
             }
 
-            // Register property metadata with MappingRegistry
-            if (model.QueryModel != null)
-            {
-                RegisterQueryModelMapping(model);
-            }
-            else
-            {
-                _mappingRegistry.RegisterEntityModel(model, genericValue: model.StreamTableType == StreamTableType.Table);
-            }
+            _mappingRegistry.RegisterEntityModel(model, genericValue: model.StreamTableType == StreamTableType.Table);
         }
     }
 

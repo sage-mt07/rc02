@@ -190,6 +190,16 @@ public class KsqlContextToQueryIntegrationTests
     }
 
     [Fact]
+    public void ToQuery_Removes_Base_Model()
+    {
+        var client = new StubSchemaRegistry();
+        using var ctx = new TestContext(client);
+
+        var models = ctx.GetEntityModels();
+        Assert.DoesNotContain(typeof(OrderView), models.Keys);
+    }
+
+    [Fact]
     public void ToQuery_SelectOrder_IsPreserved()
     {
         var client = new StubSchemaRegistry();
