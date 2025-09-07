@@ -59,7 +59,7 @@ internal class ExpressionAnalysisResult
                 _ => "bar_1m_live"
             };
             md = md.WithProperty($"input/{tf}Live", liveInput);
-            md = md.WithProperty($"input/{tf}Final", $"bar_{tf}_agg_final ⟂ bar_prev_1m");
+            md = md.WithProperty($"input/{tf}Final", liveInput);
         }
         return md;
     }

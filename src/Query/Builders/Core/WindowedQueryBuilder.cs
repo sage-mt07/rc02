@@ -20,10 +20,8 @@ internal static class WindowedQueryBuilder
             _ => string.Empty
         };
         var sb = new StringBuilder();
-        if (role == Role.Live)
+        if (role == Role.Live || role == Role.Final)
             sb.Append($"TABLE {input}");
-        else if (role == Role.Final)
-            sb.Append(QueryBuilderUtils.ApplyCompose_FinalNonNull(input));
         if (spec.Window)
             sb.Append(' ').Append(QueryBuilderUtils.ApplyWindowTumbling(tfStr));
         if (spec.Emit != null)
@@ -37,7 +35,10 @@ internal static class WindowedQueryBuilder
                 sb.Append(' ').Append(QueryBuilderUtils.ApplySync_HB1m(sync));
         }
         sb.Append(' ').Append(QueryBuilderUtils.ApplyTimeFrame(md));
-        return sb.ToString().Trim();
+        var sql = sb.ToString().Trim();
+        if (role == Role.Final && sql.Contains("COMPOSE(", System.StringComparison.OrdinalIgnoreCase))
+            throw new System.InvalidOperationException("Final SQL should not include COMPOSE()");
+        return sql;
     }
 
     private static Timeframe Parse(string tf)

@@ -1,6 +1,9 @@
 using System;
 using Kafka.Ksql.Linq.Query.Dsl;
 using Kafka.Ksql.Linq;
+using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Query.Pipeline;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query.Builders;
@@ -11,6 +14,15 @@ public class KsqlCreateWindowedStatementBuilderTests
     {
         public string Broker { get; set; } = string.Empty;
         public string Symbol { get; set; } = string.Empty;
+        public DateTime Timestamp { get; set; }
+        public double Bid { get; set; }
+    }
+
+    [KsqlTable]
+    private class RateTable
+    {
+        [KsqlKey(0)] public string Broker { get; set; } = string.Empty;
+        [KsqlKey(1)] public string Symbol { get; set; } = string.Empty;
         public DateTime Timestamp { get; set; }
         public double Bid { get; set; }
     }
@@ -51,6 +63,76 @@ public class KsqlCreateWindowedStatementBuilderTests
         Assert.True(map.ContainsKey("5m"));
         Assert.Contains("bar_1m_live", map["1m"]);
         Assert.Contains("bar_5m_live", map["5m"]);
+    }
+
+    [Fact]
+    public void Build_Final_1m_Emits_Windowstart_Arrow_And_Final()
+    {
+        var model = new KsqlQueryRoot()
+            .From<RateTable>()
+            .Tumbling(r => r.Timestamp, minutes: new[] { 1 })
+            .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
+            .Select(g => new { g.Key.Broker, g.Key.Symbol, Open = g.EarliestByOffset(x => x.Bid) })
+            .AsFinal()
+            .AsPush()
+            .Build();
+        var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.Build("bar_1m_final", model, "1m");
+        Assert.Contains("WINDOW TUMBLING (SIZE 1 MINUTES)", sql);
+        Assert.Contains("SELECT WINDOWSTART AS BucketStart", sql);
+        Assert.Contains("EMIT FINAL", sql);
+        Assert.Contains("GROUP BY KEY->BROKER, KEY->SYMBOL", sql);
+        Assert.Contains("KEY->BROKER AS Broker, KEY->SYMBOL AS Symbol", sql);
+        Assert.DoesNotContain("COMPOSE(", sql);
+    }
+
+    [Fact]
+    public void Build_Final_5m_Emits_Windowstart_Arrow_And_Final()
+    {
+        var model = new KsqlQueryRoot()
+            .From<RateTable>()
+            .Tumbling(r => r.Timestamp, minutes: new[] { 1, 5 })
+            .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
+            .Select(g => new { g.Key.Broker, g.Key.Symbol, Open = g.EarliestByOffset(x => x.Bid) })
+            .AsFinal()
+            .AsPush()
+            .Build();
+
+        var map = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.BuildAll(
+            "bar",
+            model,
+            tf => $"bar_{tf}_final");
+        var sql = map["5m"];
+        Assert.Contains("WINDOW TUMBLING (SIZE 5 MINUTES)", sql);
+        Assert.Contains("SELECT WINDOWSTART AS BucketStart", sql);
+        Assert.Contains("EMIT FINAL", sql);
+        Assert.Contains("GROUP BY KEY->BROKER, KEY->SYMBOL", sql);
+        Assert.Contains("KEY->BROKER AS Broker, KEY->SYMBOL AS Symbol", sql);
+        Assert.DoesNotContain("COMPOSE(", sql);
+    }
+
+    [Fact]
+    public void Build_Final_StreamTableJoin_Applies_Arrow_To_Table_Side()
+    {
+        var model = new KsqlQueryModel
+        {
+            SourceTypes = new[] { typeof(RateTable), typeof(Rate) },
+            JoinCondition = (Expression<Func<RateTable, Rate, bool>>)((t, s) => t.Broker == s.Broker && t.Symbol == s.Symbol),
+            WhereCondition = (Expression<Func<RateTable, Rate, bool>>)((t, s) => t.Broker != string.Empty && s.Symbol != string.Empty),
+            GroupByExpression = (Expression<Func<RateTable, Rate, object>>)((t, s) => new { t.Broker, s.Symbol }),
+            SelectProjection = (Expression<Func<RateTable, Rate, object>>)((t, s) => new { t.Broker, s.Symbol }),
+            IsAggregateQuery = true,
+            HasTumbling = true,
+            IsFinal = true,
+            ExecutionMode = QueryExecutionMode.PushQuery
+        };
+        model.Windows.Add("1m");
+
+        var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.Build("mix_1m_final", model, "1m");
+        Assert.Contains("SELECT WINDOWSTART AS BucketStart, KEY->BROKER AS Broker, i.Symbol AS Symbol", sql);
+        Assert.Contains("GROUP BY KEY->BROKER, Symbol", sql);
+        Assert.Contains("WHERE ((KEY->BROKER != Empty) AND (i.Symbol != Empty))", sql);
+        Assert.DoesNotContain("KEY->SYMBOL", sql);
+        Assert.DoesNotContain("COMPOSE(", sql);
     }
 }
 

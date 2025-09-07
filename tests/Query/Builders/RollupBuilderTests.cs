@@ -92,14 +92,18 @@ public class RollupBuilderTests
     }
 
     [Fact]
-    public void Final_Composes_AggFinal_Or_Prev1m_NonNull()
+    public void Final_Uses_Window_EmitFinal()
     {
         var md = BuildMetadata();
         var sql = FinalBuilder.Build(md, "5m");
-        Assert.Contains("COMPOSE(bar_5m_agg_final ⟂ bar_prev_1m)", sql);
+        Assert.Contains("TABLE bar_1m_live WINDOW TUMBLING(5m)", sql);
+        Assert.Contains("EMIT FINAL", sql);
         Assert.DoesNotContain("HB_1m", sql);
+        Assert.DoesNotContain("COMPOSE(", sql);
         var sql1 = FinalBuilder.Build(md, "1m");
+        Assert.Contains("TABLE 10sAgg WINDOW TUMBLING(1m)", sql1);
         Assert.Contains("SYNC HB_1m", sql1);
+        Assert.DoesNotContain("COMPOSE(", sql1);
     }
 
     [Fact]
@@ -129,6 +133,8 @@ public class RollupBuilderTests
         Assert.True(specAgg.Projector);
 
         var specFinal = RoleTraits.For(Role.Final, new Timeframe(5, "m"));
+        Assert.True(specFinal.Window);
+        Assert.Equal("FINAL", specFinal.Emit);
         Assert.False(specFinal.SyncHb1m);
     }
 }
