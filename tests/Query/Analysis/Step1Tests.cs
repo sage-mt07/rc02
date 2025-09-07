@@ -102,7 +102,7 @@ public class Step1Tests
         var live = specs.First(s => s.TargetId.StartsWith("bar_1m_live"));
         Assert.Contains("CHANGES", live.Operation);
         var final = specs.First(s => s.TargetId.StartsWith("bar_1m_final"));
-        Assert.Contains("Compose", final.Operation);
+        Assert.Contains("FINAL", final.Operation);
         Assert.NotEmpty(agg.BasedOnRef.JoinKeys);
     }
 
@@ -161,6 +161,77 @@ public class Step1Tests
         var liveWeek = entities.First(e => e.Id == "bar_1wk_live");
         Assert.Equal("bar_1m_final", liveWeek.InputHint);
         Assert.Contains("bar_1m_final", dag.Edges[liveWeek.Id]);
+    }
+
+    [Fact]
+    public void Planner_Uses_10sAgg_For_1m_Final()
+    {
+        var qao = new TumblingQao
+        {
+            TimeKey = "Timestamp",
+            Windows = new List<Timeframe> { new(1, "m") },
+            Keys = new[] { "Broker", "Symbol", "BucketStart" },
+            Projection = new[] { "Broker", "Symbol", "BucketStart" },
+            PocoShape = new[]
+            {
+                new ColumnShape("Broker", typeof(string), false),
+                new ColumnShape("Symbol", typeof(string), false),
+                new ColumnShape("Timestamp", typeof(DateTime), false),
+                new ColumnShape("BucketStart", typeof(DateTime), false)
+            },
+            BasedOn = new BasedOnSpec(new[] { "Broker" }, "Open", "Close", "MarketDate")
+        };
+        var (entities, _) = DerivationPlanner.Plan(qao);
+        var final1m = entities.First(e => e.Id == "bar_1m_final");
+        Assert.Equal("10sAgg", final1m.InputHint);
+    }
+
+    [Fact]
+    public void Planner_Connects_5m_Final_To_1m_Live()
+    {
+        var qao = new TumblingQao
+        {
+            TimeKey = "Timestamp",
+            Windows = new List<Timeframe> { new(1, "m"), new(5, "m") },
+            Keys = new[] { "Broker", "Symbol", "BucketStart" },
+            Projection = new[] { "Broker", "Symbol", "BucketStart" },
+            PocoShape = new[]
+            {
+                new ColumnShape("Broker", typeof(string), false),
+                new ColumnShape("Symbol", typeof(string), false),
+                new ColumnShape("Timestamp", typeof(DateTime), false),
+                new ColumnShape("BucketStart", typeof(DateTime), false)
+            },
+            BasedOn = new BasedOnSpec(new[] { "Broker" }, "Open", "Close", "MarketDate")
+        };
+        var (entities, dag) = DerivationPlanner.Plan(qao);
+        var final5m = entities.First(e => e.Id == "bar_5m_final");
+        Assert.Equal("bar_1m_live", final5m.InputHint);
+        Assert.Contains("bar_1m_live", dag.Edges[final5m.Id]);
+    }
+
+    [Fact]
+    public void Planner_Connects_Week_Final_To_1m_Final()
+    {
+        var qao = new TumblingQao
+        {
+            TimeKey = "Timestamp",
+            Windows = new List<Timeframe> { new(1, "m"), new(1, "wk") },
+            Keys = new[] { "Broker", "Symbol", "BucketStart" },
+            Projection = new[] { "Broker", "Symbol", "BucketStart" },
+            PocoShape = new[]
+            {
+                new ColumnShape("Broker", typeof(string), false),
+                new ColumnShape("Symbol", typeof(string), false),
+                new ColumnShape("Timestamp", typeof(DateTime), false),
+                new ColumnShape("BucketStart", typeof(DateTime), false)
+            },
+            BasedOn = new BasedOnSpec(new[] { "Broker" }, "Open", "Close", "MarketDate")
+        };
+        var (entities, dag) = DerivationPlanner.Plan(qao);
+        var finalWeek = entities.First(e => e.Id == "bar_1wk_final");
+        Assert.Equal("bar_1m_final", finalWeek.InputHint);
+        Assert.Contains("bar_1m_final", dag.Edges[finalWeek.Id]);
     }
 
     [Fact]

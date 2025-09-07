@@ -157,8 +157,7 @@ public class ChartChecklistTests
         Assert.Equal("Window(TUMBLING,1m)+Emit(FINAL+GRACE)", specs.First(s => s.TargetId == "bar_1m_agg_final").Operation);
         Assert.Equal("Window(TUMBLING,1m)+Emit(CHANGES)", specs.First(s => s.TargetId == "bar_1m_live").Operation);
         var final = specs.First(s => s.TargetId == "bar_1m_final");
-        Assert.Contains("bar_prev_1m", final.Sources);
-        Assert.Equal("Compose(AggFinal⟂BarPrev1m)", final.Operation);
+        Assert.Equal("Window(TUMBLING,1m)+Emit(FINAL)", final.Operation);
     }
 
     [Fact]
@@ -213,7 +212,7 @@ public class ChartChecklistTests
     }
 
     [Fact]
-    public void QueryAdapter_Composes_5m_Final_With_1m_Prev()
+    public void QueryAdapter_Builds_5m_Final_Window()
     {
         var qao = new TumblingQao
         {
@@ -234,9 +233,9 @@ public class ChartChecklistTests
         Assert.Contains(entities, e => e.Id == "bar_prev_1m" && e.Role == Role.Prev1m);
         var specs = QueryAdapter.Build(entities, dag);
         var final5m = specs.First(s => s.TargetId == "bar_5m_final");
-        Assert.Contains("bar_prev_1m", final5m.Sources);
-        Assert.Equal("Compose(AggFinal⟂BarPrev1m)", final5m.Operation);
-        Assert.Contains("bar_prev_1m", dag.Edges["bar_5m_final"]);
+        Assert.Contains("bar_1m_live", final5m.Sources);
+        Assert.Equal("Window(TUMBLING,5m)+Emit(FINAL)", final5m.Operation);
+        Assert.Contains("bar_1m_live", dag.Edges["bar_5m_final"]);
     }
 
     [Fact]

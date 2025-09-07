@@ -11,7 +11,7 @@ internal static class RoleTraits
         {
             Role.Live => new(true, "CHANGES", false, false, is1m),
             Role.AggFinal => new(true, "FINAL GRACE", true, false, false),
-            Role.Final => new(false, null, false, true, is1m),
+            Role.Final => new(true, "FINAL", true, false, is1m),
             _ => new(false, null, false, false, false)
         };
     }

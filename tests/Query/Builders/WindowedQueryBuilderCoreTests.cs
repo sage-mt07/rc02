@@ -40,17 +40,21 @@ public class WindowedQueryBuilderCoreTests
     }
 
     [Fact]
-    public void Core_Builds_Final_Compose_AggOrPrev_SyncsOnlyOn1m()
+    public void Core_Builds_Final_Window_EmitFinal_SyncsOnlyOn1m()
     {
         var md1 = BaseMd()
-            .WithProperty("input/1mFinal", "agg1")
+            .WithProperty("input/1mFinal", "src1")
             .WithProperty("sync/1mFinal", "HB_1m");
         var q1 = FinalBuilder.Build(md1, "1m");
-        Assert.Contains("COMPOSE(agg1)", q1);
+        Assert.StartsWith("TABLE src1", q1);
+        Assert.Contains("WINDOW TUMBLING(1m)", q1);
+        Assert.Contains("EMIT FINAL", q1);
         Assert.Contains("SYNC HB_1m", q1);
 
-        var md5 = BaseMd().WithProperty("input/5mFinal", "agg5");
+        var md5 = BaseMd().WithProperty("input/5mFinal", "src5");
         var q5 = FinalBuilder.Build(md5, "5m");
+        Assert.StartsWith("TABLE src5", q5);
+        Assert.Contains("WINDOW TUMBLING(5m)", q5);
         Assert.DoesNotContain("SYNC", q5);
     }
 

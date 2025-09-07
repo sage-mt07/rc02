@@ -20,10 +20,8 @@ internal static class WindowedQueryBuilder
             _ => string.Empty
         };
         var sb = new StringBuilder();
-        if (role == Role.Live)
+        if (role == Role.Live || role == Role.Final)
             sb.Append($"TABLE {input}");
-        else if (role == Role.Final)
-            sb.Append(QueryBuilderUtils.ApplyCompose_FinalNonNull(input));
         if (spec.Window)
             sb.Append(' ').Append(QueryBuilderUtils.ApplyWindowTumbling(tfStr));
         if (spec.Emit != null)
