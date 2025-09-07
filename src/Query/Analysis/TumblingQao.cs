@@ -15,6 +15,7 @@ internal record BasedOnSpec(
 
 internal class TumblingQao
 {
+    public string BaseTopicName { get; init; } = string.Empty;
     public string TimeKey { get; init; } = string.Empty;
     public IReadOnlyList<Timeframe> Windows { get; init; } = new List<Timeframe>();
     public IReadOnlyList<string> Keys { get; init; } = new List<string>();

@@ -11,6 +11,7 @@ public class DerivationPlannerTests
     {
         var qao = new TumblingQao
         {
+            BaseTopicName = "bar",
             TimeKey = "Timestamp",
             Windows = new[] { new Timeframe(5, "m") },
             Keys = new[] { "Id" },

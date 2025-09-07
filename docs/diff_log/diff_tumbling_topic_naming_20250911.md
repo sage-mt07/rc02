@@ -1,0 +1,2 @@
+- Added BaseTopicName to TumblingQao and wired through schema registration.
+- Derived tumbling entity names now prefix with BaseTopicName instead of fixed 'bar_'.
