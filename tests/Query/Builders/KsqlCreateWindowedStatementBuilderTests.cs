@@ -1,6 +1,7 @@
 using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Query.Dsl;
 using Kafka.Ksql.Linq.Query.Pipeline;
+using Kafka.Ksql.Linq.Query.Abstractions;
 using System;
 using System.Linq.Expressions;
 using Xunit;
@@ -119,8 +120,6 @@ public class KsqlCreateWindowedStatementBuilderTests
             WhereCondition = (Expression<Func<RateTable, Rate, bool>>)((t, s) => t.Broker != string.Empty && s.Symbol != string.Empty),
             GroupByExpression = (Expression<Func<RateTable, Rate, object>>)((t, s) => new { t.Broker, s.Symbol }),
             SelectProjection = (Expression<Func<RateTable, Rate, object>>)((t, s) => new { t.Broker, s.Symbol }),
-            IsAggregateQuery = true,
-            HasTumbling = true,
             IsFinal = true,
             ExecutionMode = QueryExecutionMode.PushQuery
         };
@@ -132,6 +131,30 @@ public class KsqlCreateWindowedStatementBuilderTests
         Assert.Contains("WHERE ((KEY->BROKER != Empty) AND (i.Symbol != Empty))", sql);
         Assert.DoesNotContain("KEY->SYMBOL", sql);
         Assert.DoesNotContain("COMPOSE(", sql);
+    }
+
+    [Fact]
+    public void DetermineType_Tumbling_Returns_Table()
+    {
+        var model = new KsqlQueryRoot()
+            .From<Rate>()
+            .Tumbling(r => r.Timestamp, minutes: new[] { 1 })
+            .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
+            .Select(g => new { g.Key.Broker, g.Key.Symbol, g.Key.BucketStart })
+            .AsPush()
+            .Build();
+        Assert.Equal(StreamTableType.Table, model.DetermineType());
+    }
+
+    [Fact]
+    public void DetermineType_NoAggregation_Returns_Stream()
+    {
+        var model = new KsqlQueryRoot()
+            .From<Rate>()
+            .Select(r => r)
+            .AsPush()
+            .Build();
+        Assert.Equal(StreamTableType.Stream, model.DetermineType());
     }
 }
 

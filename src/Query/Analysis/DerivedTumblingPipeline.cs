@@ -66,7 +66,7 @@ internal static class DerivedTumblingPipeline
         var dt = resolveType(name);
         model.EntityType = dt;
         model.TopicName = name;
-        model.SetStreamTableType(StreamTableType.Table);
+        model.SetStreamTableType(queryModel.DetermineType());
         var ns = model.AdditionalSettings.TryGetValue("namespace", out var nsObj) ? nsObj?.ToString() : null;
         mapping.RegisterEntityModel(model, genericValue: true, overrideNamespace: ns);
         registry[dt] = model;

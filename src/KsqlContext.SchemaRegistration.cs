@@ -317,7 +317,7 @@ public abstract partial class KsqlContext
         if (model.QueryModel != null)
             RegisterQueryModelMapping(model);
 
-        if (model.QueryModel?.HasTumbling == true && model.QueryModel.Windows.Count > 0)
+        if (model.QueryModel?.HasTumbling() == true)
         {
             var qao = BuildQao(model);
             await DerivedTumblingPipeline.RunAsync(
@@ -331,9 +331,10 @@ public abstract partial class KsqlContext
             return;
         }
 
-        var isTable = model.GetExplicitStreamTableType() == StreamTableType.Table || model.QueryModel?.IsAggregateQuery == true;
+        var isTable = model.GetExplicitStreamTableType() == StreamTableType.Table ||
+            model.QueryModel?.DetermineType() == StreamTableType.Table;
 
-        if (model.QueryModel?.IsAggregateQuery == true)
+        if (model.QueryModel?.DetermineType() == StreamTableType.Table)
 
         {
             Func<Type, string> resolver = t =>
@@ -465,7 +466,8 @@ public abstract partial class KsqlContext
         if (model.QueryModel == null)
             return;
 
-        var isTable = model.GetExplicitStreamTableType() == StreamTableType.Table || model.QueryModel!.IsAggregateQuery;
+        var isTable = model.GetExplicitStreamTableType() == StreamTableType.Table ||
+            model.QueryModel!.DetermineType() == StreamTableType.Table;
         _mappingRegistry.RegisterQueryModel(
             model.EntityType,
             model.QueryModel!,

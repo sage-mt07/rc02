@@ -294,7 +294,7 @@ public abstract partial class KsqlContext : IKsqlContext
     public async Task StartHeartbeatRunnerAsync(CancellationToken appStopping)
     {
         if (_hbRunner != null) return;
-        if (!_entityModels.Values.Any(m => m.QueryModel?.HasTumbling == true)) return;
+        if (!_entityModels.Values.Any(m => m.QueryModel?.HasTumbling() == true)) return;
 
         var scheduleType = _entityModels.Values
             .Select(m => m.QueryModel?.BasedOnType)

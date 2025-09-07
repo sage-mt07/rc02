@@ -343,8 +343,7 @@ public class ToQueryDslTests
             WhereCondition = (Expression<Func<OrderTable, Customer, bool>>)((o, c) => o.Id > 0 && c.Id > 0),
             GroupByExpression = (Expression<Func<OrderTable, Customer, object>>)((o, c) => new { o.Id, c.Name }),
             SelectProjection = (Expression<Func<OrderTable, Customer, object>>)((o, c) => new { o.Id, c.Name }),
-            WithinSeconds = 300,
-            IsAggregateQuery = true
+            WithinSeconds = 300
         };
 
         var sql = KsqlCreateStatementBuilder.Build("view", model);
