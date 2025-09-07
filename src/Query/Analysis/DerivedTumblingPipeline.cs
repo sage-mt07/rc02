@@ -6,6 +6,7 @@ using Kafka.Ksql.Linq.Query.Abstractions;
 using Kafka.Ksql.Linq.Mapping;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -19,18 +20,22 @@ internal static class DerivedTumblingPipeline
         Func<string, Task> execute,
         Func<string, Type> resolveType,
         MappingRegistry mapping,
-        IDictionary<Type, EntityModel> registry,
+        ConcurrentDictionary<Type, EntityModel> registry,
         ILogger logger)
     {
         var entities = PlanDerivedEntities(qao);
         var models = AdaptModels(entities);
-        foreach (var m in models)
+        await Parallel.ForEachAsync(models, async (m, _) =>
         {
             var role = Enum.Parse<Role>((string)m.AdditionalSettings["role"]);
             var qm = queryModel.Clone();
             qm.IsFinal = role is Role.Final or Role.AggFinal;
-            await BuildDdlAndRegister(qao.BaseTopicName, qm, m, role, execute, resolveType, mapping, registry, logger);
-        }
+            var (ddl, dt, ns) = BuildDdlAndRegister(qao.BaseTopicName, qm, m, role, resolveType);
+            logger.LogInformation("KSQL DDL (derived {Entity}): {Sql}", m.TopicName, ddl);
+            await execute(ddl);
+            mapping.RegisterEntityModel(m, genericValue: true, overrideNamespace: ns);
+            registry[dt] = m;
+        });
     }
 
     public static IReadOnlyList<DerivedEntity> PlanDerivedEntities(TumblingQao qao)
@@ -39,16 +44,12 @@ internal static class DerivedTumblingPipeline
     public static IReadOnlyList<EntityModel> AdaptModels(IReadOnlyList<DerivedEntity> entities)
         => EntityModelAdapter.Adapt(entities);
 
-    private static async Task BuildDdlAndRegister(
+    private static (string ddl, Type entityType, string? ns) BuildDdlAndRegister(
         string baseName,
         KsqlQueryModel queryModel,
         EntityModel model,
         Role role,
-        Func<string, Task> execute,
-        Func<string, Type> resolveType,
-        MappingRegistry mapping,
-        IDictionary<Type, EntityModel> registry,
-        ILogger logger)
+        Func<string, Type> resolveType)
     {
         var tf = (string)model.AdditionalSettings["timeframe"];
         var name = role switch
@@ -61,14 +62,11 @@ internal static class DerivedTumblingPipeline
             _ => $"{baseName}_{tf}"
         };
         var ddl = KsqlCreateWindowedStatementBuilder.Build(name, queryModel, tf);
-        logger.LogInformation("KSQL DDL (derived {Entity}): {Sql}", name, ddl);
-        await execute(ddl);
         var dt = resolveType(name);
         model.EntityType = dt;
         model.TopicName = name;
         model.SetStreamTableType(queryModel.DetermineType());
         var ns = model.AdditionalSettings.TryGetValue("namespace", out var nsObj) ? nsObj?.ToString() : null;
-        mapping.RegisterEntityModel(model, genericValue: true, overrideNamespace: ns);
-        registry[dt] = model;
+        return (ddl, dt, ns);
     }
 }

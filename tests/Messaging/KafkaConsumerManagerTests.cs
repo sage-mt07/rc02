@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
@@ -48,7 +49,7 @@ public class KafkaConsumerManagerTests
         var manager = new KafkaConsumerManager(
             new MappingRegistry(),
             Options.Create(options),
-            new Dictionary<Type, EntityModel>(),
+            new ConcurrentDictionary<Type, EntityModel>(),
             new Mock<IDlqProducer>().Object,
             new ManualCommitManager(),
             new LeadershipFlag(),
@@ -134,7 +135,7 @@ public class KafkaConsumerManagerTests
         var manager = new KafkaConsumerManager(
             new MappingRegistry(),
             options,
-            new Dictionary<Type, EntityModel>(),
+            new ConcurrentDictionary<Type, EntityModel>(),
             new Mock<IDlqProducer>().Object,
             new ManualCommitManager(),
             new LeadershipFlag(),

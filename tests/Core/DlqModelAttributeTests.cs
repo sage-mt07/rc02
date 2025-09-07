@@ -5,6 +5,7 @@ using Kafka.Ksql.Linq.Mapping;
 using Kafka.Ksql.Linq.Messaging;
 using Kafka.Ksql.Linq.Query.Abstractions;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -32,7 +33,7 @@ public class DlqModelAttributeTests
         typeof(KsqlContext).GetField("_mappingRegistry", BindingFlags.Instance | BindingFlags.NonPublic)!
             .SetValue(ctx, new MappingRegistry());
         typeof(KsqlContext).GetField("_entityModels", BindingFlags.Instance | BindingFlags.NonPublic)!
-            .SetValue(ctx, new Dictionary<Type, EntityModel>());
+            .SetValue(ctx, new ConcurrentDictionary<Type, EntityModel>());
         return ctx;
     }
 

@@ -13,6 +13,7 @@ using Kafka.Ksql.Linq.Runtime.Heartbeat;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -27,7 +28,7 @@ internal class KafkaConsumerManager : IDisposable
     private readonly KsqlDslOptions _options;
     private readonly ILogger? _logger;
     private readonly Lazy<ConfluentSchemaRegistry.ISchemaRegistryClient> _schemaRegistryClient;
-    private readonly Dictionary<Type, EntityModel> _entityModels;
+    private readonly ConcurrentDictionary<Type, EntityModel> _entityModels;
     private readonly MappingRegistry _mappingRegistry;
     private readonly DlqOptions _dlq;
     private readonly IRateLimiter _limiter;
@@ -51,7 +52,7 @@ internal class KafkaConsumerManager : IDisposable
     public KafkaConsumerManager(
         MappingRegistry mapping,
         IOptions<KsqlDslOptions> options,
-        Dictionary<Type, EntityModel> entityModels,
+        ConcurrentDictionary<Type, EntityModel> entityModels,
         IDlqProducer dlqProducer,
         ICommitManager commitManager,
         ILeadershipFlag flag,

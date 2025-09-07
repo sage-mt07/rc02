@@ -6,6 +6,7 @@ using Kafka.Ksql.Linq.Query.Abstractions;
 using Kafka.Ksql.Linq.Query.Dsl;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -50,7 +51,7 @@ public class EnsureQueryEntityDdlAsyncTests
         private DummyContext() : base(new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build()) { }
     }
 
-    private static DummyContext CreateContext(CapturingClient client, ListLogger logger, Dictionary<Type, EntityModel> models)
+    private static DummyContext CreateContext(CapturingClient client, ListLogger logger, ConcurrentDictionary<Type, EntityModel> models)
     {
         var ctx = (DummyContext)RuntimeHelpers.GetUninitializedObject(typeof(DummyContext));
         var dsl = new KsqlDslOptions();
@@ -71,7 +72,7 @@ public class EnsureQueryEntityDdlAsyncTests
     {
         var client = new CapturingClient();
         var logger = new ListLogger();
-        var models = new Dictionary<Type, EntityModel>();
+        var models = new ConcurrentDictionary<Type, EntityModel>();
 
         models[typeof(Source)] = new EntityModel
         {
@@ -116,7 +117,7 @@ public class EnsureQueryEntityDdlAsyncTests
     {
         var client = new CapturingClient();
         var logger = new ListLogger();
-        var models = new Dictionary<Type, EntityModel>();
+        var models = new ConcurrentDictionary<Type, EntityModel>();
 
         models[typeof(Source)] = new EntityModel
         {
@@ -165,7 +166,7 @@ public class EnsureQueryEntityDdlAsyncTests
     {
         var client = new CapturingClient();
         var logger = new ListLogger();
-        var models = new Dictionary<Type, EntityModel>();
+        var models = new ConcurrentDictionary<Type, EntityModel>();
 
         models[typeof(Source)] = new EntityModel
         {
@@ -212,7 +213,7 @@ public class EnsureQueryEntityDdlAsyncTests
     {
         var client = new CapturingClient();
         var logger = new ListLogger();
-        var models = new Dictionary<Type, EntityModel>();
+        var models = new ConcurrentDictionary<Type, EntityModel>();
 
         models[typeof(Source)] = new EntityModel
         {
