@@ -37,7 +37,6 @@ internal static class EntityModelAdapter
             model.AdditionalSettings["timeframe"] = $"{e.Timeframe.Value}{e.Timeframe.Unit}";
             if (e.SyncHint != null) model.AdditionalSettings[$"sync"] = e.SyncHint;
             if (e.InputHint != null) model.AdditionalSettings[$"input"] = e.InputHint;
-            if (e.TopicHint != null) model.AdditionalSettings[$"topicCandidate"] = e.TopicHint;
             var nsSource = e.TopicHint ?? e.Id;
             if (!string.IsNullOrWhiteSpace(nsSource))
             {

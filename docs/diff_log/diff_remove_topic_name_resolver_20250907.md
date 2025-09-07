@@ -1,0 +1,2 @@
+- Removed `TopicNameResolver` and its topic naming logic
+- Dropped `topicCandidate` propagation in `EntityModelAdapter`
