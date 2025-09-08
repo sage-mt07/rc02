@@ -1,0 +1,1 @@
+- enforce single WindowStart() projection for windowed queries in DDL/DML generators.
