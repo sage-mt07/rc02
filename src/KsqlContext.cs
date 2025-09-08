@@ -319,7 +319,7 @@ public abstract partial class KsqlContext : IKsqlContext
             BootstrapServers = _dslOptions.Common.BootstrapServers
         }).Build();
         var sender = new KafkaHeartbeatSender(producer, _leaderFlag, _dslOptions.Heartbeat.Topic);
-        var planner = new HeartbeatPlanner(TimeSpan.Zero, Array.Empty<HeartbeatItem>(), _marketScheduleProvider);
+        var planner = new HeartbeatPlanner(_dslOptions.Heartbeat.Grace, Array.Empty<HeartbeatItem>(), _marketScheduleProvider);
         _hbRunner = new HeartbeatRunner(planner, sender, 0);
         _hbRunner.Start(appStopping);
     }

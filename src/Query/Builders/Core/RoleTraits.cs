@@ -11,12 +11,11 @@ internal static class RoleTraits
 {
     public static OperationSpec For(Role role, Timeframe tf)
     {
-        var is1m = tf.Unit == "m" && tf.Value == 1;
         return role switch
         {
-            Role.Live => new(true, "CHANGES", false, false, is1m),
+            Role.Live => new(true, "CHANGES", false, false, true),
             Role.AggFinal => new(true, "FINAL GRACE", true, false, false),
-            Role.Final => new(true, "FINAL", true, false, is1m),
+            Role.Final => new(true, "FINAL", true, false, true),
             _ => new(false, null, false, false, false)
         };
     }

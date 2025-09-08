@@ -1,18 +1,21 @@
 using Confluent.SchemaRegistry;
 using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Configuration;
+using Kafka.Ksql.Linq.Configuration.Messaging;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Dlq;
 using Kafka.Ksql.Linq.Core.Modeling;
 using Kafka.Ksql.Linq.Mapping;
 using Kafka.Ksql.Linq.Messaging.Consumers;
 using Kafka.Ksql.Linq.Messaging.Producers;
+using Kafka.Ksql.Linq.Query.Dsl;
 using Kafka.Ksql.Linq.Runtime.Heartbeat;
 using Microsoft.Extensions.Options;
 using Moq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,23 +50,13 @@ public class KsqlContextRunnerTests
 
     private class TumblingContext : KsqlContext
     {
-        public TumblingContext() : base(new KsqlDslOptions())
+        public TumblingContext(KsqlDslOptions? options = null) : base(options ?? new KsqlDslOptions())
         {
             typeof(KsqlContext).GetField("_schemaRegistryClient", BindingFlags.NonPublic | BindingFlags.Instance)!
                 .SetValue(this, new Lazy<ISchemaRegistryClient>(() => new Mock<ISchemaRegistryClient>().Object));
         }
         protected override bool SkipSchemaRegistration => true;
-        protected override void OnModelCreating(IModelBuilder builder)
-        {
-            builder.Entity<MarketSchedule>();
-            builder.Entity<TickView>().ToQuery(q => q.From<Tick>()
-                .TimeFrame<MarketSchedule>(
-                    (r, s) => r.Broker == s.Broker && r.Symbol == s.Symbol && s.Open <= r.Timestamp && r.Timestamp < s.Close,
-                    s => s.MarketDate)
-                .Tumbling(t => t.Timestamp, minutes: new[] { 1 })
-                .GroupBy(t => new { t.Broker, t.Symbol, BucketStart = t.Timestamp })
-                .Select(g => new TickView { Broker = g.Key.Broker, Symbol = g.Key.Symbol, BucketStart = g.Key.BucketStart }));
-        }
+        protected override void OnModelCreating(IModelBuilder builder) { }
     }
 
     private class FakeManager : KafkaConsumerManager
@@ -164,5 +157,44 @@ public class KsqlContextRunnerTests
 
         ctx.StartHeartbeatRunnerAsync(CancellationToken.None).GetAwaiter().GetResult();
         setMock.Verify(s => s.ToListAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public void StartHeartbeatRunner_Uses_Grace_From_Options()
+    {
+        var opts = new KsqlDslOptions { Heartbeat = new HeartbeatOptions { Grace = TimeSpan.FromSeconds(5) } };
+        var ctx = new TumblingContext(opts);
+        var fake = new FakeManager();
+        typeof(KsqlContext).GetField("_consumerManager", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(ctx, fake);
+
+        var setMock = new Mock<IEntitySet<MarketSchedule>>();
+        setMock.Setup(s => s.ToListAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new List<MarketSchedule>());
+        typeof(KsqlContext).GetField("_entitySets", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(ctx, new Dictionary<Type, object> { { typeof(MarketSchedule), setMock.Object } });
+
+        var qm = new KsqlQueryModel { BasedOnType = typeof(MarketSchedule) };
+        qm.Windows.Add("1");
+        var model = new EntityModel { EntityType = typeof(Tick), QueryModel = qm };
+        var models = new ConcurrentDictionary<Type, EntityModel>();
+        models[typeof(Tick)] = model;
+        typeof(KsqlContext).GetField("_entityModels", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(ctx, models);
+
+        var provider = new Mock<IMarketScheduleProvider>();
+        provider.Setup(p => p.InitializeAsync(typeof(MarketSchedule), It.IsAny<IEnumerable>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        typeof(KsqlContext).GetField("_marketScheduleProvider", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(ctx, provider.Object);
+
+        ctx.StartHeartbeatRunnerAsync(CancellationToken.None).GetAwaiter().GetResult();
+
+        var runner = (HeartbeatRunner)typeof(KsqlContext).GetField("_hbRunner", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .GetValue(ctx)!;
+        var planner = (HeartbeatPlanner)typeof(HeartbeatRunner).GetField("_planner", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .GetValue(runner)!;
+        var grace = (TimeSpan)typeof(HeartbeatPlanner).GetField("_grace", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .GetValue(planner)!;
+        Assert.Equal(TimeSpan.FromSeconds(5), grace);
     }
 }

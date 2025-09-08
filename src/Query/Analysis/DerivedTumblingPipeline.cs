@@ -63,7 +63,7 @@ internal static class DerivedTumblingPipeline
             Role.Live => $"{baseName}_{tf}_live",
             Role.Final => $"{baseName}_{tf}_final",
             Role.Prev1m => $"{baseName}_prev_1m",
-            Role.Hb => $"{baseName}_hb_1m",
+            Role.Hb => $"{baseName}_hb_{tf}",
             _ => $"{baseName}_{tf}"
         };
         var ddl = KsqlCreateWindowedStatementBuilder.Build(name, qm, tf);
