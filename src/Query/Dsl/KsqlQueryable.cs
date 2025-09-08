@@ -66,6 +66,9 @@ public class KsqlQueryable<T1> : IKsqlQueryable, IScheduledScope<T1>
         DayOfWeek? week = null,
         TimeSpan? grace = null)
     {
+        _model.TimeKey = ExtractPropertyName(time);
+        if (grace.HasValue)
+            _model.GraceSeconds = (int)Math.Ceiling(grace.Value.TotalSeconds);
         if (minutes != null) foreach (var m in minutes) _model.Windows.Add($"{m}m");
         if (hours != null) foreach (var h in hours) _model.Windows.Add($"{h}h");
         if (days != null) foreach (var d in days) _model.Windows.Add($"{d}d");
