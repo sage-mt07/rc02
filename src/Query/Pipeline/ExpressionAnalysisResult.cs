@@ -72,8 +72,7 @@ internal class ExpressionAnalysisResult
             {
                 var liveInput = tf switch
                 {
-                    "1m" => "10sAgg",
-                    "1wk" => $"{baseId}_1m_final",
+                    "1wk" => $"{baseId}_1d_live",
                     _ => $"{baseId}_1m_live"
                 };
                 md = md.WithProperty($"input/{tf}Live", liveInput);

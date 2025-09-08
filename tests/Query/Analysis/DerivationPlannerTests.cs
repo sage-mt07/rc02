@@ -53,7 +53,7 @@ public class DerivationPlannerTests
 
         Assert.Contains(entities, e => e.Id == "bar_1m_agg_final" && e.Role == Role.AggFinal);
         var live = Assert.Single(entities, e => e.Id == "bar_1m_live" && e.Role == Role.Live);
-        Assert.Equal("10sAgg", live.InputHint);
+        Assert.Equal("bar_1m_live", live.InputHint);
         Assert.Equal("BAR_HB_1M", live.SyncHint);
         var final = Assert.Single(entities, e => e.Id == "bar_1m_final" && e.Role == Role.Final);
         Assert.Equal("bar_1m_agg_final", final.InputHint);
@@ -80,7 +80,8 @@ public class DerivationPlannerTests
         Assert.Equal("BAR_HB_5M", final.SyncHint);
         Assert.Equal("bar_prev_1m", final.PrevHint);
         Assert.Contains(entities, e => e.Id == "bar_hb_5m" && e.Role == Role.Hb);
-        Assert.DoesNotContain(entities, e => e.Role == Role.Prev1m);
+        Assert.Contains(entities, e => e.Id == "bar_hb_1m" && e.Role == Role.Hb);
+        Assert.Contains(entities, e => e.Id == "bar_prev_1m" && e.Role == Role.Prev1m);
     }
 
     [Fact]
@@ -102,7 +103,7 @@ public class DerivationPlannerTests
         var live1 = Assert.Single(entities, e => e.Id == "bar_1h_live" && e.Role == Role.Live);
         Assert.Equal("bar_1m_live", live1.InputHint);
         var live3 = Assert.Single(entities, e => e.Id == "bar_3h_live" && e.Role == Role.Live);
-        Assert.Equal("bar_1h_live", live3.InputHint);
+        Assert.Equal("bar_1m_live", live3.InputHint);
     }
 
     [Fact]
@@ -114,7 +115,7 @@ public class DerivationPlannerTests
         var liveH = Assert.Single(entities, e => e.Id == "bar_1h_live" && e.Role == Role.Live);
         Assert.Equal("bar_1m_live", liveH.InputHint);
         var liveD = Assert.Single(entities, e => e.Id == "bar_1d_live" && e.Role == Role.Live);
-        Assert.Equal("bar_1h_live", liveD.InputHint);
+        Assert.Equal("bar_1m_live", liveD.InputHint);
     }
 
     [Fact]
