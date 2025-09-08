@@ -436,17 +436,23 @@ public abstract partial class KsqlContext
             var keys = m.KeyProperties.Select(p => p.Name).ToArray();
             var basedOnKeys = m.QueryModel.BasedOnJoinKeys.Count > 0 ? m.QueryModel.BasedOnJoinKeys.ToArray() : keys;
             var dayKey = PropertyName(m.QueryModel.BasedOnDayKey);
+            var timeKey = m.AllProperties.FirstOrDefault(p => p.GetCustomAttribute<KsqlTimestampAttribute>() != null)?.Name
+                ?? m.QueryModel!.TimeKey
+                ?? "Timestamp";
+            var projection = m.AllProperties.Select(p => p.Name).Where(n => !keys.Contains(n)).ToArray();
+            var basedOnOpen = m.QueryModel.BasedOnOpen ?? string.Empty;
+            var basedOnClose = m.QueryModel.BasedOnClose ?? string.Empty;
             return new TumblingQao
             {
-                TimeKey = m.QueryModel!.TimeKey ?? "Timestamp",
+                TimeKey = timeKey,
                 Windows = frames,
                 Keys = keys,
-                Projection = keys,
+                Projection = projection,
                 PocoShape = shape,
                 BasedOn = new BasedOnSpec(
                     basedOnKeys,
-                    m.QueryModel.BasedOnOpen ?? string.Empty,
-                    m.QueryModel.BasedOnClose ?? string.Empty,
+                    basedOnOpen,
+                    basedOnClose,
                     dayKey,
                     m.QueryModel.BasedOnOpenInclusive,
                     m.QueryModel.BasedOnCloseInclusive),
