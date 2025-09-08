@@ -66,7 +66,7 @@ public class KsqlQueryable<T1> : IKsqlQueryable, IScheduledScope<T1>
         DayOfWeek? week = null,
         TimeSpan? grace = null)
     {
-        _model.TimeKey = ExtractPropertyName(time);
+        _ = time;
         if (grace.HasValue)
             _model.GraceSeconds = (int)Math.Ceiling(grace.Value.TotalSeconds);
         if (minutes != null) foreach (var m in minutes) _model.Windows.Add($"{m}m");
@@ -211,10 +211,4 @@ public class KsqlQueryable<T1> : IKsqlQueryable, IScheduledScope<T1>
 
     public KsqlQueryModel Build() => _model;
 
-    private static string ExtractPropertyName(Expression expression)
-    {
-        return expression is LambdaExpression lambda && lambda.Body is MemberExpression member
-            ? member.Member.Name
-            : throw new ArgumentException("The timestamp property must be specified using a property access expression.");
-    }
 }
