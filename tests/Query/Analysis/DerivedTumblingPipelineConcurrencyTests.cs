@@ -59,7 +59,7 @@ public class DerivedTumblingPipelineConcurrencyTests
 
         await DerivedTumblingPipeline.RunAsync(qao, baseModel, model, Exec, Resolver, mapping, registry, new LoggerFactory().CreateLogger("test"));
 
-        var expected = 7; // 1m: AggFinal/Live/Final + Hb, 5m: AggFinal/Live/Final
+        var expected = 8; // 1m: AggFinal/Live/Final + Hb + Prev, 5m: AggFinal/Live/Final
         Assert.Equal(expected, registry.Count);
         Assert.Equal(expected, ddls.Count);
     }
