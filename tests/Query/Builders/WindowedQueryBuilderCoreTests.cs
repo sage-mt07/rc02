@@ -44,12 +44,14 @@ public class WindowedQueryBuilderCoreTests
     {
         var md1 = BaseMd()
             .WithProperty("input/1mFinal", "src1")
-            .WithProperty("sync/1mFinal", "HB_1m");
+            .WithProperty("sync/1mFinal", "HB_1m")
+            .WithProperty("prev/1mFinal", "bar_prev_1m");
         var q1 = FinalBuilder.Build(md1, "1m");
         Assert.StartsWith("TABLE src1", q1);
         Assert.Contains("WINDOW TUMBLING(1m)", q1);
         Assert.Contains("EMIT FINAL", q1);
         Assert.Contains("SYNC HB_1m", q1);
+        Assert.Contains("PREV bar_prev_1m", q1);
         Assert.DoesNotContain("COMPOSE(", q1);
 
         var md5 = BaseMd().WithProperty("input/5mFinal", "src5");

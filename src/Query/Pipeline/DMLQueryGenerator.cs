@@ -408,6 +408,9 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
         var visitor = new MethodCallCollectorVisitor();
         visitor.Visit(expression);
         var result = visitor.Result;
+        var type = expression.Type.IsGenericType ? expression.Type.GetGenericArguments().FirstOrDefault() : null;
+        if (type != null)
+            result.PocoType = type;
         if (result.Windows.Count > 0)
         {
             if (result.TimeKey == null)

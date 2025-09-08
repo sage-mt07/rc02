@@ -27,4 +27,6 @@ internal static class QueryBuilderUtils
     public static string ApplyProjector_BucketStartFromWindowStart() => "SELECT WINDOWSTART AS BucketStart";
 
     public static string ApplySync_HB1m(string sync) => $"SYNC {sync}";
+
+    public static string ApplyPrev_1m(string prev) => $"PREV {prev}";
 }

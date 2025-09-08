@@ -80,7 +80,8 @@ internal static class DerivationPlanner
                 KeyShape = keyShapes,
                 ValueShape = valueShapes,
                 InputHint = finalInput,
-                SyncHint = $"{baseId}_prev_1m",
+                SyncHint = hbId.ToUpperInvariant(),
+                PrevHint = $"{baseId}_prev_1m",
                 BasedOnSpec = basedOn,
                 WeekAnchor = qao.WeekAnchor
             };

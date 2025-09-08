@@ -1,0 +1,1 @@
+- derive prev and heartbeat topics from POCO's KsqlTopic attribute

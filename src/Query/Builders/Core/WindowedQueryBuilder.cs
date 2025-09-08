@@ -34,6 +34,12 @@ internal static class WindowedQueryBuilder
             if (sync != null)
                 sb.Append(' ').Append(QueryBuilderUtils.ApplySync_HB1m(sync));
         }
+        if (role == Role.Final)
+        {
+            var prev = md.GetProperty<string>($"prev/{tfStr}{roleName}");
+            if (prev != null)
+                sb.Append(' ').Append(QueryBuilderUtils.ApplyPrev_1m(prev));
+        }
         sb.Append(' ').Append(QueryBuilderUtils.ApplyTimeFrame(md));
         var sql = sb.ToString().Trim();
         if (role == Role.Final && sql.Contains("COMPOSE(", System.StringComparison.OrdinalIgnoreCase))
