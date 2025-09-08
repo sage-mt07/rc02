@@ -158,6 +158,21 @@ public class KsqlCreateWindowedStatementBuilderTests
     }
 
     [Fact]
+    public void Build_Final_Uses_Custom_WindowStart_Alias()
+    {
+        var model = new KsqlQueryRoot()
+            .From<RateTable>()
+            .Tumbling(r => r.Timestamp, minutes: new[] { 1 })
+            .GroupBy(r => new { r.Broker, r.Symbol, StartAt = r.Timestamp })
+            .Select(g => new { g.Key.Broker, g.Key.Symbol, StartAt = g.WindowStart(), Open = g.EarliestByOffset(x => x.Bid) })
+            .AsFinal()
+            .AsPush()
+            .Build();
+        var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.Build("bar_1m_final", model, "1m");
+        Assert.Contains("SELECT WINDOWSTART AS StartAt", sql);
+    }
+
+    [Fact]
     public void Build_NoWindow_Creates_Stream()
     {
         var model = new KsqlQueryRoot()
@@ -168,6 +183,30 @@ public class KsqlCreateWindowedStatementBuilderTests
 
         var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateStatementBuilder.Build("rates", model);
         Assert.StartsWith("CREATE STREAM rates", sql);
+    }
+
+    [Fact]
+    public void InjectWindowStart_Handles_Complex_Select()
+    {
+        var sql = "SELECT Price, CONCAT('BucketStart', Symbol) AS Label, Value AS BucketStartValue FROM Rates GROUP BY BucketStart";
+        var result = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.InjectWindowStart(sql);
+        Assert.Equal("SELECT WINDOWSTART AS BucketStart, Price, CONCAT('BucketStart', Symbol) AS Label, Value AS BucketStartValue FROM Rates GROUP BY BucketStart", result);
+    }
+
+    [Fact]
+    public void InjectWindowStart_Does_Not_Duplicate()
+    {
+        var sql = "SELECT WINDOWSTART AS StartAt, Price FROM Rates";
+        var result = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.InjectWindowStart(sql);
+        Assert.Equal(sql, result);
+    }
+
+    [Fact]
+    public void InjectWindowStart_Uses_Custom_Alias()
+    {
+        var sql = "SELECT Price, WINDOWSTART AS StartAt FROM Rates";
+        var result = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.InjectWindowStart(sql);
+        Assert.Equal("SELECT WINDOWSTART AS StartAt, Price FROM Rates", result);
     }
 
     [Fact]
