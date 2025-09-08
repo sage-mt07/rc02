@@ -9,11 +9,21 @@ internal static class WindowValidator
         if (result == null) throw new ArgumentNullException(nameof(result));
         if (!result.BaseUnitSeconds.HasValue || result.Windows.Count == 0)
             return;
+
         var baseUnit = result.BaseUnitSeconds.Value;
+
+        if (60 % baseUnit != 0)
+            throw new InvalidOperationException("Base unit must divide 60 seconds.");
+
         foreach (var w in result.Windows)
         {
-            if (ToSeconds(w) % baseUnit != 0)
+            var seconds = ToSeconds(w);
+
+            if (seconds % baseUnit != 0)
                 throw new InvalidOperationException($"Window {w} must be a multiple of base {baseUnit}s.");
+
+            if (seconds >= 60 && seconds % 60 != 0)
+                throw new InvalidOperationException("Windows ≥ 1 minute must be whole-minute multiples.");
         }
     }
 
