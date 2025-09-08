@@ -29,6 +29,7 @@ public class KsqlQueryModel
     public int? WithinSeconds { get; set; }
     public bool ForbidDefaultWithin { get; set; }
     public int? BaseUnitSeconds { get; set; }
+    public int? GraceSeconds { get; set; }
     public LambdaExpression? WhenEmptyFiller { get; set; }
     public System.Collections.Generic.Dictionary<string, object?> Extras { get; } = new();
 
@@ -54,6 +55,7 @@ public class KsqlQueryModel
             WithinSeconds = WithinSeconds,
             ForbidDefaultWithin = ForbidDefaultWithin,
             BaseUnitSeconds = BaseUnitSeconds,
+            GraceSeconds = GraceSeconds,
             WhenEmptyFiller = WhenEmptyFiller
         };
         clone.Windows.AddRange(Windows);

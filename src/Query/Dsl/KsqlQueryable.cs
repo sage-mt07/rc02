@@ -61,7 +61,9 @@ public class KsqlQueryable<T1> : IKsqlQueryable, IScheduledScope<T1>
 
     public KsqlQueryable<T1> Tumbling(
         Expression<Func<T1, DateTime>> time,
-        Windows windows)
+        Windows windows,
+        int baseUnitSeconds = 10,
+        TimeSpan? grace = null)
     {
         if (time.Body is MemberExpression me)
             _model.TimeKey = me.Member.Name;
@@ -71,8 +73,9 @@ public class KsqlQueryable<T1> : IKsqlQueryable, IScheduledScope<T1>
         if (windows.Hours != null) foreach (var h in windows.Hours) _model.Windows.Add($"{h}h");
         if (windows.Days != null) foreach (var d in windows.Days) _model.Windows.Add($"{d}d");
         if (windows.Months != null) foreach (var mo in windows.Months) _model.Windows.Add($"{mo}mo");
-        if (windows.BaseUnitSeconds.HasValue)
-            _model.BaseUnitSeconds = windows.BaseUnitSeconds;
+        _model.BaseUnitSeconds = baseUnitSeconds;
+        if (grace.HasValue)
+            _model.GraceSeconds = (int)Math.Ceiling(grace.Value.TotalSeconds);
         static int ToMinutes(string tf)
         {
             if (tf.EndsWith("mo")) return int.Parse(tf[..^2]) * 43200;

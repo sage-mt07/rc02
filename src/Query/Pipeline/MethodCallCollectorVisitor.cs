@@ -49,13 +49,10 @@ internal class MethodCallCollectorVisitor : ExpressionVisitor
                         foreach (var ce in nae.Expressions.OfType<ConstantExpression>())
                             Result.Windows.Add(Normalize((int)ce.Value!, name));
                     }
-                    else if (expr is ConstantExpression ce)
+                    else if (expr is ConstantExpression ce && ce.Value is int[] arr)
                     {
-                        if (name == nameof(Windows.BaseUnitSeconds) && ce.Value is int b)
-                            Result.BaseUnitSeconds = b;
-                        else if (ce.Value is int[] arr)
-                            foreach (var v in arr)
-                                Result.Windows.Add(Normalize(v, name));
+                        foreach (var v in arr)
+                            Result.Windows.Add(Normalize(v, name));
                     }
                 }
             }
@@ -65,9 +62,14 @@ internal class MethodCallCollectorVisitor : ExpressionVisitor
                 if (w.Hours != null) foreach (var v in w.Hours) Result.Windows.Add(Normalize(v, nameof(w.Hours)));
                 if (w.Days != null) foreach (var v in w.Days) Result.Windows.Add(Normalize(v, nameof(w.Days)));
                 if (w.Months != null) foreach (var v in w.Months) Result.Windows.Add(Normalize(v, nameof(w.Months)));
-                if (w.BaseUnitSeconds.HasValue) Result.BaseUnitSeconds = w.BaseUnitSeconds;
             }
         }
+
+        if (call.Arguments.Count > 2 && call.Arguments[2] is ConstantExpression ce2 && ce2.Value is int b)
+            Result.BaseUnitSeconds = b;
+
+        if (call.Arguments.Count > 3 && call.Arguments[3] is ConstantExpression ce3 && ce3.Value is TimeSpan ts)
+            Result.GraceSeconds = (int)Math.Ceiling(ts.TotalSeconds);
 
         var ordered = Result.Windows.Distinct().OrderBy(ToMinutes).ToList();
         Result.Windows.Clear();
