@@ -1,4 +1,3 @@
-using Kafka.Ksql.Linq.Query.Pipeline;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -56,15 +55,12 @@ public class KsqlQueryable2<T1, T2> : IKsqlQueryable
 
     public KsqlQueryable2<T1, T2> Tumbling(
         Expression<Func<T1, T2, DateTime>> time,
-        Windows windows,
-        TimeSpan? grace = null)
+        Windows windows)
     {
         if (time.Body is MemberExpression me)
             _model.TimeKey = me.Member.Name;
         else if (time.Body is UnaryExpression ue && ue.Operand is MemberExpression me2)
             _model.TimeKey = me2.Member.Name;
-        if (grace.HasValue)
-            _model.GraceSeconds = (int)Math.Ceiling(grace.Value.TotalSeconds);
         if (windows.Minutes != null) foreach (var m in windows.Minutes) _model.Windows.Add($"{m}m");
         if (windows.Hours != null) foreach (var h in windows.Hours) _model.Windows.Add($"{h}h");
         if (windows.Days != null) foreach (var d in windows.Days) _model.Windows.Add($"{d}d");
@@ -105,21 +101,9 @@ public class KsqlQueryable2<T1, T2> : IKsqlQueryable
         return this;
     }
 
-    public KsqlQueryable2<T1, T2> Tumbling(Expression<Func<T1, T2, object>> timeProperty, TimeSpan size, TimeSpan? grace = null)
+    public KsqlQueryable2<T1, T2> Tumbling(Expression<Func<T1, T2, object>> timeProperty, TimeSpan size)
     {
         throw new NotSupportedException("Legacy Tumbling overload is not supported in this phase.");
-    }
-
-    public KsqlQueryable2<T1, T2> AsPush()
-    {
-        _model.ExecutionMode = QueryExecutionMode.PushQuery;
-        return this;
-    }
-
-    public KsqlQueryable2<T1, T2> AsPull()
-    {
-        _model.ExecutionMode = QueryExecutionMode.PullQuery;
-        return this;
     }
 
     public KsqlQueryModel Build() => _model;

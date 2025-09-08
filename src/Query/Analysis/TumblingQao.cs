@@ -22,6 +22,5 @@ internal class TumblingQao
     public IReadOnlyList<ColumnShape> PocoShape { get; init; } = new List<ColumnShape>();
     public BasedOnSpec BasedOn { get; init; } = new(new List<string>(), string.Empty, string.Empty, string.Empty);
     public DayOfWeek WeekAnchor { get; init; } = DayOfWeek.Monday;
-    public int? GraceSeconds { get; init; }
     public int? BaseUnitSeconds { get; init; }
 }

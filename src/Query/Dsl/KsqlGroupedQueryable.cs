@@ -1,4 +1,3 @@
-using Kafka.Ksql.Linq.Query.Pipeline;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -40,37 +39,5 @@ public class KsqlGroupedQueryable<T, TKey> : IKsqlQueryable
         return this;
     }
 
-    public KsqlGroupedQueryable<T, TKey> AsPush()
-    {
-        _model.ExecutionMode = QueryExecutionMode.PushQuery;
-        return this;
-    }
-
-    public KsqlGroupedQueryable<T, TKey> AsPull()
-    {
-        _model.ExecutionMode = QueryExecutionMode.PullQuery;
-        return this;
-    }
-
     public KsqlQueryModel Build() => _model;
-
-    public KsqlGroupedQueryable<T, TKey> AsFinal(TimeSpan? grace = null)
-    {
-        _model.IsFinal = true;
-        if (grace.HasValue)
-            _model.GraceSeconds = (int)Math.Ceiling(grace.Value.TotalSeconds);
-        return this;
-    }
-
-    public KsqlGroupedQueryable<T, TKey> AsLive()
-    {
-        _model.IsFinal = false;
-        return this;
-    }
-
-    public KsqlGroupedQueryable<T, TKey> Grace(TimeSpan grace)
-    {
-        _model.GraceSeconds = (int)Math.Ceiling(grace.TotalSeconds);
-        return this;
-    }
 }

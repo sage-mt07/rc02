@@ -1,4 +1,3 @@
-using Kafka.Ksql.Linq.Query.Pipeline;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -59,15 +58,12 @@ public class KsqlQueryable<T1> : IKsqlQueryable, IScheduledScope<T1>
 
     public KsqlQueryable<T1> Tumbling(
         Expression<Func<T1, DateTime>> time,
-        Windows windows,
-        TimeSpan? grace = null)
+        Windows windows)
     {
         if (time.Body is MemberExpression me)
             _model.TimeKey = me.Member.Name;
         else if (time.Body is UnaryExpression ue && ue.Operand is MemberExpression me2)
             _model.TimeKey = me2.Member.Name;
-        if (grace.HasValue)
-            _model.GraceSeconds = (int)Math.Ceiling(grace.Value.TotalSeconds);
         if (windows.Minutes != null) foreach (var m in windows.Minutes) _model.Windows.Add($"{m}m");
         if (windows.Hours != null) foreach (var h in windows.Hours) _model.Windows.Add($"{h}h");
         if (windows.Days != null) foreach (var d in windows.Days) _model.Windows.Add($"{d}d");
@@ -94,7 +90,7 @@ public class KsqlQueryable<T1> : IKsqlQueryable, IScheduledScope<T1>
         return this;
     }
 
-    public KsqlQueryable<T1> Tumbling(Expression<Func<T1, object>> timeProperty, TimeSpan size, TimeSpan? grace = null)
+    public KsqlQueryable<T1> Tumbling(Expression<Func<T1, object>> timeProperty, TimeSpan size)
     {
         throw new NotSupportedException("Legacy Tumbling overload is not supported in this phase.");
     }
@@ -156,38 +152,6 @@ public class KsqlQueryable<T1> : IKsqlQueryable, IScheduledScope<T1>
                 _model.BasedOnCloseInclusive = inclusive;
             }
         }
-    }
-
-    public KsqlQueryable<T1> AsPush()
-    {
-        _model.ExecutionMode = QueryExecutionMode.PushQuery;
-        return this;
-    }
-
-    public KsqlQueryable<T1> AsPull()
-    {
-        _model.ExecutionMode = QueryExecutionMode.PullQuery;
-        return this;
-    }
-
-    public KsqlQueryable<T1> AsFinal(TimeSpan? grace = null)
-    {
-        _model.IsFinal = true;
-        if (grace.HasValue)
-            _model.GraceSeconds = (int)Math.Ceiling(grace.Value.TotalSeconds);
-        return this;
-    }
-
-    public KsqlQueryable<T1> AsLive()
-    {
-        _model.IsFinal = false;
-        return this;
-    }
-
-    public KsqlQueryable<T1> Grace(TimeSpan grace)
-    {
-        _model.GraceSeconds = (int)Math.Ceiling(grace.TotalSeconds);
-        return this;
     }
 
     public KsqlQueryable<T1> WhenEmpty(Expression<Func<T1, T1, T1>> filler)

@@ -104,8 +104,7 @@ public class KsqlContextToQueryIntegrationTests
             builder.Entity<Order>();
             builder.Entity<OrderView>().ToQuery(q => q.From<Order>()
                 .Where(o => o.Id > 0)
-                .Select(o => new OrderView { Id = o.Id })
-                .AsPush());
+                .Select(o => new OrderView { Id = o.Id }));
         }
     }
 

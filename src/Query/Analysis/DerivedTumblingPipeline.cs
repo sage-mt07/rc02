@@ -55,7 +55,6 @@ internal static class DerivedTumblingPipeline
         Func<string, Type> resolveType)
     {
         var qm = queryModel.Clone();
-        qm.IsFinal = role is Role.Final or Role.AggFinal;
         var tf = (string)model.AdditionalSettings["timeframe"];
         var name = role switch
         {
