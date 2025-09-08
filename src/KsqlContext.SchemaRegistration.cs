@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 using ConfluentSchemaRegistry = Confluent.SchemaRegistry;
 
 namespace Kafka.Ksql.Linq;
@@ -433,6 +434,8 @@ public abstract partial class KsqlContext
             var shape = m.AllProperties.Select(p => new ColumnShape(p.Name, p.PropertyType, ctx.Create(p).WriteState == NullabilityState.Nullable)).ToArray();
             var frames = m.QueryModel!.Windows.Select(ParseWindow).ToList();
             var keys = m.KeyProperties.Select(p => p.Name).ToArray();
+            var basedOnKeys = m.QueryModel.BasedOnJoinKeys.Count > 0 ? m.QueryModel.BasedOnJoinKeys.ToArray() : keys;
+            var dayKey = PropertyName(m.QueryModel.BasedOnDayKey);
             return new TumblingQao
             {
                 TimeKey = m.QueryModel!.TimeKey ?? "Timestamp",
@@ -440,7 +443,13 @@ public abstract partial class KsqlContext
                 Keys = keys,
                 Projection = keys,
                 PocoShape = shape,
-                BasedOn = new BasedOnSpec(keys, string.Empty, string.Empty, string.Empty),
+                BasedOn = new BasedOnSpec(
+                    basedOnKeys,
+                    m.QueryModel.BasedOnOpen ?? string.Empty,
+                    m.QueryModel.BasedOnClose ?? string.Empty,
+                    dayKey,
+                    m.QueryModel.BasedOnOpenInclusive,
+                    m.QueryModel.BasedOnCloseInclusive),
                 WeekAnchor = m.QueryModel!.WeekAnchor,
                 GraceSeconds = m.QueryModel!.GraceSeconds
             };
@@ -456,6 +465,9 @@ public abstract partial class KsqlContext
             var value = int.Parse(w[..^1]);
             return new Timeframe(value, unit);
         }
+
+        static string PropertyName(LambdaExpression? e) =>
+            e?.Body is MemberExpression m ? m.Member.Name : string.Empty;
     }
 
     /// <summary>
