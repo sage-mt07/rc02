@@ -1,0 +1,2 @@
+- final entities now sync on heartbeat topics
+- added PrevHint for prev_1m fallback and propagated to builders

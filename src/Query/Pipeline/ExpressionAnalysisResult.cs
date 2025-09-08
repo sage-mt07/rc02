@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using Kafka.Ksql.Linq.Core.Attributes;
 
 namespace Kafka.Ksql.Linq.Query.Pipeline;
 
@@ -25,6 +27,7 @@ internal class ExpressionAnalysisResult
     public bool BasedOnOpenInclusive { get; set; } = true;
     public bool BasedOnCloseInclusive { get; set; } = false;
     public string? BasedOnDayKey { get; set; }
+    public Type? PocoType { get; set; }
 
     private static bool IsAggregateMethod(string methodName)
     {
@@ -48,18 +51,28 @@ internal class ExpressionAnalysisResult
         md = md.WithProperty("roles/final", Windows.ToArray());
         md = md.WithProperty("roles/prev", new[] { "1m" });
         md = md.WithProperty("roles/hb", new[] { "1m" });
-        md = md.WithProperty("sync/1mLive", "HB_1m");
-        md = md.WithProperty("sync/1mFinal", "HB_1m");
-        foreach (var tf in Windows)
+
+        if (PocoType != null)
         {
-            var liveInput = tf switch
+            var topicAttr = PocoType.GetCustomAttribute<KsqlTopicAttribute>();
+            var baseId = (topicAttr?.Name ?? PocoType.Name).ToLowerInvariant();
+            var hb = $"{baseId}_hb_1m".ToUpperInvariant();
+            var prevId = $"{baseId}_prev_1m";
+            md = md.WithProperty("sync/1mLive", hb);
+            md = md.WithProperty("sync/1mFinal", hb);
+            md = md.WithProperty("prev/1mFinal", prevId);
+            foreach (var tf in Windows)
             {
-                "1m" => "10sAgg",
-                "1wk" => "bar_1m_final",
-                _ => "bar_1m_live"
-            };
-            md = md.WithProperty($"input/{tf}Live", liveInput);
-            md = md.WithProperty($"input/{tf}Final", liveInput);
+                var liveInput = tf switch
+                {
+                    "1m" => "10sAgg",
+                    "1wk" => $"{baseId}_1m_final",
+                    _ => $"{baseId}_1m_live"
+                };
+                md = md.WithProperty($"input/{tf}Live", liveInput);
+                md = md.WithProperty($"input/{tf}Final", liveInput);
+                md = md.WithProperty($"prev/{tf}Final", prevId);
+            }
         }
         return md;
     }
