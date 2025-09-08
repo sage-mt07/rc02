@@ -29,10 +29,10 @@ public class DerivationPlannerTests
         public double KsqlTimeFrameClose { get; set; }
     }
 
-    private static TumblingQao Create(Timeframe tf) => new()
+    private static TumblingQao Create(params Timeframe[] tfs) => new()
     {
         TimeKey = "Timestamp",
-        Windows = new[] { tf },
+        Windows = tfs,
         Keys = new[] { "Id", "BucketStart" },
         Projection = new[] { "Id", "BucketStart", "KsqlTimeFrameClose" },
         PocoShape = new[]
@@ -91,5 +91,29 @@ public class DerivationPlannerTests
 
         var live = Assert.Single(entities, e => e.Id == "bar_1wk_live" && e.Role == Role.Live);
         Assert.Equal("bar_1d_live", live.InputHint);
+    }
+
+    [Fact]
+    public void Plan_Hour_Windows_Chain()
+    {
+        var model = new EntityModel { EntityType = typeof(Source) };
+        var entities = DerivationPlanner.Plan(Create(new Timeframe(3, "h"), new Timeframe(1, "h")), model);
+
+        var live1 = Assert.Single(entities, e => e.Id == "bar_1h_live" && e.Role == Role.Live);
+        Assert.Equal("bar_1m_live", live1.InputHint);
+        var live3 = Assert.Single(entities, e => e.Id == "bar_3h_live" && e.Role == Role.Live);
+        Assert.Equal("bar_1h_live", live3.InputHint);
+    }
+
+    [Fact]
+    public void Plan_Day_Windows_Chain()
+    {
+        var model = new EntityModel { EntityType = typeof(Source) };
+        var entities = DerivationPlanner.Plan(Create(new Timeframe(1, "d"), new Timeframe(1, "h")), model);
+
+        var liveH = Assert.Single(entities, e => e.Id == "bar_1h_live" && e.Role == Role.Live);
+        Assert.Equal("bar_1m_live", liveH.InputHint);
+        var liveD = Assert.Single(entities, e => e.Id == "bar_1d_live" && e.Role == Role.Live);
+        Assert.Equal("bar_1h_live", liveD.InputHint);
     }
 }
