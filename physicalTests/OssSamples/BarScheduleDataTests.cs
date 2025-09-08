@@ -38,7 +38,7 @@ public class BarScheduleDataTests
         public double Open { get; set; }
         public double High { get; set; }
         public double Low { get; set; }
-        public double Close { get; set; }
+        [KsqlTimeFrameClose] public double KsqlTimeFrameClose { get; set; }
     }
 
     private class Bar1wkFinal
@@ -49,7 +49,7 @@ public class BarScheduleDataTests
         public double Open { get; set; }
         public double High { get; set; }
         public double Low { get; set; }
-        public double Close { get; set; }
+        [KsqlTimeFrameClose] public double KsqlTimeFrameClose { get; set; }
     }
 
     private sealed class TestContext : KsqlContext
@@ -77,7 +77,7 @@ public class BarScheduleDataTests
                         Open = g.EarliestByOffset(x => x.Bid),
                         High = g.Max(x => x.Bid),
                         Low = g.Min(x => x.Bid),
-                        Close = g.LatestByOffset(x => x.Bid)
+                        KsqlTimeFrameClose = g.LatestByOffset(x => x.Bid)
                     })
                     .AsPush());
 
@@ -98,7 +98,7 @@ public class BarScheduleDataTests
                         Open = g.EarliestByOffset(x => x.Bid),
                         High = g.Max(x => x.Bid),
                         Low = g.Min(x => x.Bid),
-                        Close = g.LatestByOffset(x => x.Bid)
+                        KsqlTimeFrameClose = g.LatestByOffset(x => x.Bid)
                     })); // Final系の具体的モードはビルダー側で扱う
         }
     }

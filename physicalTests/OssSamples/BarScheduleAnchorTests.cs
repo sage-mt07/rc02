@@ -29,7 +29,7 @@ public class BarScheduleAnchorTests
         public double Open { get; set; }
         public double High { get; set; }
         public double Low { get; set; }
-        public double Close { get; set; }
+        [KsqlTimeFrameClose] public double KsqlTimeFrameClose { get; set; }
     }
 
     private sealed class TestContext : KsqlContext
@@ -51,7 +51,7 @@ public class BarScheduleAnchorTests
                         Open = g.EarliestByOffset(x => x.Bid),
                         High = g.Max(x => x.Bid),
                         Low = g.Min(x => x.Bid),
-                        Close = g.LatestByOffset(x => x.Bid)
+                        KsqlTimeFrameClose = g.LatestByOffset(x => x.Bid)
                     })
                     .AsPush());
         }

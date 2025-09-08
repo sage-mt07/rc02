@@ -33,7 +33,7 @@ public class BarDslExplainTests
         public double Open { get; set; }
         public double High { get; set; }
         public double Low { get; set; }
-        public double Close { get; set; }
+        [KsqlTimeFrameClose] public double KsqlTimeFrameClose { get; set; }
     }
 
 
@@ -70,7 +70,7 @@ public class BarDslExplainTests
                         Open = g.EarliestByOffset(x => x.Bid),
                         High = g.Max(x => x.Bid),
                         Low = g.Min(x => x.Bid),
-                        Close = g.LatestByOffset(x => x.Bid)
+                        KsqlTimeFrameClose = g.LatestByOffset(x => x.Bid)
                     }));
 
         }
@@ -127,7 +127,7 @@ public class BarDslExplainTests
         var bs00 = Ms(t0);
         var bs01 = Ms(t0.AddMinutes(1));
 
-        var rows1m = await ctx.QueryRowsAsync("SELECT BucketStart, Open, High, Low, Close FROM bar_1m_live WHERE Broker='B1' AND Symbol='S1';", TimeSpan.FromSeconds(30));
+        var rows1m = await ctx.QueryRowsAsync("SELECT BucketStart, Open, High, Low, KsqlTimeFrameClose FROM bar_1m_live WHERE Broker='B1' AND Symbol='S1';", TimeSpan.FromSeconds(30));
         bool ok1 = false, ok2 = false;
         foreach (var r in rows1m)
         {
@@ -142,7 +142,7 @@ public class BarDslExplainTests
         Assert.True(ok1, "1m OHLC for 00:00 mismatch");
         Assert.True(ok2, "1m OHLC for 00:01 mismatch");
 
-        var rows5m = await ctx.QueryRowsAsync("SELECT BucketStart, Open, High, Low, Close FROM bar_5m_live WHERE Broker='B1' AND Symbol='S1';", TimeSpan.FromSeconds(30));
+        var rows5m = await ctx.QueryRowsAsync("SELECT BucketStart, Open, High, Low, KsqlTimeFrameClose FROM bar_5m_live WHERE Broker='B1' AND Symbol='S1';", TimeSpan.FromSeconds(30));
         bool ok5 = false;
         foreach (var r in rows5m)
         {

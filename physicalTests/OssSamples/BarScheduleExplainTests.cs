@@ -39,7 +39,7 @@ public class BarScheduleExplainTests
         public double Open { get; set; }
         public double High { get; set; }
         public double Low { get; set; }
-        public double Close { get; set; }
+        [KsqlTimeFrameClose] public double KsqlTimeFrameClose { get; set; }
     }
 
     private class Bar1wkLive
@@ -50,7 +50,7 @@ public class BarScheduleExplainTests
         public double Open { get; set; }
         public double High { get; set; }
         public double Low { get; set; }
-        public double Close { get; set; }
+        [KsqlTimeFrameClose] public double KsqlTimeFrameClose { get; set; }
     }
 
     private sealed class TestContext : KsqlContext
@@ -78,7 +78,7 @@ public class BarScheduleExplainTests
                         Open = g.EarliestByOffset(x => x.Bid),
                         High = g.Max(x => x.Bid),
                         Low = g.Min(x => x.Bid),
-                        Close = g.LatestByOffset(x => x.Bid)
+                        KsqlTimeFrameClose = g.LatestByOffset(x => x.Bid)
                     })
                     .AsPush());
 
@@ -99,7 +99,7 @@ public class BarScheduleExplainTests
                         Open = g.EarliestByOffset(x => x.Bid),
                         High = g.Max(x => x.Bid),
                         Low = g.Min(x => x.Bid),
-                        Close = g.LatestByOffset(x => x.Bid)
+                        KsqlTimeFrameClose = g.LatestByOffset(x => x.Bid)
                     })
                     .AsPush());
         }
@@ -114,7 +114,7 @@ public class BarScheduleExplainTests
         Assert.Equal(typeof(MarketSchedule), em.QueryModel!.BasedOnType);
         var sql = KsqlCreateStatementBuilder.Build("bar_1d_live", em.QueryModel!);
         Assert.Contains("EARLIEST_BY_OFFSET(Bid) AS Open", sql);
-        Assert.Contains("LATEST_BY_OFFSET(Bid) AS Close", sql);
+        Assert.Contains("LATEST_BY_OFFSET(Bid) AS KsqlTimeFrameClose", sql);
         Assert.Contains("CREATE TABLE bar_1d_live", sql);
     }
 

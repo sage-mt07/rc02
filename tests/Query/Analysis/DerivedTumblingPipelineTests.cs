@@ -30,9 +30,13 @@ public class DerivedTumblingPipelineTests
             TimeKey = "Timestamp",
             Windows = new[] { new Timeframe(1, "m") },
             Keys = new[] { "Id" },
-            Projection = new[] { "Id" },
-            PocoShape = new[] { new ColumnShape("Id", typeof(int), false) },
-            BasedOn = new BasedOnSpec(new[] { "Id" }, string.Empty, string.Empty, string.Empty),
+            Projection = new[] { "Id", "KsqlTimeFrameClose" },
+            PocoShape = new[]
+            {
+                new ColumnShape("Id", typeof(int), false),
+                new ColumnShape("KsqlTimeFrameClose", typeof(double), false)
+            },
+            BasedOn = new BasedOnSpec(new[] { "Id" }, string.Empty, "KsqlTimeFrameClose", string.Empty),
             WeekAnchor = DayOfWeek.Monday
         };
         var baseModel = new EntityModel { EntityType = typeof(TestSource) };
