@@ -5,6 +5,7 @@ using Kafka.Ksql.Linq.Query.Builders;
 using Kafka.Ksql.Linq.Query.Dsl;
 using Kafka.Ksql.Linq.Query.Abstractions;
 using Kafka.Ksql.Linq.Mapping;
+using Kafka.Ksql.Linq.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -90,10 +91,22 @@ internal static class DerivedTumblingPipeline
         var ns = model.AdditionalSettings.TryGetValue("namespace", out var nsObj) ? nsObj?.ToString() : null;
         return (ddl, dt, ns);
 
-        static string Map(Type t) => t == typeof(int) ? "INT"
-            : t == typeof(long) ? "BIGINT"
-            : t == typeof(bool) ? "BOOLEAN"
-            : t == typeof(string) ? "VARCHAR"
-            : "DOUBLE";
+        static string Map(Type t) => t switch
+        {
+            Type x when x == typeof(int) => "INT",
+            Type x when x == typeof(short) => "INT",
+            Type x when x == typeof(long) => "BIGINT",
+            Type x when x == typeof(double) => "DOUBLE",
+            Type x when x == typeof(float) => "DOUBLE",
+            Type x when x == typeof(decimal) => $"DECIMAL({DecimalPrecisionConfig.DecimalPrecision}, {DecimalPrecisionConfig.DecimalScale})",
+            Type x when x == typeof(string) => "VARCHAR",
+            Type x when x == typeof(char) => "VARCHAR",
+            Type x when x == typeof(bool) => "BOOLEAN",
+            Type x when x == typeof(DateTime) => "TIMESTAMP",
+            Type x when x == typeof(DateTimeOffset) => "TIMESTAMP",
+            Type x when x == typeof(Guid) => "VARCHAR",
+            Type x when x == typeof(byte[]) => "BYTES",
+            _ => "DOUBLE"
+        };
     }
 }
