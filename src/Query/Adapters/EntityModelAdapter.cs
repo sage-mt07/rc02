@@ -23,9 +23,10 @@ internal static class EntityModelAdapter
             if (e.Role == Role.Prev1m)
             {
                 var close = e.ValueShape.First(v => v.Name == e.BasedOnSpec.CloseProp);
-                values = new[] { close.Name };
-                types = new[] { close.Type };
-                nulls = new[] { close.IsNullable };
+                var timeKey = e.ValueShape.First(v => v.Name != close.Name);
+                values = new[] { timeKey.Name, close.Name };
+                types = new[] { timeKey.Type, close.Type };
+                nulls = new[] { timeKey.IsNullable, close.IsNullable };
             }
             if (keys.Length == 0 || (values.Length == 0 && e.Role != Role.Hb))
                 throw new InvalidOperationException("Key and value must not be empty");
