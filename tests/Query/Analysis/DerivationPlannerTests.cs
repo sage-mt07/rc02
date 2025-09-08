@@ -33,10 +33,15 @@ public class DerivationPlannerTests
     {
         TimeKey = "Timestamp",
         Windows = new[] { tf },
-        Keys = new[] { "Id" },
-        Projection = new[] { "Id" },
-        PocoShape = new[] { new ColumnShape("Id", typeof(int), false) },
-        BasedOn = new BasedOnSpec(new[] { "Id" }, string.Empty, "KsqlTimeFrameClose", string.Empty),
+        Keys = new[] { "Id", "BucketStart" },
+        Projection = new[] { "Id", "BucketStart", "KsqlTimeFrameClose" },
+        PocoShape = new[]
+        {
+            new ColumnShape("Id", typeof(int), false),
+            new ColumnShape("BucketStart", typeof(long), false),
+            new ColumnShape("KsqlTimeFrameClose", typeof(double), false)
+        },
+        BasedOn = new BasedOnSpec(new[] { "Id", "BucketStart" }, string.Empty, "KsqlTimeFrameClose", string.Empty),
         WeekAnchor = DayOfWeek.Monday
     };
 
@@ -67,36 +72,34 @@ public class DerivationPlannerTests
     }
 
     [Fact]
-    public void Prev1m_Static_Table_Single_Value()
+    public void Prev1m_Table_Excludes_TimeKey_From_PrimaryKey()
     {
         var qao = new TumblingQao
         {
-            TimeKey = "Timestamp",
+            TimeKey = "BucketStart",
             Windows = new[] { new Timeframe(1, "m") },
-            Keys = new[] { "Id" },
-            Projection = new[] { "Id", "Open", "High", "Low", "KsqlTimeFrameClose" },
+            Keys = new[] { "Id", "BucketStart" },
+            Projection = new[] { "Id", "BucketStart", "KsqlTimeFrameClose" },
             PocoShape = new[]
             {
                 new ColumnShape("Id", typeof(int), false),
-                new ColumnShape("Open", typeof(double), false),
-                new ColumnShape("High", typeof(double), false),
-                new ColumnShape("Low", typeof(double), false),
+                new ColumnShape("BucketStart", typeof(long), false),
                 new ColumnShape("KsqlTimeFrameClose", typeof(double), false)
             },
-            BasedOn = new BasedOnSpec(new[] { "Id" }, string.Empty, string.Empty, string.Empty),
+            BasedOn = new BasedOnSpec(new[] { "Id", "BucketStart" }, string.Empty, "KsqlTimeFrameClose", string.Empty),
             WeekAnchor = DayOfWeek.Monday
         };
         var baseModel = new EntityModel { EntityType = typeof(SourceOhlc) };
         var entities = DerivationPlanner.Plan(qao, baseModel);
         var models = EntityModelAdapter.Adapt(entities);
         var prev = models.Single(m => (string)m.AdditionalSettings["role"] == Role.Prev1m.ToString());
-        var close = (string)prev.AdditionalSettings["basedOn/closeProp"];
-        Assert.Equal(new[] { close }, (string[])prev.AdditionalSettings["projection"]);
+        Assert.Equal(new[] { "Id" }, (string[])prev.AdditionalSettings["keys"]);
+        Assert.Equal(new[] { "BucketStart", "KsqlTimeFrameClose" }, (string[])prev.AdditionalSettings["projection"]);
         var method = typeof(DerivedTumblingPipeline).GetMethod("BuildDdlAndRegister", BindingFlags.NonPublic | BindingFlags.Static);
         var qm = new KsqlQueryModel { SourceTypes = new[] { typeof(SourceOhlc) } };
         var res = ((string ddl, Type _, string? ns))method!.Invoke(null, new object[] { "bar", qm, prev, Role.Prev1m, (Func<string, Type>)(_ => typeof(object)) })!;
         Assert.StartsWith("CREATE TABLE bar_prev_1m", res.ddl);
-        Assert.DoesNotContain("AS SELECT", res.ddl);
-        Assert.Contains(close, res.ddl);
+        Assert.Contains("PRIMARY KEY (Id)", res.ddl);
+        Assert.Contains("BucketStart", res.ddl);
     }
 }

@@ -85,13 +85,16 @@ internal static class DerivationPlanner
 
             if (tf.Unit == "m" && tf.Value == 1 && prev == null)
             {
+                var prevKeys = keyShapes[..^1];
+                var timeKey = keyShapes[^1];
+                var close = qao.PocoShape.First(p => p.Name == basedOn.CloseProp);
                 prev = new DerivedEntity
                 {
                     Id = $"{baseId}_prev_1m",
                     Role = Role.Prev1m,
                     Timeframe = tf,
-                    KeyShape = keyShapes,
-                    ValueShape = qao.PocoShape.Where(p => p.Name == basedOn.CloseProp).ToArray(),
+                    KeyShape = prevKeys,
+                    ValueShape = new[] { timeKey, close },
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor
                 };
