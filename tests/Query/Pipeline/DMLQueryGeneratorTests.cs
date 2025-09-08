@@ -1,6 +1,8 @@
 using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Core.Modeling;
 using Kafka.Ksql.Linq.Query.Pipeline;
+using Kafka.Ksql.Linq.Query.Dsl;
+using Kafka.Ksql.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -171,6 +173,12 @@ public class DMLQueryGeneratorTests
         public int CustomerId { get; set; }
         public double Amount { get; set; }
         public int Count { get; set; }
+    }
+
+    private class WindowEntity
+    {
+        public int Id { get; set; }
+        public DateTime Timestamp { get; set; }
     }
 
     [Fact]
@@ -811,5 +819,21 @@ public class DMLQueryGeneratorTests
             ExecuteInScope(() => generator.GenerateLinqQuery("orders", query.Expression, true, true)));
 
         Assert.Contains("GROUP BY is not supported in pull or table queries", ex.Message);
+    }
+
+    [Fact]
+    public void GenerateLinqQuery_MultipleWindowStart_Throws()
+    {
+        IQueryable<WindowEntity> src = new List<WindowEntity>().AsQueryable();
+
+        var expr = src
+            .Tumbling(e => e.Timestamp, new Windows { Minutes = new[] { 1 } })
+            .GroupBy(e => e.Id)
+            .Select(g => new { Start1 = g.WindowStart(), Start2 = g.WindowStart() });
+
+        var generator = new DMLQueryGenerator();
+        var ex = Assert.Throws<InvalidOperationException>(() =>
+            ExecuteInScope(() => generator.GenerateLinqQuery("win", expr.Expression, false)));
+        Assert.Contains("Windowed query requires exactly one WindowStart() in projection.", ex.Message);
     }
 }

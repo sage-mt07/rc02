@@ -5,6 +5,8 @@ using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Core.Modeling;
 using Kafka.Ksql.Linq.Query.Ddl;
 using Kafka.Ksql.Linq.Query.Pipeline;
+using Kafka.Ksql.Linq.Query.Dsl;
+using Kafka.Ksql.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -197,6 +199,12 @@ public class DDLQueryGeneratorTests
         public string Name { get; set; } = string.Empty;
     }
 
+    private class WindowEntity
+    {
+        public int Id { get; set; }
+        public DateTime Timestamp { get; set; }
+    }
+
     [KsqlTopic("attr_entity", PartitionCount = 3, ReplicationFactor = 2)]
     private class AttrEntity
     {
@@ -288,5 +296,21 @@ public class DDLQueryGeneratorTests
         var sql = GenerateDdl(model);
         Assert.Contains("PARTITIONS=6", sql);
         Assert.Contains("REPLICAS=1", sql);
+    }
+
+    [Fact]
+    public void GenerateCreateTableAs_MultipleWindowStart_Throws()
+    {
+        IQueryable<WindowEntity> src = new List<WindowEntity>().AsQueryable();
+
+        var expr = src
+            .Tumbling(e => e.Timestamp, new Windows { Minutes = new[] { 1 } })
+            .GroupBy(e => e.Id)
+            .Select(g => new { Start1 = g.WindowStart(), Start2 = g.WindowStart() });
+
+        var generator = new DDLQueryGenerator();
+        var ex = Assert.Throws<InvalidOperationException>(() =>
+            ExecuteInScope(() => generator.GenerateCreateTableAs("t1", "src", expr.Expression)));
+        Assert.Contains("Windowed query requires exactly one WindowStart() in projection.", ex.Message);
     }
 }

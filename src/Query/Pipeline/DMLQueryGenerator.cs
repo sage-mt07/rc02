@@ -431,6 +431,8 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
                 throw new InvalidOperationException("Time key is required");
             if (string.IsNullOrEmpty(result.BucketColumnName))
                 throw new InvalidOperationException("WindowStart() projection required for windowed queries");
+            if (result.WindowStartCallCount != 1)
+                throw new InvalidOperationException("Windowed query requires exactly one WindowStart() in projection.");
         }
         WindowValidator.Validate(result);
         return result;
