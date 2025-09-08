@@ -7,8 +7,10 @@ internal static class WindowValidator
     public static void Validate(ExpressionAnalysisResult result)
     {
         if (result == null) throw new ArgumentNullException(nameof(result));
-        if (!result.BaseUnitSeconds.HasValue || result.Windows.Count == 0)
+        if (result.Windows.Count == 0)
             return;
+        if (!result.BaseUnitSeconds.HasValue)
+            throw new InvalidOperationException("Base unit is required for tumbling windows.");
 
         var baseUnit = result.BaseUnitSeconds.Value;
 
