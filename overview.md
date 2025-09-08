@@ -8,6 +8,7 @@
 - 新規メンバー向けガイドとして [docs/new_member_reference.md](./docs/new_member_reference.md) を参照
 - [詳細運用ルール・AIプロンプトなどは AGENTS.md 参照](./AGENTS.md)
 - 日次進捗ログの記録ルールと改定履歴は [docs/progress_management.md](./docs/progress_management.md) を参照
+- 足生成DSL仕様は [docs/chart.md](./docs/chart.md) を参照
 - 機能別作業の集約は `features/` を参照（テンプレート: `features/_template/`）
 
 ## 注意事項・運用ルール
