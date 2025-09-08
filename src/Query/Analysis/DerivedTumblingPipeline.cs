@@ -5,7 +5,6 @@ using Kafka.Ksql.Linq.Query.Builders;
 using Kafka.Ksql.Linq.Query.Dsl;
 using Kafka.Ksql.Linq.Query.Abstractions;
 using Kafka.Ksql.Linq.Mapping;
-using Kafka.Ksql.Linq.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -67,46 +66,12 @@ internal static class DerivedTumblingPipeline
             Role.Hb => $"{baseName}_hb_1m",
             _ => $"{baseName}_{tf}"
         };
-        string ddl;
-        if (role == Role.Prev1m)
-        {
-            var keys = (string[])model.AdditionalSettings["keys"];
-            var keyTypes = (Type[])model.AdditionalSettings["keys/types"];
-            var proj = (string[])model.AdditionalSettings["projection"];
-            var projTypes = (Type[])model.AdditionalSettings["projection/types"];
-            var cols = new List<string>();
-            for (var i = 0; i < keys.Length; i++) cols.Add($"{keys[i]} {Map(keyTypes[i])}");
-            for (var i = 0; i < proj.Length; i++) cols.Add($"{proj[i]} {Map(projTypes[i])}");
-            var pk = string.Join(", ", keys);
-            ddl = $"CREATE TABLE {name} ({string.Join(", ", cols)}, PRIMARY KEY ({pk})) WITH (KAFKA_TOPIC='{name}', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO');";
-        }
-        else
-        {
-            ddl = KsqlCreateWindowedStatementBuilder.Build(name, qm, tf);
-        }
+        var ddl = KsqlCreateWindowedStatementBuilder.Build(name, qm, tf);
         var dt = resolveType(name);
         model.EntityType = dt;
         model.TopicName = name;
         model.SetStreamTableType(qm.DetermineType());
         var ns = model.AdditionalSettings.TryGetValue("namespace", out var nsObj) ? nsObj?.ToString() : null;
         return (ddl, dt, ns);
-
-        static string Map(Type t) => t switch
-        {
-            Type x when x == typeof(int) => "INT",
-            Type x when x == typeof(short) => "INT",
-            Type x when x == typeof(long) => "BIGINT",
-            Type x when x == typeof(double) => "DOUBLE",
-            Type x when x == typeof(float) => "DOUBLE",
-            Type x when x == typeof(decimal) => $"DECIMAL({DecimalPrecisionConfig.DecimalPrecision}, {DecimalPrecisionConfig.DecimalScale})",
-            Type x when x == typeof(string) => "VARCHAR",
-            Type x when x == typeof(char) => "VARCHAR",
-            Type x when x == typeof(bool) => "BOOLEAN",
-            Type x when x == typeof(DateTime) => "TIMESTAMP",
-            Type x when x == typeof(DateTimeOffset) => "TIMESTAMP",
-            Type x when x == typeof(Guid) => "VARCHAR",
-            Type x when x == typeof(byte[]) => "BYTES",
-            _ => "DOUBLE"
-        };
     }
 }

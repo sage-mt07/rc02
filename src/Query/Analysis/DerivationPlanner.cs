@@ -33,7 +33,6 @@ internal static class DerivationPlanner
             }
         }
 
-        DerivedEntity? prev = null;
         foreach (var tf in qao.Windows)
         {
             var tfStr = $"{tf.Value}{tf.Unit}";
@@ -83,23 +82,8 @@ internal static class DerivationPlanner
             };
             entities.Add(final);
 
-            if (tf.Unit == "m" && tf.Value == 1 && prev == null)
+            if (tf.Unit == "m" && tf.Value == 1)
             {
-                var prevKeys = keyShapes[..^1];
-                var timeKey = keyShapes[^1];
-                var close = qao.PocoShape.First(p => p.Name == basedOn.CloseProp);
-                prev = new DerivedEntity
-                {
-                    Id = $"{baseId}_prev_1m",
-                    Role = Role.Prev1m,
-                    Timeframe = tf,
-                    KeyShape = prevKeys,
-                    ValueShape = new[] { timeKey, close },
-                    BasedOnSpec = basedOn,
-                    WeekAnchor = qao.WeekAnchor
-                };
-                entities.Add(prev);
-
                 var hb = new DerivedEntity
                 {
                     Id = $"{baseId}_hb_1m",

@@ -20,14 +20,6 @@ internal static class EntityModelAdapter
             var values = e.ValueShape.Select(v => v.Name).ToArray();
             var types = e.ValueShape.Select(v => v.Type).ToArray();
             var nulls = e.ValueShape.Select(v => v.IsNullable).ToArray();
-            if (e.Role == Role.Prev1m)
-            {
-                var close = e.ValueShape.First(v => v.Name == e.BasedOnSpec.CloseProp);
-                var timeKey = e.ValueShape.First(v => v.Name != close.Name);
-                values = new[] { timeKey.Name, close.Name };
-                types = new[] { timeKey.Type, close.Type };
-                nulls = new[] { timeKey.IsNullable, close.IsNullable };
-            }
             if (keys.Length == 0 || (values.Length == 0 && e.Role != Role.Hb))
                 throw new InvalidOperationException("Key and value must not be empty");
 

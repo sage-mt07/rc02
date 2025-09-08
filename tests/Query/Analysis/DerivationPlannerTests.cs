@@ -46,7 +46,7 @@ public class DerivationPlannerTests
     };
 
     [Fact]
-    public void Plan_1m_Includes_All_Roles()
+    public void Plan_1m_Includes_Agg_Live_Final_Hb()
     {
         var model = new EntityModel { EntityType = typeof(Source) };
         var entities = DerivationPlanner.Plan(Create(new Timeframe(1, "m")), model);
@@ -54,12 +54,12 @@ public class DerivationPlannerTests
         Assert.Contains(entities, e => e.Id == "bar_1m_agg_final" && e.Role == Role.AggFinal);
         Assert.Contains(entities, e => e.Id == "bar_1m_live" && e.Role == Role.Live);
         Assert.Contains(entities, e => e.Id == "bar_1m_final" && e.Role == Role.Final);
-        Assert.Contains(entities, e => e.Id == "bar_prev_1m" && e.Role == Role.Prev1m);
+        Assert.DoesNotContain(entities, e => e.Role == Role.Prev1m);
         Assert.Contains(entities, e => e.Id == "bar_hb_1m" && e.Role == Role.Hb);
     }
 
     [Fact]
-    public void Plan_5m_Excludes_Prev_And_Hb()
+    public void Plan_5m_Excludes_Hb()
     {
         var model = new EntityModel { EntityType = typeof(Source) };
         var entities = DerivationPlanner.Plan(Create(new Timeframe(5, "m")), model);
@@ -67,39 +67,6 @@ public class DerivationPlannerTests
         Assert.Contains(entities, e => e.Id == "bar_5m_agg_final" && e.Role == Role.AggFinal);
         Assert.Contains(entities, e => e.Id == "bar_5m_live" && e.Role == Role.Live);
         Assert.Contains(entities, e => e.Id == "bar_5m_final" && e.Role == Role.Final);
-        Assert.DoesNotContain(entities, e => e.Role == Role.Prev1m);
         Assert.DoesNotContain(entities, e => e.Role == Role.Hb);
-    }
-
-    [Fact]
-    public void Prev1m_Table_Excludes_TimeKey_From_PrimaryKey()
-    {
-        var qao = new TumblingQao
-        {
-            TimeKey = "BucketStart",
-            Windows = new[] { new Timeframe(1, "m") },
-            Keys = new[] { "Id", "BucketStart" },
-            Projection = new[] { "Id", "BucketStart", "KsqlTimeFrameClose" },
-            PocoShape = new[]
-            {
-                new ColumnShape("Id", typeof(int), false),
-                new ColumnShape("BucketStart", typeof(long), false),
-                new ColumnShape("KsqlTimeFrameClose", typeof(double), false)
-            },
-            BasedOn = new BasedOnSpec(new[] { "Id", "BucketStart" }, string.Empty, "KsqlTimeFrameClose", string.Empty),
-            WeekAnchor = DayOfWeek.Monday
-        };
-        var baseModel = new EntityModel { EntityType = typeof(SourceOhlc) };
-        var entities = DerivationPlanner.Plan(qao, baseModel);
-        var models = EntityModelAdapter.Adapt(entities);
-        var prev = models.Single(m => (string)m.AdditionalSettings["role"] == Role.Prev1m.ToString());
-        Assert.Equal(new[] { "Id" }, (string[])prev.AdditionalSettings["keys"]);
-        Assert.Equal(new[] { "BucketStart", "KsqlTimeFrameClose" }, (string[])prev.AdditionalSettings["projection"]);
-        var method = typeof(DerivedTumblingPipeline).GetMethod("BuildDdlAndRegister", BindingFlags.NonPublic | BindingFlags.Static);
-        var qm = new KsqlQueryModel { SourceTypes = new[] { typeof(SourceOhlc) } };
-        var res = ((string ddl, Type _, string? ns))method!.Invoke(null, new object[] { "bar", qm, prev, Role.Prev1m, (Func<string, Type>)(_ => typeof(object)) })!;
-        Assert.StartsWith("CREATE TABLE bar_prev_1m", res.ddl);
-        Assert.Contains("PRIMARY KEY (Id)", res.ddl);
-        Assert.Contains("BucketStart", res.ddl);
     }
 }
