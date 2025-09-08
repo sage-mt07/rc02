@@ -143,32 +143,6 @@ public class ToQueryDslTests
     }
 
     [Fact]
-    public void AsPush_AddsEmitChanges()
-    {
-        var model = new KsqlQueryRoot()
-            .From<Order>()
-            .Select(o => new { o.Id })
-            .AsPush()
-            .Build();
-
-        var sql = KsqlCreateStatementBuilder.Build("orders", model);
-        Assert.Contains("EMIT CHANGES", sql);
-    }
-
-    [Fact]
-    public void AsPull_OmitsEmitChanges()
-    {
-        var model = new KsqlQueryRoot()
-            .From<Order>()
-            .Select(o => new { o.Id })
-            .AsPull()
-            .Build();
-
-        var sql = KsqlCreateStatementBuilder.Build("orders", model);
-        Assert.DoesNotContain("EMIT CHANGES", sql);
-    }
-
-    [Fact]
     public void KeylessEntity_AllowsNoKeys()
     {
         var builder = new ModelBuilder();

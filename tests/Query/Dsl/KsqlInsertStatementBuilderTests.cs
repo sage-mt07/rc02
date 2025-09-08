@@ -1,6 +1,5 @@
 using Kafka.Ksql.Linq.Query.Builders;
 using Kafka.Ksql.Linq.Query.Dsl;
-using Kafka.Ksql.Linq.Query.Pipeline;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query.Dsl;
@@ -30,7 +29,6 @@ public class KsqlInsertStatementBuilderTests
             .From<Order>()
             .Select(o => new { o.Id })
             .Build();
-        model.ExecutionMode = QueryExecutionMode.PullQuery;
 
         var sql = KsqlInsertStatementBuilder.Build("orders", model);
 

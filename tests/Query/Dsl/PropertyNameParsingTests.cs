@@ -29,12 +29,11 @@ public class PropertyNameParsingTests
         var q = Expression.Parameter(typeof(KsqlQueryable<Rate>), "q");
         var r = Expression.Parameter(typeof(Rate), "r");
         var timeLambda = Expression.Lambda(Expression.Property(r, nameof(Rate.Timestamp)), r);
-        var method = typeof(KsqlQueryable<Rate>).GetMethods().First(m => m.Name == "Tumbling" && m.GetParameters().Length == 3);
+        var method = typeof(KsqlQueryable<Rate>).GetMethods().First(m => m.Name == "Tumbling" && m.GetParameters().Length == 2);
         var windows = Expression.MemberInit(Expression.New(typeof(Windows)));
         var call = Expression.Call(q, method,
             timeLambda,
-            windows,
-            Expression.Constant(null, typeof(TimeSpan?)));
+            windows);
         var visitor = new MethodCallCollectorVisitor();
         visitor.Visit(call);
         Assert.Equal("Timestamp", visitor.Result.TimeKey);
@@ -80,25 +79,23 @@ public class PropertyNameParsingTests
         var s = Expression.Parameter(typeof(Schedule), "s");
         var timeLambda = Expression.Lambda(Expression.Property(r, nameof(Rate.Timestamp)), r, s);
         var method = typeof(KsqlQueryable2<Rate, Schedule>).GetMethods()
-            .First(m => m.Name == "Tumbling" && m.GetParameters().Length == 3);
+            .First(m => m.Name == "Tumbling" && m.GetParameters().Length == 2);
         var windows = Expression.MemberInit(Expression.New(typeof(Windows)));
         var call = Expression.Call(q, method,
             timeLambda,
-            windows,
-            Expression.Constant(null, typeof(TimeSpan?)));
+            windows);
         var visitor = new MethodCallCollectorVisitor();
         visitor.Visit(call);
         Assert.Equal("Timestamp", visitor.Result.TimeKey);
     }
 
     [Fact]
-    public void Tumbling2_Sets_TimeKey_Grace_And_Orders_Windows()
+    public void Tumbling2_Sets_TimeKey_And_Orders_Windows()
     {
         var model = new KsqlQueryable2<Rate, Schedule>()
-            .Tumbling((r, s) => r.Timestamp, new Windows { Minutes = new[] { 90, 15, 15 }, Hours = new[] { 1 } }, TimeSpan.FromSeconds(30))
+            .Tumbling((r, s) => r.Timestamp, new Windows { Minutes = new[] { 90, 15, 15 }, Hours = new[] { 1 } })
             .Build();
         Assert.Equal("Timestamp", model.TimeKey);
-        Assert.Equal(30, model.GraceSeconds);
         Assert.Equal(new[] { "15m", "1h", "90m" }, model.Windows);
     }
 

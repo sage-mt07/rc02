@@ -1,4 +1,3 @@
-using Kafka.Ksql.Linq.Query.Pipeline;
 using Kafka.Ksql.Linq.Query.Builders;
 using Kafka.Ksql.Linq.Query.Abstractions;
 using System;
@@ -16,7 +15,6 @@ public class KsqlQueryModel
     public LambdaExpression? SelectProjection { get; set; }
     public LambdaExpression? GroupByExpression { get; set; }
     public LambdaExpression? HavingCondition { get; set; }
-    public QueryExecutionMode ExecutionMode { get; set; } = QueryExecutionMode.Unspecified;
     public Type? BasedOnType { get; set; }
     public LambdaExpression? BasedOnDayKey { get; set; }
     public List<string> BasedOnJoinKeys { get; } = new();
@@ -29,8 +27,6 @@ public class KsqlQueryModel
     public string? TimeKey { get; set; }
     public int? WithinSeconds { get; set; }
     public bool ForbidDefaultWithin { get; set; }
-    public bool IsFinal { get; set; }
-    public int? GraceSeconds { get; set; }
     public int? BaseUnitSeconds { get; set; }
     public LambdaExpression? WhenEmptyFiller { get; set; }
     public System.Collections.Generic.Dictionary<string, object?> Extras { get; } = new();
@@ -45,7 +41,6 @@ public class KsqlQueryModel
             SelectProjection = SelectProjection,
             GroupByExpression = GroupByExpression,
             HavingCondition = HavingCondition,
-            ExecutionMode = ExecutionMode,
             BasedOnType = BasedOnType,
             BasedOnDayKey = BasedOnDayKey,
             BasedOnOpen = BasedOnOpen,
@@ -56,8 +51,6 @@ public class KsqlQueryModel
             TimeKey = TimeKey,
             WithinSeconds = WithinSeconds,
             ForbidDefaultWithin = ForbidDefaultWithin,
-            IsFinal = IsFinal,
-            GraceSeconds = GraceSeconds,
             BaseUnitSeconds = BaseUnitSeconds,
             WhenEmptyFiller = WhenEmptyFiller
         };
@@ -74,7 +67,7 @@ public class KsqlQueryModel
     public string Dump()
     {
         var sources = string.Join(",", SourceTypes.Select(t => t.Name));
-        return $"Sources:[{sources}] Join:{JoinCondition} Where:{WhereCondition} Select:{SelectProjection} Aggregate:{IsAggregateQuery()} Mode:{ExecutionMode}";
+        return $"Sources:[{sources}] Join:{JoinCondition} Where:{WhereCondition} Select:{SelectProjection} Aggregate:{IsAggregateQuery()}";
     }
 
     public bool HasGroupBy() => GroupByExpression != null;

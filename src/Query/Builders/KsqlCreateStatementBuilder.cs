@@ -92,18 +92,8 @@ public static class KsqlCreateStatementBuilder
             sb.AppendLine();
             sb.Append($"PARTITION BY {partitionBy}");
         }
-        var mode = model.ExecutionMode == Query.Pipeline.QueryExecutionMode.Unspecified
-            ? Query.Pipeline.QueryExecutionMode.PushQuery
-            : model.ExecutionMode;
-        if (mode == Query.Pipeline.QueryExecutionMode.PushQuery)
-        {
-            sb.AppendLine();
-            sb.Append("EMIT CHANGES;");
-        }
-        else
-        {
-            sb.Append(';');
-        }
+        sb.AppendLine();
+        sb.Append("EMIT CHANGES;");
         return sb.ToString();
     }
 

@@ -1,0 +1,3 @@
+- KsqlQueryable から AsFinal / AsLive / AsPush / AsPull / Grace を削除。
+- KsqlQueryModel から ExecutionMode, IsFinal, GraceSeconds を削除。
+- 実行モードは KsqlContext のプロファイル設定へ移行。
