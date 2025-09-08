@@ -33,7 +33,18 @@ internal static class DerivationPlanner
             }
         }
 
-        foreach (var tf in qao.Windows)
+        var windows = qao.Windows
+            .OrderBy(w => w.Unit switch
+            {
+                "m" => w.Value,
+                "h" => w.Value * 60,
+                "d" => w.Value * 1440,
+                "wk" => w.Value * 10080,
+                _ => w.Value
+            })
+            .ToArray();
+        Timeframe? prevWindow = null;
+        foreach (var tf in windows)
         {
             var tfStr = $"{tf.Value}{tf.Unit}";
             var topicAttr = model.EntityType.GetCustomAttribute<KsqlTopicAttribute>();
@@ -55,11 +66,13 @@ internal static class DerivationPlanner
             };
             entities.Add(agg);
 
-            var liveInput = tf.Unit == "m" && tf.Value == 1
-                ? "10sAgg"
-                : tf.Unit == "wk"
-                    ? $"{baseId}_1d_live"
-                    : $"{baseId}_1m_live";
+            var liveInput = prevWindow == null
+                ? tf.Unit == "m" && tf.Value == 1
+                    ? "10sAgg"
+                    : tf.Unit == "wk"
+                        ? $"{baseId}_1d_live"
+                        : $"{baseId}_1m_live"
+                : $"{baseId}_{prevWindow.Value}{prevWindow.Unit}_live";
             var liveSync = hbId.ToUpperInvariant();
             var live = new DerivedEntity
             {
@@ -120,6 +133,7 @@ internal static class DerivationPlanner
                 };
                 entities.Add(prev);
             }
+            prevWindow = tf;
         }
         return entities;
     }
