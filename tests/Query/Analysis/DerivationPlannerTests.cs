@@ -25,6 +25,7 @@ public class DerivationPlannerTests
         public double Open { get; set; }
         public double High { get; set; }
         public double Low { get; set; }
+        [KsqlTimeFrameClose]
         public double KsqlTimeFrameClose { get; set; }
     }
 
@@ -82,14 +83,14 @@ public class DerivationPlannerTests
                 new ColumnShape("Low", typeof(double), false),
                 new ColumnShape("KsqlTimeFrameClose", typeof(double), false)
             },
-            BasedOn = new BasedOnSpec(new[] { "Id" }, string.Empty, "KsqlTimeFrameClose", string.Empty),
+            BasedOn = new BasedOnSpec(new[] { "Id" }, string.Empty, string.Empty, string.Empty),
             WeekAnchor = DayOfWeek.Monday
         };
         var baseModel = new EntityModel { EntityType = typeof(SourceOhlc) };
         var entities = DerivationPlanner.Plan(qao, baseModel);
         var models = EntityModelAdapter.Adapt(entities);
         var prev = models.Single(m => (string)m.AdditionalSettings["role"] == Role.Prev1m.ToString());
-        var close = qao.BasedOn.CloseProp;
+        var close = (string)prev.AdditionalSettings["basedOn/closeProp"];
         Assert.Equal(new[] { close }, (string[])prev.AdditionalSettings["projection"]);
         var method = typeof(DerivedTumblingPipeline).GetMethod("BuildDdlAndRegister", BindingFlags.NonPublic | BindingFlags.Static);
         var qm = new KsqlQueryModel { SourceTypes = new[] { typeof(SourceOhlc) } };
