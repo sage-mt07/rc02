@@ -31,6 +31,7 @@ public class KsqlQueryModel
     public bool ForbidDefaultWithin { get; set; }
     public bool IsFinal { get; set; }
     public int? GraceSeconds { get; set; }
+    public int? BaseUnitSeconds { get; set; }
     public System.Collections.Generic.Dictionary<string, object?> Extras { get; } = new();
 
     public KsqlQueryModel Clone()
@@ -55,7 +56,8 @@ public class KsqlQueryModel
             WithinSeconds = WithinSeconds,
             ForbidDefaultWithin = ForbidDefaultWithin,
             IsFinal = IsFinal,
-            GraceSeconds = GraceSeconds
+            GraceSeconds = GraceSeconds,
+            BaseUnitSeconds = BaseUnitSeconds
         };
         clone.Windows.AddRange(Windows);
         clone.BasedOnJoinKeys.AddRange(BasedOnJoinKeys);

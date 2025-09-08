@@ -7,10 +7,6 @@ public interface IScheduledScope<T>
 {
     KsqlQueryable<T> Tumbling(
         Expression<Func<T, DateTime>> time,
-        int[]? minutes = null,
-        int[]? hours = null,
-        int[]? days = null,
-        int[]? months = null,
-        DayOfWeek? week = null,
+        Windows windows,
         TimeSpan? grace = null);
 }
