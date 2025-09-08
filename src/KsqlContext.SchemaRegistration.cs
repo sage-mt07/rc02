@@ -457,7 +457,7 @@ public abstract partial class KsqlContext
                     m.QueryModel.BasedOnOpenInclusive,
                     m.QueryModel.BasedOnCloseInclusive),
                 WeekAnchor = m.QueryModel!.WeekAnchor,
-                BaseUnitSeconds = m.QueryModel!.BaseUnitSeconds
+                BaseUnitSeconds = m.QueryModel!.BaseUnitSeconds // pass through base unit for window checks
             };
         }
 
