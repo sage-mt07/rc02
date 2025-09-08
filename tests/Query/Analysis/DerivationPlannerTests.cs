@@ -25,7 +25,7 @@ public class DerivationPlannerTests
         public double Open { get; set; }
         public double High { get; set; }
         public double Low { get; set; }
-        public double Close { get; set; }
+        public double KsqlTimeFrameClose { get; set; }
     }
 
     private static TumblingQao Create(Timeframe tf) => new()
@@ -35,7 +35,7 @@ public class DerivationPlannerTests
         Keys = new[] { "Id" },
         Projection = new[] { "Id" },
         PocoShape = new[] { new ColumnShape("Id", typeof(int), false) },
-        BasedOn = new BasedOnSpec(new[] { "Id" }, string.Empty, "Close", string.Empty),
+        BasedOn = new BasedOnSpec(new[] { "Id" }, string.Empty, "KsqlTimeFrameClose", string.Empty),
         WeekAnchor = DayOfWeek.Monday
     };
 
@@ -73,16 +73,16 @@ public class DerivationPlannerTests
             TimeKey = "Timestamp",
             Windows = new[] { new Timeframe(1, "m") },
             Keys = new[] { "Id" },
-            Projection = new[] { "Id", "Open", "High", "Low", "Close" },
+            Projection = new[] { "Id", "Open", "High", "Low", "KsqlTimeFrameClose" },
             PocoShape = new[]
             {
                 new ColumnShape("Id", typeof(int), false),
                 new ColumnShape("Open", typeof(double), false),
                 new ColumnShape("High", typeof(double), false),
                 new ColumnShape("Low", typeof(double), false),
-                new ColumnShape("Close", typeof(double), false)
+                new ColumnShape("KsqlTimeFrameClose", typeof(double), false)
             },
-            BasedOn = new BasedOnSpec(new[] { "Id" }, string.Empty, "Close", string.Empty),
+            BasedOn = new BasedOnSpec(new[] { "Id" }, string.Empty, "KsqlTimeFrameClose", string.Empty),
             WeekAnchor = DayOfWeek.Monday
         };
         var baseModel = new EntityModel { EntityType = typeof(SourceOhlc) };

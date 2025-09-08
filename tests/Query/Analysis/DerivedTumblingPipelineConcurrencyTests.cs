@@ -29,13 +29,13 @@ public class DerivedTumblingPipelineConcurrencyTests
             TimeKey = "Timestamp",
             Windows = new[] { new Timeframe(1, "m"), new Timeframe(5, "m") },
             Keys = new[] { "Id" },
-            Projection = new[] { "Id", "Close" },
+            Projection = new[] { "Id", "KsqlTimeFrameClose" },
             PocoShape = new[]
             {
                 new ColumnShape("Id", typeof(int), false),
-                new ColumnShape("Close", typeof(double), false)
+                new ColumnShape("KsqlTimeFrameClose", typeof(double), false)
             },
-            BasedOn = new BasedOnSpec(new[] { "Id" }, string.Empty, "Close", string.Empty),
+            BasedOn = new BasedOnSpec(new[] { "Id" }, string.Empty, "KsqlTimeFrameClose", string.Empty),
             WeekAnchor = DayOfWeek.Monday
         };
         var baseModel = new EntityModel { EntityType = typeof(ConcurrencySource) };
