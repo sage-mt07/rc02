@@ -189,13 +189,13 @@ public class KsqlContextToQueryIntegrationTests
     }
 
     [Fact]
-    public void ToQuery_Removes_Base_Model()
+    public void ToQuery_Retains_Model()
     {
         var client = new StubSchemaRegistry();
         using var ctx = new TestContext(client);
 
         var models = ctx.GetEntityModels();
-        Assert.DoesNotContain(typeof(OrderView), models.Keys);
+        Assert.Contains(typeof(OrderView), models.Keys);
     }
 
     [Fact]

@@ -204,7 +204,7 @@ public abstract partial class KsqlContext
             if (model.QueryModel != null)
             {
                 RegisterQueryModelMapping(model);
-            _entityModels.TryRemove(type, out _);
+                _entityModels[type] = model;
                 continue;
             }
 
