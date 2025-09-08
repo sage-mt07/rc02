@@ -1,0 +1,2 @@
+- Add BaseUnitSeconds-window alignment validation and error messaging.
+- Ensure SchemaRegistration passes BaseUnitSeconds to TumblingQao.

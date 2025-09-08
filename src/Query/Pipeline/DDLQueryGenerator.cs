@@ -422,6 +422,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
             if (string.IsNullOrEmpty(result.BucketColumnName))
                 throw new InvalidOperationException("WindowStart() projection required for windowed queries");
         }
+        WindowValidator.Validate(result);
         return result;
     }
 
