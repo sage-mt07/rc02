@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using Kafka.Ksql.Linq.Query.Dsl;
 
 namespace Kafka.Ksql.Linq.Query.Pipeline;
 
@@ -31,34 +32,46 @@ internal class MethodCallCollectorVisitor : ExpressionVisitor
         if (call.Arguments[0] is UnaryExpression ue && ue.Operand is LambdaExpression le && le.Body is MemberExpression me)
             Result.TimeKey = me.Member.Name;
 
-        var parameters = call.Method.GetParameters();
-        for (int i = 1; i < call.Arguments.Count; i++)
+        if (call.Arguments.Count > 1)
         {
-            var unit = parameters[i].Name!;
-            var arg = call.Arguments[i];
-            if (arg is NewArrayExpression nae)
+            var arg = call.Arguments[1];
+            if (arg is MemberInitExpression mie)
             {
-                foreach (var expr in nae.Expressions)
-                    if (expr is ConstantExpression ce && ce.Value is int v)
-                        Result.Windows.Add(Normalize(v, unit));
+                foreach (var binding in mie.Bindings.OfType<MemberAssignment>())
+                {
+                    var name = binding.Member.Name;
+                    var expr = binding.Expression;
+                    if (expr is NewArrayExpression nae)
+                    {
+                        foreach (var ce in nae.Expressions.OfType<ConstantExpression>())
+                            Result.Windows.Add(Normalize((int)ce.Value!, name));
+                    }
+                    else if (expr is ConstantExpression ce)
+                    {
+                        if (name == nameof(Windows.BaseUnitSeconds) && ce.Value is int b)
+                            Result.BaseUnitSeconds = b;
+                        else if (ce.Value is int[] arr)
+                            foreach (var v in arr)
+                                Result.Windows.Add(Normalize(v, name));
+                    }
+                }
             }
-            else if (arg is ConstantExpression ce && ce.Value is int[] arr)
+            else if (arg is ConstantExpression ce && ce.Value is Windows w)
             {
-                foreach (var v in arr)
-                    Result.Windows.Add(Normalize(v, unit));
-            }
-            else if (unit == "week" && arg is ConstantExpression cw && cw.Value is DayOfWeek dow)
-            {
-                Result.WeekAnchor = dow;
-                Result.Windows.Add("1wk");
+                if (w.Minutes != null) foreach (var v in w.Minutes) Result.Windows.Add(Normalize(v, nameof(w.Minutes)));
+                if (w.Hours != null) foreach (var v in w.Hours) Result.Windows.Add(Normalize(v, nameof(w.Hours)));
+                if (w.Days != null) foreach (var v in w.Days) Result.Windows.Add(Normalize(v, nameof(w.Days)));
+                if (w.Months != null) foreach (var v in w.Months) Result.Windows.Add(Normalize(v, nameof(w.Months)));
+                if (w.BaseUnitSeconds.HasValue) Result.BaseUnitSeconds = w.BaseUnitSeconds;
             }
         }
+
         var ordered = Result.Windows.Distinct().OrderBy(ToMinutes).ToList();
         Result.Windows.Clear();
         Result.Windows.AddRange(ordered);
     }
 
-    private static string Normalize(int value, string unit) => unit switch
+    private static string Normalize(int value, string unit) => unit.ToLowerInvariant() switch
     {
         "minutes" => value + "m",
         "hours" => value + "h",

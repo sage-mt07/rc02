@@ -56,11 +56,7 @@ public class KsqlQueryable2<T1, T2> : IKsqlQueryable
 
     public KsqlQueryable2<T1, T2> Tumbling(
         Expression<Func<T1, T2, DateTime>> time,
-        int[]? minutes = null,
-        int[]? hours = null,
-        int[]? days = null,
-        int[]? months = null,
-        DayOfWeek? week = null,
+        Windows windows,
         TimeSpan? grace = null)
     {
         if (time.Body is MemberExpression me)
@@ -69,15 +65,12 @@ public class KsqlQueryable2<T1, T2> : IKsqlQueryable
             _model.TimeKey = me2.Member.Name;
         if (grace.HasValue)
             _model.GraceSeconds = (int)Math.Ceiling(grace.Value.TotalSeconds);
-        if (minutes != null) foreach (var m in minutes) _model.Windows.Add($"{m}m");
-        if (hours != null) foreach (var h in hours) _model.Windows.Add($"{h}h");
-        if (days != null) foreach (var d in days) _model.Windows.Add($"{d}d");
-        if (months != null) foreach (var mo in months) _model.Windows.Add($"{mo}mo");
-        if (week.HasValue)
-        {
-            _model.WeekAnchor = week.Value;
-            _model.Windows.Add("1wk");
-        }
+        if (windows.Minutes != null) foreach (var m in windows.Minutes) _model.Windows.Add($"{m}m");
+        if (windows.Hours != null) foreach (var h in windows.Hours) _model.Windows.Add($"{h}h");
+        if (windows.Days != null) foreach (var d in windows.Days) _model.Windows.Add($"{d}d");
+        if (windows.Months != null) foreach (var mo in windows.Months) _model.Windows.Add($"{mo}mo");
+        if (windows.BaseUnitSeconds.HasValue)
+            _model.BaseUnitSeconds = windows.BaseUnitSeconds;
         static int ToMinutes(string tf)
         {
             if (tf.EndsWith("mo")) return int.Parse(tf[..^2]) * 43200;

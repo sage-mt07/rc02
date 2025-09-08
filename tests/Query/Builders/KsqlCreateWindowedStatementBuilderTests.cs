@@ -41,7 +41,7 @@ public class KsqlCreateWindowedStatementBuilderTests
     {
         var model = new KsqlQueryRoot()
             .From<Rate>()
-            .Tumbling(r => r.Timestamp, minutes: new[] { 1 })
+            .Tumbling(r => r.Timestamp, new Windows { Minutes = new[] { 1 } })
             .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
             .Select(g => new { g.Key.Broker, g.Key.Symbol, g.Key.BucketStart, Open = g.EarliestByOffset(x => x.Bid) })
             .AsPush()
@@ -57,7 +57,7 @@ public class KsqlCreateWindowedStatementBuilderTests
     {
         var model = new KsqlQueryRoot()
             .From<DedupRate>()
-            .Tumbling(r => r.Ts, minutes: new[] { 1 })
+            .Tumbling(r => r.Ts, new Windows { Minutes = new[] { 1 } })
             .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Ts })
             .Select(g => new { g.Key.Broker, g.Key.Symbol, g.Key.BucketStart, Open = g.EarliestByOffset(x => x.Bid) })
             .AsPush()
@@ -72,7 +72,7 @@ public class KsqlCreateWindowedStatementBuilderTests
     {
         var model = new KsqlQueryRoot()
             .From<Rate>()
-            .Tumbling(r => r.Timestamp, minutes: new[] { 1, 5 })
+            .Tumbling(r => r.Timestamp, new Windows { Minutes = new[] { 1, 5 } })
             .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
             .Select(g => new { g.Key.Broker, g.Key.Symbol, g.Key.BucketStart, Open = g.EarliestByOffset(x => x.Bid) })
             .AsPush()
@@ -94,7 +94,7 @@ public class KsqlCreateWindowedStatementBuilderTests
     {
         var model = new KsqlQueryRoot()
             .From<RateTable>()
-            .Tumbling(r => r.Timestamp, minutes: new[] { 1 })
+            .Tumbling(r => r.Timestamp, new Windows { Minutes = new[] { 1 } })
             .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
             .Select(g => new { g.Key.Broker, g.Key.Symbol, Open = g.EarliestByOffset(x => x.Bid) })
             .AsFinal()
@@ -114,7 +114,7 @@ public class KsqlCreateWindowedStatementBuilderTests
     {
         var model = new KsqlQueryRoot()
             .From<RateTable>()
-            .Tumbling(r => r.Timestamp, minutes: new[] { 1, 5 })
+            .Tumbling(r => r.Timestamp, new Windows { Minutes = new[] { 1, 5 } })
             .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
             .Select(g => new { g.Key.Broker, g.Key.Symbol, Open = g.EarliestByOffset(x => x.Bid) })
             .AsFinal()
@@ -162,7 +162,7 @@ public class KsqlCreateWindowedStatementBuilderTests
     {
         var model = new KsqlQueryRoot()
             .From<RateTable>()
-            .Tumbling(r => r.Timestamp, minutes: new[] { 1 })
+            .Tumbling(r => r.Timestamp, new Windows { Minutes = new[] { 1 } })
             .GroupBy(r => new { r.Broker, r.Symbol, StartAt = r.Timestamp })
             .Select(g => new { g.Key.Broker, g.Key.Symbol, StartAt = g.WindowStart(), Open = g.EarliestByOffset(x => x.Bid) })
             .AsFinal()
@@ -214,7 +214,7 @@ public class KsqlCreateWindowedStatementBuilderTests
     {
         var model = new KsqlQueryRoot()
             .From<Rate>()
-            .Tumbling(r => r.Timestamp, minutes: new[] { 1 })
+            .Tumbling(r => r.Timestamp, new Windows { Minutes = new[] { 1 } })
             .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
             .Select(g => new { g.Key.Broker, g.Key.Symbol, g.Key.BucketStart, Open = g.EarliestByOffset(x => x.Bid) })
             .AsPush()
@@ -230,7 +230,7 @@ public class KsqlCreateWindowedStatementBuilderTests
     {
         var model = new KsqlQueryRoot()
             .From<Rate>()
-            .Tumbling(r => r.Timestamp, minutes: new[] { 1 })
+            .Tumbling(r => r.Timestamp, new Windows { Minutes = new[] { 1 } })
             .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
             .Select(g => new { g.Key.Broker, g.Key.Symbol, g.Key.BucketStart })
             .AsPush()
