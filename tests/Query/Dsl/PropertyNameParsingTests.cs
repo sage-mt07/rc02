@@ -44,6 +44,15 @@ public class PropertyNameParsingTests
     }
 
     [Fact]
+    public void Tumbling_Sets_TimeKey_On_Model()
+    {
+        var model = new KsqlQueryable<Rate>()
+            .Tumbling(r => r.Timestamp, minutes: new[] { 1 })
+            .Build();
+        Assert.Equal("Timestamp", model.TimeKey);
+    }
+
+    [Fact]
     public void TimeFrame_Extracts_DayKey()
     {
         var q = Expression.Parameter(typeof(KsqlQueryable<Rate>), "q");
