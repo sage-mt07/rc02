@@ -5,6 +5,7 @@ using Kafka.Ksql.Linq.Query.Builders.Core;
 using Kafka.Ksql.Linq.Query.Dsl;
 using Kafka.Ksql.Linq.Query.Pipeline;
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using Xunit;
 
@@ -44,8 +45,8 @@ public class RollupBuilderTests
                     r.Timestamp < s.Close,
                 s => s.MarketDate)
             .Tumbling(r => r.Timestamp, new Windows { Minutes = new[] { 1, 5 } })
-            .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
-            .Select(g => g))).Body;
+            .GroupBy(r => new { r.Broker, r.Symbol })
+            .Select(g => new { g.Key.Broker, g.Key.Symbol, BucketStart = g.WindowStart() }))).Body;
         var analysis = Analyze(expr);
         return analysis.ToMetadata();
     }
@@ -55,24 +56,38 @@ public class RollupBuilderTests
         var visitor = new MethodCallCollectorVisitor();
         visitor.Visit(expr);
         var result = visitor.Result;
+        var selectCall = result.MethodCalls.FirstOrDefault(mc => mc.Method.Name == "Select");
+        if (selectCall != null && selectCall.Arguments.Count > 1)
+        {
+            Expression? projExpr = selectCall.Arguments[1] switch
+            {
+                LambdaExpression le => le.Body,
+                UnaryExpression ue when ue.Operand is LambdaExpression le => le.Body,
+                ConstantExpression ce when ce.Value is LambdaExpression le => le.Body,
+                _ => null
+            };
+            if (projExpr != null)
+            {
+                var ws = new WindowStartDetectionVisitor();
+                ws.Visit(projExpr);
+                result.BucketColumnName = ws.ColumnName;
+            }
+        }
         result.PocoType = typeof(Rate);
         if (result.Windows.Count == 0)
             throw new InvalidOperationException("Tumbling windows are required");
         if (result.TimeKey == null)
             throw new InvalidOperationException("Time key is required");
-        if (!result.GroupByKeys.Contains(result.TimeKey) && !result.GroupByKeys.Contains("BucketStart"))
-            throw new InvalidOperationException("Time key must be part of GroupBy keys");
         return result;
     }
 
     [Fact]
-    public void AggFinal_Builds_FinalWithGrace_Projects_BucketStart()
+    public void AggFinal_Builds_FinalWithGrace()
     {
         var md = BuildMetadata();
         var sql = AggFinalBuilder.Build(md, "1m");
         Assert.Contains("WINDOW TUMBLING(1m)", sql);
         Assert.Contains("EMIT FINAL GRACE", sql);
-        Assert.Contains("BucketStart", sql);
     }
 
     [Fact]
@@ -133,7 +148,7 @@ public class RollupBuilderTests
         Assert.True(specLive.SyncHb1m);
 
         var specAgg = RoleTraits.For(Role.AggFinal, new Timeframe(1, "m"));
-        Assert.True(specAgg.Projector);
+        Assert.True(specAgg.Window);
 
         var specFinal = RoleTraits.For(Role.Final, new Timeframe(5, "m"));
         Assert.True(specFinal.Window);

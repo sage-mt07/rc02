@@ -43,6 +43,9 @@ public class KsqlQueryable<T1> : IKsqlQueryable, IScheduledScope<T1>
         _model.SelectProjection = projection;
         var visitor = new Kafka.Ksql.Linq.Query.Builders.AggregateDetectionVisitor();
         visitor.Visit(projection.Body);
+        var wsVisitor = new Kafka.Ksql.Linq.Query.Builders.WindowStartDetectionVisitor();
+        wsVisitor.Visit(projection.Body);
+        _model.BucketColumnName = wsVisitor.ColumnName;
         return this;
     }
 

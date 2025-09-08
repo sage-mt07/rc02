@@ -398,6 +398,20 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
         var visitor = new MethodCallCollectorVisitor();
         visitor.Visit(expression);
         var result = visitor.Result;
+
+        var selectCall = result.MethodCalls.FirstOrDefault(mc => mc.Method.Name == "Select");
+        if (selectCall != null && selectCall.Arguments.Count > 1)
+        {
+            var body = ExtractLambdaBody(selectCall.Arguments[1]);
+            if (body != null)
+            {
+                var ws = new WindowStartDetectionVisitor();
+                ws.Visit(body);
+                result.WindowStartCallCount = ws.Count;
+                result.BucketColumnName = ws.ColumnName;
+            }
+        }
+
         var type = expression.Type.IsGenericType ? expression.Type.GetGenericArguments().FirstOrDefault() : null;
         if (type != null)
             result.PocoType = type;
@@ -405,8 +419,8 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
         {
             if (result.TimeKey == null)
                 throw new InvalidOperationException("Time key is required");
-            if (!result.GroupByKeys.Contains(result.TimeKey) && !result.GroupByKeys.Contains("BucketStart"))
-                throw new InvalidOperationException("Time key must be part of GroupBy keys");
+            if (string.IsNullOrEmpty(result.BucketColumnName))
+                throw new InvalidOperationException("WindowStart() projection required for windowed queries");
         }
         return result;
     }

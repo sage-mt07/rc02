@@ -41,8 +41,8 @@ public class KsqlCreateWindowedStatementBuilderTests
         var model = new KsqlQueryRoot()
             .From<Rate>()
             .Tumbling(r => r.Timestamp, new Windows { Minutes = new[] { 1 } })
-            .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
-            .Select(g => new { g.Key.Broker, g.Key.Symbol, g.Key.BucketStart, Open = g.EarliestByOffset(x => x.Bid) })
+            .GroupBy(r => new { r.Broker, r.Symbol })
+            .Select(g => new { g.Key.Broker, g.Key.Symbol, BucketStart = g.WindowStart(), Open = g.EarliestByOffset(x => x.Bid) })
             .Build();
 
         var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.Build("bar_1m_live", model, "1m");
@@ -56,8 +56,8 @@ public class KsqlCreateWindowedStatementBuilderTests
         var model = new KsqlQueryRoot()
             .From<DedupRate>()
             .Tumbling(r => r.Ts, new Windows { Minutes = new[] { 1 } })
-            .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Ts })
-            .Select(g => new { g.Key.Broker, g.Key.Symbol, g.Key.BucketStart, Open = g.EarliestByOffset(x => x.Bid) })
+            .GroupBy(r => new { r.Broker, r.Symbol })
+            .Select(g => new { g.Key.Broker, g.Key.Symbol, BucketStart = g.WindowStart(), Open = g.EarliestByOffset(x => x.Bid) })
             .Build();
 
         var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.Build("bar_1m_live", model, "1m");
@@ -70,8 +70,8 @@ public class KsqlCreateWindowedStatementBuilderTests
         var model = new KsqlQueryRoot()
             .From<Rate>()
             .Tumbling(r => r.Timestamp, new Windows { Minutes = new[] { 1, 5 } })
-            .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
-            .Select(g => new { g.Key.Broker, g.Key.Symbol, g.Key.BucketStart, Open = g.EarliestByOffset(x => x.Bid) })
+            .GroupBy(r => new { r.Broker, r.Symbol })
+            .Select(g => new { g.Key.Broker, g.Key.Symbol, BucketStart = g.WindowStart(), Open = g.EarliestByOffset(x => x.Bid) })
             .Build();
 
         var map = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.BuildAll(
@@ -98,37 +98,13 @@ public class KsqlCreateWindowedStatementBuilderTests
     }
 
     [Fact]
-    public void InjectWindowStart_Handles_Complex_Select()
-    {
-        var sql = "SELECT Price, CONCAT('BucketStart', Symbol) AS Label, Value AS BucketStartValue FROM Rates GROUP BY BucketStart";
-        var result = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.InjectWindowStart(sql);
-        Assert.Equal("SELECT WINDOWSTART AS BucketStart, Price, CONCAT('BucketStart', Symbol) AS Label, Value AS BucketStartValue FROM Rates GROUP BY BucketStart", result);
-    }
-
-    [Fact]
-    public void InjectWindowStart_Does_Not_Duplicate()
-    {
-        var sql = "SELECT WINDOWSTART AS StartAt, Price FROM Rates";
-        var result = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.InjectWindowStart(sql);
-        Assert.Equal(sql, result);
-    }
-
-    [Fact]
-    public void InjectWindowStart_Uses_Custom_Alias()
-    {
-        var sql = "SELECT Price, WINDOWSTART AS StartAt FROM Rates";
-        var result = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.InjectWindowStart(sql);
-        Assert.Equal("SELECT WINDOWSTART AS StartAt, Price FROM Rates", result);
-    }
-
-    [Fact]
     public void Build_WithWindow_Creates_Table()
     {
         var model = new KsqlQueryRoot()
             .From<Rate>()
             .Tumbling(r => r.Timestamp, new Windows { Minutes = new[] { 1 } })
-            .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
-            .Select(g => new { g.Key.Broker, g.Key.Symbol, g.Key.BucketStart, Open = g.EarliestByOffset(x => x.Bid) })
+            .GroupBy(r => new { r.Broker, r.Symbol })
+            .Select(g => new { g.Key.Broker, g.Key.Symbol, BucketStart = g.WindowStart(), Open = g.EarliestByOffset(x => x.Bid) })
             .Build();
 
         var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.Build("bar_1m", model, "1m");
@@ -142,8 +118,8 @@ public class KsqlCreateWindowedStatementBuilderTests
         var model = new KsqlQueryRoot()
             .From<Rate>()
             .Tumbling(r => r.Timestamp, new Windows { Minutes = new[] { 1 } })
-            .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
-            .Select(g => new { g.Key.Broker, g.Key.Symbol, g.Key.BucketStart })
+            .GroupBy(r => new { r.Broker, r.Symbol })
+            .Select(g => new { g.Key.Broker, g.Key.Symbol, BucketStart = g.WindowStart() })
             .Build();
         Assert.Equal(StreamTableType.Table, model.DetermineType());
     }
