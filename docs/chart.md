@@ -62,7 +62,7 @@ EventSet<Rate>()
               months:  new[]{1,12},
               grace: TimeSpan.FromMinutes(2)) // 遅延許容
 
-    .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
+    .GroupBy(r => new { r.Broker, r.Symbol })
 
     .Select(g => new {
         g.Key.Broker,
@@ -112,7 +112,7 @@ EventSet<Rate>()
       )
 
 
-    .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
+    .GroupBy(r => new { r.Broker, r.Symbol })
 
     .Select(g => new {
         g.Key.Broker,
