@@ -33,7 +33,18 @@ internal static class DerivationPlanner
             }
         }
 
-        foreach (var tf in qao.Windows)
+        var windows = qao.Windows
+            .OrderBy(w => w.Unit switch
+            {
+                "m" => w.Value,
+                "h" => w.Value * 60,
+                "d" => w.Value * 1440,
+                "wk" => w.Value * 10080,
+                _ => w.Value
+            })
+            .ToArray();
+        Timeframe? prevWindow = null;
+        foreach (var tf in windows)
         {
             var tfStr = $"{tf.Value}{tf.Unit}";
             var topicAttr = model.EntityType.GetCustomAttribute<KsqlTopicAttribute>();
@@ -41,6 +52,7 @@ internal static class DerivationPlanner
             var aggId = $"{baseId}_{tfStr}_agg_final";
             var liveId = $"{baseId}_{tfStr}_live";
             var finalId = $"{baseId}_{tfStr}_final";
+            var hbId = $"{baseId}_hb_{tfStr}";
 
             var agg = new DerivedEntity
             {
@@ -54,6 +66,14 @@ internal static class DerivationPlanner
             };
             entities.Add(agg);
 
+            var liveInput = prevWindow == null
+                ? tf.Unit == "m" && tf.Value == 1
+                    ? "10sAgg"
+                    : tf.Unit == "wk"
+                        ? $"{baseId}_1d_live"
+                        : $"{baseId}_1m_live"
+                : $"{baseId}_{prevWindow.Value}{prevWindow.Unit}_live";
+            var liveSync = hbId.ToUpperInvariant();
             var live = new DerivedEntity
             {
                 Id = liveId,
@@ -61,13 +81,14 @@ internal static class DerivationPlanner
                 Timeframe = tf,
                 KeyShape = keyShapes,
                 ValueShape = valueShapes,
-                InputHint = tf.Unit == "m" && tf.Value == 1 ? "10sAgg" : tf.Unit == "wk" ? $"{baseId}_1m_final" : $"{baseId}_1m_live",
-                SyncHint = tf.Unit == "m" && tf.Value == 1 ? $"{baseId}_hb_1m".ToUpperInvariant() : null,
+                InputHint = liveInput,
+                SyncHint = liveSync,
                 BasedOnSpec = basedOn,
                 WeekAnchor = qao.WeekAnchor
             };
             entities.Add(live);
 
+            var finalInput = aggId;
             var final = new DerivedEntity
             {
                 Id = finalId,
@@ -75,28 +96,44 @@ internal static class DerivationPlanner
                 Timeframe = tf,
                 KeyShape = keyShapes,
                 ValueShape = valueShapes,
-                InputHint = tf.Unit == "m" && tf.Value == 1 ? "10sAgg" : tf.Unit == "wk" ? $"{baseId}_1m_final" : $"{baseId}_1m_live",
-                SyncHint = tf.Unit == "m" && tf.Value == 1 ? $"{baseId}_hb_1m".ToUpperInvariant() : null,
+                InputHint = finalInput,
+                SyncHint = hbId.ToUpperInvariant(),
+                PrevHint = $"{baseId}_prev_1m",
                 BasedOnSpec = basedOn,
                 WeekAnchor = qao.WeekAnchor
             };
             entities.Add(final);
 
+            var hb = new DerivedEntity
+            {
+                Id = hbId,
+                Role = Role.Hb,
+                Timeframe = tf,
+                KeyShape = keyShapes,
+                ValueShape = Array.Empty<ColumnShape>(),
+                MaterializationHint = MaterializationHint.Stream,
+                BasedOnSpec = basedOn,
+                WeekAnchor = qao.WeekAnchor
+            };
+            entities.Add(hb);
+
             if (tf.Unit == "m" && tf.Value == 1)
             {
-                var hb = new DerivedEntity
+                var prev = new DerivedEntity
                 {
-                    Id = $"{baseId}_hb_1m",
-                    Role = Role.Hb,
+                    Id = $"{baseId}_prev_1m",
+                    Role = Role.Prev1m,
                     Timeframe = tf,
                     KeyShape = keyShapes,
-                    ValueShape = Array.Empty<ColumnShape>(),
-                    MaterializationHint = MaterializationHint.Stream,
+                    ValueShape = valueShapes,
+                    InputHint = $"{baseId}_1m_final",
+                    SyncHint = hbId.ToUpperInvariant(),
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor
                 };
-                entities.Add(hb);
+                entities.Add(prev);
             }
+            prevWindow = tf;
         }
         return entities;
     }

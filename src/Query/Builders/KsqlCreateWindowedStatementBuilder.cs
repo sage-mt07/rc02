@@ -1,6 +1,7 @@
 using Kafka.Ksql.Linq.Query.Dsl;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Kafka.Ksql.Linq.Query.Builders;
@@ -18,12 +19,7 @@ internal static class KsqlCreateWindowedStatementBuilder
         if (string.IsNullOrWhiteSpace(timeframe)) throw new ArgumentException("timeframe required", nameof(timeframe));
         var baseSql = KsqlCreateStatementBuilder.Build(name, model);
         if (model.IsFinal)
-        {
-            // remove any existing BucketStart alias from the SELECT list; regex scope is limited to SELECT
-            // TODO: anchor to the SELECT segment explicitly if the builder ever rewrites other clauses
-            baseSql = Regex.Replace(baseSql, @",\s*[^,]*?AS BucketStart", string.Empty, RegexOptions.IgnoreCase);
-            baseSql = baseSql.Replace("SELECT ", "SELECT WINDOWSTART AS BucketStart, ");
-        }
+            baseSql = InjectWindowStart(baseSql);
         var window = FormatWindow(model, timeframe);
         var sql = InjectWindowAfterFrom(baseSql, window);
         sql = InjectEmitMode(sql, model);
@@ -41,6 +37,87 @@ internal static class KsqlCreateWindowedStatementBuilder
             result[tf] = Build(name, model, tf);
         }
         return result;
+    }
+
+    internal static string InjectWindowStart(string sql)
+    {
+        var selectIdx = sql.IndexOf("SELECT", StringComparison.OrdinalIgnoreCase);
+        if (selectIdx < 0) return sql;
+        var fromIdx = FindFrom(sql, selectIdx + 6);
+        var body = sql.Substring(selectIdx + 6, fromIdx - (selectIdx + 6));
+        var items = Split(body);
+        string? alias = null;
+        for (var i = 0; i < items.Count; i++)
+        {
+            var trimmed = items[i].TrimStart();
+            if (trimmed.StartsWith("WINDOWSTART", StringComparison.OrdinalIgnoreCase))
+            {
+                alias = ExtractAlias(trimmed);
+                items.RemoveAt(i);
+                break;
+            }
+        }
+        alias ??= "BucketStart";
+        items.Insert(0, $"WINDOWSTART AS {alias}");
+        var rebuilt = string.Join(", ", items);
+        return sql.Substring(0, selectIdx + 6) + " " + rebuilt + " " + sql.Substring(fromIdx);
+    }
+
+    private static string ExtractAlias(string item)
+    {
+        var idx = item.IndexOf("AS", StringComparison.OrdinalIgnoreCase);
+        return idx >= 0 ? item[(idx + 2)..].Trim() : "BucketStart";
+    }
+
+    private static int FindFrom(string sql, int start)
+    {
+        var depth = 0; var single = false; var dbl = false;
+        for (var i = start; i < sql.Length - 3; i++)
+        {
+            var c = sql[i];
+            if (c == '\'' && !dbl) single = !single;
+            else if (c == '"' && !single) dbl = !dbl;
+            else if (!single && !dbl)
+            {
+                if (c == '(') depth++;
+                else if (c == ')') depth--;
+                else if (depth == 0 && (c == 'F' || c == 'f') &&
+                         sql.AsSpan(i, 4).Equals("from", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (i == 0 || char.IsWhiteSpace(sql[i - 1])) return i;
+                }
+            }
+        }
+        return sql.Length;
+    }
+
+    private static List<string> Split(string body)
+    {
+        var list = new List<string>();
+        var sb = new StringBuilder();
+        var depth = 0; var single = false; var dbl = false;
+        foreach (var c in body)
+        {
+            if (c == ',' && depth == 0 && !single && !dbl)
+            {
+                list.Add(sb.ToString().Trim());
+                sb.Clear();
+            }
+            else
+            {
+                sb.Append(c);
+                if (c == '\'' && !dbl) single = !single;
+                else if (c == '"' && !single) dbl = !dbl;
+                else if (!single && !dbl)
+                {
+                    if (c == '(') depth++;
+                    else if (c == ')') depth--;
+                }
+            }
+        }
+        var last = sb.ToString().Trim();
+        if (last.Length > 0) list.Add(last);
+        return list;
     }
 
     private static string FormatWindow(KsqlQueryModel model, string timeframe)

@@ -63,6 +63,12 @@ public class KsqlQueryable2<T1, T2> : IKsqlQueryable
         DayOfWeek? week = null,
         TimeSpan? grace = null)
     {
+        if (time.Body is MemberExpression me)
+            _model.TimeKey = me.Member.Name;
+        else if (time.Body is UnaryExpression ue && ue.Operand is MemberExpression me2)
+            _model.TimeKey = me2.Member.Name;
+        if (grace.HasValue)
+            _model.GraceSeconds = (int)Math.Ceiling(grace.Value.TotalSeconds);
         if (minutes != null) foreach (var m in minutes) _model.Windows.Add($"{m}m");
         if (hours != null) foreach (var h in hours) _model.Windows.Add($"{h}h");
         if (days != null) foreach (var d in days) _model.Windows.Add($"{d}d");
@@ -125,11 +131,4 @@ public class KsqlQueryable2<T1, T2> : IKsqlQueryable
 
     public KsqlQueryModel Build() => _model;
 
-    private static string ExtractPropertyName(Expression expression)
-    {
-        return expression is LambdaExpression lambda &&
-               lambda.Body is MemberExpression member
-            ? member.Member.Name
-            : throw new ArgumentException("The timestamp property must be specified using a property access expression.");
-    }
 }

@@ -1,3 +1,4 @@
+using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Query.Analysis;
 using Kafka.Ksql.Linq.Query.Builders;
 using Kafka.Ksql.Linq.Query.Builders.Core;
@@ -11,6 +12,7 @@ namespace Kafka.Ksql.Linq.Tests.Query.Builders;
 
 public class RollupBuilderTests
 {
+    [KsqlTopic("bar")]
     private class Rate
     {
         public string Broker { get; set; } = string.Empty;
@@ -53,6 +55,7 @@ public class RollupBuilderTests
         var visitor = new MethodCallCollectorVisitor();
         visitor.Visit(expr);
         var result = visitor.Result;
+        result.PocoType = typeof(Rate);
         if (result.Windows.Count == 0)
             throw new InvalidOperationException("Tumbling windows are required");
         if (result.TimeKey == null)
@@ -79,7 +82,7 @@ public class RollupBuilderTests
         var sql = LiveBuilder.Build(md, "1m");
         Assert.Contains("TABLE 10sAgg WINDOW TUMBLING(1m)", sql);
         Assert.Contains("EMIT CHANGES", sql);
-        Assert.Contains("SYNC HB_1m", sql);
+        Assert.Contains("SYNC BAR_HB_1M", sql);
     }
 
     [Fact]
@@ -88,7 +91,7 @@ public class RollupBuilderTests
         var md = BuildMetadata();
         var sql = LiveBuilder.Build(md, "5m");
         Assert.Contains("TABLE bar_1m_live WINDOW TUMBLING(5m)", sql);
-        Assert.DoesNotContain("HB_1m", sql);
+        Assert.DoesNotContain("BAR_HB_1M", sql);
     }
 
     [Fact]
@@ -98,11 +101,11 @@ public class RollupBuilderTests
         var sql = FinalBuilder.Build(md, "5m");
         Assert.Contains("TABLE bar_1m_live WINDOW TUMBLING(5m)", sql);
         Assert.Contains("EMIT FINAL", sql);
-        Assert.DoesNotContain("HB_1m", sql);
+        Assert.DoesNotContain("BAR_HB_1M", sql);
         Assert.DoesNotContain("COMPOSE(", sql);
         var sql1 = FinalBuilder.Build(md, "1m");
         Assert.Contains("TABLE 10sAgg WINDOW TUMBLING(1m)", sql1);
-        Assert.Contains("SYNC HB_1m", sql1);
+        Assert.Contains("SYNC BAR_HB_1M", sql1);
         Assert.DoesNotContain("COMPOSE(", sql1);
     }
 
@@ -135,6 +138,6 @@ public class RollupBuilderTests
         var specFinal = RoleTraits.For(Role.Final, new Timeframe(5, "m"));
         Assert.True(specFinal.Window);
         Assert.Equal("FINAL", specFinal.Emit);
-        Assert.False(specFinal.SyncHb1m);
+        Assert.True(specFinal.SyncHb1m);
     }
 }

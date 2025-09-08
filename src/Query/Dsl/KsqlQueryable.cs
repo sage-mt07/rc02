@@ -66,6 +66,12 @@ public class KsqlQueryable<T1> : IKsqlQueryable, IScheduledScope<T1>
         DayOfWeek? week = null,
         TimeSpan? grace = null)
     {
+        if (time.Body is MemberExpression me)
+            _model.TimeKey = me.Member.Name;
+        else if (time.Body is UnaryExpression ue && ue.Operand is MemberExpression me2)
+            _model.TimeKey = me2.Member.Name;
+        if (grace.HasValue)
+            _model.GraceSeconds = (int)Math.Ceiling(grace.Value.TotalSeconds);
         if (minutes != null) foreach (var m in minutes) _model.Windows.Add($"{m}m");
         if (hours != null) foreach (var h in hours) _model.Windows.Add($"{h}h");
         if (days != null) foreach (var d in days) _model.Windows.Add($"{d}d");
@@ -106,7 +112,57 @@ public class KsqlQueryable<T1> : IKsqlQueryable, IScheduledScope<T1>
     {
         _model.BasedOnType = typeof(TSchedule);
         _model.BasedOnDayKey = dayKey;
+        Parse(predicate.Body);
         return this;
+
+        void Parse(Expression expr)
+        {
+            switch (expr)
+            {
+                case BinaryExpression be when be.NodeType == ExpressionType.AndAlso:
+                    Parse(be.Left);
+                    Parse(be.Right);
+                    break;
+                case BinaryExpression be when be.NodeType == ExpressionType.Equal:
+                    if (be.Left is MemberExpression lm && be.Right is MemberExpression rm)
+                    {
+                        if (lm.Expression is ParameterExpression lp && lp.Type == typeof(T1) &&
+                            rm.Expression is ParameterExpression rp && rp.Type == typeof(TSchedule))
+                            _model.BasedOnJoinKeys.Add(lm.Member.Name);
+                        else if (rm.Expression is ParameterExpression rp2 && rp2.Type == typeof(T1) &&
+                                 lm.Expression is ParameterExpression lp2 && lp2.Type == typeof(TSchedule))
+                            _model.BasedOnJoinKeys.Add(rm.Member.Name);
+                    }
+                    break;
+                case BinaryExpression be when be.NodeType is ExpressionType.LessThan or ExpressionType.LessThanOrEqual or ExpressionType.GreaterThan or ExpressionType.GreaterThanOrEqual:
+                    HandleBoundary(be);
+                    break;
+            }
+        }
+
+        void HandleBoundary(BinaryExpression be)
+        {
+            if (be.Left is not MemberExpression l || be.Right is not MemberExpression r) return;
+            if (l.Expression is not ParameterExpression lp || r.Expression is not ParameterExpression rp) return;
+            var lSched = lp.Type == typeof(TSchedule);
+            var rSched = rp.Type == typeof(TSchedule);
+            if (lSched == rSched) return;
+            var schedProp = lSched ? l.Member.Name : r.Member.Name;
+            var inclusive = be.NodeType is ExpressionType.LessThanOrEqual or ExpressionType.GreaterThanOrEqual;
+            var isOpen = lSched
+                ? be.NodeType is ExpressionType.LessThan or ExpressionType.LessThanOrEqual
+                : be.NodeType is ExpressionType.GreaterThan or ExpressionType.GreaterThanOrEqual;
+            if (isOpen)
+            {
+                _model.BasedOnOpen = schedProp;
+                _model.BasedOnOpenInclusive = inclusive;
+            }
+            else
+            {
+                _model.BasedOnClose = schedProp;
+                _model.BasedOnCloseInclusive = inclusive;
+            }
+        }
     }
 
     public KsqlQueryable<T1> AsPush()
@@ -158,10 +214,4 @@ public class KsqlQueryable<T1> : IKsqlQueryable, IScheduledScope<T1>
 
     public KsqlQueryModel Build() => _model;
 
-    private static string ExtractPropertyName(Expression expression)
-    {
-        return expression is LambdaExpression lambda && lambda.Body is MemberExpression member
-            ? member.Member.Name
-            : throw new ArgumentException("The timestamp property must be specified using a property access expression.");
-    }
 }

@@ -19,8 +19,14 @@ public class KsqlQueryModel
     public QueryExecutionMode ExecutionMode { get; set; } = QueryExecutionMode.Unspecified;
     public Type? BasedOnType { get; set; }
     public LambdaExpression? BasedOnDayKey { get; set; }
+    public List<string> BasedOnJoinKeys { get; } = new();
+    public string? BasedOnOpen { get; set; }
+    public string? BasedOnClose { get; set; }
+    public bool BasedOnOpenInclusive { get; set; } = true;
+    public bool BasedOnCloseInclusive { get; set; } = false;
     public List<string> Windows { get; } = new();
     public DayOfWeek WeekAnchor { get; set; } = DayOfWeek.Monday;
+    public string? TimeKey { get; set; }
     public int? WithinSeconds { get; set; }
     public bool ForbidDefaultWithin { get; set; }
     public bool IsFinal { get; set; }
@@ -40,13 +46,19 @@ public class KsqlQueryModel
             ExecutionMode = ExecutionMode,
             BasedOnType = BasedOnType,
             BasedOnDayKey = BasedOnDayKey,
+            BasedOnOpen = BasedOnOpen,
+            BasedOnClose = BasedOnClose,
+            BasedOnOpenInclusive = BasedOnOpenInclusive,
+            BasedOnCloseInclusive = BasedOnCloseInclusive,
             WeekAnchor = WeekAnchor,
+            TimeKey = TimeKey,
             WithinSeconds = WithinSeconds,
             ForbidDefaultWithin = ForbidDefaultWithin,
             IsFinal = IsFinal,
             GraceSeconds = GraceSeconds
         };
         clone.Windows.AddRange(Windows);
+        clone.BasedOnJoinKeys.AddRange(BasedOnJoinKeys);
         foreach (var kv in Extras)
             clone.Extras[kv.Key] = kv.Value;
         return clone;

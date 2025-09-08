@@ -41,6 +41,7 @@ internal static class EntityModelAdapter
             model.AdditionalSettings["timeframe"] = $"{e.Timeframe.Value}{e.Timeframe.Unit}";
             if (e.SyncHint != null) model.AdditionalSettings[$"sync"] = e.SyncHint;
             if (e.InputHint != null) model.AdditionalSettings[$"input"] = e.InputHint;
+            if (e.PrevHint != null) model.AdditionalSettings[$"prev"] = e.PrevHint;
             var nsSource = e.TopicHint ?? e.Id;
             if (!string.IsNullOrWhiteSpace(nsSource))
             {
@@ -53,7 +54,7 @@ internal static class EntityModelAdapter
                         Role.Live => TrimSuffix(baseNs, $"_{e.Timeframe.Value}{e.Timeframe.Unit}_live"),
                         Role.Final => TrimSuffix(baseNs, $"_{e.Timeframe.Value}{e.Timeframe.Unit}_final"),
                         Role.Prev1m => TrimSuffix(baseNs, "_prev_1m"),
-                        Role.Hb => TrimSuffix(baseNs, "_hb_1m"),
+                        Role.Hb => TrimSuffix(baseNs, $"_hb_{e.Timeframe.Value}{e.Timeframe.Unit}"),
                         _ => baseNs
                     };
                 }

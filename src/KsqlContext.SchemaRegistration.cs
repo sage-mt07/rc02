@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 using ConfluentSchemaRegistry = Confluent.SchemaRegistry;
 
 namespace Kafka.Ksql.Linq;
@@ -433,15 +434,30 @@ public abstract partial class KsqlContext
             var shape = m.AllProperties.Select(p => new ColumnShape(p.Name, p.PropertyType, ctx.Create(p).WriteState == NullabilityState.Nullable)).ToArray();
             var frames = m.QueryModel!.Windows.Select(ParseWindow).ToList();
             var keys = m.KeyProperties.Select(p => p.Name).ToArray();
+            var basedOnKeys = m.QueryModel.BasedOnJoinKeys.Count > 0 ? m.QueryModel.BasedOnJoinKeys.ToArray() : keys;
+            var dayKey = PropertyName(m.QueryModel.BasedOnDayKey);
+            var timeKey = m.QueryModel!.TimeKey
+                ?? m.AllProperties.FirstOrDefault(p => p.GetCustomAttribute<KsqlTimestampAttribute>() != null)?.Name
+                ?? string.Empty;
+            var projection = m.AllProperties.Select(p => p.Name).Where(n => !keys.Contains(n)).ToArray();
+            var basedOnOpen = m.QueryModel.BasedOnOpen ?? string.Empty;
+            var basedOnClose = m.QueryModel.BasedOnClose ?? string.Empty;
             return new TumblingQao
             {
-                TimeKey = "Timestamp",
+                TimeKey = timeKey,
                 Windows = frames,
                 Keys = keys,
-                Projection = keys,
+                Projection = projection,
                 PocoShape = shape,
-                BasedOn = new BasedOnSpec(keys, string.Empty, string.Empty, string.Empty),
-                WeekAnchor = m.QueryModel!.WeekAnchor
+                BasedOn = new BasedOnSpec(
+                    basedOnKeys,
+                    basedOnOpen,
+                    basedOnClose,
+                    dayKey,
+                    m.QueryModel.BasedOnOpenInclusive,
+                    m.QueryModel.BasedOnCloseInclusive),
+                WeekAnchor = m.QueryModel!.WeekAnchor,
+                GraceSeconds = m.QueryModel!.GraceSeconds
             };
         }
 
@@ -455,6 +471,9 @@ public abstract partial class KsqlContext
             var value = int.Parse(w[..^1]);
             return new Timeframe(value, unit);
         }
+
+        static string PropertyName(LambdaExpression? e) =>
+            e?.Body is MemberExpression m ? m.Member.Name : string.Empty;
     }
 
     /// <summary>
