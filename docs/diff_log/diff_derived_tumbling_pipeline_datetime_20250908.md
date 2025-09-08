@@ -1,0 +1,1 @@
+- Expanded DerivedTumblingPipeline type mapping to explicitly handle DateTime, DateTimeOffset, decimal and other CLR types for correct KSQL DDL generation.
