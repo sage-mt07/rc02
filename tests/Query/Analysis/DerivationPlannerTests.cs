@@ -116,4 +116,12 @@ public class DerivationPlannerTests
         var liveD = Assert.Single(entities, e => e.Id == "bar_1d_live" && e.Role == Role.Live);
         Assert.Equal("bar_1h_live", liveD.InputHint);
     }
+
+    [Fact]
+    public void Plan_WhenEmpty_Adds_Fill_Entity()
+    {
+        var model = new EntityModel { EntityType = typeof(Source) };
+        var entities = DerivationPlanner.Plan(Create(new Timeframe(1, "m")), model, true);
+        Assert.Contains(entities, e => e.Id == "bar_1m_fill" && e.Role == Role.Fill);
+    }
 }

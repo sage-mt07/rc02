@@ -23,6 +23,9 @@ internal class MethodCallCollectorVisitor : ExpressionVisitor
             case "TimeFrame":
                 ParseTimeFrame(node);
                 break;
+            case "WhenEmpty":
+                Result.WhenEmpty = true;
+                break;
         }
         return base.VisitMethodCall(node);
     }

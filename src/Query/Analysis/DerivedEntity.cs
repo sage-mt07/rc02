@@ -9,7 +9,8 @@ internal enum Role
     AggFinal,
     Final,
     Prev1m,
-    Hb
+    Hb,
+    Fill
 }
 
 internal enum MaterializationHint

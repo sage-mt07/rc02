@@ -9,7 +9,7 @@ namespace Kafka.Ksql.Linq.Query.Analysis;
 
 internal static class DerivationPlanner
 {
-    public static IReadOnlyList<DerivedEntity> Plan(TumblingQao qao, EntityModel model)
+    public static IReadOnlyList<DerivedEntity> Plan(TumblingQao qao, EntityModel model, bool whenEmpty = false)
     {
         var entities = new List<DerivedEntity>();
 
@@ -116,6 +116,23 @@ internal static class DerivationPlanner
                 WeekAnchor = qao.WeekAnchor
             };
             entities.Add(hb);
+
+            if (whenEmpty)
+            {
+                var fill = new DerivedEntity
+                {
+                    Id = $"{baseId}_{tfStr}_fill",
+                    Role = Role.Fill,
+                    Timeframe = tf,
+                    KeyShape = keyShapes,
+                    ValueShape = valueShapes,
+                    InputHint = finalId,
+                    SyncHint = hbId.ToUpperInvariant(),
+                    BasedOnSpec = basedOn,
+                    WeekAnchor = qao.WeekAnchor
+                };
+                entities.Add(fill);
+            }
 
             if (tf.Unit == "m" && tf.Value == 1)
             {

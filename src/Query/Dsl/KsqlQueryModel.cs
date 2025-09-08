@@ -32,6 +32,7 @@ public class KsqlQueryModel
     public bool IsFinal { get; set; }
     public int? GraceSeconds { get; set; }
     public int? BaseUnitSeconds { get; set; }
+    public LambdaExpression? WhenEmptyFiller { get; set; }
     public System.Collections.Generic.Dictionary<string, object?> Extras { get; } = new();
 
     public KsqlQueryModel Clone()
@@ -57,7 +58,8 @@ public class KsqlQueryModel
             ForbidDefaultWithin = ForbidDefaultWithin,
             IsFinal = IsFinal,
             GraceSeconds = GraceSeconds,
-            BaseUnitSeconds = BaseUnitSeconds
+            BaseUnitSeconds = BaseUnitSeconds,
+            WhenEmptyFiller = WhenEmptyFiller
         };
         clone.Windows.AddRange(Windows);
         clone.BasedOnJoinKeys.AddRange(BasedOnJoinKeys);

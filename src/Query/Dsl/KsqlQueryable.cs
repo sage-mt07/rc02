@@ -190,6 +190,12 @@ public class KsqlQueryable<T1> : IKsqlQueryable, IScheduledScope<T1>
         return this;
     }
 
+    public KsqlQueryable<T1> WhenEmpty(Expression<Func<T1, T1, T1>> filler)
+    {
+        _model.WhenEmptyFiller = filler;
+        return this;
+    }
+
     public KsqlQueryable2<T1, T2> Join<T2>(Expression<Func<T1, T2, bool>> condition)
     {
         if (_stage != QueryBuildStage.From)

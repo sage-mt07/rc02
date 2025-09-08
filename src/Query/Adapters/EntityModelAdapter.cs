@@ -55,6 +55,7 @@ internal static class EntityModelAdapter
                         Role.Final => TrimSuffix(baseNs, $"_{e.Timeframe.Value}{e.Timeframe.Unit}_final"),
                         Role.Prev1m => TrimSuffix(baseNs, "_prev_1m"),
                         Role.Hb => TrimSuffix(baseNs, $"_hb_{e.Timeframe.Value}{e.Timeframe.Unit}"),
+                        Role.Fill => TrimSuffix(baseNs, $"_{e.Timeframe.Value}{e.Timeframe.Unit}_fill"),
                         _ => baseNs
                     };
                 }

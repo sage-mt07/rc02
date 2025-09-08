@@ -101,5 +101,19 @@ public class PropertyNameParsingTests
         Assert.Equal(30, model.GraceSeconds);
         Assert.Equal(new[] { "15m", "1h", "90m" }, model.Windows);
     }
+
+    [Fact]
+    public void WhenEmpty_Sets_Flag()
+    {
+        var q = Expression.Parameter(typeof(KsqlQueryable<Rate>), "q");
+        var r1 = Expression.Parameter(typeof(Rate), "r1");
+        var r2 = Expression.Parameter(typeof(Rate), "r2");
+        var filler = Expression.Lambda<Func<Rate, Rate, Rate>>(r1, r1, r2);
+        var method = typeof(KsqlQueryable<Rate>).GetMethod("WhenEmpty");
+        var call = Expression.Call(q, method!, filler);
+        var visitor = new MethodCallCollectorVisitor();
+        visitor.Visit(call);
+        Assert.True(visitor.Result.WhenEmpty);
+    }
 }
 
