@@ -1,0 +1,4 @@
+- Removed BaseUnitSeconds from Windows DSL; base unit now passed as Tumbling argument.
+- Tumbling accepts baseUnitSeconds and optional grace period; values stored in KsqlQueryModel.
+- MethodCallCollectorVisitor parses positional baseUnitSeconds and grace arguments.
+- Added GraceSeconds to ExpressionAnalysisResult, KsqlQueryModel and TumblingQao, propagated through BuildQao.

@@ -44,7 +44,7 @@ public class RollupBuilderTests
                     s.Open <= r.Timestamp &&
                     r.Timestamp < s.Close,
                 s => s.MarketDate)
-            .Tumbling(r => r.Timestamp, new Windows { Minutes = new[] { 1, 5 } })
+            .Tumbling(r => r.Timestamp, new Windows { Minutes = new[] { 1, 5 } }, 10, null)
             .GroupBy(r => new { r.Broker, r.Symbol })
             .Select(g => new { g.Key.Broker, g.Key.Symbol, BucketStart = g.WindowStart() }))).Body;
         var analysis = Analyze(expr);

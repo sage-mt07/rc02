@@ -23,4 +23,5 @@ internal class TumblingQao
     public BasedOnSpec BasedOn { get; init; } = new(new List<string>(), string.Empty, string.Empty, string.Empty);
     public DayOfWeek WeekAnchor { get; init; } = DayOfWeek.Monday;
     public int? BaseUnitSeconds { get; init; }
+    public int? GraceSeconds { get; init; }
 }

@@ -21,6 +21,7 @@ internal class ExpressionAnalysisResult
     public List<string> GroupByKeys { get; } = new();
     public DayOfWeek WeekAnchor { get; set; } = DayOfWeek.Monday;
     public int? BaseUnitSeconds { get; set; }
+    public int? GraceSeconds { get; set; }
 
     public List<string> BasedOnJoinKeys { get; } = new();
     public string? BasedOnOpen { get; set; }

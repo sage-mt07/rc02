@@ -29,11 +29,13 @@ public class PropertyNameParsingTests
         var q = Expression.Parameter(typeof(KsqlQueryable<Rate>), "q");
         var r = Expression.Parameter(typeof(Rate), "r");
         var timeLambda = Expression.Lambda(Expression.Property(r, nameof(Rate.Timestamp)), r);
-        var method = typeof(KsqlQueryable<Rate>).GetMethods().First(m => m.Name == "Tumbling" && m.GetParameters().Length == 2);
+        var method = typeof(KsqlQueryable<Rate>).GetMethods().First(m => m.Name == "Tumbling" && m.GetParameters().Length == 4);
         var windows = Expression.MemberInit(Expression.New(typeof(Windows)));
         var call = Expression.Call(q, method,
             timeLambda,
-            windows);
+            windows,
+            Expression.Constant(10),
+            Expression.Constant(null, typeof(TimeSpan?)));
         var visitor = new MethodCallCollectorVisitor();
         visitor.Visit(call);
         Assert.Equal("Timestamp", visitor.Result.TimeKey);
@@ -79,11 +81,13 @@ public class PropertyNameParsingTests
         var s = Expression.Parameter(typeof(Schedule), "s");
         var timeLambda = Expression.Lambda(Expression.Property(r, nameof(Rate.Timestamp)), r, s);
         var method = typeof(KsqlQueryable2<Rate, Schedule>).GetMethods()
-            .First(m => m.Name == "Tumbling" && m.GetParameters().Length == 2);
+            .First(m => m.Name == "Tumbling" && m.GetParameters().Length == 4);
         var windows = Expression.MemberInit(Expression.New(typeof(Windows)));
         var call = Expression.Call(q, method,
             timeLambda,
-            windows);
+            windows,
+            Expression.Constant(10),
+            Expression.Constant(null, typeof(TimeSpan?)));
         var visitor = new MethodCallCollectorVisitor();
         visitor.Visit(call);
         Assert.Equal("Timestamp", visitor.Result.TimeKey);
