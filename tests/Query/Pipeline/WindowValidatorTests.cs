@@ -7,6 +7,15 @@ namespace Kafka.Ksql.Linq.Tests.Query.Pipeline;
 public class WindowValidatorTests
 {
     [Fact]
+    public void Validate_Throws_When_BaseUnit_Missing()
+    {
+        var res = new ExpressionAnalysisResult();
+        res.Windows.Add("5s");
+        var ex = Assert.Throws<InvalidOperationException>(() => WindowValidator.Validate(res));
+        Assert.Equal("Base unit is required for tumbling windows.", ex.Message);
+    }
+
+    [Fact]
     public void Validate_Throws_When_BaseUnit_Not_Divide_60()
     {
         var res = new ExpressionAnalysisResult { BaseUnitSeconds = 7 };

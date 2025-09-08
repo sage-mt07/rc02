@@ -1,0 +1,1 @@
+- WindowValidator now throws when BaseUnitSeconds is missing for defined windows.
