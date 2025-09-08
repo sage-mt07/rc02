@@ -25,6 +25,7 @@ public class KsqlQueryModel
     public List<string> Windows { get; } = new();
     public DayOfWeek WeekAnchor { get; set; } = DayOfWeek.Monday;
     public string? TimeKey { get; set; }
+    public string? BucketColumnName { get; set; }
     public int? WithinSeconds { get; set; }
     public bool ForbidDefaultWithin { get; set; }
     public int? BaseUnitSeconds { get; set; }
@@ -49,6 +50,7 @@ public class KsqlQueryModel
             BasedOnCloseInclusive = BasedOnCloseInclusive,
             WeekAnchor = WeekAnchor,
             TimeKey = TimeKey,
+            BucketColumnName = BucketColumnName,
             WithinSeconds = WithinSeconds,
             ForbidDefaultWithin = ForbidDefaultWithin,
             BaseUnitSeconds = BaseUnitSeconds,

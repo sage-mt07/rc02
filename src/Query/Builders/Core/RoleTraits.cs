@@ -13,10 +13,10 @@ internal static class RoleTraits
     {
         return role switch
         {
-            Role.Live => new(true, "CHANGES", false, false, true),
-            Role.AggFinal => new(true, "FINAL GRACE", true, false, false),
-            Role.Final => new(true, "FINAL", true, false, true),
-            _ => new(false, null, false, false, false)
+            Role.Live => new(true, "CHANGES", true),
+            Role.AggFinal => new(true, "FINAL GRACE", false),
+            Role.Final => new(true, "FINAL", true),
+            _ => new(false, null, false)
         };
     }
 }

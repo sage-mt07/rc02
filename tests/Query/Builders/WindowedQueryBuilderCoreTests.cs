@@ -32,11 +32,10 @@ public class WindowedQueryBuilderCoreTests
     }
 
     [Fact]
-    public void Core_Builds_AggFinal_FinalPlusGrace_WithBucketStartProjector()
+    public void Core_Builds_AggFinal_FinalPlusGrace()
     {
         var q = AggFinalBuilder.Build(BaseMd(), "1m");
         Assert.Contains("FINAL GRACE", q);
-        Assert.Contains("SELECT WINDOWSTART AS BucketStart", q);
     }
 
     [Fact]

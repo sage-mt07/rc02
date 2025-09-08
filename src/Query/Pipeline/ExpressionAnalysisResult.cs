@@ -30,6 +30,8 @@ internal class ExpressionAnalysisResult
     public string? BasedOnDayKey { get; set; }
     public Type? PocoType { get; set; }
     public bool WhenEmpty { get; set; }
+    public int WindowStartCallCount { get; set; }
+    public string? BucketColumnName { get; set; }
 
     private static bool IsAggregateMethod(string methodName)
     {
@@ -47,6 +49,9 @@ internal class ExpressionAnalysisResult
         md = md.WithProperty("basedOn/dayKey", BasedOnDayKey!);
         md = md.WithProperty("basedOn/openInclusive", BasedOnOpenInclusive);
         md = md.WithProperty("basedOn/closeInclusive", BasedOnCloseInclusive);
+
+        if (BucketColumnName != null)
+            md = md.WithProperty("bucketColumn", BucketColumnName);
 
         md = md.WithProperty("roles/live", Windows.ToArray());
         md = md.WithProperty("roles/aggFinal", Windows.ToArray());

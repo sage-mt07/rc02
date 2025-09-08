@@ -26,8 +26,6 @@ internal static class WindowedQueryBuilder
             sb.Append(' ').Append(QueryBuilderUtils.ApplyWindowTumbling(tfStr));
         if (spec.Emit != null)
             sb.Append(' ').Append($"EMIT {spec.Emit}");
-        if (spec.Projector)
-            sb.Append(' ').Append(QueryBuilderUtils.ApplyProjector_BucketStartFromWindowStart());
         if (spec.SyncHb1m)
         {
             var sync = md.GetProperty<string>($"sync/{tfStr}{roleName}");
