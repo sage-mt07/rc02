@@ -14,8 +14,12 @@ internal static class QueryBuilderUtils
         var openProp = md.GetProperty<string>("basedOn/openProp");
         var closeProp = md.GetProperty<string>("basedOn/closeProp");
         var timeKey = md.GetProperty<string>("timeKey");
+        var openInc = md.GetProperty<bool?>("basedOn/openInclusive") ?? true;
+        var closeInc = md.GetProperty<bool?>("basedOn/closeInclusive") ?? false;
+        var openOp = openInc ? "<=" : "<";
+        var closeOp = closeInc ? "<=" : "<";
         var join = string.Join(" AND ", joinKeys.Select(k => $"r.{k} = s.{k}"));
-        return $"JOIN ON {join} AND s.{openProp} <= r.{timeKey} AND r.{timeKey} < s.{closeProp}";
+        return $"JOIN ON {join} AND s.{openProp} {openOp} r.{timeKey} AND r.{timeKey} {closeOp} s.{closeProp}"; 
     }
 
     public static string ApplyWindowTumbling(string timeframe) => $"WINDOW TUMBLING({timeframe})";
