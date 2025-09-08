@@ -28,7 +28,7 @@ internal static class DerivedTumblingPipeline
     {
         var baseAttr = baseModel.EntityType.GetCustomAttribute<KsqlTopicAttribute>();
         var baseName = (baseAttr?.Name ?? baseModel.TopicName ?? baseModel.EntityType.Name).ToLowerInvariant();
-        var entities = PlanDerivedEntities(qao, baseModel);
+        var entities = PlanDerivedEntities(qao, baseModel, queryModel.WhenEmptyFiller != null);
         var models = AdaptModels(entities);
         await Parallel.ForEachAsync(models, async (m, _) =>
         {
@@ -41,8 +41,8 @@ internal static class DerivedTumblingPipeline
         });
     }
 
-    public static IReadOnlyList<DerivedEntity> PlanDerivedEntities(TumblingQao qao, EntityModel model)
-        => DerivationPlanner.Plan(qao, model);
+    public static IReadOnlyList<DerivedEntity> PlanDerivedEntities(TumblingQao qao, EntityModel model, bool whenEmpty)
+        => DerivationPlanner.Plan(qao, model, whenEmpty);
 
     public static IReadOnlyList<EntityModel> AdaptModels(IReadOnlyList<DerivedEntity> entities)
         => EntityModelAdapter.Adapt(entities);
@@ -64,6 +64,7 @@ internal static class DerivedTumblingPipeline
             Role.Final => $"{baseName}_{tf}_final",
             Role.Prev1m => $"{baseName}_prev_1m",
             Role.Hb => $"{baseName}_hb_{tf}",
+            Role.Fill => $"{baseName}_{tf}_fill",
             _ => $"{baseName}_{tf}"
         };
         var ddl = KsqlCreateWindowedStatementBuilder.Build(name, qm, tf);

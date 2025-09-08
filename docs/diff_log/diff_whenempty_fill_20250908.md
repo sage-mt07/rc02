@@ -1,0 +1,1 @@
+- Added WhenEmpty filler support with derived HB+LEFT JOIN+Fill entity.

@@ -29,6 +29,7 @@ internal class ExpressionAnalysisResult
     public bool BasedOnCloseInclusive { get; set; } = false;
     public string? BasedOnDayKey { get; set; }
     public Type? PocoType { get; set; }
+    public bool WhenEmpty { get; set; }
 
     private static bool IsAggregateMethod(string methodName)
     {
