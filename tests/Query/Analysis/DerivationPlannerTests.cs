@@ -53,6 +53,7 @@ public class DerivationPlannerTests
 
         Assert.Contains(entities, e => e.Id == "bar_1m_agg_final" && e.Role == Role.AggFinal);
         var live = Assert.Single(entities, e => e.Id == "bar_1m_live" && e.Role == Role.Live);
+        Assert.Equal("10sAgg", live.InputHint);
         Assert.Equal("BAR_HB_1M", live.SyncHint);
         var final = Assert.Single(entities, e => e.Id == "bar_1m_final" && e.Role == Role.Final);
         Assert.Equal("bar_1m_agg_final", final.InputHint);
@@ -72,6 +73,7 @@ public class DerivationPlannerTests
 
         Assert.Contains(entities, e => e.Id == "bar_5m_agg_final" && e.Role == Role.AggFinal);
         var live5 = Assert.Single(entities, e => e.Id == "bar_5m_live" && e.Role == Role.Live);
+        Assert.Equal("bar_1m_live", live5.InputHint);
         Assert.Equal("BAR_HB_5M", live5.SyncHint);
         var final = Assert.Single(entities, e => e.Id == "bar_5m_final" && e.Role == Role.Final);
         Assert.Equal("bar_5m_agg_final", final.InputHint);
@@ -79,5 +81,15 @@ public class DerivationPlannerTests
         Assert.Equal("bar_prev_1m", final.PrevHint);
         Assert.Contains(entities, e => e.Id == "bar_hb_5m" && e.Role == Role.Hb);
         Assert.DoesNotContain(entities, e => e.Role == Role.Prev1m);
+    }
+
+    [Fact]
+    public void Plan_1wk_Live_Uses_1d_Live_Input()
+    {
+        var model = new EntityModel { EntityType = typeof(Source) };
+        var entities = DerivationPlanner.Plan(Create(new Timeframe(1, "wk")), model);
+
+        var live = Assert.Single(entities, e => e.Id == "bar_1wk_live" && e.Role == Role.Live);
+        Assert.Equal("bar_1d_live", live.InputHint);
     }
 }

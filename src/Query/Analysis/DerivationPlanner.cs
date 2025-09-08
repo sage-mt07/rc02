@@ -55,7 +55,11 @@ internal static class DerivationPlanner
             };
             entities.Add(agg);
 
-            var liveInput = tf.Unit == "m" && tf.Value == 1 ? "10sAgg" : tf.Unit == "wk" ? $"{baseId}_1m_final" : $"{baseId}_1m_live";
+            var liveInput = tf.Unit == "m" && tf.Value == 1
+                ? "10sAgg"
+                : tf.Unit == "wk"
+                    ? $"{baseId}_1d_live"
+                    : $"{baseId}_1m_live";
             var liveSync = hbId.ToUpperInvariant();
             var live = new DerivedEntity
             {
