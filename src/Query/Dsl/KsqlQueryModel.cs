@@ -21,6 +21,7 @@ public class KsqlQueryModel
     public LambdaExpression? BasedOnDayKey { get; set; }
     public List<string> Windows { get; } = new();
     public DayOfWeek WeekAnchor { get; set; } = DayOfWeek.Monday;
+    public string? TimeKey { get; set; }
     public int? WithinSeconds { get; set; }
     public bool ForbidDefaultWithin { get; set; }
     public bool IsFinal { get; set; }
@@ -41,6 +42,7 @@ public class KsqlQueryModel
             BasedOnType = BasedOnType,
             BasedOnDayKey = BasedOnDayKey,
             WeekAnchor = WeekAnchor,
+            TimeKey = TimeKey,
             WithinSeconds = WithinSeconds,
             ForbidDefaultWithin = ForbidDefaultWithin,
             IsFinal = IsFinal,

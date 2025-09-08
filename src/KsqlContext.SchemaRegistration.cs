@@ -435,13 +435,14 @@ public abstract partial class KsqlContext
             var keys = m.KeyProperties.Select(p => p.Name).ToArray();
             return new TumblingQao
             {
-                TimeKey = "Timestamp",
+                TimeKey = m.QueryModel!.TimeKey ?? "Timestamp",
                 Windows = frames,
                 Keys = keys,
                 Projection = keys,
                 PocoShape = shape,
                 BasedOn = new BasedOnSpec(keys, string.Empty, string.Empty, string.Empty),
-                WeekAnchor = m.QueryModel!.WeekAnchor
+                WeekAnchor = m.QueryModel!.WeekAnchor,
+                GraceSeconds = m.QueryModel!.GraceSeconds
             };
         }
 
