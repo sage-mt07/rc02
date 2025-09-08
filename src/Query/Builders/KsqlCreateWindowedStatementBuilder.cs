@@ -91,8 +91,12 @@ internal static class KsqlCreateWindowedStatementBuilder
 
     private static string InjectWindowAfterFrom(string sql, string windowClause)
     {
-        // naive injection: replace first occurrence of "FROM <ident>" with "FROM <ident> {window}"
-        var pattern = new Regex(@"\bFROM\s+([A-Za-z_][\w]*)", RegexOptions.IgnoreCase);
-        return pattern.Replace(sql, m => $"FROM {m.Groups[1].Value} {windowClause}", 1);
+        // Replace first occurrence of "FROM <ident> [alias]" with "FROM <ident> [alias] {window}"
+        var pattern = new Regex(@"\bFROM\s+([A-Za-z_][\w]*)(\s+[A-Za-z_][\w]*)?", RegexOptions.IgnoreCase);
+        return pattern.Replace(sql, m =>
+        {
+            var alias = m.Groups[2].Value;
+            return $"FROM {m.Groups[1].Value}{alias} {windowClause}";
+        }, 1);
     }
 }
