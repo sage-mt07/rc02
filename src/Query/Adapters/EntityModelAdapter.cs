@@ -15,15 +15,26 @@ internal static class EntityModelAdapter
         foreach (var e in entities)
         {
             var keys = e.KeyShape.Select(k => k.Name).ToArray();
+            var keyTypes = e.KeyShape.Select(k => k.Type).ToArray();
+            var keyNulls = e.KeyShape.Select(k => k.IsNullable).ToArray();
             var values = e.ValueShape.Select(v => v.Name).ToArray();
             var types = e.ValueShape.Select(v => v.Type).ToArray();
             var nulls = e.ValueShape.Select(v => v.IsNullable).ToArray();
+            if (e.Role == Role.Prev1m)
+            {
+                var close = e.ValueShape.First(v => v.Name == "Close");
+                values = new[] { "Close" };
+                types = new[] { close.Type };
+                nulls = new[] { close.IsNullable };
+            }
             if (keys.Length == 0 || (values.Length == 0 && e.Role != Role.Hb))
                 throw new InvalidOperationException("Key and value must not be empty");
 
             var model = new EntityModel { EntityType = typeof(object) };
             model.AdditionalSettings["id"] = e.Id;
             model.AdditionalSettings["keys"] = keys;
+            model.AdditionalSettings["keys/types"] = keyTypes;
+            model.AdditionalSettings["keys/nulls"] = keyNulls;
             model.AdditionalSettings["projection"] = values;
             model.AdditionalSettings["projection/types"] = types;
             model.AdditionalSettings["projection/nulls"] = nulls;

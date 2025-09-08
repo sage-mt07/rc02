@@ -79,7 +79,7 @@ internal static class DerivationPlanner
                     Role = Role.Prev1m,
                     Timeframe = tf,
                     KeyShape = keyShapes,
-                    ValueShape = valueShapes,
+                    ValueShape = qao.PocoShape.Where(p => p.Name == "Close").ToArray(),
                     BasedOnSpec = qao.BasedOn,
                     WeekAnchor = qao.WeekAnchor
                 };

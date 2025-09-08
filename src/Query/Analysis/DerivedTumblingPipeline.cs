@@ -66,12 +66,34 @@ internal static class DerivedTumblingPipeline
             Role.Hb => $"{baseName}_hb_1m",
             _ => $"{baseName}_{tf}"
         };
-        var ddl = KsqlCreateWindowedStatementBuilder.Build(name, qm, tf);
+        string ddl;
+        if (role == Role.Prev1m)
+        {
+            var keys = (string[])model.AdditionalSettings["keys"];
+            var keyTypes = (Type[])model.AdditionalSettings["keys/types"];
+            var proj = (string[])model.AdditionalSettings["projection"];
+            var projTypes = (Type[])model.AdditionalSettings["projection/types"];
+            var cols = new List<string>();
+            for (var i = 0; i < keys.Length; i++) cols.Add($"{keys[i]} {Map(keyTypes[i])}");
+            for (var i = 0; i < proj.Length; i++) cols.Add($"{proj[i]} {Map(projTypes[i])}");
+            var pk = string.Join(", ", keys);
+            ddl = $"CREATE TABLE {name} ({string.Join(", ", cols)}, PRIMARY KEY ({pk})) WITH (KAFKA_TOPIC='{name}', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO');";
+        }
+        else
+        {
+            ddl = KsqlCreateWindowedStatementBuilder.Build(name, qm, tf);
+        }
         var dt = resolveType(name);
         model.EntityType = dt;
         model.TopicName = name;
         model.SetStreamTableType(qm.DetermineType());
         var ns = model.AdditionalSettings.TryGetValue("namespace", out var nsObj) ? nsObj?.ToString() : null;
         return (ddl, dt, ns);
+
+        static string Map(Type t) => t == typeof(int) ? "INT"
+            : t == typeof(long) ? "BIGINT"
+            : t == typeof(bool) ? "BOOLEAN"
+            : t == typeof(string) ? "VARCHAR"
+            : "DOUBLE";
     }
 }

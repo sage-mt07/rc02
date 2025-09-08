@@ -30,8 +30,12 @@ public class DerivedTumblingPipelineTests
             TimeKey = "Timestamp",
             Windows = new[] { new Timeframe(1, "m") },
             Keys = new[] { "Id" },
-            Projection = new[] { "Id" },
-            PocoShape = new[] { new ColumnShape("Id", typeof(int), false) },
+            Projection = new[] { "Id", "Close" },
+            PocoShape = new[]
+            {
+                new ColumnShape("Id", typeof(int), false),
+                new ColumnShape("Close", typeof(double), false)
+            },
             BasedOn = new BasedOnSpec(new[] { "Id" }, string.Empty, string.Empty, string.Empty),
             WeekAnchor = DayOfWeek.Monday
         };
