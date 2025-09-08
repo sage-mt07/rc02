@@ -11,7 +11,7 @@ public class WindowedQueryBuilderCoreTests
         new QueryMetadata(DateTime.UtcNow, "cat")
             .WithProperty("basedOn/joinKeys", new[] { "Broker" })
             .WithProperty("basedOn/openProp", "Open")
-            .WithProperty("basedOn/closeProp", "Close")
+            .WithProperty("basedOn/closeProp", "KsqlTimeFrameClose")
             .WithProperty("basedOn/dayKey", "MarketDate")
             .WithProperty("timeKey", "Ts");
 

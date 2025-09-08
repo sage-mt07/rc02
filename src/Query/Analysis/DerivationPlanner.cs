@@ -21,6 +21,18 @@ internal static class DerivationPlanner
         }).ToArray();
         var valueShapes = qao.PocoShape.ToArray();
 
+        var basedOn = qao.BasedOn;
+        if (string.IsNullOrEmpty(basedOn.CloseProp))
+        {
+            var close = model.EntityType
+                .GetProperties()
+                .FirstOrDefault(p => p.GetCustomAttribute<KsqlTimeFrameCloseAttribute>() != null);
+            if (close != null)
+            {
+                basedOn = basedOn with { CloseProp = close.Name };
+            }
+        }
+
         DerivedEntity? prev = null;
         foreach (var tf in qao.Windows)
         {
@@ -38,7 +50,7 @@ internal static class DerivationPlanner
                 Timeframe = tf,
                 KeyShape = keyShapes,
                 ValueShape = valueShapes,
-                BasedOnSpec = qao.BasedOn,
+                BasedOnSpec = basedOn,
                 WeekAnchor = qao.WeekAnchor
             };
             entities.Add(agg);
@@ -52,7 +64,7 @@ internal static class DerivationPlanner
                 ValueShape = valueShapes,
                 InputHint = tf.Unit == "m" && tf.Value == 1 ? "10sAgg" : tf.Unit == "wk" ? $"{baseId}_1m_final" : $"{baseId}_1m_live",
                 SyncHint = tf.Unit == "m" && tf.Value == 1 ? $"{baseId}_hb_1m".ToUpperInvariant() : null,
-                BasedOnSpec = qao.BasedOn,
+                BasedOnSpec = basedOn,
                 WeekAnchor = qao.WeekAnchor
             };
             entities.Add(live);
@@ -66,7 +78,7 @@ internal static class DerivationPlanner
                 ValueShape = valueShapes,
                 InputHint = tf.Unit == "m" && tf.Value == 1 ? "10sAgg" : tf.Unit == "wk" ? $"{baseId}_1m_final" : $"{baseId}_1m_live",
                 SyncHint = tf.Unit == "m" && tf.Value == 1 ? $"{baseId}_hb_1m".ToUpperInvariant() : null,
-                BasedOnSpec = qao.BasedOn,
+                BasedOnSpec = basedOn,
                 WeekAnchor = qao.WeekAnchor
             };
             entities.Add(final);
@@ -79,8 +91,8 @@ internal static class DerivationPlanner
                     Role = Role.Prev1m,
                     Timeframe = tf,
                     KeyShape = keyShapes,
-                    ValueShape = valueShapes,
-                    BasedOnSpec = qao.BasedOn,
+                    ValueShape = qao.PocoShape.Where(p => p.Name == basedOn.CloseProp).ToArray(),
+                    BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor
                 };
                 entities.Add(prev);
@@ -93,7 +105,7 @@ internal static class DerivationPlanner
                     KeyShape = keyShapes,
                     ValueShape = Array.Empty<ColumnShape>(),
                     MaterializationHint = MaterializationHint.Stream,
-                    BasedOnSpec = qao.BasedOn,
+                    BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor
                 };
                 entities.Add(hb);
