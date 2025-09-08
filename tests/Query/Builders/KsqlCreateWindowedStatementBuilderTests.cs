@@ -27,6 +27,15 @@ public class KsqlCreateWindowedStatementBuilderTests
         public double Bid { get; set; }
     }
 
+    [KsqlTopic("deduprates")]
+    private class DedupRate
+    {
+        public string Broker { get; set; } = string.Empty;
+        public string Symbol { get; set; } = string.Empty;
+        public DateTime Ts { get; set; }
+        public double Bid { get; set; }
+    }
+
     [Fact]
     public void Build_Includes_Window_Tumbling_1m()
     {
@@ -41,6 +50,21 @@ public class KsqlCreateWindowedStatementBuilderTests
         var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.Build("bar_1m_live", model, "1m");
         Assert.Contains("WINDOW TUMBLING (SIZE 1 MINUTES)", sql);
         Assert.Contains("CREATE TABLE bar_1m_live", sql);
+    }
+
+    [Fact]
+    public void Build_From_With_Alias_Inserts_Window_After_Alias()
+    {
+        var model = new KsqlQueryRoot()
+            .From<DedupRate>()
+            .Tumbling(r => r.Ts, minutes: new[] { 1 })
+            .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Ts })
+            .Select(g => new { g.Key.Broker, g.Key.Symbol, g.Key.BucketStart, Open = g.EarliestByOffset(x => x.Bid) })
+            .AsPush()
+            .Build();
+
+        var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.Build("bar_1m_live", model, "1m");
+        Assert.Contains("FROM DEDUPRATES o WINDOW TUMBLING", sql);
     }
 
     [Fact]
