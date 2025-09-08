@@ -41,6 +41,7 @@ internal static class DerivationPlanner
             var aggId = $"{baseId}_{tfStr}_agg_final";
             var liveId = $"{baseId}_{tfStr}_live";
             var finalId = $"{baseId}_{tfStr}_final";
+            var hbId = $"{baseId}_hb_{tfStr}";
 
             var agg = new DerivedEntity
             {
@@ -55,7 +56,7 @@ internal static class DerivationPlanner
             entities.Add(agg);
 
             var liveInput = tf.Unit == "m" && tf.Value == 1 ? "10sAgg" : tf.Unit == "wk" ? $"{baseId}_1m_final" : $"{baseId}_1m_live";
-            var liveSync = tf.Unit == "m" && tf.Value == 1 ? $"{baseId}_hb_1m".ToUpperInvariant() : null;
+            var liveSync = hbId.ToUpperInvariant();
             var live = new DerivedEntity
             {
                 Id = liveId,
@@ -70,7 +71,7 @@ internal static class DerivationPlanner
             };
             entities.Add(live);
 
-            var finalInput = tf.Unit == "m" && tf.Value == 1 ? "10sAgg" : tf.Unit == "wk" ? $"{baseId}_1m_final" : $"{baseId}_1m_live";
+            var finalInput = aggId;
             var final = new DerivedEntity
             {
                 Id = finalId,
@@ -85,21 +86,21 @@ internal static class DerivationPlanner
             };
             entities.Add(final);
 
+            var hb = new DerivedEntity
+            {
+                Id = hbId,
+                Role = Role.Hb,
+                Timeframe = tf,
+                KeyShape = keyShapes,
+                ValueShape = Array.Empty<ColumnShape>(),
+                MaterializationHint = MaterializationHint.Stream,
+                BasedOnSpec = basedOn,
+                WeekAnchor = qao.WeekAnchor
+            };
+            entities.Add(hb);
+
             if (tf.Unit == "m" && tf.Value == 1)
             {
-                var hb = new DerivedEntity
-                {
-                    Id = $"{baseId}_hb_1m",
-                    Role = Role.Hb,
-                    Timeframe = tf,
-                    KeyShape = keyShapes,
-                    ValueShape = Array.Empty<ColumnShape>(),
-                    MaterializationHint = MaterializationHint.Stream,
-                    BasedOnSpec = basedOn,
-                    WeekAnchor = qao.WeekAnchor
-                };
-                entities.Add(hb);
-
                 var prev = new DerivedEntity
                 {
                     Id = $"{baseId}_prev_1m",
@@ -108,7 +109,7 @@ internal static class DerivationPlanner
                     KeyShape = keyShapes,
                     ValueShape = valueShapes,
                     InputHint = $"{baseId}_1m_final",
-                    SyncHint = $"{baseId}_hb_1m".ToUpperInvariant(),
+                    SyncHint = hbId.ToUpperInvariant(),
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor
                 };

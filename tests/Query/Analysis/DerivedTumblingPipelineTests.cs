@@ -67,6 +67,7 @@ public class DerivedTumblingPipelineTests
         Assert.Contains(ddls, s => s.Contains("_prev_1m"));
         Assert.Contains("EMIT CHANGES", live);
         Assert.Contains("EMIT FINAL", final);
+        Assert.DoesNotContain("_1m_live", final);
         Assert.False(model.IsFinal);
     }
 }

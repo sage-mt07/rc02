@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 
 namespace Kafka.Ksql.Linq.Configuration.Messaging;
@@ -18,4 +19,9 @@ public class HeartbeatOptions
 
     [DefaultValue(typeof(LeaderElectionOptions))]
     public LeaderElectionOptions LeaderElection { get; init; } = new();
+
+    /// <summary>
+    /// Additional delay after each bucket before emitting a heartbeat.
+    /// </summary>
+    public TimeSpan Grace { get; init; } = TimeSpan.Zero;
 }

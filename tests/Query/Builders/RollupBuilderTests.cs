@@ -135,6 +135,6 @@ public class RollupBuilderTests
         var specFinal = RoleTraits.For(Role.Final, new Timeframe(5, "m"));
         Assert.True(specFinal.Window);
         Assert.Equal("FINAL", specFinal.Emit);
-        Assert.False(specFinal.SyncHb1m);
+        Assert.True(specFinal.SyncHb1m);
     }
 }
