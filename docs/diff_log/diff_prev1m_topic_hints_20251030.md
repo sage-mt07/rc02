@@ -1,0 +1,2 @@
+- detect 1m window and register bar_prev_1m derived entity
+- final entities sync to bar_prev_1m for fallback

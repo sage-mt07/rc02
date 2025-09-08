@@ -46,15 +46,18 @@ public class DerivationPlannerTests
     };
 
     [Fact]
-    public void Plan_1m_Includes_Agg_Live_Final_Hb()
+    public void Plan_1m_Includes_Agg_Live_Final_Hb_Prev()
     {
         var model = new EntityModel { EntityType = typeof(Source) };
         var entities = DerivationPlanner.Plan(Create(new Timeframe(1, "m")), model);
 
         Assert.Contains(entities, e => e.Id == "bar_1m_agg_final" && e.Role == Role.AggFinal);
         Assert.Contains(entities, e => e.Id == "bar_1m_live" && e.Role == Role.Live);
-        Assert.Contains(entities, e => e.Id == "bar_1m_final" && e.Role == Role.Final);
-        Assert.DoesNotContain(entities, e => e.Role == Role.Prev1m);
+        var final = Assert.Single(entities, e => e.Id == "bar_1m_final" && e.Role == Role.Final);
+        Assert.Equal("bar_prev_1m", final.SyncHint);
+        var prev = Assert.Single(entities, e => e.Id == "bar_prev_1m" && e.Role == Role.Prev1m);
+        Assert.Equal("bar_1m_final", prev.InputHint);
+        Assert.Equal("BAR_HB_1M", prev.SyncHint);
         Assert.Contains(entities, e => e.Id == "bar_hb_1m" && e.Role == Role.Hb);
     }
 
@@ -66,7 +69,9 @@ public class DerivationPlannerTests
 
         Assert.Contains(entities, e => e.Id == "bar_5m_agg_final" && e.Role == Role.AggFinal);
         Assert.Contains(entities, e => e.Id == "bar_5m_live" && e.Role == Role.Live);
-        Assert.Contains(entities, e => e.Id == "bar_5m_final" && e.Role == Role.Final);
+        var final = Assert.Single(entities, e => e.Id == "bar_5m_final" && e.Role == Role.Final);
+        Assert.Equal("bar_prev_1m", final.SyncHint);
         Assert.DoesNotContain(entities, e => e.Role == Role.Hb);
+        Assert.DoesNotContain(entities, e => e.Role == Role.Prev1m);
     }
 }
