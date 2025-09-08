@@ -1,0 +1,3 @@
+- KsqlQueryable2.Tumbling now extracts the time property name and stores it in the query model.
+- Optional grace periods are recorded as seconds via `GraceSeconds`.
+- Window sizes are deduplicated and ordered for consistent queries.
