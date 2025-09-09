@@ -82,12 +82,12 @@ public class RollupBuilderTests
     }
 
     [Fact]
-    public void AggFinal_Builds_FinalWithGrace()
+    public void AggFinal_Builds_Final()
     {
         var md = BuildMetadata();
         var sql = AggFinalBuilder.Build(md, "1m");
         Assert.Contains("WINDOW TUMBLING(1m)", sql);
-        Assert.Contains("EMIT FINAL GRACE", sql);
+        Assert.Contains("EMIT FINAL", sql);
     }
 
     [Fact]
