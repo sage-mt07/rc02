@@ -47,7 +47,7 @@ internal static class DerivationPlanner
             .ToList();
         if (!windows.Any(w => w.Unit == "m" && w.Value == 1))
             windows.Insert(0, new Timeframe(1, "m"));
-        string? prevFinalId = null;
+        var prevFinalId = baseId;
         foreach (var tf in windows)
         {
             var tfStr = $"{tf.Value}{tf.Unit}";
@@ -75,7 +75,7 @@ internal static class DerivationPlanner
             };
             entities.Add(live);
 
-            var finalInput = prevFinalId ?? baseId;
+            var finalInput = prevFinalId;
             var final = new DerivedEntity
             {
                 Id = finalId,
