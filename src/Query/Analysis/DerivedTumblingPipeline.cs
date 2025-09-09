@@ -86,7 +86,6 @@ internal static class DerivedTumblingPipeline
         var emit = spec.Emit != null ? $"EMIT {spec.Emit}" : null;
         var name = role switch
         {
-            Role.AggFinal => $"{baseName}_{tf}_agg_final",
             Role.Live => $"{baseName}_{tf}_live",
             Role.Final => $"{baseName}_{tf}_final",
             Role.Prev1m => $"{baseName}_prev_1m",

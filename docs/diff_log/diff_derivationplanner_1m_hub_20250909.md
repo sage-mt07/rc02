@@ -1,3 +1,3 @@
 - DerivationPlanner builds a 1m hub when no 1m window is specified.
-- Adds _1m_agg_final, _1m_live and _1m_final alongside hb_1m and prev_1m.
+- Adds _1m_live and _1m_final alongside hb_1m and prev_1m.
 - Tests verify _1m_live and _1m_final are created even with other windows.
