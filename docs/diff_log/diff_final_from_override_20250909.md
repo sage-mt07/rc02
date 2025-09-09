@@ -1,0 +1,3 @@
+- Final entities chain from base or previous _final without intermediate tables.
+- DerivedTumblingPipeline applies AdditionalSettings["input"] to the FROM clause before DDL generation.
+- Docs and tests cleaned so only _1m_live and _1m_final remain.

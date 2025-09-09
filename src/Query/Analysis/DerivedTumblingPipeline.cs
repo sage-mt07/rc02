@@ -16,7 +16,6 @@ using System.Reflection.Emit;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 
 namespace Kafka.Ksql.Linq.Query.Analysis;
 
@@ -97,11 +96,13 @@ internal static class DerivedTumblingPipeline
         string ddl;
         if (role == Role.Final || role == Role.Prev1m)
         {
-            ddl = KsqlCreateStatementBuilder.Build(name, qm);
+            Func<Type, string> resolver = t =>
+                !string.IsNullOrWhiteSpace(inputOverride)
+                    ? inputOverride!
+                    : t.GetCustomAttribute<KsqlTopicAttribute>()?.Name?.ToUpperInvariant() ?? t.Name;
+            ddl = KsqlCreateStatementBuilder.Build(name, qm, null, null, resolver);
             if (!string.IsNullOrWhiteSpace(emit))
                 ddl = ddl.Replace("EMIT CHANGES", emit);
-            if (!string.IsNullOrWhiteSpace(inputOverride))
-                ddl = OverrideFrom(ddl, inputOverride);
         }
         else
         {
@@ -113,12 +114,6 @@ internal static class DerivedTumblingPipeline
         model.SetStreamTableType(qm.DetermineType());
         var ns = model.AdditionalSettings.TryGetValue("namespace", out var nsObj) ? nsObj?.ToString() : null;
         return (ddl, dt, ns);
-    }
-
-    private static string OverrideFrom(string sql, string source)
-    {
-        var pattern = new Regex(@"\bFROM\s+([A-Za-z_][\w]*)\s+([A-Za-z_][\w]*)", RegexOptions.IgnoreCase);
-        return pattern.Replace(sql, m => $"FROM {source} {m.Groups[2].Value}", 1);
     }
 
     private static (LambdaExpression select, LambdaExpression group) BuildFinalProjection(

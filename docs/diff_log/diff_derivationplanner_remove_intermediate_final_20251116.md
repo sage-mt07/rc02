@@ -1,0 +1,4 @@
+- Removed intermediate aggregation stage from derivation planning and derived pipeline naming.
+- Final entities now source from previous _final or base topic.
+- Fallback 1m hub's final stage uses base topic as input.
+- Tests and docs updated accordingly.
