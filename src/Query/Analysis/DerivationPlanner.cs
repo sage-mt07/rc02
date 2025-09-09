@@ -155,6 +155,8 @@ internal static class DerivationPlanner
             };
             entities.Add(live1m);
 
+            prevFinalId = null;
+            var finalInput = prevFinalId ?? baseId;
             var final1m = new DerivedEntity
             {
                 Id = $"{baseId}_1m_final",
@@ -162,7 +164,7 @@ internal static class DerivationPlanner
                 Timeframe = tf,
                 KeyShape = keyShapes,
                 ValueShape = valueShapes,
-                InputHint = baseId,
+                InputHint = finalInput,
                 SyncHint = $"{baseId}_hb_1m".ToUpperInvariant(),
                 PrevHint = $"{baseId}_prev_1m",
                 BasedOnSpec = basedOn,

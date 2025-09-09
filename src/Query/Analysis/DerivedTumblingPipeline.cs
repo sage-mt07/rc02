@@ -92,14 +92,13 @@ internal static class DerivedTumblingPipeline
             Role.Fill => $"{baseName}_{tf}_fill",
             _ => $"{baseName}_{tf}"
         };
-        var inputOverride = model.AdditionalSettings.TryGetValue("input", out var inputObj) ? inputObj?.ToString() : null;
+        var inputOverride = model.AdditionalSettings.TryGetValue("input", out var inputObj)
+            ? inputObj?.ToString() ?? baseName
+            : baseName;
         string ddl;
         if (role == Role.Final || role == Role.Prev1m)
         {
-            Func<Type, string> resolver = t =>
-                !string.IsNullOrWhiteSpace(inputOverride)
-                    ? inputOverride!
-                    : t.GetCustomAttribute<KsqlTopicAttribute>()?.Name?.ToUpperInvariant() ?? t.Name;
+            Func<Type, string> resolver = _ => inputOverride;
             ddl = KsqlCreateStatementBuilder.Build(name, qm, null, null, resolver);
             if (!string.IsNullOrWhiteSpace(emit))
                 ddl = ddl.Replace("EMIT CHANGES", emit);
