@@ -46,17 +46,16 @@ public class DerivationPlannerTests
     };
 
     [Fact]
-    public void Plan_1m_Includes_Agg_Live_Final_Hb_Prev()
+    public void Plan_1m_Includes_Live_Final_Hb_Prev()
     {
         var model = new EntityModel { EntityType = typeof(Source) };
         var entities = DerivationPlanner.Plan(Create(new Timeframe(1, "m")), model);
 
-        Assert.Contains(entities, e => e.Id == "bar_1m_agg_final" && e.Role == Role.AggFinal);
         var live = Assert.Single(entities, e => e.Id == "bar_1m_live" && e.Role == Role.Live);
         Assert.Null(live.InputHint);
         Assert.Equal("BAR_HB_1M", live.SyncHint);
         var final = Assert.Single(entities, e => e.Id == "bar_1m_final" && e.Role == Role.Final);
-        Assert.Equal("bar_1m_agg_final", final.InputHint);
+        Assert.Equal("bar", final.InputHint);
         Assert.Equal("BAR_HB_1M", final.SyncHint);
         Assert.Equal("bar_prev_1m", final.PrevHint);
         var prev = Assert.Single(entities, e => e.Id == "bar_prev_1m" && e.Role == Role.Prev1m);
@@ -71,19 +70,16 @@ public class DerivationPlannerTests
         var model = new EntityModel { EntityType = typeof(Source) };
         var entities = DerivationPlanner.Plan(Create(new Timeframe(5, "m")), model);
 
-        var agg5 = Assert.Single(entities, e => e.Id == "bar_5m_agg_final" && e.Role == Role.AggFinal);
-        Assert.Null(agg5.InputHint);
         var live5 = Assert.Single(entities, e => e.Id == "bar_5m_live" && e.Role == Role.Live);
         Assert.Equal("bar_1m_live", live5.InputHint);
         Assert.Equal("BAR_HB_5M", live5.SyncHint);
         var final = Assert.Single(entities, e => e.Id == "bar_5m_final" && e.Role == Role.Final);
-        Assert.Equal("bar_5m_agg_final", final.InputHint);
+        Assert.Equal("bar", final.InputHint);
         Assert.Equal("BAR_HB_5M", final.SyncHint);
         Assert.Equal("bar_prev_1m", final.PrevHint);
-
-        Assert.Contains(entities, e => e.Id == "bar_1m_agg_final" && e.Role == Role.AggFinal);
         Assert.Contains(entities, e => e.Id == "bar_1m_live" && e.Role == Role.Live);
-        Assert.Contains(entities, e => e.Id == "bar_1m_final" && e.Role == Role.Final);
+        var final1m = Assert.Single(entities, e => e.Id == "bar_1m_final" && e.Role == Role.Final);
+        Assert.Equal("bar", final1m.InputHint);
         Assert.Contains(entities, e => e.Id == "bar_hb_5m" && e.Role == Role.Hb);
         Assert.Contains(entities, e => e.Id == "bar_hb_1m" && e.Role == Role.Hb);
         Assert.Contains(entities, e => e.Id == "bar_prev_1m" && e.Role == Role.Prev1m);

@@ -49,23 +49,9 @@ internal static class DerivationPlanner
         foreach (var tf in windows)
         {
             var tfStr = $"{tf.Value}{tf.Unit}";
-            var aggId = $"{baseId}_{tfStr}_agg_final";
             var liveId = $"{baseId}_{tfStr}_live";
             var finalId = $"{baseId}_{tfStr}_final";
             var hbId = $"{baseId}_hb_{tfStr}";
-
-            var agg = new DerivedEntity
-            {
-                Id = aggId,
-                Role = Role.AggFinal,
-                Timeframe = tf,
-                KeyShape = keyShapes,
-                ValueShape = valueShapes,
-                InputHint = prevFinalId,
-                BasedOnSpec = basedOn,
-                WeekAnchor = qao.WeekAnchor
-            };
-            entities.Add(agg);
 
             string? liveInput = tf.Unit == "m" && tf.Value == 1
                 ? null
@@ -87,7 +73,7 @@ internal static class DerivationPlanner
             };
             entities.Add(live);
 
-            var finalInput = prevFinalId ?? aggId;
+            var finalInput = prevFinalId ?? baseId;
             var final = new DerivedEntity
             {
                 Id = finalId,
@@ -155,18 +141,6 @@ internal static class DerivationPlanner
         if (!windows.Any(w => w.Unit == "m" && w.Value == 1))
         {
             var tf = new Timeframe(1, "m");
-            var agg1m = new DerivedEntity
-            {
-                Id = $"{baseId}_1m_agg_final",
-                Role = Role.AggFinal,
-                Timeframe = tf,
-                KeyShape = keyShapes,
-                ValueShape = valueShapes,
-                BasedOnSpec = basedOn,
-                WeekAnchor = qao.WeekAnchor
-            };
-            entities.Add(agg1m);
-
             var live1m = new DerivedEntity
             {
                 Id = $"{baseId}_1m_live",
@@ -188,7 +162,7 @@ internal static class DerivationPlanner
                 Timeframe = tf,
                 KeyShape = keyShapes,
                 ValueShape = valueShapes,
-                InputHint = agg1m.Id,
+                InputHint = baseId,
                 SyncHint = $"{baseId}_hb_1m".ToUpperInvariant(),
                 PrevHint = $"{baseId}_prev_1m",
                 BasedOnSpec = basedOn,
