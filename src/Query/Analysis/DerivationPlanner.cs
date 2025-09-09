@@ -67,9 +67,11 @@ internal static class DerivationPlanner
             };
             entities.Add(agg);
 
-            var liveInput = tf.Unit == "wk"
-                ? $"{baseId}_1d_live"
-                : $"{baseId}_1m_live";
+            var liveInput = tf.Unit == "m" && tf.Value == 1
+                ? baseId
+                : tf.Unit == "wk"
+                    ? $"{baseId}_1d_live"
+                    : $"{baseId}_1m_live";
             var liveSync = hbId.ToUpperInvariant();
             var live = new DerivedEntity
             {
@@ -78,7 +80,7 @@ internal static class DerivationPlanner
                 Timeframe = tf,
                 KeyShape = keyShapes,
                 ValueShape = valueShapes,
-                InputHint = liveInput,
+                InputHint = liveInput == liveId ? null : liveInput,
                 SyncHint = liveSync,
                 BasedOnSpec = basedOn,
                 WeekAnchor = qao.WeekAnchor
