@@ -1,0 +1,4 @@
+- derive Final/Prev1m select projection from aggregated columns
+- avoid referencing non-existent BID when building _1m_final
+- pull aggregation functions from original projection definitions
+- reaggregate any non-key projection column without assuming OHLC field names
