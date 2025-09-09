@@ -44,7 +44,9 @@ internal static class DerivationPlanner
                 "wk" => w.Value * 10080,
                 _ => w.Value
             })
-            .ToArray();
+            .ToList();
+        if (!windows.Any(w => w.Unit == "m" && w.Value == 1))
+            windows.Insert(0, new Timeframe(1, "m"));
         string? prevFinalId = null;
         foreach (var tf in windows)
         {
@@ -137,67 +139,6 @@ internal static class DerivationPlanner
                 };
                 entities.Add(prev);
             }
-        }
-        if (!windows.Any(w => w.Unit == "m" && w.Value == 1))
-        {
-            var tf = new Timeframe(1, "m");
-            var live1m = new DerivedEntity
-            {
-                Id = $"{baseId}_1m_live",
-                Role = Role.Live,
-                Timeframe = tf,
-                KeyShape = keyShapes,
-                ValueShape = valueShapes,
-                InputHint = null,
-                SyncHint = $"{baseId}_hb_1m".ToUpperInvariant(),
-                BasedOnSpec = basedOn,
-                WeekAnchor = qao.WeekAnchor
-            };
-            entities.Add(live1m);
-
-            prevFinalId = null;
-            var finalInput = prevFinalId ?? baseId;
-            var final1m = new DerivedEntity
-            {
-                Id = $"{baseId}_1m_final",
-                Role = Role.Final,
-                Timeframe = tf,
-                KeyShape = keyShapes,
-                ValueShape = valueShapes,
-                InputHint = finalInput,
-                SyncHint = $"{baseId}_hb_1m".ToUpperInvariant(),
-                PrevHint = $"{baseId}_prev_1m",
-                BasedOnSpec = basedOn,
-                WeekAnchor = qao.WeekAnchor
-            };
-            entities.Add(final1m);
-
-            var hb1m = new DerivedEntity
-            {
-                Id = $"{baseId}_hb_1m",
-                Role = Role.Hb,
-                Timeframe = tf,
-                KeyShape = keyShapes,
-                ValueShape = Array.Empty<ColumnShape>(),
-                MaterializationHint = MaterializationHint.Stream,
-                BasedOnSpec = basedOn,
-                WeekAnchor = qao.WeekAnchor
-            };
-            entities.Add(hb1m);
-
-            var prev = new DerivedEntity
-            {
-                Id = $"{baseId}_prev_1m",
-                Role = Role.Prev1m,
-                Timeframe = tf,
-                KeyShape = keyShapes,
-                ValueShape = valueShapes,
-                InputHint = final1m.Id,
-                SyncHint = $"{baseId}_hb_1m".ToUpperInvariant(),
-                BasedOnSpec = basedOn,
-                WeekAnchor = qao.WeekAnchor
-            };
-            entities.Add(prev);
         }
         return entities;
     }

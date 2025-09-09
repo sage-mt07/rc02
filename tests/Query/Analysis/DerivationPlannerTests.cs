@@ -74,7 +74,7 @@ public class DerivationPlannerTests
         Assert.Equal("bar_1m_live", live5.InputHint);
         Assert.Equal("BAR_HB_5M", live5.SyncHint);
         var final = Assert.Single(entities, e => e.Id == "bar_5m_final" && e.Role == Role.Final);
-        Assert.Equal("bar", final.InputHint);
+        Assert.Equal("bar_1m_final", final.InputHint);
         Assert.Equal("BAR_HB_5M", final.SyncHint);
         Assert.Equal("bar_prev_1m", final.PrevHint);
         Assert.Contains(entities, e => e.Id == "bar_1m_live" && e.Role == Role.Live);

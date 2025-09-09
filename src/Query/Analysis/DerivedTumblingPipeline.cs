@@ -92,9 +92,9 @@ internal static class DerivedTumblingPipeline
             Role.Fill => $"{baseName}_{tf}_fill",
             _ => $"{baseName}_{tf}"
         };
-        var inputOverride = model.AdditionalSettings.TryGetValue("input", out var inputObj)
-            ? inputObj?.ToString() ?? baseName
-            : baseName;
+        var inputOverride = baseName;
+        if (model.AdditionalSettings.TryGetValue("input", out var inputObj))
+            inputOverride = inputObj?.ToString() ?? baseName;
         string ddl;
         if (role == Role.Final || role == Role.Prev1m)
         {
