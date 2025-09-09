@@ -9,6 +9,7 @@ internal record QueryMetadata(
     string? BaseObject = null,
     Dictionary<string, object>? Properties = null)
 {
+    public int? GraceSeconds { get; init; }
     /// <summary>
     /// プロパティ追加
     /// </summary>

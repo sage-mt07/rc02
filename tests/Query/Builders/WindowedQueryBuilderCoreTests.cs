@@ -32,10 +32,10 @@ public class WindowedQueryBuilderCoreTests
     }
 
     [Fact]
-    public void Core_Builds_AggFinal_FinalPlusGrace()
+    public void Core_Builds_AggFinal_EmitFinal()
     {
         var q = AggFinalBuilder.Build(BaseMd(), "1m");
-        Assert.Contains("FINAL GRACE", q);
+        Assert.Contains("EMIT FINAL", q);
     }
 
     [Fact]

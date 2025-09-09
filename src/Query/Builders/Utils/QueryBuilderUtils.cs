@@ -22,7 +22,11 @@ internal static class QueryBuilderUtils
         return $"JOIN ON {join} AND s.{openProp} {openOp} r.{timeKey} AND r.{timeKey} {closeOp} s.{closeProp}"; 
     }
 
-    public static string ApplyWindowTumbling(string timeframe) => $"WINDOW TUMBLING({timeframe})";
+    public static string ApplyWindowTumbling(string timeframe, int? graceSeconds = null)
+    {
+        var grace = graceSeconds.HasValue ? $" GRACE PERIOD {graceSeconds.Value}s" : string.Empty;
+        return $"WINDOW TUMBLING({timeframe}{grace})";
+    }
 
     public static string ApplySync_HB1m(string sync) => $"SYNC {sync}";
 

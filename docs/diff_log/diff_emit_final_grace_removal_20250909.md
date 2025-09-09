@@ -1,0 +1,4 @@
+- AggFinal role emits `FINAL` instead of `FINAL GRACE`.
+- Window tumbling builder accepts optional grace seconds appended as `GRACE PERIOD`.
+- WindowedQueryBuilder forwards `GraceSeconds` from `QueryMetadata`.
+- Updated tests to expect `EMIT FINAL`.
