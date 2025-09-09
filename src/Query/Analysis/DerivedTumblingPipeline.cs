@@ -76,7 +76,8 @@ internal static class DerivedTumblingPipeline
             Role.Fill => $"{baseName}_{tf}_fill",
             _ => $"{baseName}_{tf}"
         };
-        var ddl = KsqlCreateWindowedStatementBuilder.Build(name, qm, tf, emit);
+        var inputOverride = model.AdditionalSettings.TryGetValue("input", out var inputObj) ? inputObj?.ToString() : null;
+        var ddl = KsqlCreateWindowedStatementBuilder.Build(name, qm, tf, emit, inputOverride);
         var dt = resolveType(name);
         model.EntityType = dt;
         model.TopicName = name;

@@ -45,6 +45,7 @@ internal static class DerivationPlanner
                 _ => w.Value
             })
             .ToArray();
+        string? prevFinalId = null;
         foreach (var tf in windows)
         {
             var tfStr = $"{tf.Value}{tf.Unit}";
@@ -60,6 +61,7 @@ internal static class DerivationPlanner
                 Timeframe = tf,
                 KeyShape = keyShapes,
                 ValueShape = valueShapes,
+                InputHint = prevFinalId,
                 BasedOnSpec = basedOn,
                 WeekAnchor = qao.WeekAnchor
             };
@@ -83,7 +85,7 @@ internal static class DerivationPlanner
             };
             entities.Add(live);
 
-            var finalInput = aggId;
+            var finalInput = prevFinalId ?? aggId;
             var final = new DerivedEntity
             {
                 Id = finalId,
@@ -98,6 +100,8 @@ internal static class DerivationPlanner
                 WeekAnchor = qao.WeekAnchor
             };
             entities.Add(final);
+
+            prevFinalId = finalId;
 
             var hb = new DerivedEntity
             {

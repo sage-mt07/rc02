@@ -71,7 +71,8 @@ public class DerivationPlannerTests
         var model = new EntityModel { EntityType = typeof(Source) };
         var entities = DerivationPlanner.Plan(Create(new Timeframe(5, "m")), model);
 
-        Assert.Contains(entities, e => e.Id == "bar_5m_agg_final" && e.Role == Role.AggFinal);
+        var agg5 = Assert.Single(entities, e => e.Id == "bar_5m_agg_final" && e.Role == Role.AggFinal);
+        Assert.Null(agg5.InputHint);
         var live5 = Assert.Single(entities, e => e.Id == "bar_5m_live" && e.Role == Role.Live);
         Assert.Equal("bar_1m_live", live5.InputHint);
         Assert.Equal("BAR_HB_5M", live5.SyncHint);
