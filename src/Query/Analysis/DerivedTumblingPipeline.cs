@@ -31,7 +31,7 @@ internal static class DerivedTumblingPipeline
         var baseName = (baseAttr?.Name ?? baseModel.TopicName ?? baseModel.EntityType.Name).ToLowerInvariant();
         var entities = PlanDerivedEntities(qao, baseModel, queryModel.WhenEmptyFiller != null);
         var models = AdaptModels(entities);
-        await Parallel.ForEachAsync(models, async (m, _) =>
+        foreach (var m in models)
         {
             var role = Enum.Parse<Role>((string)m.AdditionalSettings["role"]);
             var (ddl, dt, ns) = BuildDdlAndRegister(baseName, queryModel, m, role, resolveType);
@@ -39,7 +39,7 @@ internal static class DerivedTumblingPipeline
             await execute(ddl);
             mapping.RegisterEntityModel(m, genericValue: true, overrideNamespace: ns);
             registry[dt] = m;
-        });
+        }
     }
 
     public static IReadOnlyList<DerivedEntity> PlanDerivedEntities(TumblingQao qao, EntityModel model, bool whenEmpty)
