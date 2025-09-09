@@ -1,4 +1,4 @@
-- finals now source from agg_final and sync on prev_1m instead of live
+- finals now source from previous _final and sync on prev_1m instead of live
 - heartbeat topics generated for all timeframes and linked via SyncHint
 - pipeline tests assert finals avoid live dependencies
 - heartbeat runner honors configurable grace before emitting signals

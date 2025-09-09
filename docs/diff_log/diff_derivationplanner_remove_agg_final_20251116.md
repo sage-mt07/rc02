@@ -1,4 +1,0 @@
-- Removed _agg_final entities from derivation planning and derived pipeline naming.
-- Final entities now source from previous _final or base topic.
-- Fallback 1m hub's final stage uses base topic as input.
-- Tests and docs updated to drop _agg_final references.

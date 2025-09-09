@@ -86,6 +86,18 @@ public class DerivationPlannerTests
     }
 
     [Fact]
+    public void Plan_Windows_Chain_Final_Input()
+    {
+        var model = new EntityModel { EntityType = typeof(Source) };
+        var entities = DerivationPlanner.Plan(Create(new Timeframe(1, "m"), new Timeframe(5, "m")), model);
+
+        var final1 = Assert.Single(entities, e => e.Id == "bar_1m_final" && e.Role == Role.Final);
+        Assert.Equal("bar", final1.InputHint);
+        var final5 = Assert.Single(entities, e => e.Id == "bar_5m_final" && e.Role == Role.Final);
+        Assert.Equal("bar_1m_final", final5.InputHint);
+    }
+
+    [Fact]
     public void Plan_1wk_Live_Uses_1d_Live_Input()
     {
         var model = new EntityModel { EntityType = typeof(Source) };
