@@ -1,0 +1,3 @@
+- KsqlCreateWindowedStatementBuilder now accepts optional emit override to replace `EMIT CHANGES`.
+- DerivedTumblingPipeline selects role-based emit using RoleTraits and forwards it to windowed builder.
+- Final role DDLs now emit `EMIT FINAL`; tests verify this behavior.

@@ -12,12 +12,14 @@ namespace Kafka.Ksql.Linq.Query.Builders;
 /// </summary>
 internal static class KsqlCreateWindowedStatementBuilder
 {
-    public static string Build(string name, KsqlQueryModel model, string timeframe)
+    public static string Build(string name, KsqlQueryModel model, string timeframe, string? emitOverride = null)
     {
         if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("name required", nameof(name));
         if (model is null) throw new ArgumentNullException(nameof(model));
         if (string.IsNullOrWhiteSpace(timeframe)) throw new ArgumentException("timeframe required", nameof(timeframe));
         var baseSql = KsqlCreateStatementBuilder.Build(name, model);
+        if (!string.IsNullOrWhiteSpace(emitOverride))
+            baseSql = baseSql.Replace("EMIT CHANGES", emitOverride);
         var window = FormatWindow(timeframe);
         var sql = InjectWindowAfterFrom(baseSql, window);
         return sql;

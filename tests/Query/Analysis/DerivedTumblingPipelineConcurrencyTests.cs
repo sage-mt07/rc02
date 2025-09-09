@@ -62,5 +62,8 @@ public class DerivedTumblingPipelineConcurrencyTests
         var expected = 9; // 1m: AggFinal/Live/Final + Hb + Prev, 5m: AggFinal/Live/Final + Hb
         Assert.Equal(expected, registry.Count);
         Assert.Equal(expected, ddls.Count);
+        foreach (var ddl in ddls)
+            if (ddl.Contains("_final"))
+                Assert.Contains("EMIT FINAL", ddl);
     }
 }

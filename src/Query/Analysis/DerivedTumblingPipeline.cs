@@ -2,6 +2,7 @@ using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Query.Adapters;
 using Kafka.Ksql.Linq.Query.Builders;
+using Kafka.Ksql.Linq.Query.Builders.Core;
 using Kafka.Ksql.Linq.Query.Dsl;
 using Kafka.Ksql.Linq.Query.Abstractions;
 using Kafka.Ksql.Linq.Mapping;
@@ -56,6 +57,15 @@ internal static class DerivedTumblingPipeline
     {
         var qm = queryModel.Clone();
         var tf = (string)model.AdditionalSettings["timeframe"];
+        Timeframe tfObj;
+        if (tf.EndsWith("wk", StringComparison.OrdinalIgnoreCase))
+            tfObj = new Timeframe(int.Parse(tf[..^2]), "wk");
+        else if (tf.EndsWith("mo", StringComparison.OrdinalIgnoreCase))
+            tfObj = new Timeframe(int.Parse(tf[..^2]), "mo");
+        else
+            tfObj = new Timeframe(int.Parse(tf[..^1]), tf[^1].ToString());
+        var spec = RoleTraits.For(role, tfObj);
+        var emit = spec.Emit != null ? $"EMIT {spec.Emit}" : null;
         var name = role switch
         {
             Role.AggFinal => $"{baseName}_{tf}_agg_final",
@@ -66,7 +76,7 @@ internal static class DerivedTumblingPipeline
             Role.Fill => $"{baseName}_{tf}_fill",
             _ => $"{baseName}_{tf}"
         };
-        var ddl = KsqlCreateWindowedStatementBuilder.Build(name, qm, tf);
+        var ddl = KsqlCreateWindowedStatementBuilder.Build(name, qm, tf, emit);
         var dt = resolveType(name);
         model.EntityType = dt;
         model.TopicName = name;
