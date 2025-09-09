@@ -66,7 +66,7 @@ public class DerivationPlannerTests
     }
 
     [Fact]
-    public void Plan_5m_Includes_Hb()
+    public void Plan_5m_Includes_1m_Hub()
     {
         var model = new EntityModel { EntityType = typeof(Source) };
         var entities = DerivationPlanner.Plan(Create(new Timeframe(5, "m")), model);
@@ -80,6 +80,10 @@ public class DerivationPlannerTests
         Assert.Equal("bar_5m_agg_final", final.InputHint);
         Assert.Equal("BAR_HB_5M", final.SyncHint);
         Assert.Equal("bar_prev_1m", final.PrevHint);
+
+        Assert.Contains(entities, e => e.Id == "bar_1m_agg_final" && e.Role == Role.AggFinal);
+        Assert.Contains(entities, e => e.Id == "bar_1m_live" && e.Role == Role.Live);
+        Assert.Contains(entities, e => e.Id == "bar_1m_final" && e.Role == Role.Final);
         Assert.Contains(entities, e => e.Id == "bar_hb_5m" && e.Role == Role.Hb);
         Assert.Contains(entities, e => e.Id == "bar_hb_1m" && e.Role == Role.Hb);
         Assert.Contains(entities, e => e.Id == "bar_prev_1m" && e.Role == Role.Prev1m);

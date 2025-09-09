@@ -154,11 +154,53 @@ internal static class DerivationPlanner
         }
         if (!windows.Any(w => w.Unit == "m" && w.Value == 1))
         {
+            var tf = new Timeframe(1, "m");
+            var agg1m = new DerivedEntity
+            {
+                Id = $"{baseId}_1m_agg_final",
+                Role = Role.AggFinal,
+                Timeframe = tf,
+                KeyShape = keyShapes,
+                ValueShape = valueShapes,
+                BasedOnSpec = basedOn,
+                WeekAnchor = qao.WeekAnchor
+            };
+            entities.Add(agg1m);
+
+            var live1m = new DerivedEntity
+            {
+                Id = $"{baseId}_1m_live",
+                Role = Role.Live,
+                Timeframe = tf,
+                KeyShape = keyShapes,
+                ValueShape = valueShapes,
+                InputHint = baseId,
+                SyncHint = $"{baseId}_hb_1m".ToUpperInvariant(),
+                BasedOnSpec = basedOn,
+                WeekAnchor = qao.WeekAnchor
+            };
+            entities.Add(live1m);
+
+            var final1m = new DerivedEntity
+            {
+                Id = $"{baseId}_1m_final",
+                Role = Role.Final,
+                Timeframe = tf,
+                KeyShape = keyShapes,
+                ValueShape = valueShapes,
+                InputHint = agg1m.Id,
+                SyncHint = $"{baseId}_hb_1m".ToUpperInvariant(),
+                PrevHint = $"{baseId}_prev_1m",
+                BasedOnSpec = basedOn,
+                WeekAnchor = qao.WeekAnchor
+            };
+            entities.Add(final1m);
+
             var hb1m = new DerivedEntity
             {
                 Id = $"{baseId}_hb_1m",
                 Role = Role.Hb,
-                Timeframe = new Timeframe(1, "m"),
+                Timeframe = tf,
                 KeyShape = keyShapes,
                 ValueShape = Array.Empty<ColumnShape>(),
                 MaterializationHint = MaterializationHint.Stream,
@@ -171,10 +213,10 @@ internal static class DerivationPlanner
             {
                 Id = $"{baseId}_prev_1m",
                 Role = Role.Prev1m,
-                Timeframe = new Timeframe(1, "m"),
+                Timeframe = tf,
                 KeyShape = keyShapes,
                 ValueShape = valueShapes,
-                InputHint = $"{baseId}_1m_final",
+                InputHint = final1m.Id,
                 SyncHint = $"{baseId}_hb_1m".ToUpperInvariant(),
                 BasedOnSpec = basedOn,
                 WeekAnchor = qao.WeekAnchor
