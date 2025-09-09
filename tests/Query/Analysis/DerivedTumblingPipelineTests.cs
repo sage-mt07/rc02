@@ -178,4 +178,48 @@ public class DerivedTumblingPipelineTests
         Assert.Contains("SUM(Volume) AS Volume", ddl);
         Assert.DoesNotContain("BID", ddl, StringComparison.OrdinalIgnoreCase);
     }
+
+    [Fact]
+    public async Task Final_ddl_has_no_window_clause_or_agg_final_reference()
+    {
+        var qao = new TumblingQao
+        {
+            TimeKey = "Timestamp",
+            Windows = new[] { new Timeframe(1, "m"), new Timeframe(5, "m") },
+            Keys = new[] { "Id", "BucketStart" },
+            Projection = new[] { "Id", "BucketStart" },
+            PocoShape = new[]
+            {
+                new ColumnShape("Id", typeof(int), false),
+                new ColumnShape("BucketStart", typeof(long), false)
+            },
+            BasedOn = new BasedOnSpec(new[] { "Id", "BucketStart" }, string.Empty, "BucketStart", string.Empty),
+            WeekAnchor = DayOfWeek.Monday
+        };
+        var baseModel = new EntityModel { EntityType = typeof(TestSource) };
+        var model = new KsqlQueryModel
+        {
+            SourceTypes = new[] { typeof(TestSource) },
+            Windows = { "1m", "5m" }
+        };
+        var ddls = new ConcurrentBag<string>();
+        Task Exec(string sql)
+        {
+            ddls.Add(sql);
+            return Task.CompletedTask;
+        }
+        var mapping = new MappingRegistry();
+        var registry = new ConcurrentDictionary<Type, EntityModel>();
+        var asm = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("dyn"), AssemblyBuilderAccess.Run);
+        var mod = asm.DefineDynamicModule("m");
+        Type Resolver(string _) => mod.DefineType("T" + Guid.NewGuid().ToString("N")).CreateType()!;
+
+        await DerivedTumblingPipeline.RunAsync(qao, baseModel, model, Exec, Resolver, mapping, registry, new LoggerFactory().CreateLogger("test"));
+
+        foreach (var sql in ddls.Where(s => s.Contains("_final")))
+        {
+            Assert.DoesNotContain("WINDOW", sql, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("_agg_final", sql, StringComparison.OrdinalIgnoreCase);
+        }
+    }
 }
