@@ -1,0 +1,3 @@
+- Final and Prev1m roles now clone query model and drop tumbling windows to create non-windowed persistent tables.
+- Grouping uses join keys plus bucket start from model settings while keeping EARLIEST_BY_OFFSET/O aggregation.
+- DDL generation for these roles uses KsqlCreateStatementBuilder without WINDOW clause and applies EMIT/FROM overrides.
