@@ -12,7 +12,7 @@ namespace Kafka.Ksql.Linq.Query.Builders;
 /// </summary>
 internal static class KsqlCreateWindowedStatementBuilder
 {
-    public static string Build(string name, KsqlQueryModel model, string timeframe, string? emitOverride = null)
+    public static string Build(string name, KsqlQueryModel model, string timeframe, string? emitOverride = null, string? inputOverride = null)
     {
         if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("name required", nameof(name));
         if (model is null) throw new ArgumentNullException(nameof(model));
@@ -20,6 +20,8 @@ internal static class KsqlCreateWindowedStatementBuilder
         var baseSql = KsqlCreateStatementBuilder.Build(name, model);
         if (!string.IsNullOrWhiteSpace(emitOverride))
             baseSql = baseSql.Replace("EMIT CHANGES", emitOverride);
+        if (!string.IsNullOrWhiteSpace(inputOverride))
+            baseSql = OverrideFrom(baseSql, inputOverride);
         var window = FormatWindow(timeframe);
         var sql = InjectWindowAfterFrom(baseSql, window);
         return sql;
@@ -60,6 +62,12 @@ internal static class KsqlCreateWindowedStatementBuilder
             'd' => $"WINDOW TUMBLING (SIZE {val} DAYS)",
             _ => $"WINDOW TUMBLING (SIZE {val} MINUTES)"
         };
+    }
+
+    private static string OverrideFrom(string sql, string source)
+    {
+        var pattern = new Regex(@"\bFROM\s+([A-Za-z_][\w]*)\s+([A-Za-z_][\w]*)", RegexOptions.IgnoreCase);
+        return pattern.Replace(sql, m => $"FROM {source} {m.Groups[2].Value}", 1);
     }
 
     private static string InjectWindowAfterFrom(string sql, string windowClause)

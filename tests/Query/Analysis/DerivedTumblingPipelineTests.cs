@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query.Analysis;
 
-[KsqlTopic("test-topic")]
+[KsqlTopic("bar")]
 class TestSource
 {
     public int Id { get; set; }
@@ -62,10 +62,55 @@ public class DerivedTumblingPipelineTests
 
         await DerivedTumblingPipeline.RunAsync(qao, baseModel, model, Exec, Resolver, mapping, registry, new LoggerFactory().CreateLogger("test"));
 
-        var live = ddls.Single(s => s.Contains("_1m_live"));
-        var final = ddls.Single(s => s.Contains("_1m_final"));
+        var live = ddls.Single(s => s.StartsWith("CREATE TABLE bar_1m_live") || s.StartsWith("CREATE STREAM bar_1m_live"));
+        var final = ddls.Single(s => s.StartsWith("CREATE TABLE bar_1m_final") || s.StartsWith("CREATE STREAM bar_1m_final"));
         Assert.Contains(ddls, s => s.Contains("_prev_1m"));
         Assert.Contains("EMIT CHANGES", live);
         Assert.Contains("EMIT FINAL", final);
+    }
+
+    [Fact]
+    public async Task Final_5m_uses_prev_final_as_input()
+    {
+        var qao = new TumblingQao
+        {
+            TimeKey = "Timestamp",
+            Windows = new[] { new Timeframe(1, "m"), new Timeframe(5, "m") },
+            Keys = new[] { "Id", "BucketStart" },
+            Projection = new[] { "Id", "BucketStart", "KsqlTimeFrameClose" },
+            PocoShape = new[]
+            {
+                new ColumnShape("Id", typeof(int), false),
+                new ColumnShape("BucketStart", typeof(long), false),
+                new ColumnShape("KsqlTimeFrameClose", typeof(double), false)
+            },
+            BasedOn = new BasedOnSpec(new[] { "Id", "BucketStart" }, string.Empty, "KsqlTimeFrameClose", string.Empty),
+            WeekAnchor = DayOfWeek.Monday
+        };
+        var baseModel = new EntityModel { EntityType = typeof(TestSource) };
+        var model = new KsqlQueryModel
+        {
+            SourceTypes = new[] { typeof(TestSource) },
+            Windows = { "1m", "5m" }
+        };
+
+        var ddls = new ConcurrentBag<string>();
+        Task Exec(string sql)
+        {
+            ddls.Add(sql);
+            return Task.CompletedTask;
+        }
+
+        var mapping = new MappingRegistry();
+        var registry = new ConcurrentDictionary<Type, EntityModel>();
+        var asm = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("dyn"), AssemblyBuilderAccess.Run);
+        var mod = asm.DefineDynamicModule("m");
+        Type Resolver(string _) => mod.DefineType("T" + Guid.NewGuid().ToString("N")).CreateType()!;
+
+        await DerivedTumblingPipeline.RunAsync(qao, baseModel, model, Exec, Resolver, mapping, registry, new LoggerFactory().CreateLogger("test"));
+
+        var ddl5 = ddls.Single(s => s.Contains("_5m_final"));
+        Assert.Contains("FROM bar_1m_final", ddl5);
+        Assert.Contains("EMIT FINAL", ddl5);
     }
 }
