@@ -34,9 +34,15 @@ internal static class WindowValidator
         foreach (var w in ordered)
         {
             grace++;
-            if (result.GracePerTimeframe.TryGetValue(w, out var g) && g != grace)
-                throw new InvalidOperationException($"Window {w} grace must be parent grace + 1s.");
-            result.GracePerTimeframe[w] = grace;
+            if (result.GracePerTimeframe.TryGetValue(w, out var g))
+            {
+                if (g != grace)
+                    throw new InvalidOperationException($"Window {w} grace must be parent grace + 1s.");
+            }
+            else
+            {
+                result.GracePerTimeframe[w] = grace;
+            }
         }
     }
 
