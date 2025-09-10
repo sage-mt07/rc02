@@ -26,7 +26,8 @@ TimeFrame → Tumbling → GroupBy → Select → (WhenEmpty?)
     && s.Open <= r.Timestamp && r.Timestamp < s.Close,
     dayKey: s => s.MarketDate)
 ```
-- **実行レイヤでの原則**：マーケットスケジュールによる取引時間判定は Raw 取り込み直後（または最上流）で付与し、`IsTrading` による **filteredraw** を生成してから集計する（DSL外の責務）
+- **実行レイヤでの原則**: マーケットスケジュールによる取引時間判定は Raw 取り込み直後（または最上流）で付与し、`IsTrading` による **filteredraw** を生成してから集計する。  
+  filteredraw の生成は上流責務であり、DSL は `<raw_stream_name>_filtered` を参照するのみ。
 - `dayKey` は **日足以上（days, months）**で営業日境界を与える **マーカー**。
 - 分足・時間足では原則不要（指定可）。スケジュール判定自体は上流ガードで行う。
 
@@ -141,7 +142,7 @@ TimeFrame → Tumbling → GroupBy → Select → (WhenEmpty?)
   - 例: `bar_1s_final`, `bar_1m_live`, `bar_5m_live`, `bar_1d_live`
 - **timeframe表記**: `s`=秒, `m`=分, `h`=時間, `d`=日, `mo`=月
 - **live/finalの接尾辞**: 集計モードを明示する
-- **filteredraw/nontrading_raw**: 取引時間フィルタ済/除外用の特別ストリーム <raw_stream_name>_filtered
+  - **filteredraw/nontrading_raw**: 取引時間フィルタ済/除外用の特別ストリーム `<raw_stream_name>_filtered`（上流で生成。DSL は参照のみ）
 - **1s_final**: 全上位足の唯一の親。必ず存在
 
 1s_final / 1s_final_s の役割
