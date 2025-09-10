@@ -63,7 +63,7 @@ internal static class DerivedTumblingPipeline
     {
         var qm = queryModel.Clone();
         var inputOverride = baseName;
-        if (model.AdditionalSettings.TryGetValue("input", out var inputObj))
+        if (role != Role.Final1sStream && model.AdditionalSettings.TryGetValue("input", out var inputObj))
             inputOverride = inputObj?.ToString() ?? baseName;
         if (role == Role.Prev1m || role == Role.Final1sStream)
         {

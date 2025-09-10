@@ -77,6 +77,7 @@ internal static class DerivationPlanner
                     Timeframe = tf,
                     KeyShape = keyShapes,
                     ValueShape = valueShapes,
+                    InputHint = hub,
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor,
                     GraceSeconds = graceMap[tfStr]
@@ -90,7 +91,7 @@ internal static class DerivationPlanner
                     Timeframe = tf,
                     KeyShape = keyShapes,
                     ValueShape = valueShapes,
-                    InputHint = $"{baseId}_1s_final",
+                    InputHint = hub,
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor,
                     GraceSeconds = graceMap[tfStr]
@@ -104,6 +105,7 @@ internal static class DerivationPlanner
                     Timeframe = tf,
                     KeyShape = keyShapes,
                     ValueShape = Array.Empty<ColumnShape>(),
+                    InputHint = hub,
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor,
                     GraceSeconds = graceMap[tfStr]
@@ -134,6 +136,7 @@ internal static class DerivationPlanner
                 Timeframe = tf,
                 KeyShape = keyShapes,
                 ValueShape = Array.Empty<ColumnShape>(),
+                InputHint = hub,
                 BasedOnSpec = basedOn,
                 WeekAnchor = qao.WeekAnchor,
                 GraceSeconds = graceMap[tfStr]
@@ -149,7 +152,7 @@ internal static class DerivationPlanner
                     Timeframe = tf,
                     KeyShape = keyShapes,
                     ValueShape = valueShapes,
-                    InputHint = liveId,
+                    InputHint = hub,
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor,
                     GraceSeconds = graceMap[tfStr]
@@ -166,7 +169,7 @@ internal static class DerivationPlanner
                     Timeframe = tf,
                     KeyShape = keyShapes,
                     ValueShape = valueShapes,
-                    InputHint = liveId,
+                    InputHint = hub,
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor,
                     GraceSeconds = graceMap[tfStr]

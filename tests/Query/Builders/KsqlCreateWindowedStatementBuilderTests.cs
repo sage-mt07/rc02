@@ -60,8 +60,13 @@ public class KsqlCreateWindowedStatementBuilderTests
             .Select(g => new { g.Key.Broker, g.Key.Symbol, BucketStart = g.WindowStart(), Open = g.EarliestByOffset(x => x.Bid) })
             .Build();
 
-        var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.Build("bar_1m_live", model, "1m");
-        Assert.Contains("FROM DEDUPRATES o WINDOW TUMBLING", sql);
+        var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.Build(
+            "bar_1m_live",
+            model,
+            "1m",
+            null,
+            "deduprates_1s_final_s");
+        Assert.Contains("FROM deduprates_1s_final_s o WINDOW TUMBLING", sql);
     }
 
     [Fact]
