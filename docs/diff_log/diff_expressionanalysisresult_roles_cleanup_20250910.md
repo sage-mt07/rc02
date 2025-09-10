@@ -1,0 +1,2 @@
+- Removed windows, roles/live, roles/aggFinal, roles/final, roles/prev, and roles/hb properties from ExpressionAnalysisResult metadata.
+- Metadata now only carries inputs, prev, sync, and per-timeframe grace for builders.
