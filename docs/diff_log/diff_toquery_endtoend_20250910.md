@@ -1,0 +1,3 @@
+- add ToQueryEndToEndTests verifying generated KSQL DDL matches expected.
+- extend tests with count/avg query pattern to broaden DDL coverage.
+- add single-key variant validating DDL generation with one grouping key.
