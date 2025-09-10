@@ -195,40 +195,6 @@ internal static class DerivationPlanner
                 entities.Add(prev);
             }
         }
-        if (!entities.Any(e => e.Role == Role.Prev1m))
-        {
-            var hbId = $"{baseId}_hb_1m";
-            var grace1m = graceMap.TryGetValue("1m", out var g1) ? g1 : graceMap.Values.Last() + 1;
-            var prev = new DerivedEntity
-            {
-                Id = $"{baseId}_prev_1m",
-                Role = Role.Prev1m,
-                Timeframe = new Timeframe(1, "m"),
-                KeyShape = keyShapes,
-                ValueShape = valueShapes,
-                InputHint = hub,
-                SyncHint = hbId.ToUpperInvariant(),
-                BasedOnSpec = basedOn,
-                WeekAnchor = qao.WeekAnchor,
-                GraceSeconds = grace1m
-            };
-            entities.Add(prev);
-            if (!entities.Any(e => e.Id == hbId))
-            {
-                var hb = new DerivedEntity
-                {
-                    Id = hbId,
-                    Role = Role.Hb,
-                    Timeframe = new Timeframe(1, "m"),
-                    KeyShape = keyShapes,
-                    ValueShape = Array.Empty<ColumnShape>(),
-                    BasedOnSpec = basedOn,
-                    WeekAnchor = qao.WeekAnchor,
-                    GraceSeconds = grace1m
-                };
-                entities.Add(hb);
-            }
-        }
         return entities;
     }
 }
