@@ -355,12 +355,7 @@ b.Entity<TickAvg1m>().ToQuery(q => q
 - `string GetTopicName()`: バインドされたトピック名を返す。
 - `EntityModel GetEntityModel()`: エンティティのモデル情報を返す。
 - `IKsqlContext GetContext()`: バックエンドのコンテキストを返す。
-- `EventSet<T> WithRetry(int maxRetries, TimeSpan? retryInterval=null)`: 再試行方針を設定する。
 - `EventSet<TResult> Map<TResult>(Func<T,Task<TResult>> mapper)` / 同同期版: メッセージを変換する。
-
-### 拡張（エラー処理関係）
-- `EntitySetErrorHandlingExtensions.OnError<T>(this IEntitySet<T>, ErrorAction)`: 失敗時の処理を設定する。
-- `EntitySetErrorHandlingExtensions.StartErrorHandling<T>(this IEntitySet<T>)`: エラーハンドリングチェーンを開始する。
 
 ### ビルダー/オプション（拡張メソッド）
 - `KsqlContextOptionsExtensions.UseSchemaRegistry(...)`: スキーマレジストリを設定する。
