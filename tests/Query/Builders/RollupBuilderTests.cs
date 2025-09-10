@@ -133,14 +133,12 @@ public class RollupBuilderTests
     [Fact]
     public void RoleSpec_Table()
     {
-        var specLive = RoleTraits.For(Role.Live, new Timeframe(1, "m"));
+        var specLive = RoleTraits.For(Role.Live);
         Assert.True(specLive.Window);
         Assert.Equal("CHANGES", specLive.Emit);
-        Assert.True(specLive.SyncHb1m);
 
-        var specFinal = RoleTraits.For(Role.Final, new Timeframe(5, "m"));
+        var specFinal = RoleTraits.For(Role.Final);
         Assert.True(specFinal.Window);
         Assert.Equal("FINAL", specFinal.Emit);
-        Assert.True(specFinal.SyncHb1m);
     }
 }

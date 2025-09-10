@@ -40,9 +40,8 @@ internal static class EntityModelAdapter
             model.AdditionalSettings["role"] = e.Role.ToString();
             model.AdditionalSettings["timeframe"] = $"{e.Timeframe.Value}{e.Timeframe.Unit}";
             model.AdditionalSettings["graceSeconds"] = e.GraceSeconds;
-            if (e.SyncHint != null) model.AdditionalSettings[$"sync"] = e.SyncHint;
             if (e.InputHint != null) model.AdditionalSettings[$"input"] = e.InputHint;
-              var nsSource = e.TopicHint ?? e.Id;
+            var nsSource = e.TopicHint ?? e.Id;
             if (!string.IsNullOrWhiteSpace(nsSource))
             {
                 var baseNs = e.TopicHint ?? e.Id;

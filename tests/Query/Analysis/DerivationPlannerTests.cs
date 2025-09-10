@@ -1,11 +1,8 @@
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Query.Analysis;
-using Kafka.Ksql.Linq.Query.Adapters;
 using Kafka.Ksql.Linq.Query.Dsl;
 using System;
-using System.Linq;
-using System.Reflection;
 using Xunit;
 
 namespace Kafka.Ksql.Linq.Tests.Query.Analysis;
@@ -54,10 +51,8 @@ public class DerivationPlannerTests
         var final1sStream = Assert.Single(entities, e => e.Id == "bar_1s_final_s" && e.Role == Role.Final1sStream);
         var live = Assert.Single(entities, e => e.Id == "bar_1m_live" && e.Role == Role.Live);
         Assert.Equal("bar_1s_final_s", live.InputHint);
-        Assert.Equal("BAR_HB_1M", live.SyncHint);
         var final = Assert.Single(entities, e => e.Id == "bar_1m_final" && e.Role == Role.Final);
         Assert.Equal("bar_1s_final_s", final.InputHint);
-        Assert.Equal("BAR_HB_1M", final.SyncHint);
         Assert.Contains(entities, e => e.Id == "bar_hb_1m" && e.Role == Role.Hb);
         Assert.Contains(entities, e => e.Id == "bar_hb_1s" && e.Role == Role.Hb);
     }
@@ -71,10 +66,8 @@ public class DerivationPlannerTests
         var final1sStream = Assert.Single(entities, e => e.Id == "bar_1s_final_s" && e.Role == Role.Final1sStream);
         var live5 = Assert.Single(entities, e => e.Id == "bar_5m_live" && e.Role == Role.Live);
         Assert.Equal("bar_1s_final_s", live5.InputHint);
-        Assert.Equal("BAR_HB_5M", live5.SyncHint);
         var final = Assert.Single(entities, e => e.Id == "bar_5m_final" && e.Role == Role.Final);
         Assert.Equal("bar_1s_final_s", final.InputHint);
-        Assert.Equal("BAR_HB_5M", final.SyncHint);
         Assert.Contains(entities, e => e.Id == "bar_hb_5m" && e.Role == Role.Hb);
     }
 

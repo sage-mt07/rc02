@@ -77,7 +77,6 @@ internal static class DerivationPlanner
                     Timeframe = tf,
                     KeyShape = keyShapes,
                     ValueShape = valueShapes,
-                    SyncHint = hbId.ToUpperInvariant(),
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor,
                     GraceSeconds = graceMap[tfStr]
@@ -92,7 +91,6 @@ internal static class DerivationPlanner
                     KeyShape = keyShapes,
                     ValueShape = valueShapes,
                     InputHint = $"{baseId}_1s_final",
-                    SyncHint = hbId.ToUpperInvariant(),
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor,
                     GraceSeconds = graceMap[tfStr]
@@ -124,7 +122,6 @@ internal static class DerivationPlanner
                 KeyShape = keyShapes,
                 ValueShape = valueShapes,
                 InputHint = hub,
-                SyncHint = hbId.ToUpperInvariant(),
                 BasedOnSpec = basedOn,
                 WeekAnchor = qao.WeekAnchor,
                 GraceSeconds = graceMap[tfStr]
@@ -139,7 +136,6 @@ internal static class DerivationPlanner
                 KeyShape = keyShapes,
                 ValueShape = valueShapes,
                 InputHint = hub,
-                SyncHint = hbId.ToUpperInvariant(),
                 BasedOnSpec = basedOn,
                 WeekAnchor = qao.WeekAnchor,
                 GraceSeconds = graceMap[tfStr]
@@ -169,7 +165,6 @@ internal static class DerivationPlanner
                     KeyShape = keyShapes,
                     ValueShape = valueShapes,
                     InputHint = hub,
-                    SyncHint = hbId.ToUpperInvariant(),
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor,
                     GraceSeconds = graceMap[tfStr]
@@ -187,7 +182,6 @@ internal static class DerivationPlanner
                     KeyShape = keyShapes,
                     ValueShape = valueShapes,
                     InputHint = hub,
-                    SyncHint = hbId.ToUpperInvariant(),
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor,
                     GraceSeconds = graceMap[tfStr]

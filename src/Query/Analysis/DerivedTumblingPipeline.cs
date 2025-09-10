@@ -70,14 +70,7 @@ internal static class DerivedTumblingPipeline
             qm.SelectProjection = BuildInputProjection(inputType);
         }
         var tf = (string)model.AdditionalSettings["timeframe"];
-        Timeframe tfObj;
-        if (tf.EndsWith("wk", StringComparison.OrdinalIgnoreCase))
-            tfObj = new Timeframe(int.Parse(tf[..^2]), "wk");
-        else if (tf.EndsWith("mo", StringComparison.OrdinalIgnoreCase))
-            tfObj = new Timeframe(int.Parse(tf[..^2]), "mo");
-        else
-            tfObj = new Timeframe(int.Parse(tf[..^1]), tf[^1].ToString());
-        var spec = RoleTraits.For(role, tfObj);
+        var spec = RoleTraits.For(role);
         var emit = spec.Emit != null ? $"EMIT {spec.Emit}" : null;
         var name = role switch
         {
