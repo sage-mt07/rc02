@@ -37,4 +37,5 @@ internal class DerivedEntity
     public string? PrevHint { get; init; }
     public BasedOnSpec BasedOnSpec { get; init; } = new(new List<string>(), string.Empty, string.Empty, string.Empty);
     public DayOfWeek WeekAnchor { get; init; } = DayOfWeek.Monday;
+    public int GraceSeconds { get; init; }
 }

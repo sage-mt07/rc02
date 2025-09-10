@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace Kafka.Ksql.Linq.Query.Pipeline;
 
@@ -17,7 +18,8 @@ internal static class WindowValidator
         if (60 % baseUnit != 0)
             throw new InvalidOperationException("Base unit must divide 60 seconds.");
 
-        foreach (var w in result.Windows)
+        var ordered = result.Windows.OrderBy(ToSeconds).ToList();
+        foreach (var w in ordered)
         {
             var seconds = ToSeconds(w);
 
@@ -26,6 +28,15 @@ internal static class WindowValidator
 
             if (seconds >= 60 && seconds % 60 != 0)
                 throw new InvalidOperationException("Windows ≥ 1 minute must be whole-minute multiples.");
+        }
+
+        var grace = result.GraceSeconds ?? 0;
+        foreach (var w in ordered)
+        {
+            grace++;
+            if (result.GracePerTimeframe.TryGetValue(w, out var g) && g != grace)
+                throw new InvalidOperationException($"Window {w} grace must be parent grace + 1s.");
+            result.GracePerTimeframe[w] = grace;
         }
     }
 

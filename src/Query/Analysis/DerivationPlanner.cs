@@ -48,6 +48,14 @@ internal static class DerivationPlanner
             .ToList();
         if (!windows.Any(w => w.Unit == "s" && w.Value == 1))
             windows.Insert(0, new Timeframe(1, "s"));
+        var graceMap = new Dictionary<string, int>();
+        var grace = qao.GraceSeconds ?? 0;
+        foreach (var tf in windows)
+        {
+            grace++;
+            graceMap[$"{tf.Value}{tf.Unit}"] = grace;
+        }
+        qao.GracePerTimeframe = graceMap;
         var hub = $"{baseId}_1s_final_s";
         foreach (var tf in windows)
         {
@@ -65,7 +73,8 @@ internal static class DerivationPlanner
                     SyncHint = hbId.ToUpperInvariant(),
                     PrevHint = $"{baseId}_prev_1m",
                     BasedOnSpec = basedOn,
-                    WeekAnchor = qao.WeekAnchor
+                    WeekAnchor = qao.WeekAnchor,
+                    GraceSeconds = graceMap[tfStr]
                 };
                 entities.Add(final1s);
 
@@ -80,7 +89,8 @@ internal static class DerivationPlanner
                     SyncHint = hbId.ToUpperInvariant(),
                     PrevHint = $"{baseId}_prev_1m",
                     BasedOnSpec = basedOn,
-                    WeekAnchor = qao.WeekAnchor
+                    WeekAnchor = qao.WeekAnchor,
+                    GraceSeconds = graceMap[tfStr]
                 };
                 entities.Add(final1sStream);
 
@@ -93,7 +103,8 @@ internal static class DerivationPlanner
                     ValueShape = Array.Empty<ColumnShape>(),
                     MaterializationHint = MaterializationHint.Stream,
                     BasedOnSpec = basedOn,
-                    WeekAnchor = qao.WeekAnchor
+                    WeekAnchor = qao.WeekAnchor,
+                    GraceSeconds = graceMap[tfStr]
                 };
                 entities.Add(hb1s);
                 continue;
@@ -111,7 +122,8 @@ internal static class DerivationPlanner
                 InputHint = hub,
                 SyncHint = hbId.ToUpperInvariant(),
                 BasedOnSpec = basedOn,
-                WeekAnchor = qao.WeekAnchor
+                WeekAnchor = qao.WeekAnchor,
+                GraceSeconds = graceMap[tfStr]
             };
             entities.Add(live);
 
@@ -126,7 +138,8 @@ internal static class DerivationPlanner
                 SyncHint = hbId.ToUpperInvariant(),
                 PrevHint = $"{baseId}_prev_1m",
                 BasedOnSpec = basedOn,
-                WeekAnchor = qao.WeekAnchor
+                WeekAnchor = qao.WeekAnchor,
+                GraceSeconds = graceMap[tfStr]
             };
             entities.Add(final);
 
@@ -139,7 +152,8 @@ internal static class DerivationPlanner
                 ValueShape = Array.Empty<ColumnShape>(),
                 MaterializationHint = MaterializationHint.Stream,
                 BasedOnSpec = basedOn,
-                WeekAnchor = qao.WeekAnchor
+                WeekAnchor = qao.WeekAnchor,
+                GraceSeconds = graceMap[tfStr]
             };
             entities.Add(hb);
 
@@ -155,7 +169,8 @@ internal static class DerivationPlanner
                     InputHint = hub,
                     SyncHint = hbId.ToUpperInvariant(),
                     BasedOnSpec = basedOn,
-                    WeekAnchor = qao.WeekAnchor
+                    WeekAnchor = qao.WeekAnchor,
+                    GraceSeconds = graceMap[tfStr]
                 };
                 entities.Add(fill);
             }
@@ -172,7 +187,8 @@ internal static class DerivationPlanner
                     InputHint = hub,
                     SyncHint = hbId.ToUpperInvariant(),
                     BasedOnSpec = basedOn,
-                    WeekAnchor = qao.WeekAnchor
+                    WeekAnchor = qao.WeekAnchor,
+                    GraceSeconds = graceMap[tfStr]
                 };
                 entities.Add(prev);
             }
@@ -180,6 +196,7 @@ internal static class DerivationPlanner
         if (!entities.Any(e => e.Role == Role.Prev1m))
         {
             var hbId = $"{baseId}_hb_1m";
+            var grace1m = graceMap.TryGetValue("1m", out var g1) ? g1 : graceMap.Values.Last() + 1;
             var prev = new DerivedEntity
             {
                 Id = $"{baseId}_prev_1m",
@@ -190,7 +207,8 @@ internal static class DerivationPlanner
                 InputHint = hub,
                 SyncHint = hbId.ToUpperInvariant(),
                 BasedOnSpec = basedOn,
-                WeekAnchor = qao.WeekAnchor
+                WeekAnchor = qao.WeekAnchor,
+                GraceSeconds = grace1m
             };
             entities.Add(prev);
             if (!entities.Any(e => e.Id == hbId))
@@ -204,7 +222,8 @@ internal static class DerivationPlanner
                     ValueShape = Array.Empty<ColumnShape>(),
                     MaterializationHint = MaterializationHint.Stream,
                     BasedOnSpec = basedOn,
-                    WeekAnchor = qao.WeekAnchor
+                    WeekAnchor = qao.WeekAnchor,
+                    GraceSeconds = grace1m
                 };
                 entities.Add(hb);
             }

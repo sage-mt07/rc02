@@ -62,6 +62,16 @@ public class WindowedQueryBuilderCoreTests
     }
 
     [Fact]
+    public void FinalBuilder_Uses_PerTimeframe_Grace()
+    {
+        var md = BaseMd()
+            .WithProperty("input/1mFinal", "src")
+            .WithProperty("grace/1m", 4);
+        var q = FinalBuilder.Build(md, "1m");
+        Assert.Contains("WINDOW TUMBLING(1m GRACE PERIOD 4s)", q);
+    }
+
+    [Fact]
     public void Core_Applies_TimeFrame_Join_And_Boundary_To_All()
     {
         var md = BaseMd().WithProperty("input/1mLive", "s");
