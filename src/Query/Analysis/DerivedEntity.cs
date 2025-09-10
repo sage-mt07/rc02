@@ -14,12 +14,6 @@ internal enum Role
     Fill
 }
 
-internal enum MaterializationHint
-{
-    Table,
-    Stream
-}
-
 internal record ColumnShape(string Name, Type Type, bool IsNullable);
 
 internal class DerivedEntity
@@ -29,11 +23,10 @@ internal class DerivedEntity
     public Timeframe Timeframe { get; init; } = default!;
     public IReadOnlyList<ColumnShape> KeyShape { get; init; } = Array.Empty<ColumnShape>();
     public IReadOnlyList<ColumnShape> ValueShape { get; init; } = Array.Empty<ColumnShape>();
-    public MaterializationHint MaterializationHint { get; init; } = MaterializationHint.Table;
     public string? TopicHint { get; init; }
     public string? InputHint { get; init; }
     public string? SyncHint { get; init; }
-      public BasedOnSpec BasedOnSpec { get; init; } = new(new List<string>(), string.Empty, string.Empty, string.Empty);
+    public BasedOnSpec BasedOnSpec { get; init; } = new(new List<string>(), string.Empty, string.Empty, string.Empty);
     public DayOfWeek WeekAnchor { get; init; } = DayOfWeek.Monday;
     public int GraceSeconds { get; init; }
 }

@@ -106,7 +106,6 @@ internal static class DerivationPlanner
                     Timeframe = tf,
                     KeyShape = keyShapes,
                     ValueShape = Array.Empty<ColumnShape>(),
-                    MaterializationHint = MaterializationHint.Stream,
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor,
                     GraceSeconds = graceMap[tfStr]
@@ -154,7 +153,6 @@ internal static class DerivationPlanner
                 Timeframe = tf,
                 KeyShape = keyShapes,
                 ValueShape = Array.Empty<ColumnShape>(),
-                MaterializationHint = MaterializationHint.Stream,
                 BasedOnSpec = basedOn,
                 WeekAnchor = qao.WeekAnchor,
                 GraceSeconds = graceMap[tfStr]
@@ -224,7 +222,6 @@ internal static class DerivationPlanner
                     Timeframe = new Timeframe(1, "m"),
                     KeyShape = keyShapes,
                     ValueShape = Array.Empty<ColumnShape>(),
-                    MaterializationHint = MaterializationHint.Stream,
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor,
                     GraceSeconds = grace1m
