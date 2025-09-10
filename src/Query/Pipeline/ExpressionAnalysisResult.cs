@@ -62,9 +62,11 @@ internal class ExpressionAnalysisResult
             var topicAttr = PocoType.GetCustomAttribute<KsqlTopicAttribute>();
             var baseId = (topicAttr?.Name ?? PocoType.Name).ToLowerInvariant();
             var hub = $"{baseId}_1s_final_s";
-            var tf = Windows[0];
-            md = md.WithProperty($"input/{tf}Live", hub);
-            md = md.WithProperty($"input/{tf}Final", hub);
+            foreach (var tf in Windows)
+            {
+                md = md.WithProperty($"input/{tf}Live", hub);
+                md = md.WithProperty($"input/{tf}Final", hub);
+            }
         }
         return md;
     }
