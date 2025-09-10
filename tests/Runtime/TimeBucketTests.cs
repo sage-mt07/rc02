@@ -53,7 +53,7 @@ public class TimeBucketTests
         {
             var key = m.FormatKeyForPrefix(m.ExtractAvroKey(r));
             var val = m.ExtractAvroValue(r);
-            rocks.Add("rate_5m_final", key, val);
+            rocks.Add("rate_5m_live", key, val);
         }
         var live = new Rate { Broker = "B", Symbol = "S", BucketStart = new DateTime(2025, 8, 23, 10, 10, 0, DateTimeKind.Utc), Value = 4 };
         var lkey = m.FormatKeyForPrefix(m.ExtractAvroKey(live));
@@ -65,7 +65,7 @@ public class TimeBucketTests
     public void TimeBucket_ResolvesTopicName_FromPeriod_AndPoco()
     {
         var (_, _, bucket) = CreateBucket();
-        Assert.Equal("rate_5m_final", bucket.FinalTopicName);
+        Assert.Null(bucket.FinalTopicName);
         Assert.Equal("rate_5m_live", bucket.LiveTopicName);
     }
 
@@ -73,8 +73,23 @@ public class TimeBucketTests
     public void TopicResolver_Maps_1wk_To_Rate_1wk_Final()
     {
         var (_, _, bucket) = CreateBucket(Period.Week());
-        Assert.Equal("rate_1wk_final", bucket.FinalTopicName);
+        Assert.Null(bucket.FinalTopicName);
         Assert.Equal("rate_1wk_live", bucket.LiveTopicName);
+    }
+
+    [Fact]
+    public async Task TimeBucket_1s_Uses_Final_Only()
+    {
+        var (map, rocks, bucket) = CreateBucket(Period.Seconds(1));
+        var m = map.GetMapping(typeof(Rate));
+        var row = new Rate { Broker = "B", Symbol = "S", BucketStart = new DateTime(2025, 8, 23, 10, 0, 0, DateTimeKind.Utc), Value = 1 };
+        var key = m.FormatKeyForPrefix(m.ExtractAvroKey(row));
+        var val = m.ExtractAvroValue(row);
+        rocks.Add("rate_1s_final", key, val);
+        var list = await bucket.ToListAsync(new[] { "B", "S" }, CancellationToken.None);
+        Assert.Single(list);
+        Assert.Equal("rate_1s_final", bucket.FinalTopicName);
+        Assert.Null(bucket.LiveTopicName);
     }
 
     [Fact]
@@ -109,7 +124,7 @@ public class TimeBucketTests
     }
 
     [Fact]
-    public async Task ToListAsync_UsesLive_WhenFinalEmpty()
+    public async Task ToListAsync_ReturnsFromLiveTopic()
     {
         var (map, rocks, bucket) = CreateBucket();
         Seed(map, rocks);
@@ -150,7 +165,7 @@ public class TimeBucketTests
         {
             var key = m.FormatKeyForPrefix(m.ExtractAvroKey(r));
             var val = m.ExtractAvroValue(r);
-            rocks.Add("rate_1wk_final", key, val);
+            rocks.Add("rate_1wk_live", key, val);
         }
         var live = new Rate { Broker = "B", Symbol = "S", BucketStart = new DateTime(2025, 8, 25, 0, 0, 0, DateTimeKind.Utc), Value = 4 };
         var lkey = m.FormatKeyForPrefix(m.ExtractAvroKey(live));

@@ -9,6 +9,7 @@ public static class Periods
         tsUtc = tsUtc.ToUniversalTime();
         return p.Unit switch
         {
+            PeriodUnit.Seconds => new DateTime(tsUtc.Year, tsUtc.Month, tsUtc.Day, tsUtc.Hour, tsUtc.Minute, (tsUtc.Second / p.Value) * p.Value, 0, DateTimeKind.Utc),
             PeriodUnit.Minutes => new DateTime(tsUtc.Year, tsUtc.Month, tsUtc.Day, tsUtc.Hour, (tsUtc.Minute / p.Value) * p.Value, 0, 0, DateTimeKind.Utc),
             PeriodUnit.Hours => new DateTime(tsUtc.Year, tsUtc.Month, tsUtc.Day, (tsUtc.Hour / p.Value) * p.Value, 0, 0, DateTimeKind.Utc),
             PeriodUnit.Days => new DateTime(tsUtc.Year, tsUtc.Month, ((tsUtc.Day - 1) / p.Value) * p.Value + 1, 0, 0, 0, DateTimeKind.Utc),
@@ -24,6 +25,7 @@ public static class Periods
         tsUtc = tsUtc.ToUniversalTime();
         return p.Unit switch
         {
+            PeriodUnit.Seconds => tsUtc.AddSeconds(p.Value),
             PeriodUnit.Minutes => tsUtc.AddMinutes(p.Value),
             PeriodUnit.Hours => tsUtc.AddHours(p.Value),
             PeriodUnit.Days => tsUtc.AddDays(p.Value),

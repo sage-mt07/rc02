@@ -46,8 +46,8 @@ public sealed class TimeBucket<T> where T : class
 {
     private readonly ITimeBucketContext _ctx;
     private readonly Period _period;
-    private readonly string _finalTopic;
-    private readonly string _liveTopic;
+    private readonly string? _finalTopic;
+    private readonly string? _liveTopic;
 
     internal TimeBucket(ITimeBucketContext ctx, Period period)
     {
@@ -55,44 +55,56 @@ public sealed class TimeBucket<T> where T : class
         _period = period;
         var baseTopic = typeof(T).Name.ToLowerInvariant();
         var prefix = $"{baseTopic}_{period}";
-        _finalTopic = $"{prefix}_final";
-        _liveTopic = $"{prefix}_live";
+        if (period.Unit == PeriodUnit.Seconds && period.Value == 1)
+        {
+            _finalTopic = $"{prefix}_final";
+            _liveTopic = null;
+        }
+        else
+        {
+            _finalTopic = null;
+            _liveTopic = $"{prefix}_live";
+        }
     }
 
     public async Task<List<T>> ToListAsync(IReadOnlyList<string> pkFilter, CancellationToken ct)
     {
         if (pkFilter == null) throw new ArgumentNullException(nameof(pkFilter));
-        List<T>? finalRows = null;
-        var final = _ctx.Set<T>(_finalTopic, _period);
-        try
+        List<T>? list = null;
+
+        if (_finalTopic != null)
         {
-            finalRows = await final.ToListAsync(pkFilter, ct);
-        }
-        catch (InvalidOperationException)
-        {
+            var final = _ctx.Set<T>(_finalTopic, _period);
+            try
+            {
+                list = await final.ToListAsync(pkFilter, ct);
+            }
+            catch (InvalidOperationException)
+            {
+            }
         }
 
-        List<T>? liveRows = null;
-        var live = _ctx.Set<T>(_liveTopic, _period);
-        try
+        if (_liveTopic != null)
         {
-            liveRows = await live.ToListAsync(pkFilter, ct);
-        }
-        catch (InvalidOperationException)
-        {
+            var live = _ctx.Set<T>(_liveTopic, _period);
+            try
+            {
+                var rows = await live.ToListAsync(pkFilter, ct);
+                if (list == null) list = rows; else list.AddRange(rows);
+            }
+            catch (InvalidOperationException)
+            {
+            }
         }
 
-        if (finalRows == null && liveRows == null)
+        if (list == null)
             throw new InvalidOperationException("No rows matched the filter.");
 
-        var list = new List<T>();
-        if (finalRows != null) list.AddRange(finalRows);
-        if (liveRows != null) list.AddRange(liveRows);
         return list;
     }
 
-    internal string FinalTopicName => _finalTopic;
-    internal string LiveTopicName => _liveTopic;
+    internal string? FinalTopicName => _finalTopic;
+    internal string? LiveTopicName => _liveTopic;
 }
 
 /// <summary>
@@ -101,21 +113,29 @@ public sealed class TimeBucket<T> where T : class
 public sealed class TimeBucketWriter<T> where T : class
 {
     private readonly ITimeBucketWriteContext _ctx;
-    private readonly string _finalTopic;
-    private readonly string _liveTopic;
+    private readonly string? _finalTopic;
+    private readonly string? _liveTopic;
 
     internal TimeBucketWriter(ITimeBucketWriteContext ctx, Period period)
     {
         _ctx = ctx ?? throw new ArgumentNullException(nameof(ctx));
         var baseTopic = typeof(T).Name.ToLowerInvariant();
         var prefix = $"{baseTopic}_{period}";
-        _finalTopic = $"{prefix}_final";
-        _liveTopic = $"{prefix}_live";
+        if (period.Unit == PeriodUnit.Seconds && period.Value == 1)
+        {
+            _finalTopic = $"{prefix}_final";
+            _liveTopic = null;
+        }
+        else
+        {
+            _finalTopic = null;
+            _liveTopic = $"{prefix}_live";
+        }
     }
 
-    public Task WriteAsync(T row, bool toFinal, CancellationToken ct = default)
-        => _ctx.ProduceAsync(toFinal ? _finalTopic : _liveTopic, row, ct);
+    public Task WriteAsync(T row, CancellationToken ct = default)
+        => _ctx.ProduceAsync(_finalTopic ?? _liveTopic!, row, ct);
 
-    internal string FinalTopicName => _finalTopic;
-    internal string LiveTopicName => _liveTopic;
+    internal string? FinalTopicName => _finalTopic;
+    internal string? LiveTopicName => _liveTopic;
 }

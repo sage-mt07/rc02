@@ -4,6 +4,7 @@ namespace Kafka.Ksql.Linq.Runtime;
 
 public enum PeriodUnit
 {
+    Seconds,
     Minutes,
     Hours,
     Days,
@@ -29,6 +30,7 @@ public readonly struct Period : IEquatable<Period>
     public static Period Days(int d) => Create(d, PeriodUnit.Days);
     public static Period Months(int m) => Create(m, PeriodUnit.Months);
     public static Period Week(DayOfWeek anchor = DayOfWeek.Monday) => Create(1, PeriodUnit.Weeks, anchor);
+    public static Period Seconds(int s) => Create(s, PeriodUnit.Seconds);
 
     private static Period Create(int v, PeriodUnit unit, DayOfWeek anchor = DayOfWeek.Monday)
     {
@@ -39,6 +41,7 @@ public readonly struct Period : IEquatable<Period>
 
     public override string ToString() => Unit switch
     {
+        PeriodUnit.Seconds => $"{Value}s",
         PeriodUnit.Minutes => $"{Value}m",
         PeriodUnit.Hours => $"{Value}h",
         PeriodUnit.Days => $"{Value}d",
