@@ -1,0 +1,3 @@
+- DerivationPlanner inserts a 1m timeframe when absent so the first `_final` derives from the base topic and later finals chain to the previous final.
+- DerivedTumblingPipeline.BuildDdlAndRegister clears windows for `Final` and `Prev1m` roles and always overrides the `FROM` source with a non-windowed input.
+- Added regression test asserting `_final` DDL never includes `WINDOW` or references `_agg_final`.

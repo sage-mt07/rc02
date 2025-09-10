@@ -1,4 +1,4 @@
-- AggFinal and Final entities now take the previous `_final` table as `InputHint`, chaining window sources.
+- Final entities now take the previous `_final` table as `InputHint`, chaining window sources.
 - DerivedTumblingPipeline forwards `AdditionalSettings["input"]` to windowed builder to override the `FROM` clause.
 - KsqlCreateWindowedStatementBuilder gained `inputOverride` parameter to replace source name in generated DDL.
 - Added test ensuring `bar_5m_final` DDL uses `FROM bar_1m_final` with `EMIT FINAL`.

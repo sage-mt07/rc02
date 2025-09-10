@@ -16,7 +16,6 @@ using System.Reflection.Emit;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 
 namespace Kafka.Ksql.Linq.Query.Analysis;
 
@@ -64,15 +63,15 @@ internal static class DerivedTumblingPipeline
         Func<string, Type> resolveType)
     {
         var qm = queryModel.Clone();
+        var inputOverride = baseName;
+        if (model.AdditionalSettings.TryGetValue("input", out var inputObj))
+            inputOverride = inputObj?.ToString() ?? baseName;
         if (role == Role.Final || role == Role.Prev1m)
         {
-            if (qm.SelectProjection != null)
-            {
-                var (sel, grp) = BuildFinalProjection(model, qm.SelectProjection);
-                qm.SelectProjection = sel;
-                qm.GroupByExpression = grp;
-            }
             qm.Windows.Clear();
+            qm.GroupByExpression = null;
+            var inputType = resolveType(inputOverride);
+            qm.SelectProjection = BuildInputProjection(inputType);
         }
         var tf = (string)model.AdditionalSettings["timeframe"];
         Timeframe tfObj;
@@ -86,7 +85,6 @@ internal static class DerivedTumblingPipeline
         var emit = spec.Emit != null ? $"EMIT {spec.Emit}" : null;
         var name = role switch
         {
-            Role.AggFinal => $"{baseName}_{tf}_agg_final",
             Role.Live => $"{baseName}_{tf}_live",
             Role.Final => $"{baseName}_{tf}_final",
             Role.Prev1m => $"{baseName}_prev_1m",
@@ -94,15 +92,13 @@ internal static class DerivedTumblingPipeline
             Role.Fill => $"{baseName}_{tf}_fill",
             _ => $"{baseName}_{tf}"
         };
-        var inputOverride = model.AdditionalSettings.TryGetValue("input", out var inputObj) ? inputObj?.ToString() : null;
         string ddl;
         if (role == Role.Final || role == Role.Prev1m)
         {
-            ddl = KsqlCreateStatementBuilder.Build(name, qm);
+            Func<Type, string> resolver = _ => inputOverride;
+            ddl = KsqlCreateStatementBuilder.Build(name, qm, null, null, resolver);
             if (!string.IsNullOrWhiteSpace(emit))
                 ddl = ddl.Replace("EMIT CHANGES", emit);
-            if (!string.IsNullOrWhiteSpace(inputOverride))
-                ddl = OverrideFrom(ddl, inputOverride);
         }
         else
         {
@@ -116,10 +112,18 @@ internal static class DerivedTumblingPipeline
         return (ddl, dt, ns);
     }
 
-    private static string OverrideFrom(string sql, string source)
+    private static LambdaExpression BuildInputProjection(Type inputType)
     {
-        var pattern = new Regex(@"\bFROM\s+([A-Za-z_][\w]*)\s+([A-Za-z_][\w]*)", RegexOptions.IgnoreCase);
-        return pattern.Replace(sql, m => $"FROM {source} {m.Groups[2].Value}", 1);
+        var p = Expression.Parameter(inputType, "x");
+        var props = new[] { "Open", "High", "Low", "KsqlTimeFrameClose" }
+            .Select(n => inputType.GetProperty(n, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase))
+            .Where(pr => pr != null)
+            .Cast<PropertyInfo>()
+            .ToArray();
+        if (props.Length == 0) return Expression.Lambda(p, p);
+        var bindings = props.Select(pr => Expression.Bind(pr, Expression.Property(p, pr)));
+        var body = Expression.MemberInit(Expression.New(inputType), bindings);
+        return Expression.Lambda(body, p);
     }
 
     private static (LambdaExpression select, LambdaExpression group) BuildFinalProjection(
