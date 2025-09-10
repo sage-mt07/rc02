@@ -43,7 +43,6 @@ internal class ExpressionAnalysisResult
     public QueryMetadata ToMetadata()
     {
         var md = new QueryMetadata(DateTime.UtcNow, "Query") { GraceSeconds = GraceSeconds };
-        md = md.WithProperty("windows", Windows.ToArray());
         md = md.WithProperty("timeKey", TimeKey!);
         md = md.WithProperty("basedOn/joinKeys", BasedOnJoinKeys.ToArray());
         md = md.WithProperty("basedOn/openProp", BasedOnOpen!);
@@ -54,10 +53,6 @@ internal class ExpressionAnalysisResult
 
         if (BucketColumnName != null)
             md = md.WithProperty("bucketColumn", BucketColumnName);
-
-        md = md.WithProperty("roles/live", Windows.ToArray());
-        md = md.WithProperty("roles/aggFinal", Windows.ToArray());
-        md = md.WithProperty("roles/final", Windows.ToArray());
 
         foreach (var kv in GracePerTimeframe)
             md = md.WithProperty($"grace/{kv.Key}", kv.Value);
@@ -76,8 +71,6 @@ internal class ExpressionAnalysisResult
                 md = md.WithProperty($"input/{tf}Final", hub);
                 md = md.WithProperty($"prev/{tf}Final", hub);
             }
-            md = md.WithProperty("roles/prev", new[] { "1m" });
-            md = md.WithProperty("roles/hb", new[] { "1m" });
         }
         return md;
     }
