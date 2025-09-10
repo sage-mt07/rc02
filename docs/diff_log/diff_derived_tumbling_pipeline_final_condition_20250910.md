@@ -1,0 +1,2 @@
+- Derived tumbling pipeline now skips creation of final tables for non-1s timeframes.
+- Only *_1s_final and *_1s_final_s are generated; other timeframes produce *_X_live only.

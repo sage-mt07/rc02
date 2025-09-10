@@ -37,6 +37,9 @@ internal static class DerivedTumblingPipeline
         foreach (var m in models)
         {
             var role = Enum.Parse<Role>((string)m.AdditionalSettings["role"]);
+            var tf = (string)m.AdditionalSettings["timeframe"];
+            if (tf != "1s" && role != Role.Live)
+                continue;
             var (ddl, dt, ns) = BuildDdlAndRegister(baseName, queryModel, m, role, resolveType);
             logger.LogInformation("KSQL DDL (derived {Entity}): {Sql}", m.TopicName, ddl);
             await execute(ddl);

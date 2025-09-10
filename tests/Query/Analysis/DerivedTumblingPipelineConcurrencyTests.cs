@@ -6,6 +6,7 @@ using Kafka.Ksql.Linq.Mapping;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
@@ -59,11 +60,11 @@ public class DerivedTumblingPipelineConcurrencyTests
 
         await DerivedTumblingPipeline.RunAsync(qao, baseModel, model, Exec, Resolver, mapping, registry, new LoggerFactory().CreateLogger("test"));
 
-        var expected = 10; // 1s hub + 1m: Live/Final/Hb + 5m: Live/Final/Hb
+        var expected = 5; // 1s hub + 1m: Live + 5m: Live
         Assert.Equal(expected, registry.Count);
         Assert.Equal(expected, ddls.Count);
-        foreach (var ddl in ddls)
-            if (ddl.Contains("_final") && !ddl.Contains("_final_s"))
-                Assert.Contains("EMIT FINAL", ddl);
+        var finals = ddls.Where(d => d.Contains("_final") && !d.Contains("_final_s")).ToList();
+        Assert.Single(finals);
+        Assert.Contains("EMIT FINAL", finals[0]);
     }
 }
