@@ -27,8 +27,4 @@ internal static class QueryBuilderUtils
         var grace = graceSeconds.HasValue ? $" GRACE PERIOD {graceSeconds.Value}s" : string.Empty;
         return $"WINDOW TUMBLING({timeframe}{grace})";
     }
-
-    public static string ApplySync_HB1m(string sync) => $"SYNC {sync}";
-
-    public static string ApplyPrev_1m(string prev) => $"PREV {prev}";
 }

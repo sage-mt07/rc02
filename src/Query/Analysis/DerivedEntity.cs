@@ -25,7 +25,6 @@ internal class DerivedEntity
     public IReadOnlyList<ColumnShape> ValueShape { get; init; } = Array.Empty<ColumnShape>();
     public string? TopicHint { get; init; }
     public string? InputHint { get; init; }
-    public string? SyncHint { get; init; }
     public BasedOnSpec BasedOnSpec { get; init; } = new(new List<string>(), string.Empty, string.Empty, string.Empty);
     public DayOfWeek WeekAnchor { get; init; } = DayOfWeek.Monday;
     public int GraceSeconds { get; init; }
