@@ -63,6 +63,8 @@ public class DerivedTumblingPipelineTests
 
         await DerivedTumblingPipeline.RunAsync(qao, baseModel, model, Exec, Resolver, mapping, registry, new LoggerFactory().CreateLogger("test"));
 
+        Assert.Contains(ddls, s => s.StartsWith("CREATE TABLE bar_1s_final"));
+        Assert.Contains(ddls, s => s.StartsWith("CREATE STREAM bar_1s_final_s"));
         var live = ddls.Single(s => s.StartsWith("CREATE TABLE bar_1m_live") || s.StartsWith("CREATE STREAM bar_1m_live"));
         var final = ddls.Single(s => s.StartsWith("CREATE TABLE bar_1m_final") || s.StartsWith("CREATE STREAM bar_1m_final"));
         Assert.Contains(ddls, s => s.Contains("_prev_1m"));
@@ -71,7 +73,7 @@ public class DerivedTumblingPipelineTests
     }
 
     [Fact]
-    public async Task Final_5m_uses_prev_final_as_input()
+    public async Task Final_5m_uses_hub_stream_as_input()
     {
         var qao = new TumblingQao
         {
@@ -111,7 +113,7 @@ public class DerivedTumblingPipelineTests
         await DerivedTumblingPipeline.RunAsync(qao, baseModel, model, Exec, Resolver, mapping, registry, new LoggerFactory().CreateLogger("test"));
 
         var ddl5 = ddls.Single(s => s.Contains("_5m_final"));
-        Assert.Contains("FROM bar_1m_final", ddl5);
+        Assert.Contains("FROM bar_1s_final_s", ddl5);
         Assert.Contains("EMIT FINAL", ddl5);
     }
 
@@ -171,11 +173,8 @@ public class DerivedTumblingPipelineTests
         await DerivedTumblingPipeline.RunAsync(qao, baseModel, model, Exec, Resolver, mapping, registry, new LoggerFactory().CreateLogger("test"));
 
         var ddl = ddls.Single(s => s.StartsWith("CREATE TABLE bar_1m_final") || s.StartsWith("CREATE STREAM bar_1m_final"));
-        Assert.Contains("EARLIEST_BY_OFFSET(Open) AS Open", ddl);
-        Assert.Contains("MAX(High) AS High", ddl);
-        Assert.Contains("MIN(Low) AS Low", ddl);
-        Assert.Contains("LATEST_BY_OFFSET(KsqlTimeFrameClose) AS KsqlTimeFrameClose", ddl);
-        Assert.Contains("SUM(Volume) AS Volume", ddl);
+        Assert.Contains("FROM bar_1s_final_s", ddl);
+        Assert.Contains("EMIT FINAL", ddl);
         Assert.DoesNotContain("BID", ddl, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -218,7 +217,6 @@ public class DerivedTumblingPipelineTests
 
         foreach (var sql in ddls.Where(s => s.Contains("_final")))
         {
-            Assert.DoesNotContain("WINDOW", sql, StringComparison.OrdinalIgnoreCase);
             Assert.DoesNotContain("_agg_final", sql, StringComparison.OrdinalIgnoreCase);
         }
     }

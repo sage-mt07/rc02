@@ -66,7 +66,7 @@ internal static class DerivedTumblingPipeline
         var inputOverride = baseName;
         if (model.AdditionalSettings.TryGetValue("input", out var inputObj))
             inputOverride = inputObj?.ToString() ?? baseName;
-        if (role == Role.Final || role == Role.Prev1m)
+        if (role == Role.Prev1m || role == Role.Final1sStream)
         {
             qm.Windows.Clear();
             qm.GroupByExpression = null;
@@ -87,13 +87,15 @@ internal static class DerivedTumblingPipeline
         {
             Role.Live => $"{baseName}_{tf}_live",
             Role.Final => $"{baseName}_{tf}_final",
+            Role.Final1s => $"{baseName}_{tf}_final",
+            Role.Final1sStream => $"{baseName}_{tf}_final_s",
             Role.Prev1m => $"{baseName}_prev_1m",
             Role.Hb => $"{baseName}_hb_{tf}",
             Role.Fill => $"{baseName}_{tf}_fill",
             _ => $"{baseName}_{tf}"
         };
         string ddl;
-        if (role == Role.Final || role == Role.Prev1m)
+        if (role == Role.Prev1m || role == Role.Final1sStream)
         {
             Func<Type, string> resolver = _ => inputOverride;
             ddl = KsqlCreateStatementBuilder.Build(name, qm, null, null, resolver);

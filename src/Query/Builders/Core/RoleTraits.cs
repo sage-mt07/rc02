@@ -16,6 +16,8 @@ internal static class RoleTraits
             Role.Live => new(true, "CHANGES", true),
             Role.AggFinal => new(true, "FINAL", false),
             Role.Final => new(true, "FINAL", true),
+            Role.Final1s => new(true, "FINAL", true),
+            Role.Final1sStream => new(false, null, false),
             Role.Prev1m => new(true, "FINAL", true),
             _ => new(false, null, false)
         };

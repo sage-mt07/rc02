@@ -148,6 +148,7 @@ TimeFrame → Tumbling → GroupBy → Select → (WhenEmpty?)
 - 1s_final: EMIT FINAL を用いた 1 秒確定足。TABLE として保持し、確定値を保証する。
 - 1s_final_s: 1s_final を STREAM 化したもの。上位足生成の唯一の親として利用する。
 - ルール: 上位足は必ず *_1s_final_s を入力にする。
+- 各ウィンドウは前段の足を参照せず、常に `<entity>_1s_final_s` を入力とする。
 
 ---
 

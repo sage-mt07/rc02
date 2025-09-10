@@ -38,6 +38,7 @@ internal static class DerivationPlanner
         var windows = qao.Windows
             .OrderBy(w => w.Unit switch
             {
+                "s" => w.Value / 60m,
                 "m" => w.Value,
                 "h" => w.Value * 60,
                 "d" => w.Value * 1440,
@@ -45,22 +46,61 @@ internal static class DerivationPlanner
                 _ => w.Value
             })
             .ToList();
-        if (!windows.Any(w => w.Unit == "m" && w.Value == 1))
-            windows.Insert(0, new Timeframe(1, "m"));
-        var prevFinalId = baseId;
+        if (!windows.Any(w => w.Unit == "s" && w.Value == 1))
+            windows.Insert(0, new Timeframe(1, "s"));
+        var hub = $"{baseId}_1s_final_s";
         foreach (var tf in windows)
         {
             var tfStr = $"{tf.Value}{tf.Unit}";
+            var hbId = $"{baseId}_hb_{tfStr}";
+            if (tf.Unit == "s" && tf.Value == 1)
+            {
+                var final1s = new DerivedEntity
+                {
+                    Id = $"{baseId}_1s_final",
+                    Role = Role.Final1s,
+                    Timeframe = tf,
+                    KeyShape = keyShapes,
+                    ValueShape = valueShapes,
+                    SyncHint = hbId.ToUpperInvariant(),
+                    PrevHint = $"{baseId}_prev_1m",
+                    BasedOnSpec = basedOn,
+                    WeekAnchor = qao.WeekAnchor
+                };
+                entities.Add(final1s);
+
+                var final1sStream = new DerivedEntity
+                {
+                    Id = hub,
+                    Role = Role.Final1sStream,
+                    Timeframe = tf,
+                    KeyShape = keyShapes,
+                    ValueShape = valueShapes,
+                    InputHint = $"{baseId}_1s_final",
+                    SyncHint = hbId.ToUpperInvariant(),
+                    PrevHint = $"{baseId}_prev_1m",
+                    BasedOnSpec = basedOn,
+                    WeekAnchor = qao.WeekAnchor
+                };
+                entities.Add(final1sStream);
+
+                var hb1s = new DerivedEntity
+                {
+                    Id = hbId,
+                    Role = Role.Hb,
+                    Timeframe = tf,
+                    KeyShape = keyShapes,
+                    ValueShape = Array.Empty<ColumnShape>(),
+                    MaterializationHint = MaterializationHint.Stream,
+                    BasedOnSpec = basedOn,
+                    WeekAnchor = qao.WeekAnchor
+                };
+                entities.Add(hb1s);
+                continue;
+            }
+
             var liveId = $"{baseId}_{tfStr}_live";
             var finalId = $"{baseId}_{tfStr}_final";
-            var hbId = $"{baseId}_hb_{tfStr}";
-
-            string? liveInput = tf.Unit == "m" && tf.Value == 1
-                ? null
-                : tf.Unit == "wk"
-                    ? $"{baseId}_1d_live"
-                    : $"{baseId}_1m_live";
-            var liveSync = hbId.ToUpperInvariant();
             var live = new DerivedEntity
             {
                 Id = liveId,
@@ -68,14 +108,13 @@ internal static class DerivationPlanner
                 Timeframe = tf,
                 KeyShape = keyShapes,
                 ValueShape = valueShapes,
-                InputHint = liveInput,
-                SyncHint = liveSync,
+                InputHint = hub,
+                SyncHint = hbId.ToUpperInvariant(),
                 BasedOnSpec = basedOn,
                 WeekAnchor = qao.WeekAnchor
             };
             entities.Add(live);
 
-            var finalInput = prevFinalId;
             var final = new DerivedEntity
             {
                 Id = finalId,
@@ -83,15 +122,13 @@ internal static class DerivationPlanner
                 Timeframe = tf,
                 KeyShape = keyShapes,
                 ValueShape = valueShapes,
-                InputHint = finalInput,
+                InputHint = hub,
                 SyncHint = hbId.ToUpperInvariant(),
                 PrevHint = $"{baseId}_prev_1m",
                 BasedOnSpec = basedOn,
                 WeekAnchor = qao.WeekAnchor
             };
             entities.Add(final);
-
-            prevFinalId = finalId;
 
             var hb = new DerivedEntity
             {
@@ -115,7 +152,7 @@ internal static class DerivationPlanner
                     Timeframe = tf,
                     KeyShape = keyShapes,
                     ValueShape = valueShapes,
-                    InputHint = finalId,
+                    InputHint = hub,
                     SyncHint = hbId.ToUpperInvariant(),
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor
@@ -132,12 +169,44 @@ internal static class DerivationPlanner
                     Timeframe = tf,
                     KeyShape = keyShapes,
                     ValueShape = valueShapes,
-                    InputHint = $"{baseId}_1m_final",
+                    InputHint = hub,
                     SyncHint = hbId.ToUpperInvariant(),
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor
                 };
                 entities.Add(prev);
+            }
+        }
+        if (!entities.Any(e => e.Role == Role.Prev1m))
+        {
+            var hbId = $"{baseId}_hb_1m";
+            var prev = new DerivedEntity
+            {
+                Id = $"{baseId}_prev_1m",
+                Role = Role.Prev1m,
+                Timeframe = new Timeframe(1, "m"),
+                KeyShape = keyShapes,
+                ValueShape = valueShapes,
+                InputHint = hub,
+                SyncHint = hbId.ToUpperInvariant(),
+                BasedOnSpec = basedOn,
+                WeekAnchor = qao.WeekAnchor
+            };
+            entities.Add(prev);
+            if (!entities.Any(e => e.Id == hbId))
+            {
+                var hb = new DerivedEntity
+                {
+                    Id = hbId,
+                    Role = Role.Hb,
+                    Timeframe = new Timeframe(1, "m"),
+                    KeyShape = keyShapes,
+                    ValueShape = Array.Empty<ColumnShape>(),
+                    MaterializationHint = MaterializationHint.Stream,
+                    BasedOnSpec = basedOn,
+                    WeekAnchor = qao.WeekAnchor
+                };
+                entities.Add(hb);
             }
         }
         return entities;

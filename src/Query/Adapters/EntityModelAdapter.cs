@@ -52,6 +52,8 @@ internal static class EntityModelAdapter
                     {
                         Role.Live => TrimSuffix(baseNs, $"_{e.Timeframe.Value}{e.Timeframe.Unit}_live"),
                         Role.Final => TrimSuffix(baseNs, $"_{e.Timeframe.Value}{e.Timeframe.Unit}_final"),
+                        Role.Final1s => TrimSuffix(baseNs, "_1s_final"),
+                        Role.Final1sStream => TrimSuffix(baseNs, "_1s_final_s"),
                         Role.Prev1m => TrimSuffix(baseNs, "_prev_1m"),
                         Role.Hb => TrimSuffix(baseNs, $"_hb_{e.Timeframe.Value}{e.Timeframe.Unit}"),
                         Role.Fill => TrimSuffix(baseNs, $"_{e.Timeframe.Value}{e.Timeframe.Unit}_fill"),
