@@ -68,7 +68,7 @@ public class BarScheduleExplainTests
                       && r.Symbol == s.Symbol
                       && s.Open <= r.Timestamp && r.Timestamp < s.Close,
                       dayKey: s => s.MarketDate)
-                    .Tumbling(r => r.Timestamp, days: new[] { 1 })
+                    .Tumbling(r => r.Timestamp, new Query.Dsl.Windows { Hours = new[] { 24 } })
                     .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
                     .Select(g => new Bar1dLive
                     {
@@ -79,8 +79,7 @@ public class BarScheduleExplainTests
                         High = g.Max(x => x.Bid),
                         Low = g.Min(x => x.Bid),
                         KsqlTimeFrameClose = g.LatestByOffset(x => x.Bid)
-                    })
-                    .AsPush());
+                    }));
 
             modelBuilder.Entity<Bar1wkLive>()
                 .ToQuery(q => q.From<Rate>()
@@ -89,7 +88,7 @@ public class BarScheduleExplainTests
                       && r.Symbol == s.Symbol
                       && s.Open <= r.Timestamp && r.Timestamp < s.Close,
                       dayKey: s => s.MarketDate)
-                    .Tumbling(r => r.Timestamp, days: new[] { 7 })
+                    .Tumbling(r => r.Timestamp, new Query.Dsl.Windows { Hours = new[] { 24*7 } })
                     .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
                     .Select(g => new Bar1wkLive
                     {
@@ -100,8 +99,7 @@ public class BarScheduleExplainTests
                         High = g.Max(x => x.Bid),
                         Low = g.Min(x => x.Bid),
                         KsqlTimeFrameClose = g.LatestByOffset(x => x.Bid)
-                    })
-                    .AsPush());
+                    }));
         }
     }
 

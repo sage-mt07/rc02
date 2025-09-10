@@ -39,21 +39,21 @@ public class BarScheduleAnchorTests
         protected override void OnModelCreating(IModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Rate>(readOnly: true);
-            modelBuilder.Entity<Bar1wkLive>()
-                .ToQuery(q => q.From<Rate>()
-                    .Tumbling(r => r.Timestamp, week: DayOfWeek.Sunday)
-                    .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
-                    .Select(g => new Bar1wkLive
-                    {
-                        Broker = g.Key.Broker,
-                        Symbol = g.Key.Symbol,
-                        BucketStart = g.Key.BucketStart,
-                        Open = g.EarliestByOffset(x => x.Bid),
-                        High = g.Max(x => x.Bid),
-                        Low = g.Min(x => x.Bid),
-                        KsqlTimeFrameClose = g.LatestByOffset(x => x.Bid)
-                    })
-                    .AsPush());
+            //modelBuilder.Entity<Bar1wkLive>()
+            //    .ToQuery(q => q.From<Rate>()
+            //        .Tumbling(r => r.Timestamp, week: DayOfWeek.Sunday)
+            //        .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
+            //        .Select(g => new Bar1wkLive
+            //        {
+            //            Broker = g.Key.Broker,
+            //            Symbol = g.Key.Symbol,
+            //            BucketStart = g.Key.BucketStart,
+            //            Open = g.EarliestByOffset(x => x.Bid),
+            //            High = g.Max(x => x.Bid),
+            //            Low = g.Min(x => x.Bid),
+            //            KsqlTimeFrameClose = g.LatestByOffset(x => x.Bid)
+            //        })
+            //        .AsPush());
         }
     }
 

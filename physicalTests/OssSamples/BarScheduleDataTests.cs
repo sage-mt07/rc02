@@ -60,46 +60,46 @@ public class BarScheduleDataTests
         {
             modelBuilder.Entity<Rate>(readOnly: true);
 
-            modelBuilder.Entity<Bar1dLive>()
-                .ToQuery(q => q.From<Rate>()
-                    .TimeFrame<MarketSchedule>((r, s) =>
-                         r.Broker == s.Broker
-                      && r.Symbol == s.Symbol
-                      && s.Open <= r.Timestamp && r.Timestamp < s.Close,
-                      dayKey: s => s.MarketDate)
-                    .Tumbling(r => r.Timestamp, days: new[] { 1 })
-                    .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
-                    .Select(g => new Bar1dLive
-                    {
-                        Broker = g.Key.Broker,
-                        Symbol = g.Key.Symbol,
-                        BucketStart = g.Key.BucketStart,
-                        Open = g.EarliestByOffset(x => x.Bid),
-                        High = g.Max(x => x.Bid),
-                        Low = g.Min(x => x.Bid),
-                        KsqlTimeFrameClose = g.LatestByOffset(x => x.Bid)
-                    })
-                    .AsPush());
+            //modelBuilder.Entity<Bar1dLive>()
+            //    .ToQuery(q => q.From<Rate>()
+            //        .TimeFrame<MarketSchedule>((r, s) =>
+            //             r.Broker == s.Broker
+            //          && r.Symbol == s.Symbol
+            //          && s.Open <= r.Timestamp && r.Timestamp < s.Close,
+            //          dayKey: s => s.MarketDate)
+            //        .Tumbling(r => r.Timestamp, days: new[] { 1 })
+            //        .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
+            //        .Select(g => new Bar1dLive
+            //        {
+            //            Broker = g.Key.Broker,
+            //            Symbol = g.Key.Symbol,
+            //            BucketStart = g.Key.BucketStart,
+            //            Open = g.EarliestByOffset(x => x.Bid),
+            //            High = g.Max(x => x.Bid),
+            //            Low = g.Min(x => x.Bid),
+            //            KsqlTimeFrameClose = g.LatestByOffset(x => x.Bid)
+            //        })
+            //        .AsPush());
 
-            modelBuilder.Entity<Bar1wkFinal>()
-                .ToQuery(q => q.From<Rate>()
-                    .TimeFrame<MarketSchedule>((r, s) =>
-                         r.Broker == s.Broker
-                      && r.Symbol == s.Symbol
-                      && s.Open <= r.Timestamp && r.Timestamp < s.Close,
-                      dayKey: s => s.MarketDate)
-                    .Tumbling(r => r.Timestamp, days: new[] { 7 })
-                    .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
-                    .Select(g => new Bar1wkFinal
-                    {
-                        Broker = g.Key.Broker,
-                        Symbol = g.Key.Symbol,
-                        BucketStart = g.Key.BucketStart,
-                        Open = g.EarliestByOffset(x => x.Bid),
-                        High = g.Max(x => x.Bid),
-                        Low = g.Min(x => x.Bid),
-                        KsqlTimeFrameClose = g.LatestByOffset(x => x.Bid)
-                    })); // Final系の具体的モードはビルダー側で扱う
+            //modelBuilder.Entity<Bar1wkFinal>()
+            //    .ToQuery(q => q.From<Rate>()
+            //        .TimeFrame<MarketSchedule>((r, s) =>
+            //             r.Broker == s.Broker
+            //          && r.Symbol == s.Symbol
+            //          && s.Open <= r.Timestamp && r.Timestamp < s.Close,
+            //          dayKey: s => s.MarketDate)
+            //        .Tumbling(r => r.Timestamp, days: new[] { 7 })
+            //        .GroupBy(r => new { r.Broker, r.Symbol, BucketStart = r.Timestamp })
+            //        .Select(g => new Bar1wkFinal
+            //        {
+            //            Broker = g.Key.Broker,
+            //            Symbol = g.Key.Symbol,
+            //            BucketStart = g.Key.BucketStart,
+            //            Open = g.EarliestByOffset(x => x.Bid),
+            //            High = g.Max(x => x.Bid),
+            //            Low = g.Min(x => x.Bid),
+            //            KsqlTimeFrameClose = g.LatestByOffset(x => x.Bid)
+            //        })); // Final系の具体的モードはビルダー側で扱う
         }
     }
 

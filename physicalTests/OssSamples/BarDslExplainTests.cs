@@ -3,6 +3,7 @@ using Kafka.Ksql.Linq.Configuration;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Core.Modeling;
+using Kafka.Ksql.Linq.Query.Dsl;
 using Microsoft.Extensions.Logging;
 using Xunit;
 
@@ -60,7 +61,7 @@ public class BarDslExplainTests
             // 1m/5mの足は単一DSLで展開（minutes: new[]{1,5}）
             modelBuilder.Entity<Bar>()
                 .ToQuery(q => q.From<Rate>()
-                    .Tumbling(r => r.Timestamp, minutes: new[] { 1, 5 })
+                    .Tumbling(r => r.Timestamp,new Windows { Minutes = new[] { 1, 5 } })
                     .GroupBy(r => new { r.Broker, r.Symbol })
                     .Select(g => new Bar
                     {
