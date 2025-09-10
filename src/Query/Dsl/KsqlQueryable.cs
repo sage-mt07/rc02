@@ -101,6 +101,8 @@ public class KsqlQueryable<T1> : IKsqlQueryable, IScheduledScope<T1>
         throw new NotSupportedException("Legacy Tumbling overload is not supported in this phase.");
     }
 
+    // filteredraw は上流責務。DSL は既にフィルタ済みストリーム
+    // （例: trade_raw_filtered）を参照するだけ。
     public IScheduledScope<T1> TimeFrame<TSchedule>(
         Expression<Func<T1, TSchedule, bool>> predicate,
         Expression<Func<TSchedule, object>>? dayKey = null)

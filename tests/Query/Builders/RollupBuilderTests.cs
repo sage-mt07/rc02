@@ -13,7 +13,7 @@ namespace Kafka.Ksql.Linq.Tests.Query.Builders;
 
 public class RollupBuilderTests
 {
-    [KsqlTopic("bar")]
+    [KsqlTopic("trade_raw_filtered")]
     private class Rate
     {
         public string Broker { get; set; } = string.Empty;
@@ -86,8 +86,8 @@ public class RollupBuilderTests
     {
         var md = BuildMetadata();
         var sql = LiveBuilder.Build(md, "1m");
-        Assert.Contains("TABLE bar_1s_final_s WINDOW TUMBLING(1m)", sql);
-        Assert.Contains("SYNC bar_1s_final_s", sql);
+        Assert.Contains("TABLE trade_raw_filtered_1s_final_s WINDOW TUMBLING(1m)", sql);
+        Assert.Contains("SYNC trade_raw_filtered_1s_final_s", sql);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class RollupBuilderTests
     {
         var md = BuildMetadata();
         var sql = LiveBuilder.Build(md, "5m");
-        Assert.Contains("TABLE bar_1s_final_s WINDOW TUMBLING(5m)", sql);
+        Assert.Contains("TABLE trade_raw_filtered_1s_final_s WINDOW TUMBLING(5m)", sql);
         Assert.DoesNotContain("SYNC", sql);
     }
 
@@ -104,13 +104,13 @@ public class RollupBuilderTests
     {
         var md = BuildMetadata();
         var sql = FinalBuilder.Build(md, "5m");
-        Assert.Contains("TABLE bar_1s_final_s WINDOW TUMBLING(5m)", sql);
+        Assert.Contains("TABLE trade_raw_filtered_1s_final_s WINDOW TUMBLING(5m)", sql);
         Assert.Contains("EMIT FINAL", sql);
         Assert.DoesNotContain("SYNC", sql);
         Assert.DoesNotContain("COMPOSE(", sql);
         var sql1 = FinalBuilder.Build(md, "1m");
-        Assert.Contains("TABLE bar_1s_final_s WINDOW TUMBLING(1m)", sql1);
-        Assert.Contains("SYNC bar_1s_final_s", sql1);
+        Assert.Contains("TABLE trade_raw_filtered_1s_final_s WINDOW TUMBLING(1m)", sql1);
+        Assert.Contains("SYNC trade_raw_filtered_1s_final_s", sql1);
         Assert.DoesNotContain("COMPOSE(", sql1);
     }
 
