@@ -1,0 +1,2 @@
+- Added test verifying DerivedTumblingPipeline emits DDL in deterministic order.
+- Renamed test topic attribute from `bar` to `foo`.
