@@ -127,6 +127,15 @@ public class DerivationPlannerTests
     }
 
     [Fact]
+    public void Plan_Month_Windows_Use_Hub()
+    {
+        var model = new EntityModel { EntityType = typeof(Source) };
+        var entities = DerivationPlanner.Plan(Create(new Timeframe(1, "mo")), model);
+        var live = Assert.Single(entities, e => e.Id == "bar_1mo_live" && e.Role == Role.Live);
+        Assert.Equal("bar_1s_final_s", live.InputHint);
+    }
+
+    [Fact]
     public void Plan_WhenEmpty_Adds_Fill_Entity()
     {
         var model = new EntityModel { EntityType = typeof(Source) };

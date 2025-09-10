@@ -43,6 +43,7 @@ internal static class DerivationPlanner
                 "h" => w.Value * 60,
                 "d" => w.Value * 1440,
                 "wk" => w.Value * 10080,
+                "mo" => w.Value * 43200,
                 _ => w.Value
             })
             .ToList();
