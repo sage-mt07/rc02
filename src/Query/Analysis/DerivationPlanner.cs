@@ -35,8 +35,6 @@ internal static class DerivationPlanner
 
         var topicAttr = model.EntityType.GetCustomAttribute<KsqlTopicAttribute>();
         var baseId = (topicAttr?.Name ?? model.TopicName ?? model.EntityType.Name).ToLowerInvariant();
-        var has1m = qao.Windows.Any(w => w.Unit == "m" && w.Value == 1);
-        var prev1mHint = has1m ? $"{baseId}_prev_1m" : null;
         var windows = qao.Windows
             .OrderBy(w => w.Unit switch
             {
@@ -74,7 +72,6 @@ internal static class DerivationPlanner
                     KeyShape = keyShapes,
                     ValueShape = valueShapes,
                     SyncHint = hbId.ToUpperInvariant(),
-                    PrevHint = prev1mHint,
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor,
                     GraceSeconds = graceMap[tfStr]
@@ -90,7 +87,6 @@ internal static class DerivationPlanner
                     ValueShape = valueShapes,
                     InputHint = $"{baseId}_1s_final",
                     SyncHint = hbId.ToUpperInvariant(),
-                    PrevHint = prev1mHint,
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor,
                     GraceSeconds = graceMap[tfStr]
@@ -139,7 +135,6 @@ internal static class DerivationPlanner
                 ValueShape = valueShapes,
                 InputHint = hub,
                 SyncHint = hbId.ToUpperInvariant(),
-                PrevHint = $"{baseId}_prev_1m",
                 BasedOnSpec = basedOn,
                 WeekAnchor = qao.WeekAnchor,
                 GraceSeconds = graceMap[tfStr]
