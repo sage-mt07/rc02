@@ -14,7 +14,6 @@ internal static class RoleTraits
         return role switch
         {
             Role.Live => new(true, "CHANGES", true),
-            Role.AggFinal => new(true, "FINAL", false),
             Role.Final => new(true, "FINAL", true),
             Role.Final1s => new(true, "FINAL", true),
             Role.Final1sStream => new(false, null, false),

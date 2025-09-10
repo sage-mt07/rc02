@@ -82,15 +82,6 @@ public class RollupBuilderTests
     }
 
     [Fact]
-    public void AggFinal_Builds_Final()
-    {
-        var md = BuildMetadata();
-        var sql = AggFinalBuilder.Build(md, "1m");
-        Assert.Contains("WINDOW TUMBLING(1m)", sql);
-        Assert.Contains("EMIT FINAL", sql);
-    }
-
-    [Fact]
     public void Live_1m_IsTable_EmitChanges_SyncsOn_HB1m()
     {
         var md = BuildMetadata();
@@ -125,13 +116,12 @@ public class RollupBuilderTests
     }
 
     [Fact]
-    public void Builders_Expand_TimeFrame_Join_And_Boundary_For_All_Roles()
+    public void Builders_Expand_TimeFrame_Join_And_Boundary_For_Live_And_Final()
     {
         var md = BuildMetadata();
-        var a = AggFinalBuilder.Build(md, "1m");
-        var b = LiveBuilder.Build(md, "1m");
-        var c = FinalBuilder.Build(md, "1m");
-        foreach (var sql in new[] { a, b, c })
+        var live = LiveBuilder.Build(md, "1m");
+        var fin = FinalBuilder.Build(md, "1m");
+        foreach (var sql in new[] { live, fin })
         {
             Assert.Contains("JOIN", sql);
             Assert.Contains("<=", sql);
@@ -146,9 +136,6 @@ public class RollupBuilderTests
         Assert.True(specLive.Window);
         Assert.Equal("CHANGES", specLive.Emit);
         Assert.True(specLive.SyncHb1m);
-
-        var specAgg = RoleTraits.For(Role.AggFinal, new Timeframe(1, "m"));
-        Assert.True(specAgg.Window);
 
         var specFinal = RoleTraits.For(Role.Final, new Timeframe(5, "m"));
         Assert.True(specFinal.Window);
