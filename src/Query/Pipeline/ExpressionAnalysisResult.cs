@@ -57,20 +57,14 @@ internal class ExpressionAnalysisResult
         foreach (var kv in GracePerTimeframe)
             md = md.WithProperty($"grace/{kv.Key}", kv.Value);
 
-        if (PocoType != null)
+        if (PocoType != null && Windows.Count > 0)
         {
             var topicAttr = PocoType.GetCustomAttribute<KsqlTopicAttribute>();
             var baseId = (topicAttr?.Name ?? PocoType.Name).ToLowerInvariant();
             var hub = $"{baseId}_1s_final_s";
-            md = md.WithProperty("sync/1mLive", hub);
-            md = md.WithProperty("sync/1mFinal", hub);
-            md = md.WithProperty("prev/1mFinal", hub);
-            foreach (var tf in Windows)
-            {
-                md = md.WithProperty($"input/{tf}Live", hub);
-                md = md.WithProperty($"input/{tf}Final", hub);
-                md = md.WithProperty($"prev/{tf}Final", hub);
-            }
+            var tf = Windows[0];
+            md = md.WithProperty($"input/{tf}Live", hub);
+            md = md.WithProperty($"input/{tf}Final", hub);
         }
         return md;
     }
