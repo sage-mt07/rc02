@@ -1,0 +1,3 @@
+- TumblingQao holds a read-only Grace map per timeframe.
+- DerivationPlanner uses parent grace +1 for each derived entity and updates the map in place.
+- WindowValidator verifies provided Grace values and only populates missing entries.

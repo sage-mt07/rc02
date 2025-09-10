@@ -50,13 +50,19 @@ internal static class DerivationPlanner
         if (!windows.Any(w => w.Unit == "s" && w.Value == 1))
             windows.Insert(0, new Timeframe(1, "s"));
         var graceMap = new Dictionary<string, int>();
-        var grace = qao.GraceSeconds ?? 0;
+        var prevGrace = qao.GraceSeconds ?? 0;
         foreach (var tf in windows)
         {
-            grace++;
-            graceMap[$"{tf.Value}{tf.Unit}"] = grace;
+            var key = $"{tf.Value}{tf.Unit}";
+            if (qao.GracePerTimeframe.TryGetValue(key, out var parent))
+                prevGrace = parent;
+            var next = prevGrace + 1;
+            graceMap[key] = next;
+            prevGrace = next;
         }
-        qao.GracePerTimeframe = graceMap;
+        qao.GracePerTimeframe.Clear();
+        foreach (var kv in graceMap)
+            qao.GracePerTimeframe[kv.Key] = kv.Value;
         var hub = $"{baseId}_1s_final_s";
         foreach (var tf in windows)
         {
