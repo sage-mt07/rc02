@@ -22,6 +22,7 @@ internal class ExpressionAnalysisResult
     public DayOfWeek WeekAnchor { get; set; } = DayOfWeek.Monday;
     public int? BaseUnitSeconds { get; set; }
     public int? GraceSeconds { get; set; }
+    public Dictionary<string, int> GracePerTimeframe { get; } = new();
 
     public List<string> BasedOnJoinKeys { get; } = new();
     public string? BasedOnOpen { get; set; }
@@ -41,7 +42,7 @@ internal class ExpressionAnalysisResult
 
     public QueryMetadata ToMetadata()
     {
-        var md = new QueryMetadata(DateTime.UtcNow, "Query");
+        var md = new QueryMetadata(DateTime.UtcNow, "Query") { GraceSeconds = GraceSeconds };
         md = md.WithProperty("windows", Windows.ToArray());
         md = md.WithProperty("timeKey", TimeKey!);
         md = md.WithProperty("basedOn/joinKeys", BasedOnJoinKeys.ToArray());
@@ -59,6 +60,9 @@ internal class ExpressionAnalysisResult
         md = md.WithProperty("roles/final", Windows.ToArray());
         md = md.WithProperty("roles/prev", new[] { "1m" });
         md = md.WithProperty("roles/hb", new[] { "1m" });
+
+        foreach (var kv in GracePerTimeframe)
+            md = md.WithProperty($"grace/{kv.Key}", kv.Value);
 
         if (PocoType != null)
         {

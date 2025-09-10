@@ -57,4 +57,23 @@ public class WindowValidatorTests
         res.Windows.Add("120s");
         WindowValidator.Validate(res);
     }
+
+    [Fact]
+    public void Validate_Computes_Grace_Map()
+    {
+        var res = new ExpressionAnalysisResult { BaseUnitSeconds = 5, GraceSeconds = 1 };
+        res.Windows.Add("10s");
+        WindowValidator.Validate(res);
+        Assert.Equal(2, res.GracePerTimeframe["10s"]);
+    }
+
+    [Fact]
+    public void Validate_Throws_When_Grace_Mismatch()
+    {
+        var res = new ExpressionAnalysisResult { BaseUnitSeconds = 5, GraceSeconds = 1 };
+        res.Windows.Add("10s");
+        res.GracePerTimeframe["10s"] = 5;
+        var ex = Assert.Throws<InvalidOperationException>(() => WindowValidator.Validate(res));
+        Assert.Equal("Window 10s grace must be parent grace + 1s.", ex.Message);
+    }
 }

@@ -24,4 +24,5 @@ internal class TumblingQao
     public DayOfWeek WeekAnchor { get; init; } = DayOfWeek.Monday;
     public int? BaseUnitSeconds { get; init; }
     public int? GraceSeconds { get; init; }
+    public Dictionary<string, int> GracePerTimeframe { get; set; } = new();
 }

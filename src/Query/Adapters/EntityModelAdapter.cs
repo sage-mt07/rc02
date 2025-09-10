@@ -39,6 +39,7 @@ internal static class EntityModelAdapter
             model.AdditionalSettings["basedOn/closeInclusive"] = e.BasedOnSpec.IsCloseInclusive;
             model.AdditionalSettings["role"] = e.Role.ToString();
             model.AdditionalSettings["timeframe"] = $"{e.Timeframe.Value}{e.Timeframe.Unit}";
+            model.AdditionalSettings["graceSeconds"] = e.GraceSeconds;
             if (e.SyncHint != null) model.AdditionalSettings[$"sync"] = e.SyncHint;
             if (e.InputHint != null) model.AdditionalSettings[$"input"] = e.InputHint;
             if (e.PrevHint != null) model.AdditionalSettings[$"prev"] = e.PrevHint;

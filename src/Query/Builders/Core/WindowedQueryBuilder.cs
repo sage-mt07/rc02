@@ -23,7 +23,10 @@ internal static class WindowedQueryBuilder
         if (role == Role.Live || role == Role.Final)
             sb.Append($"TABLE {input}");
         if (spec.Window)
-            sb.Append(' ').Append(QueryBuilderUtils.ApplyWindowTumbling(tfStr, md.GraceSeconds));
+        {
+            var grace = md.GetProperty<int?>($"grace/{tfStr}");
+            sb.Append(' ').Append(QueryBuilderUtils.ApplyWindowTumbling(tfStr, grace));
+        }
         if (spec.Emit != null)
             sb.Append(' ').Append($"EMIT {spec.Emit}");
         if (spec.SyncHb1m)
