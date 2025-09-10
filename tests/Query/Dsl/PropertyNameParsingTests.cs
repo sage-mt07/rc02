@@ -104,6 +104,15 @@ public class PropertyNameParsingTests
     }
 
     [Fact]
+    public void Tumbling_Orders_Month_Windows()
+    {
+        var model = new KsqlQueryable<Rate>()
+            .Tumbling(r => r.Timestamp, new Windows { Days = new[] { 1 }, Months = new[] { 6, 1 } })
+            .Build();
+        Assert.Equal(new[] { "1d", "1mo", "6mo" }, model.Windows);
+    }
+
+    [Fact]
     public void WhenEmpty_Sets_Flag()
     {
         var q = Expression.Parameter(typeof(KsqlQueryable<Rate>), "q");
