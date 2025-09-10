@@ -100,32 +100,29 @@ public class RollupBuilderTests
     }
 
     [Fact]
-    public void Final_Uses_Window_EmitFinal()
+    public void Live_Uses_Window_NoFinal()
     {
         var md = BuildMetadata();
-        var sql = FinalBuilder.Build(md, "5m");
+        var sql = LiveBuilder.Build(md, "5m");
         Assert.Contains("TABLE trade_raw_filtered_1s_final_s WINDOW TUMBLING(5m)", sql);
-        Assert.Contains("EMIT FINAL", sql);
+        Assert.DoesNotContain("EMIT FINAL", sql);
         Assert.DoesNotContain("SYNC", sql);
         Assert.DoesNotContain("COMPOSE(", sql);
-        var sql1 = FinalBuilder.Build(md, "1m");
+        var sql1 = LiveBuilder.Build(md, "1m");
         Assert.Contains("TABLE trade_raw_filtered_1s_final_s WINDOW TUMBLING(1m)", sql1);
+        Assert.DoesNotContain("EMIT FINAL", sql1);
         Assert.DoesNotContain("SYNC", sql1);
         Assert.DoesNotContain("COMPOSE(", sql1);
     }
 
     [Fact]
-    public void Builders_Expand_TimeFrame_Join_And_Boundary_For_Live_And_Final()
+    public void Builders_Expand_TimeFrame_Join_And_Boundary_For_Live()
     {
         var md = BuildMetadata();
         var live = LiveBuilder.Build(md, "1m");
-        var fin = FinalBuilder.Build(md, "1m");
-        foreach (var sql in new[] { live, fin })
-        {
-            Assert.Contains("JOIN", sql);
-            Assert.Contains("<=", sql);
-            Assert.Contains("<", sql);
-        }
+        Assert.Contains("JOIN", live);
+        Assert.Contains("<=", live);
+        Assert.Contains("<", live);
     }
 
     [Fact]
