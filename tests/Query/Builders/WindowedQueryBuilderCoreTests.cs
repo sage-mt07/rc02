@@ -1,3 +1,4 @@
+using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Query.Builders;
 using Kafka.Ksql.Linq.Query.Pipeline;
 using System;
@@ -7,40 +8,48 @@ namespace Kafka.Ksql.Linq.Tests.Query.Builders;
 
 public class WindowedQueryBuilderCoreTests
 {
-    private static QueryMetadata BaseMd() =>
-        new QueryMetadata(DateTime.UtcNow, "cat")
-            .WithProperty("basedOn/joinKeys", new[] { "Broker" })
-            .WithProperty("basedOn/openProp", "Open")
-            .WithProperty("basedOn/closeProp", "KsqlTimeFrameClose")
-            .WithProperty("basedOn/dayKey", "MarketDate")
-            .WithProperty("timeKey", "Ts");
+    [KsqlTopic("bar")]
+    private class Source { }
+
+    private static ExpressionAnalysisResult BaseRes(string tf)
+    {
+        var res = new ExpressionAnalysisResult
+        {
+            PocoType = typeof(Source),
+            TimeKey = "Ts",
+            BasedOnOpen = "Open",
+            BasedOnClose = "KsqlTimeFrameClose",
+            BasedOnDayKey = "MarketDate"
+        };
+        res.BasedOnJoinKeys.Add("Broker");
+        res.Windows.Add(tf);
+        return res;
+    }
+
+    private static QueryMetadata Md(string tf) => BaseRes(tf).ToMetadata();
 
     [Fact]
     public void Core_Builds_Live_Table_EmitChanges_NoSync()
     {
-        var md1 = BaseMd().WithProperty("input/1mLive", "bar_1s_final_s");
-        var q1 = LiveBuilder.Build(md1, "1m");
+        var q1 = LiveBuilder.Build(Md("1m"), "1m");
         Assert.StartsWith("TABLE bar_1s_final_s", q1);
         Assert.DoesNotContain("SYNC", q1);
 
-        var md5 = BaseMd().WithProperty("input/5mLive", "bar_1s_final_s");
-        var q5 = LiveBuilder.Build(md5, "5m");
+        var q5 = LiveBuilder.Build(Md("5m"), "5m");
         Assert.DoesNotContain("SYNC", q5);
     }
 
     [Fact]
     public void Core_Builds_Final_Window_EmitFinal_NoSync()
     {
-        var md1 = BaseMd().WithProperty("input/1mFinal", "bar_1s_final_s");
-        var q1 = FinalBuilder.Build(md1, "1m");
+        var q1 = FinalBuilder.Build(Md("1m"), "1m");
         Assert.StartsWith("TABLE bar_1s_final_s", q1);
         Assert.Contains("WINDOW TUMBLING(1m)", q1);
         Assert.Contains("EMIT FINAL", q1);
         Assert.DoesNotContain("SYNC", q1);
         Assert.DoesNotContain("COMPOSE(", q1);
 
-        var md5 = BaseMd().WithProperty("input/5mFinal", "bar_1s_final_s");
-        var q5 = FinalBuilder.Build(md5, "5m");
+        var q5 = FinalBuilder.Build(Md("5m"), "5m");
         Assert.StartsWith("TABLE bar_1s_final_s", q5);
         Assert.Contains("WINDOW TUMBLING(5m)", q5);
         Assert.DoesNotContain("SYNC", q5);
@@ -50,19 +59,18 @@ public class WindowedQueryBuilderCoreTests
     [Fact]
     public void FinalBuilder_Uses_PerTimeframe_Grace()
     {
-        var md = BaseMd()
-            .WithProperty("input/1mFinal", "bar_1s_final_s")
-            .WithProperty("grace/1m", 4);
-        var q = FinalBuilder.Build(md, "1m");
+        var res = BaseRes("1m");
+        res.GracePerTimeframe["1m"] = 4;
+        var q = FinalBuilder.Build(res.ToMetadata(), "1m");
         Assert.Contains("WINDOW TUMBLING(1m GRACE PERIOD 4s)", q);
     }
 
     [Fact]
     public void Core_Applies_TimeFrame_Join_And_Boundary_To_Live_And_Final()
     {
-        var md = BaseMd().WithProperty("input/1mLive", "bar_1s_final_s");
+        var md = Md("1m");
         var live = LiveBuilder.Build(md, "1m");
-        var fin = FinalBuilder.Build(md.WithProperty("input/1mFinal", "bar_1s_final_s"), "1m");
+        var fin = FinalBuilder.Build(md, "1m");
         foreach (var q in new[] { live, fin })
             Assert.Contains("JOIN ON", q);
     }
@@ -70,10 +78,11 @@ public class WindowedQueryBuilderCoreTests
     [Fact]
     public void Builders_Expand_TimeFrame_Join_And_Boundary_For_Live_And_Final()
     {
-        var md = BaseMd().WithProperty("input/1mLive", "bar_1s_final_s");
+        var md = Md("1m");
         var live = LiveBuilder.Build(md, "1m");
-        var fin = FinalBuilder.Build(md.WithProperty("input/1mFinal", "bar_1s_final_s"), "1m");
+        var fin = FinalBuilder.Build(md, "1m");
         Assert.Contains("s.Open <= r.Ts", live);
         Assert.Contains("s.Open <= r.Ts", fin);
     }
 }
+

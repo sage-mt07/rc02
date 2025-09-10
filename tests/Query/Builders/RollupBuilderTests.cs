@@ -93,8 +93,7 @@ public class RollupBuilderTests
     [Fact]
     public void Live_5m_RollsUp_From_1mLive()
     {
-        var md = BuildMetadata()
-            .WithProperty("input/5mLive", "trade_raw_filtered_1s_final_s");
+        var md = BuildMetadata();
         var sql = LiveBuilder.Build(md, "5m");
         Assert.Contains("TABLE trade_raw_filtered_1s_final_s WINDOW TUMBLING(5m)", sql);
         Assert.DoesNotContain("SYNC", sql);
@@ -103,8 +102,7 @@ public class RollupBuilderTests
     [Fact]
     public void Final_Uses_Window_EmitFinal()
     {
-        var md = BuildMetadata()
-            .WithProperty("input/5mFinal", "trade_raw_filtered_1s_final_s");
+        var md = BuildMetadata();
         var sql = FinalBuilder.Build(md, "5m");
         Assert.Contains("TABLE trade_raw_filtered_1s_final_s WINDOW TUMBLING(5m)", sql);
         Assert.Contains("EMIT FINAL", sql);
