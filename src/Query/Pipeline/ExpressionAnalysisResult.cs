@@ -58,8 +58,6 @@ internal class ExpressionAnalysisResult
         md = md.WithProperty("roles/live", Windows.ToArray());
         md = md.WithProperty("roles/aggFinal", Windows.ToArray());
         md = md.WithProperty("roles/final", Windows.ToArray());
-        md = md.WithProperty("roles/prev", new[] { "1m" });
-        md = md.WithProperty("roles/hb", new[] { "1m" });
 
         foreach (var kv in GracePerTimeframe)
             md = md.WithProperty($"grace/{kv.Key}", kv.Value);
@@ -68,23 +66,18 @@ internal class ExpressionAnalysisResult
         {
             var topicAttr = PocoType.GetCustomAttribute<KsqlTopicAttribute>();
             var baseId = (topicAttr?.Name ?? PocoType.Name).ToLowerInvariant();
-            var hb = $"{baseId}_hb_1m".ToUpperInvariant();
-            var prevId = $"{baseId}_prev_1m";
-            md = md.WithProperty("sync/1mLive", hb);
-            md = md.WithProperty("sync/1mFinal", hb);
-            md = md.WithProperty("prev/1mFinal", prevId);
+            var hub = $"{baseId}_1s_final_s";
+            md = md.WithProperty("sync/1mLive", hub);
+            md = md.WithProperty("sync/1mFinal", hub);
+            md = md.WithProperty("prev/1mFinal", hub);
             foreach (var tf in Windows)
             {
-                var liveInput = tf switch
-                {
-                    "1wk" => $"{baseId}_1d_live",
-                    _ when tf.EndsWith("mo") => $"{baseId}_1s_final_s",
-                    _ => $"{baseId}_1m_live"
-                };
-                md = md.WithProperty($"input/{tf}Live", liveInput);
-                md = md.WithProperty($"input/{tf}Final", liveInput);
-                md = md.WithProperty($"prev/{tf}Final", prevId);
+                md = md.WithProperty($"input/{tf}Live", hub);
+                md = md.WithProperty($"input/{tf}Final", hub);
+                md = md.WithProperty($"prev/{tf}Final", hub);
             }
+            md = md.WithProperty("roles/prev", new[] { "1m" });
+            md = md.WithProperty("roles/hb", new[] { "1m" });
         }
         return md;
     }

@@ -1,0 +1,3 @@
+- Adjust ExpressionAnalysisResult.ToMetadata to emit sync/prev/input from baseId_1s_final_s.
+- roles/prev and roles/hb no longer include fixed 1m; added only when PocoType present.
+- Updated RollupBuilderTests for new hub naming.

@@ -95,9 +95,9 @@ public class RollupBuilderTests
     {
         var md = BuildMetadata();
         var sql = LiveBuilder.Build(md, "1m");
-        Assert.Contains("TABLE bar_1m_live WINDOW TUMBLING(1m)", sql);
+        Assert.Contains("TABLE bar_1s_final_s WINDOW TUMBLING(1m)", sql);
         Assert.Contains("EMIT CHANGES", sql);
-        Assert.Contains("SYNC BAR_HB_1M", sql);
+        Assert.Contains("SYNC bar_1s_final_s", sql);
     }
 
     [Fact]
@@ -105,8 +105,8 @@ public class RollupBuilderTests
     {
         var md = BuildMetadata();
         var sql = LiveBuilder.Build(md, "5m");
-        Assert.Contains("TABLE bar_1m_live WINDOW TUMBLING(5m)", sql);
-        Assert.DoesNotContain("BAR_HB_1M", sql);
+        Assert.Contains("TABLE bar_1s_final_s WINDOW TUMBLING(5m)", sql);
+        Assert.DoesNotContain("SYNC", sql);
     }
 
     [Fact]
@@ -114,13 +114,13 @@ public class RollupBuilderTests
     {
         var md = BuildMetadata();
         var sql = FinalBuilder.Build(md, "5m");
-        Assert.Contains("TABLE bar_1m_live WINDOW TUMBLING(5m)", sql);
+        Assert.Contains("TABLE bar_1s_final_s WINDOW TUMBLING(5m)", sql);
         Assert.Contains("EMIT FINAL", sql);
-        Assert.DoesNotContain("BAR_HB_1M", sql);
+        Assert.DoesNotContain("SYNC", sql);
         Assert.DoesNotContain("COMPOSE(", sql);
         var sql1 = FinalBuilder.Build(md, "1m");
-        Assert.Contains("TABLE bar_1m_live WINDOW TUMBLING(1m)", sql1);
-        Assert.Contains("SYNC BAR_HB_1M", sql1);
+        Assert.Contains("TABLE bar_1s_final_s WINDOW TUMBLING(1m)", sql1);
+        Assert.Contains("SYNC bar_1s_final_s", sql1);
         Assert.DoesNotContain("COMPOSE(", sql1);
     }
 
