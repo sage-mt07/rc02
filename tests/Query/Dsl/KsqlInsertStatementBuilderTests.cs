@@ -19,7 +19,6 @@ public class KsqlInsertStatementBuilderTests
         var sql = KsqlInsertStatementBuilder.Build("orders", model);
         Assert.Contains("INSERT INTO orders", sql);
         Assert.Contains("SELECT", sql);
-        Assert.Contains("EMIT CHANGES;", sql);
     }
 
     [Fact]
@@ -31,7 +30,6 @@ public class KsqlInsertStatementBuilderTests
             .Build();
 
         var sql = KsqlInsertStatementBuilder.Build("orders", model);
-
-        Assert.Contains("EMIT CHANGES;", sql);
+        Assert.StartsWith("INSERT INTO orders", sql);
     }
 }

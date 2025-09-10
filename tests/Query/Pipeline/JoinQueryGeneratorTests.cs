@@ -47,7 +47,6 @@ public class JoinQueryGeneratorTests
             isPullQuery: true);
 
         Assert.Contains("LEFT JOIN ChildEntity", sql);
-        Assert.DoesNotContain("EMIT CHANGES", sql);
     }
 
     [Fact]

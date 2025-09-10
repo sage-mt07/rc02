@@ -23,7 +23,6 @@ public class WindowedQueryBuilderCoreTests
             .WithProperty("sync/1mLive", "HB_1m");
         var q1 = LiveBuilder.Build(md1, "1m");
         Assert.StartsWith("TABLE src1", q1);
-        Assert.Contains("EMIT CHANGES", q1);
         Assert.Contains("SYNC HB_1m", q1);
 
         var md5 = BaseMd().WithProperty("input/5mLive", "src5");

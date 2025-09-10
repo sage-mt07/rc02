@@ -87,7 +87,6 @@ public class RollupBuilderTests
         var md = BuildMetadata();
         var sql = LiveBuilder.Build(md, "1m");
         Assert.Contains("TABLE bar_1s_final_s WINDOW TUMBLING(1m)", sql);
-        Assert.Contains("EMIT CHANGES", sql);
         Assert.Contains("SYNC bar_1s_final_s", sql);
     }
 

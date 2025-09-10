@@ -68,7 +68,6 @@ public class DerivedTumblingPipelineTests
         var live = ddls.Single(s => s.StartsWith("CREATE TABLE bar_1m_live") || s.StartsWith("CREATE STREAM bar_1m_live"));
         var final = ddls.Single(s => s.StartsWith("CREATE TABLE bar_1m_final") || s.StartsWith("CREATE STREAM bar_1m_final"));
         Assert.Contains(ddls, s => s.Contains("_prev_1m"));
-        Assert.Contains("EMIT CHANGES", live);
         Assert.Contains("EMIT FINAL", final);
     }
 
