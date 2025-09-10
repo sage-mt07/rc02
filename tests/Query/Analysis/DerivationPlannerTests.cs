@@ -134,6 +134,17 @@ public class DerivationPlannerTests
     }
 
     [Fact]
+    public void Plan_Months_Array_Uses_Hub()
+    {
+        var model = new EntityModel { EntityType = typeof(Source) };
+        var entities = DerivationPlanner.Plan(Create(new Timeframe(1, "mo"), new Timeframe(12, "mo")), model);
+        var live1 = Assert.Single(entities, e => e.Id == "bar_1mo_live" && e.Role == Role.Live);
+        Assert.Equal("bar_1s_final_s", live1.InputHint);
+        var live12 = Assert.Single(entities, e => e.Id == "bar_12mo_live" && e.Role == Role.Live);
+        Assert.Equal("bar_1s_final_s", live12.InputHint);
+    }
+
+    [Fact]
     public void Plan_WhenEmpty_Adds_Fill_Entity()
     {
         var model = new EntityModel { EntityType = typeof(Source) };
