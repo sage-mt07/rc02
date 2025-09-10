@@ -6,7 +6,6 @@ namespace Kafka.Ksql.Linq.Query.Analysis;
 internal enum Role
 {
     Live,
-    AggFinal,
     Final,
     Final1s,
     Final1sStream,

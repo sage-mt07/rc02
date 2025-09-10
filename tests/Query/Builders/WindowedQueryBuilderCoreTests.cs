@@ -32,13 +32,6 @@ public class WindowedQueryBuilderCoreTests
     }
 
     [Fact]
-    public void Core_Builds_AggFinal_EmitFinal()
-    {
-        var q = AggFinalBuilder.Build(BaseMd(), "1m");
-        Assert.Contains("EMIT FINAL", q);
-    }
-
-    [Fact]
     public void Core_Builds_Final_Window_EmitFinal_SyncsOnlyOn1m()
     {
         var md1 = BaseMd()
@@ -72,25 +65,22 @@ public class WindowedQueryBuilderCoreTests
     }
 
     [Fact]
-    public void Core_Applies_TimeFrame_Join_And_Boundary_To_All()
+    public void Core_Applies_TimeFrame_Join_And_Boundary_To_Live_And_Final()
     {
         var md = BaseMd().WithProperty("input/1mLive", "s");
         var live = LiveBuilder.Build(md, "1m");
-        var agg = AggFinalBuilder.Build(md, "1m");
         var fin = FinalBuilder.Build(md.WithProperty("input/1mFinal", "a"), "1m");
-        foreach (var q in new[] { live, agg, fin })
+        foreach (var q in new[] { live, fin })
             Assert.Contains("JOIN ON", q);
     }
 
     [Fact]
-    public void Builders_Expand_TimeFrame_Join_And_Boundary_For_All_Roles()
+    public void Builders_Expand_TimeFrame_Join_And_Boundary_For_Live_And_Final()
     {
         var md = BaseMd().WithProperty("input/1mLive", "s");
         var live = LiveBuilder.Build(md, "1m");
-        var agg = AggFinalBuilder.Build(md, "1m");
         var fin = FinalBuilder.Build(md.WithProperty("input/1mFinal", "a"), "1m");
         Assert.Contains("s.Open <= r.Ts", live);
-        Assert.Contains("s.Open <= r.Ts", agg);
         Assert.Contains("s.Open <= r.Ts", fin);
     }
 }
