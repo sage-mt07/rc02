@@ -113,7 +113,6 @@ internal static class DerivationPlanner
             }
 
             var liveId = $"{baseId}_{tfStr}_live";
-            var finalId = $"{baseId}_{tfStr}_final";
             var live = new DerivedEntity
             {
                 Id = liveId,
@@ -127,20 +126,6 @@ internal static class DerivationPlanner
                 GraceSeconds = graceMap[tfStr]
             };
             entities.Add(live);
-
-            var final = new DerivedEntity
-            {
-                Id = finalId,
-                Role = Role.Final,
-                Timeframe = tf,
-                KeyShape = keyShapes,
-                ValueShape = valueShapes,
-                InputHint = hub,
-                BasedOnSpec = basedOn,
-                WeekAnchor = qao.WeekAnchor,
-                GraceSeconds = graceMap[tfStr]
-            };
-            entities.Add(final);
 
             var hb = new DerivedEntity
             {
@@ -164,7 +149,7 @@ internal static class DerivationPlanner
                     Timeframe = tf,
                     KeyShape = keyShapes,
                     ValueShape = valueShapes,
-                    InputHint = hub,
+                    InputHint = liveId,
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor,
                     GraceSeconds = graceMap[tfStr]
@@ -181,7 +166,7 @@ internal static class DerivationPlanner
                     Timeframe = tf,
                     KeyShape = keyShapes,
                     ValueShape = valueShapes,
-                    InputHint = hub,
+                    InputHint = liveId,
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor,
                     GraceSeconds = graceMap[tfStr]
