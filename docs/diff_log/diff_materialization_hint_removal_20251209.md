@@ -1,0 +1,2 @@
+- remove MaterializationHint enum and property from DerivedEntity
+- stop assigning MaterializationHint in DerivationPlanner
