@@ -12,7 +12,6 @@ internal enum QueryClauseType
     GroupBy,
     Having,
     OrderBy,
-    Limit,
-    EmitChanges
+    Limit
 }
 

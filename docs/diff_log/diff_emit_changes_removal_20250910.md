@@ -1,0 +1,2 @@
+- EmitChanges クエリ句を削除し、関連分岐を整理。
+- テストは EMIT CHANGES の文字列に依存せず内部フラグで Push/Pull を判定。

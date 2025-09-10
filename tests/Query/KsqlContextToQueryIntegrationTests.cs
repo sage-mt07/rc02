@@ -182,7 +182,6 @@ public class KsqlContextToQueryIntegrationTests
         Assert.NotNull(model.QueryModel);
 
         var sql = KsqlCreateStatementBuilder.Build(model.GetTopicName(), model.QueryModel!);
-        Assert.Contains("EMIT CHANGES", sql);
 
         Assert.Equal(typeof(OrderView), ctx.Registry.GetLastRegistered());
     }

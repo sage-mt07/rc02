@@ -62,8 +62,7 @@ internal record QueryStructure(
         QueryClauseType.GroupBy,
         QueryClauseType.Having,
         QueryClauseType.OrderBy,
-        QueryClauseType.Limit,
-        QueryClauseType.EmitChanges
+        QueryClauseType.Limit
     };
 
     public QueryStructure AddClause(QueryClause clause)

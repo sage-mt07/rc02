@@ -246,7 +246,6 @@ internal abstract class GeneratorBase
             QueryClauseType.Having => 70,
             QueryClauseType.OrderBy => 80,
             QueryClauseType.Limit => 90,
-            QueryClauseType.EmitChanges => 100,
             _ => 999
         };
     }

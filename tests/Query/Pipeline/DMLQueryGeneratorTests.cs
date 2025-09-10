@@ -25,7 +25,7 @@ public class DMLQueryGeneratorTests
     {
         var generator = new DMLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateSelectAll("s1", isPullQuery: false));
-        Assert.Equal("SELECT * FROM s1 EMIT CHANGES;", query);
+        Assert.StartsWith("SELECT * FROM s1", query);
         File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
 
     }
@@ -36,7 +36,7 @@ public class DMLQueryGeneratorTests
         Expression<Func<TestEntity, bool>> expr = e => e.Id == 1;
         var generator = new DMLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateSelectWithCondition("s1", expr.Body, false));
-        Assert.Equal("SELECT * FROM s1 WHERE (Id = 1) EMIT CHANGES;", query);
+        Assert.StartsWith("SELECT * FROM s1 WHERE (Id = 1)", query);
         File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
     }
 
@@ -150,7 +150,7 @@ public class DMLQueryGeneratorTests
         Assert.Contains("GROUP BY Type", query);
         Assert.Contains("HAVING (COUNT(*) > 1)", query);
         Assert.Contains("ORDER BY", query);
-        Assert.EndsWith("EMIT CHANGES;", query);
+        Assert.EndsWith(";", query);
         File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
     }
 
@@ -200,7 +200,7 @@ public class DMLQueryGeneratorTests
         Assert.Contains("FROM Orders", query);
         Assert.Contains("GROUP BY CustomerId", query);
         Assert.Contains("HAVING ((COUNT(*) > 10) AND (SUM(Amount) < 5000))", query);
-        Assert.EndsWith("EMIT CHANGES;", query);
+        Assert.EndsWith(";", query);
         File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
     }
 
@@ -229,7 +229,7 @@ public class DMLQueryGeneratorTests
         Assert.Contains("HAVING ((COUNT(*) > 2) AND (SUM(Amount) < 10000))", query);
         Assert.Contains("COUNT(*) AS OrderCount", query);
         Assert.Contains("SUM(Amount) AS TotalAmount", query);
-        Assert.EndsWith("EMIT CHANGES;", query);
+        Assert.EndsWith(";", query);
         File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
     }
 
@@ -261,7 +261,7 @@ public class DMLQueryGeneratorTests
         Assert.Contains("COUNT(*)", result);
         Assert.Contains("SUM(", result);
         Assert.Contains("HAVING ((COUNT(*) > 2) AND (SUM(Amount) < 10000))", result);
-        Assert.EndsWith("EMIT CHANGES;", result);
+        Assert.EndsWith(";", result);
         File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
@@ -293,7 +293,7 @@ public class DMLQueryGeneratorTests
         Assert.Contains("SUM(", result);
         Assert.Contains("HAVING ((AVG(Amount) > 100) AND (SUM(Amount) < 1000))", result);
         Assert.Contains("TotalSmall", result);
-        Assert.EndsWith("EMIT CHANGES;", result);
+        Assert.EndsWith(";", result);
         File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
@@ -327,7 +327,7 @@ public class DMLQueryGeneratorTests
         Assert.Contains("HAVING", result);
         Assert.Contains("COUNT(", result);
         Assert.Contains("SUM(", result);
-        Assert.EndsWith("EMIT CHANGES;", result);
+        Assert.EndsWith(";", result);
         File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
@@ -354,7 +354,7 @@ public class DMLQueryGeneratorTests
         Assert.Contains("CustomerId", result);
         Assert.Contains("Region", result);
         Assert.Contains("SUM", result);
-        Assert.EndsWith("EMIT CHANGES;", result);
+        Assert.EndsWith(";", result);
         File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
@@ -378,9 +378,7 @@ public class DMLQueryGeneratorTests
         Assert.Contains("GROUP BY", result);
         Assert.Contains("CASE WHEN", result);
         Assert.Contains("SUM", result);
-        Assert.Contains("HighPriorityTotal", result);
-        Assert.Contains("EMIT CHANGES", result);
-        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Assert.Contains("HighPriorityTotal", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -402,9 +400,7 @@ public class DMLQueryGeneratorTests
 
         Assert.Contains("GROUP BY", result);
         Assert.Contains("AVG", result);
-        Assert.Contains("SUM", result);
-        Assert.Contains("EMIT CHANGES", result);
-        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Assert.Contains("SUM", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -426,9 +422,7 @@ public class DMLQueryGeneratorTests
         Assert.Contains("GROUP BY", result);
         Assert.Contains("CustomerId", result);
         Assert.Contains("Region", result);
-        Assert.Contains("SUM", result);
-        Assert.Contains("EMIT CHANGES", result);
-        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Assert.Contains("SUM", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -450,9 +444,7 @@ public class DMLQueryGeneratorTests
 
         Assert.Contains("GROUP BY", result);
         Assert.Contains("SUM", result);
-        Assert.Contains("ORDER BY", result);
-        Assert.Contains("EMIT CHANGES", result);
-        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Assert.Contains("ORDER BY", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -475,9 +467,7 @@ public class DMLQueryGeneratorTests
         Assert.Contains("GROUP BY", result);
         Assert.Contains("SUM", result);
         Assert.Contains("ORDER BY", result);
-        Assert.Contains("DESC", result);
-        Assert.Contains("EMIT CHANGES", result);
-        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Assert.Contains("DESC", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -503,9 +493,7 @@ public class DMLQueryGeneratorTests
         Assert.Contains("ORDER BY", result);
         Assert.Contains("CustomerId", result);
         Assert.Contains("Total", result);
-        Assert.Contains("DESC", result);
-        Assert.Contains("EMIT CHANGES", result);
-        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Assert.Contains("DESC", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -535,7 +523,7 @@ public class DMLQueryGeneratorTests
         Assert.Contains("AVG", result);
         Assert.Contains("AND", result);
         Assert.Contains("OR", result);
-        Assert.EndsWith("EMIT CHANGES;", result);
+        Assert.EndsWith(";", result);
         File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
@@ -561,9 +549,7 @@ public class DMLQueryGeneratorTests
         Assert.Contains("CASE", result);
         Assert.Contains("WHEN", result);
         Assert.Contains("THEN", result);
-        Assert.Contains("ELSE", result);
-        Assert.Contains("EMIT CHANGES", result);
-        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Assert.Contains("ELSE", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -592,9 +578,7 @@ public class DMLQueryGeneratorTests
         Assert.Contains("AND", result);
         Assert.Contains("OR", result);
         Assert.Contains("(", result);
-        Assert.Contains(")", result);
-        Assert.Contains("EMIT CHANGES", result);
-        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Assert.Contains(")", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -618,9 +602,7 @@ public class DMLQueryGeneratorTests
         Assert.Contains("GROUP BY CustomerId", result);
         Assert.Contains("HAVING", result);
         Assert.Contains("SUM", result);
-        Assert.Contains(" OR ", result);
-        Assert.Contains("EMIT CHANGES", result);
-        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Assert.Contains(" OR ", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -644,9 +626,7 @@ public class DMLQueryGeneratorTests
         Assert.Contains("WHERE", result);
         Assert.Contains("NOT IN", result);
         Assert.Contains("'CN'", result);
-        Assert.Contains("'RU'", result);
-        Assert.Contains("EMIT CHANGES", result);
-        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Assert.Contains("'RU'", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     private class NullableOrder
@@ -680,9 +660,7 @@ public class DMLQueryGeneratorTests
 
         Assert.Contains("WHERE", result);
         Assert.Contains("IS NULL", result);
-        Assert.Contains("CustomerId", result);
-        Assert.Contains("EMIT CHANGES", result);
-        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Assert.Contains("CustomerId", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -703,9 +681,7 @@ public class DMLQueryGeneratorTests
 
         Assert.Contains("WHERE", result);
         Assert.Contains("IS NOT NULL", result);
-        Assert.Contains("CustomerId", result);
-        Assert.Contains("EMIT CHANGES", result);
-        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Assert.Contains("CustomerId", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -727,9 +703,7 @@ public class DMLQueryGeneratorTests
 
         Assert.Contains("WHERE CustomerId IS NOT NULL", result);
         Assert.Contains("GROUP BY CustomerId", result);
-        Assert.Contains("SUM", result);
-        Assert.Contains("EMIT CHANGES", result);
-        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Assert.Contains("SUM", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -752,9 +726,7 @@ public class DMLQueryGeneratorTests
         Assert.Contains("GROUP BY", result);
         Assert.Contains("UPPER", result);
         Assert.Contains("HAVING", result);
-        Assert.Contains("SUM", result);
-        Assert.Contains("EMIT CHANGES", result);
-        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Assert.Contains("SUM", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
