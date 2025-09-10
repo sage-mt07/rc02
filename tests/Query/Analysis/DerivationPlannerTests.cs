@@ -79,7 +79,7 @@ public class DerivationPlannerTests
         Assert.Equal("bar_1s_final_s", final.InputHint);
         Assert.Equal("BAR_HB_5M", final.SyncHint);
         Assert.Contains(entities, e => e.Id == "bar_hb_5m" && e.Role == Role.Hb);
-        Assert.Contains(entities, e => e.Id == "bar_prev_1m" && e.Role == Role.Prev1m);
+        Assert.DoesNotContain(entities, e => e.Role == Role.Prev1m);
     }
 
     [Fact]
