@@ -8,6 +8,8 @@ internal enum Role
     Live,
     AggFinal,
     Final,
+    Final1s,
+    Final1sStream,
     Prev1m,
     Hb,
     Fill
