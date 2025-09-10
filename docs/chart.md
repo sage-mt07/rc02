@@ -1,9 +1,9 @@
 # 足生成DSL・ロールアップ統一仕様（Codex向けコンパクト版）
 
 ## 0. 目的
-- Tick（レート）から等間隔の足（分・時間・日・週・月）を生成する。
+- Tick（レート）から等間隔の足（秒・分・時間・日・週・月）を生成する。
 - **単一のクエリ**で複数の時間足をまとめて宣言できるようにする。
-- 内部の中間足（例: 1m ハブ）や実行モード（live/final）などの内部実装は**外部に露出しない**。
+- 内部の中間足（例: 1s ハブ / 1s_final）や実行モードは**外部に露出しない**（プロファイルで決定）。
 
 ---
 
@@ -26,8 +26,9 @@ TimeFrame → Tumbling → GroupBy → Select → (WhenEmpty?)
     && s.Open <= r.Timestamp && r.Timestamp < s.Close,
     dayKey: s => s.MarketDate)
 ```
-- `dayKey` は **日足以上（days, months）**で営業日境界を与える **マーカー**。
-- 分足・時間足では指定不要。指定しても害はないが必須ではない。
+> **実行レイヤでの原則**：マーケットスケジュールによる取引時間判定は Raw 取り込み直後（または最上流）で付与し、`IsTrading` による **filteredraw** を生成してから集計する（DSL外の責務）。
+- `dayKey` は **日足以上（days, months）**で営業日境界を与える **マーカー**。  
+  分足・時間足では原則不要（指定可）。スケジュール判定自体は上流ガードで行う。
 
 ### 1.3 Tumbling（複数足をまとめて）
 ```csharp
@@ -39,8 +40,8 @@ TimeFrame → Tumbling → GroupBy → Select → (WhenEmpty?)
 }, grace: TimeSpan.FromMinutes(2))
 ```
 - **1回の宣言で複数の足**をまとめて指定。
-- `grace` は値を保持するだけ（実際の使われ方＝確定タイミングは実行レイヤが解釈）。
-- **内部の中間足（例: 1m）や BaseUnit は非公開**。ユーザーは意識しない。
+- `grace` は**実行レイヤ解釈**のメタ情報。内部では **階段ルール（親+1秒）**で伝播させる。
+- **内部の中間足（1sハブ=1s_final）や BaseUnit は非公開**。ユーザーは意識しない。
 
 ### 1.4 GroupBy（主キー）
 ```csharp
@@ -83,11 +84,14 @@ TimeFrame → Tumbling → GroupBy → Select → (WhenEmpty?)
 ---
 
 ## 2. 内部契約（ユーザーに見せないが、Codexが前提にするもの）
-- **1m ハブ**: すべての上位足（5m/15m/…/1h/1d/1mo）は **1m からフラット派生**。多段ロールアップ禁止（5m→15m 等はしない）。
-- **BaseUnitSeconds**: ユーザー指定可能。ただし **60 の約数**のみ有効。内部で Base→1m→上位のDAGを自動展開する。
+- **1s ハブ（= 1s_final）**: すべての上位足（1m/5m/…/1h/1d/1mo）は **1s_final からフラット派生**。多段ロールアップ禁止（5m→15m 等はしない）。
+- **BaseUnitSeconds**: ユーザー指定可能。ただし **60 の約数**のみ有効。内部で Base→**1s_final**→上位のDAGを自動展開する。
 - **WindowStart（バケット列）**: 投影内の `g.WindowStart()`“式”をキーに認識し、名前に依存しない。DDL/PK では SemanticRole=BucketStart として扱う。
-- **実行モードの外出し**: live/final、確定タイミング（grace の解釈）、物理化・命名は実行レイヤ（プロファイル設定）で決定。DSLには現れない（`.EmitChanges()` 等は存在しない）。
+- **実行モードの外出し**: live/final、確定タイミング（grace の解釈）、物理化・命名は実行レイヤ（プロファイル設定）で決定。DSLには現れない（`.EmitChanges()` 等は存在しない）。  
+  *運用規約*: 分足・上位足の**確定系（final）を別途持たず**、`live(TUMBLING, EMIT CHANGES)` を唯一の足として扱い、必要に応じて「確定フラグ（IsClosed）」を算出列で提供可。
 - **循環禁止**: 欠損埋めや prev などの下流ビューを上流（final）へ戻さない。
+- **Grace伝播の階段ルール**: `Grace(上位) = Grace(親) + 1秒`（例：1s=3s→1m=4s→5m=5s）。  
+  これにより 1s_final の遅延確定を上位が確実に取り込む。
 
 ---
 
@@ -97,6 +101,7 @@ TimeFrame → Tumbling → GroupBy → Select → (WhenEmpty?)
 - **WindowStart**: ウィンドウ系クエリでは **必投影**／**重複投影は禁止**。
 - **PK整合**: `GroupByキー + WindowStart(Role)` が主キーへ反映されることを検証。
 - **循環検出**: 上流（final）への逆流配線を拒否。
+- **Grace整合**: 生成する各ウィンドウに対し、**親のGrace +1秒**を満たすこと（親=1s_final）。
 - 代表エラー文言:
   - `Base unit must divide 60 seconds.`
   - `Window 7s must be a multiple of base 5s.`
@@ -106,7 +111,7 @@ TimeFrame → Tumbling → GroupBy → Select → (WhenEmpty?)
 ---
 
 ## 4. 代表シナリオ（1クエリで複数足）
-- 分・時間・日・月を**一括宣言**。中間足（1m）や実行モードは非公開のまま内部で展開。
+- 秒・分・時間・日・月を**一括宣言**。中間足は **1s_final ハブ**に一本化し、実行モードは非公開のまま内部で展開。
 - 欠損埋めをしたい場合のみ `WhenEmpty` を添える。しない場合は省略。
 
 ---
@@ -129,7 +134,8 @@ TimeFrame → Tumbling → GroupBy → Select → (WhenEmpty?)
 ## 7. 禁則
 - `.EmitChanges()` や `.AsFinal()` 等、内部モードを匂わせるAPIは**存在しない**。
 - `.ToSink("…")` 等、物理名を DSL に露出させない。
-- 5m→15m のような多段ロールアップは禁止（常に 1m からフラット派生）。
+- 5m→15m のような多段ロールアップは禁止（常に **1s_final** からフラット派生）。
+- **Hopping を確定系列に混在させない**（速報用は別系統・別DAGでのみ許容）。
 
 ---
 
