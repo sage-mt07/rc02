@@ -10,7 +10,7 @@ public class Msg { public int Id { get; set; } public string Text { get; set; } 
 
 public class HeadersContext : KsqlContext
 {
-    protected override void OnModelCreating(IModelBuilder b) => b.Entity<Msg>().AsStream();
+    protected override void OnModelCreating(IModelBuilder b) => b.Entity<Msg>();
 }
 
 class Program

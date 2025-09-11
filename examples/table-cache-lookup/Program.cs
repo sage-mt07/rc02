@@ -1,16 +1,18 @@
 using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Attributes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
+[KsqlTable]
 public class RefData { public string Key { get; set; } = ""; public string Value { get; set; } = ""; }
 
 public class CacheContext : KsqlContext
 {
     protected override void OnModelCreating(IModelBuilder b)
-        => b.Entity<RefData>().AsTable(useCache: true);
+        => b.Entity<RefData>();
 }
 
 class Program

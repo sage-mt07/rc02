@@ -1,4 +1,5 @@
 using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Core.Modeling;
 using System;
 using System.Linq.Expressions;
@@ -8,6 +9,7 @@ namespace Kafka.Ksql.Linq.Tests;
 
 public class ApplyModelBuilderSettingsTests
 {
+    [KsqlTable]
     private class Sample
     {
         public int Id { get; set; }
@@ -17,17 +19,13 @@ public class ApplyModelBuilderSettingsTests
     private static EntityModel BuildModel()
     {
         var modelBuilder = new ModelBuilder();
-
-        // Simulate Set<T>() call which registers the model
-        modelBuilder.Entity<Sample>();
-
-        var builder = (EntityModelBuilder<Sample>)modelBuilder.Entity<Sample>()
-            .AsTable(useCache: false);
+        var builder = modelBuilder.Entity<Sample>();
         builder.OnError(ErrorAction.DLQ);
         var model = builder.GetModel();
+        model.EnableCache = false;
         model.DeserializationErrorPolicy = DeserializationErrorPolicy.DLQ;
         model.BarTimeSelector = (Expression<Func<Sample, DateTime>>)(x => x.Time);
-        return modelBuilder.GetEntityModel<Sample>()!;
+        return model;
     }
 
     [Fact]

@@ -24,7 +24,7 @@ public class BasicContext : KsqlContext
 
     protected override void OnModelCreating(IModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<BasicMessage>().AsStream();
+        modelBuilder.Entity<BasicMessage>();
     }
 }
 

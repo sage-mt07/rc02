@@ -58,10 +58,12 @@ await foreach (var rec in ctx.Dlq.ReadAsync()) Console.WriteLine(rec.RawText);
 
 ## 3. Table/キャッシュ（基盤）
 - 目的: 参照負荷を抑え、読みを安定させる。
-- 指針: 参照主体は `.AsTable(useCache:true)` を選ぶ。
+- 指針: 参照主体は `[KsqlTable]` を付与し、キャッシュを利用する。
 ```csharp
+[KsqlTable]
+public class RefData {}
 protected override void OnModelCreating(IModelBuilder b)
-  => b.Entity<RefData>().AsTable(useCache: true);
+  => b.Entity<RefData>();
 ```
 要約: 参照は Table+cache。頻繁更新は Stream。
 

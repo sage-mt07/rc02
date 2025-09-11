@@ -1,3 +1,5 @@
+using Kafka.Ksql.Linq.Core.Modeling;
+
 namespace Kafka.Ksql.Linq.Core.Abstractions;
 
 public interface IModelBuilder
@@ -8,6 +10,5 @@ public interface IModelBuilder
     /// <param name="readOnly">If true, the entity is used only for reads.</param>
     /// <param name="writeOnly">If true, the entity is used only for writes.</param>
     /// <typeparam name="T">Entity type.</typeparam>
-    /// <returns>An <see cref="IEntityBuilder{T}"/> for further configuration.</returns>
-    IEntityBuilder<T> Entity<T>(bool readOnly = false, bool writeOnly = false) where T : class;
+    EntityModelBuilder<T> Entity<T>(bool readOnly = false, bool writeOnly = false) where T : class;
 }

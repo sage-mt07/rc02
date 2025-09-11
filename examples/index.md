@@ -39,7 +39,7 @@
 - 実行: `dotnet run --project examples/retry-onerror`
 
 ## Table Cache Lookup
-- `.AsTable(useCache:true)` の使い方
+- `[KsqlTable]` とキャッシュの利用
 - 実行: `dotnet run --project examples/table-cache-lookup`
 
 ## Headers & Meta

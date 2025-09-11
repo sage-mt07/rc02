@@ -23,6 +23,7 @@ public class EventSetMapTests
     }
 
     [KsqlTopic("sample-topic")]
+    [KsqlTable]
     private class Sample
     {
         [KsqlKey(Order = 0)]
@@ -63,8 +64,7 @@ public class EventSetMapTests
     private static EntityModel CreateModel()
     {
         var builder = new ModelBuilder();
-        var entity = builder.Entity<Sample>();
-        entity.AsTable();
+        builder.Entity<Sample>();
         return builder.GetEntityModel<Sample>()!;
     }
 

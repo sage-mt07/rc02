@@ -34,6 +34,7 @@ public class ToQueryEndToEndTests
         public DateTime MarketDate { get; set; }
     }
 
+    [KsqlTable]
     private class Rate
     {
         [KsqlKey] public string Broker { get; set; } = string.Empty;
@@ -45,6 +46,7 @@ public class ToQueryEndToEndTests
         public double Close { get; set; }
     }
 
+    [KsqlTable]
     private class BidStats
     {
         [KsqlKey] public string Broker { get; set; } = string.Empty;
@@ -85,6 +87,7 @@ public class ToQueryEndToEndTests
         }
     }
 
+    [KsqlTable]
     private class SingleKeyRate
     {
         [KsqlKey] public string Broker { get; set; } = string.Empty;
@@ -110,7 +113,7 @@ public class ToQueryEndToEndTests
     public void Generates_expected_ddls()
     {
         var mb = new ModelBuilder();
-        mb.Entity<Rate>().AsTable();
+        mb.Entity<Rate>();
         var model = mb.GetEntityModel<Rate>()!;
         var set = new RateSet(model);
 
@@ -171,7 +174,7 @@ public class ToQueryEndToEndTests
     public void Generates_count_and_avg_ddls()
     {
         var mb = new ModelBuilder();
-        mb.Entity<BidStats>().AsTable();
+        mb.Entity<BidStats>();
         var model = mb.GetEntityModel<BidStats>()!;
         var set = new BidStatsSet(model);
 
@@ -230,7 +233,7 @@ public class ToQueryEndToEndTests
     public void Generates_single_key_ddls()
     {
         var mb = new ModelBuilder();
-        mb.Entity<SingleKeyRate>().AsTable();
+        mb.Entity<SingleKeyRate>();
         var model = mb.GetEntityModel<SingleKeyRate>()!;
         var set = new SingleKeyRateSet(model);
 
