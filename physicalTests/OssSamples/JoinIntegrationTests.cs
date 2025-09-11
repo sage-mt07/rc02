@@ -51,8 +51,8 @@ public class JoinIntegrationTests
         protected override void OnModelCreating(IModelBuilder modelBuilder)
         {
             // ソース
-            modelBuilder.Entity<OrderValue>().AsStream();
-            modelBuilder.Entity<Customer>().AsStream();
+            modelBuilder.Entity<OrderValue>();
+            modelBuilder.Entity<Customer>();
 
             // JOIN定義を QueryModel として登録
             var qm = new KsqlQueryRoot()
@@ -62,7 +62,7 @@ public class JoinIntegrationTests
                 .Select((o, c) => new { o.CustomerId, c.Name, o.Amount })
                 .Build();
 
-            var builder = modelBuilder.Entity<OrderCustomerJoined>().AsStream();
+            var builder = modelBuilder.Entity<OrderCustomerJoined>();
             if (builder is Kafka.Ksql.Linq.Core.Modeling.EntityModelBuilder<OrderCustomerJoined> eb)
             {
                 eb.GetModel().QueryModel = qm;

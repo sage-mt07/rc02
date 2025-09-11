@@ -1,4 +1,5 @@
 using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Core.Modeling;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,13 @@ namespace Kafka.Ksql.Linq.Tests;
 
 public class EventSetTests
 {
+    [KsqlTopic("test-topic")]
+    [KsqlTable]
+    private class TestEntity
+    {
+        public int Id { get; set; }
+    }
+
     private class DummyContext : IKsqlContext
     {
         public IEntitySet<T> Set<T>() where T : class => throw new NotImplementedException();
@@ -53,11 +61,8 @@ public class EventSetTests
     private static EntityModel CreateModel()
     {
         var builder = new ModelBuilder();
-        var entity = builder.Entity<TestEntity>();
-        entity.AsTable();
-        var model = builder.GetEntityModel<TestEntity>()!;
-        model.TopicName = "test-topic";
-        return model;
+        builder.Entity<TestEntity>();
+        return builder.GetEntityModel<TestEntity>()!;
     }
 
     [Fact]

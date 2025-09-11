@@ -1,4 +1,3 @@
-using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Query.Dsl;
 using System;
 
@@ -26,13 +25,5 @@ public static class EntityBuilderToQueryExtensions
 
         builder.GetModel().QueryModel = model;
         return builder;
-    }
-
-    public static EntityModelBuilder<T> ToQuery<T>(this IEntityBuilder<T> builder, Func<KsqlQueryRoot, IKsqlQueryable> build)
-        where T : class
-    {
-        if (builder is not EntityModelBuilder<T> concrete)
-            throw new ArgumentException("Builder must be EntityModelBuilder<T>", nameof(builder));
-        return concrete.ToQuery(build);
     }
 }

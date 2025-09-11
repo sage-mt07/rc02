@@ -10,7 +10,7 @@ public class Event { public int Id { get; set; } public string Category { get; s
 
 public class FilterContext : KsqlContext
 {
-    protected override void OnModelCreating(IModelBuilder b) => b.Entity<Event>().AsStream();
+    protected override void OnModelCreating(IModelBuilder b) => b.Entity<Event>();
 }
 
 class Program

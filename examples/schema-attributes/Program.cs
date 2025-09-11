@@ -16,7 +16,7 @@ public class Trade
 public class SchemaAttrContext : KsqlContext
 {
     protected override void OnModelCreating(IModelBuilder b)
-        => b.Entity<Trade>().AsStream();
+        => b.Entity<Trade>();
 }
 
 class Program

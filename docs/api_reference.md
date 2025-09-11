@@ -37,7 +37,7 @@ public class BasicMessage
 }
 
 protected override void OnModelCreating(IModelBuilder b)
-  => b.Entity<BasicMessage>().AsStream();
+  => b.Entity<BasicMessage>();
 ```
 
 - 要約: 登録後は `ctx.Set<BasicMessage>()` が使えます。
@@ -104,8 +104,8 @@ await foreach (var rec in ctx.Dlq.ReadAsync())
 ## 主要アノテーションとAPI
 - [Topic]: エンティティをトピックに結びます。
 - [AvroTimestamp]: イベント時刻を Avro 互換で扱います。
+- [KsqlTable]: Table として扱うことを示す（Stream は既定）。
 - Entity<T>(): 型を登録して操作を可能にします。
-- AsStream()/AsTable(): Stream/Table として登録します。
 - ToQuery(...), Where(...): ビューと絞り込みを定義します。
 - OnError(...), ctx.Dlq.ReadAsync(): エラー処理と調査を担います。
 
@@ -119,8 +119,6 @@ await foreach (var rec in ctx.Dlq.ReadAsync())
   - 購読する。ハンドラで処理する。キャンセルで停止します。
 - `ModelBuilder.Entity<T>(bool readOnly=false, bool writeOnly=false)`
   - 型を登録する。既定は両方 false（読み書き可）。
-- `EntityRegistration AsTable(string? topicName=null, bool useCache=true)`
-  - Table として扱う。キャッシュ既定は true。
 - `QueryBuilder ToQuery(Func<IQueryBuilder,IQueryBuilder> build)`
   - ビューを宣言する。生成時に KSQL を適用します。
 
@@ -203,8 +201,6 @@ WHERE Amount > 0;
 
 ### Fluent API（モデル登録）
 - `ModelBuilder.Entity<T>(readOnly=false, writeOnly=false)`: 型を登録する。
-- `.AsStream()`: Stream として登録する。
-- `.AsTable(string? topicName=null, bool useCache=true)`: Table として登録する。
 - `.ToQuery(Func<IQueryBuilder,IQueryBuilder> build)`: ビューを定義する。
 - `From<TSource>()`: ソースを指定する。
 - `Join<TRight>(expr)`: 関連を結合する。
@@ -266,18 +262,9 @@ WHERE Amount > 0;
 - 補足: 読み専用/書き専用の宣言ができる。
 - 用例:
   ```csharp
-  b.Entity<Tick>(readOnly:true).AsStream();
+  b.Entity<Tick>(readOnly:true);
   ```
 - まとめ: 登録が無い型は操作できない。
-
-### AsStream / AsTable
-- AsStream: ストリームとして登録する。
-- AsTable: テーブルとして登録する（`useCache` でキャッシュ有効）。
-- 用例:
-  ```csharp
-  b.Entity<User>().AsTable(useCache:true);
-  ```
-- まとめ: 参照主体は Table、イベント主体は Stream。
 
 ### ToQuery（ビュー定義）
 - シグネチャ: `ToQuery(Func<IQueryBuilder,IQueryBuilder> build)`

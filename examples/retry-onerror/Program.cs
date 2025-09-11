@@ -10,7 +10,7 @@ public class Item { public int Id { get; set; } public string Text { get; set; }
 
 public class RetryContext : KsqlContext
 {
-    protected override void OnModelCreating(IModelBuilder b) => b.Entity<Item>().AsStream();
+    protected override void OnModelCreating(IModelBuilder b) => b.Entity<Item>();
 }
 
 class Program

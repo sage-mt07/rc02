@@ -17,7 +17,7 @@ internal class ModelBuilder : IModelBuilder
     {
         _validationMode = validationMode;
     }
-    public IEntityBuilder<T> Entity<T>(bool readOnly = false, bool writeOnly = false) where T : class
+    public EntityModelBuilder<T> Entity<T>(bool readOnly = false, bool writeOnly = false) where T : class
     {
         if (readOnly && writeOnly)
             throw new ArgumentException("Cannot specify both readOnly and writeOnly");
