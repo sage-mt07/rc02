@@ -24,8 +24,8 @@ class Program
             .EnableLogging(LoggerFactory.Create(b => b.AddConsole()))
             .BuildContext<RetryContext>();
 
-        var set = ctx.Set<Item>().WithRetry(maxRetries: 3, retryInterval: TimeSpan.FromMilliseconds(200));
-        set.StartErrorHandling().OnError(err => ErrorAction.Dlq);
+        var set = ctx.Set<Item>().WithRetry(maxRetries: 3, retryInterval: TimeSpan.FromMilliseconds(200))
+            .OnError(ErrorAction.Dlq);
 
         await set.AddAsync(new Item { Id = 1, Text = "Payload" });
         Console.WriteLine("Produced with retry + OnError(Dlq) configured.");

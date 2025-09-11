@@ -360,7 +360,6 @@ b.Entity<TickAvg1m>().ToQuery(q => q
 
 ### 拡張（エラー処理関係）
 - `EntitySetErrorHandlingExtensions.OnError<T>(this IEntitySet<T>, ErrorAction)`: 失敗時の処理を設定する。
-- `EntitySetErrorHandlingExtensions.StartErrorHandling<T>(this IEntitySet<T>)`: エラーハンドリングチェーンを開始する。
 
 ### ビルダー/オプション（拡張メソッド）
 - `KsqlContextOptionsExtensions.UseSchemaRegistry(...)`: スキーマレジストリを設定する。
