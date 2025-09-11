@@ -201,21 +201,6 @@ internal static class KsqlContextCacheExtensions
         public string Apply(TKeyLocal key, TValueLocal value, IRecordContext context) => _f(key);
     }
 
-    //private static Lazy<object> CreateStoreLazyGeneric(Type keyType, Type valueType, IKafkaStreams streams, string storeName)
-    //{
-    //    var method = typeof(KsqlContextCacheExtensions).GetMethod(nameof(CreateStoreLazy), BindingFlags.NonPublic | BindingFlags.Static)!;
-    //    return (Lazy<object>)method.MakeGenericMethod(keyType, valueType).Invoke(null, new object[] { streams, storeName })!;
-    //}
-
-    //private static Lazy<object> CreateStoreLazy<TKey, TValue>(IKafkaStreams streams, string storeName)
-    //{
-    //    return new Lazy<object>(() =>
-    //    {
-    //        var parameters = StoreQueryParameters.FromNameAndType(storeName, QueryableStoreTypes.KeyValueStore<TKey, TValue>());
-    //        return streams.Store<TKey, TValue>(storeName, parameters);
-    //    });
-    //}
-
     private static object CreateTableCacheGeneric(Type entityType, MappingRegistry mapping,
         string storeName, Func<TimeSpan?, Task> wait,
         Lazy<Func<IEnumerable<(object key, object val)>>> enumerateLazy)
