@@ -1,0 +1,2 @@
+- `KafkaAdminService` no longer trims trailing `_` segments when resolving topic creation settings; dynamic topics must be configured by full name.
+- Documented explicit configuration of runtime-generated topics in `configuration_reference.md`.

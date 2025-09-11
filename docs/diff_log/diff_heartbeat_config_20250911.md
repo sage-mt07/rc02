@@ -1,0 +1,1 @@
+- Heartbeat topics must be declared by full name in `appsettings.json`; their creation settings are read directly without underscore-based fallback.

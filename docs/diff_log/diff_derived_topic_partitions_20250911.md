@@ -1,0 +1,1 @@
+- add DDL tests confirming topics respect partition and replication settings from Topic attributes or appsettings configurations

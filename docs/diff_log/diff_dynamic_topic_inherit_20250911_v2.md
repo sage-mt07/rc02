@@ -1,0 +1,2 @@
+- Dynamic topics fall back to the closest base topic's creation settings by trimming `_hb_` and trailing segments.
+- An explicit entry under `Topics` for the full dynamic name takes precedence over inherited values.

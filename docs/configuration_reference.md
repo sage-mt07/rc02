@@ -143,6 +143,31 @@ Consumer の設定は `ConsumerSection` クラスにそれぞれマッピング�
 
 ---
 
+#### 🆕 動的トピックの設定
+
+実行時に生成されるトピック（例: `rate_1m_pair` や `rate_hb_1m` など）は、基底エンティティに付与された `[Topic]` 属性の `PartitionCount` と `ReplicationFactor` を継承します。`appsettings.json` の `Topics` セクションに完全な名前でエントリが存在する場合は、その設定が属性値より優先されます。
+
+```json
+"Topics": {
+  "rate_1m": {
+    "Creation": {
+      "NumPartitions": 2,
+      "Configs": { "retention.ms": "60000" }
+    }
+  },
+  "rate_hb_1m": {
+    "Creation": {
+      "NumPartitions": 3,
+      "Configs": { "retention.ms": "120000" }
+    }
+  }
+}
+```
+
+上記例では、`rate_hb_1m` は `rate_1m` の属性値を継承しますが、エントリがあるため設定が上書きされます。
+
+---
+
 ### 🏪 1.4 Entities（Table cache settings）
 
 ```json
