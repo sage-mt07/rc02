@@ -237,6 +237,78 @@ public class KafkaAdminServiceTests
     }
 
     [Fact]
+    public async Task Dynamic_Topic_Uses_Explicit_Config()
+    {
+        var options = new KsqlDslOptions
+        {
+            Topics =
+            {
+                ["rate_1m_pair"] = new TopicSection
+                {
+                    Creation = new TopicCreationSection
+                    {
+                        NumPartitions = 2,
+                        Configs = { ["retention.ms"] = "123" }
+                    }
+                }
+            }
+        };
+        var proxy = DispatchProxy.Create<IAdminClient, FakeAdminClient>();
+        var fake = (FakeAdminClient)proxy!;
+        fake.MetadataHandler = _ => CreateMetadata(Array.Empty<TopicMetadata>());
+        TopicSpecification? captured = null;
+        fake.CreateHandler = (specs, _) => { captured = specs.Single(); return Task.CompletedTask; };
+
+        var svc = CreateUninitialized(options, proxy);
+        await svc.EnsureTopicExistsAsync("rate_1m_pair");
+
+        Assert.Equal("123", captured!.Configs!["retention.ms"]);
+        Assert.Equal(2, captured.NumPartitions);
+    }
+
+    [Fact]
+    public async Task Heartbeat_Topic_Inherits_Base_Config_And_Allows_Override()
+    {
+        var options = new KsqlDslOptions
+        {
+            Topics =
+            {
+                ["rate_1m"] = new TopicSection
+                {
+                    Creation = new TopicCreationSection
+                    {
+                        NumPartitions = 2,
+                        Configs = { ["retention.ms"] = "60000" }
+                    }
+                }
+            }
+        };
+        var proxy = DispatchProxy.Create<IAdminClient, FakeAdminClient>();
+        var fake = (FakeAdminClient)proxy!;
+        fake.MetadataHandler = _ => CreateMetadata(Array.Empty<TopicMetadata>());
+        TopicSpecification? spec = null;
+        fake.CreateHandler = (specs, _) => { spec = specs.Single(); return Task.CompletedTask; };
+
+        var svc = CreateUninitialized(options, proxy);
+        await svc.EnsureTopicExistsAsync("rate_hb_1m");
+        Assert.Equal(2, spec!.NumPartitions);
+        Assert.Equal("60000", spec.Configs!["retention.ms"]);
+
+        options.Topics["rate_hb_1m"] = new TopicSection
+        {
+            Creation = new TopicCreationSection
+            {
+                NumPartitions = 3,
+                Configs = { ["retention.ms"] = "123" }
+            }
+        };
+        spec = null;
+        await svc.EnsureTopicExistsAsync("rate_hb_1m");
+        Assert.Equal(3, spec!.NumPartitions);
+        Assert.Equal("123", spec.Configs!["retention.ms"]);
+    }
+
+    [Fact]
     public async Task Admin_Uses_ResolvedName_For_Appsettings_Lookup()
     {
         var options = new KsqlDslOptions

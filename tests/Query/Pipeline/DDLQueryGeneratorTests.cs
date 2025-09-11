@@ -299,6 +299,36 @@ public class DDLQueryGeneratorTests
     }
 
     [Fact]
+    public void DynamicTopic_UsesAttributeConfiguredPartitions()
+    {
+        var builder = new ModelBuilder();
+        builder.Entity<AttrEntity>();
+        var model = builder.GetEntityModel<AttrEntity>()!;
+        model.TopicName = "attr_entity_hb_1m";
+        var sql = GenerateDdl(model);
+        Assert.Contains("PARTITIONS=3", sql);
+        Assert.Contains("REPLICAS=2", sql);
+    }
+
+    [Fact]
+    public void DynamicTopic_UsesAppsettingsConfiguredPartitions()
+    {
+        var options = new KsqlDslOptions();
+        options.Topics["base_hb_1m"] = new TopicSection
+        {
+            Creation = new TopicCreationSection { NumPartitions = 5, ReplicationFactor = 2 }
+        };
+        var builder = new ModelBuilder();
+        builder.Entity<TestEntity>();
+        var model = builder.GetEntityModel<TestEntity>()!;
+        model.TopicName = "base_hb_1m";
+        ApplyTopicConfig(model, options);
+        var sql = GenerateDdl(model);
+        Assert.Contains("PARTITIONS=5", sql);
+        Assert.Contains("REPLICAS=2", sql);
+    }
+
+    [Fact]
     public void GenerateCreateTableAs_MultipleWindowStart_Throws()
     {
         IQueryable<WindowEntity> src = new List<WindowEntity>().AsQueryable();

@@ -1,0 +1,2 @@
+- Heartbeat topics inherit base topic partition and replication settings.
+- Providing a full-name entry under `Topics` overrides the inherited values.

@@ -1,6 +1,7 @@
 using Confluent.Kafka;
 using Confluent.Kafka.Admin;
 using Kafka.Ksql.Linq.Configuration;
+using Kafka.Ksql.Linq.Configuration.Messaging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -68,8 +69,6 @@ internal class KafkaAdminService : IDisposable
     {
         if (TopicExists(topicName, cancellationToken))
         {
-            if (topicName == _options.Heartbeat.Topic)
-                WarnIfMismatchWithRate1m(topicName);
             _logger?.LogDebug("Topic already exists: {TopicName}", topicName);
             return;
         }
@@ -80,40 +79,45 @@ internal class KafkaAdminService : IDisposable
             NumPartitions = 1,
             ReplicationFactor = 1
         };
-        if (topicName == _options.Heartbeat.Topic)
-            ApplyRate1mSpec(spec);
         // topic structure: base key holds partitions/replication; .pub/.int can't override
         var baseKey = topicName;
+        var hasPubIntSuffix = false;
         if (topicName.EndsWith(".pub", StringComparison.OrdinalIgnoreCase))
-            baseKey = topicName.Substring(0, topicName.Length - 4);
-        else if (topicName.EndsWith(".int", StringComparison.OrdinalIgnoreCase))
-            baseKey = topicName.Substring(0, topicName.Length - 4);
-
-        if (!string.Equals(baseKey, topicName, StringComparison.Ordinal))
         {
-            if (_options.Topics.TryGetValue(topicName, out var child) && child?.Creation != null)
-                throw new InvalidOperationException($"Structure settings must be defined on base topic '{baseKey}'");
-
-            if (!_options.Topics.TryGetValue(baseKey, out var parent) || parent?.Creation == null)
-                throw new InvalidOperationException($"Base topic '{baseKey}' missing creation settings for '{topicName}'");
-
-            var c = parent.Creation;
-            if (c.NumPartitions > 0)
-                spec.NumPartitions = c.NumPartitions;
-            if (c.ReplicationFactor > 0)
-                spec.ReplicationFactor = c.ReplicationFactor;
-            if (c.Configs.Count > 0)
-                spec.Configs = new Dictionary<string, string>(c.Configs);
+            baseKey = topicName[..^4];
+            hasPubIntSuffix = true;
         }
-        else if (_options.Topics.TryGetValue(topicName, out var sec) && sec?.Creation != null)
+        else if (topicName.EndsWith(".int", StringComparison.OrdinalIgnoreCase))
         {
-            var c = sec.Creation;
-            if (c.NumPartitions > 0)
-                spec.NumPartitions = c.NumPartitions;
-            if (c.ReplicationFactor > 0)
-                spec.ReplicationFactor = c.ReplicationFactor;
-            if (c.Configs.Count > 0)
-                spec.Configs = new Dictionary<string, string>(c.Configs);
+            baseKey = topicName[..^4];
+            hasPubIntSuffix = true;
+        }
+
+        TopicCreationSection? creation = null;
+        if (_options.Topics.TryGetValue(topicName, out var explicitSec) && explicitSec?.Creation != null)
+        {
+            if (hasPubIntSuffix)
+                throw new InvalidOperationException($"Structure settings must be defined on base topic '{baseKey}'");
+            creation = explicitSec.Creation;
+        }
+        else
+        {
+            var lookup = baseKey;
+            if (lookup.Contains("_hb_", StringComparison.OrdinalIgnoreCase))
+                lookup = lookup.Replace("_hb_", "_", StringComparison.OrdinalIgnoreCase);
+            creation = FindCreation(lookup);
+            if (hasPubIntSuffix && creation == null)
+                throw new InvalidOperationException($"Base topic '{baseKey}' missing creation settings for '{topicName}'");
+        }
+
+        if (creation != null)
+        {
+            if (creation.NumPartitions > 0)
+                spec.NumPartitions = creation.NumPartitions;
+            if (creation.ReplicationFactor > 0)
+                spec.ReplicationFactor = creation.ReplicationFactor;
+            if (creation.Configs.Count > 0)
+                spec.Configs = new Dictionary<string, string>(creation.Configs);
         }
 
         // Adjust replication factor to available brokers (dev/local single-broker clusters)
@@ -189,30 +193,20 @@ internal class KafkaAdminService : IDisposable
         }
     }
 
-    private void ApplyRate1mSpec(TopicSpecification spec)
+    private TopicCreationSection? FindCreation(string name)
     {
-        var baseTopic = _options.Topics.FirstOrDefault(kv => kv.Key.StartsWith("rate_1m_") && kv.Value?.Creation != null);
-        var c = baseTopic.Value?.Creation;
-        if (c == null) return;
-        spec.NumPartitions = c.NumPartitions;
-        spec.ReplicationFactor = c.ReplicationFactor;
-    }
+        if (_options.Topics.TryGetValue(name, out var sec) && sec?.Creation != null)
+            return sec.Creation;
 
-    private void WarnIfMismatchWithRate1m(string topicName)
-    {
-        var baseTopic = _options.Topics.FirstOrDefault(kv => kv.Key.StartsWith("rate_1m_") && kv.Value?.Creation != null);
-        var c = baseTopic.Value?.Creation;
-        if (c == null) return;
-        try
+        var idx = name.LastIndexOf('_');
+        while (idx > 0)
         {
-            var meta = _adminClient.GetMetadata(topicName, TimeSpan.FromSeconds(10)).Topics.FirstOrDefault();
-            if (meta == null) return;
-            var partitions = meta.Partitions.Count;
-            short repl = meta.Partitions.Count > 0 ? (short)meta.Partitions[0].Replicas.Length : (short)0;
-            if (partitions != c.NumPartitions || repl != c.ReplicationFactor)
-                _logger?.LogWarning("hb_1m topic differs from rate_1m_* partitions or replication; cannot adjust.");
+            var prefix = name.Substring(0, idx);
+            if (_options.Topics.TryGetValue(prefix, out sec) && sec?.Creation != null)
+                return sec.Creation;
+            idx = prefix.LastIndexOf('_');
         }
-        catch { }
+        return null;
     }
 
     /// <summary>
