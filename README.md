@@ -20,7 +20,7 @@ dotnet run
 ## structure
 1) DSL 全体アーキテクチャ図
 ``` mermaid
-flowchart LR
+flowchart TB
     subgraph App["C# アプリケーション"]
         A[LINQ / DSL 呼び出し]
     end

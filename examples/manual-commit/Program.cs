@@ -17,6 +17,7 @@ public class ManualCommitOrder
 public class ManualCommitContext : KsqlContext
 {
     public ManualCommitContext(KsqlContextOptions options) : base(options.Configuration!, options.LoggerFactory) { }
+    public ManualCommitContext(Microsoft.Extensions.Configuration.IConfiguration configuration, Microsoft.Extensions.Logging.ILoggerFactory? loggerFactory = null) : base(configuration, loggerFactory) { }
     public EventSet<ManualCommitOrder> Orders { get; set; }
     protected override void OnModelCreating(IModelBuilder modelBuilder) { }
 }
