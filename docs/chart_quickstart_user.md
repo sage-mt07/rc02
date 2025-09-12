@@ -82,7 +82,7 @@ var list = await ctx.Set<Bar>().ToListAsync();
 
 使うときの注意点（まずここだけ）
 以下は利用者が実装時に意識しておくと迷わない要点です。
-- Select には g.WindowStart() を 1 回だけ入れます（重複はエラー）。
+- `Select` には `g.WindowStart()` を 1 回だけ入れます（重複はエラー）。
 - 日足以上を作る場合は `dayKey`（日足以上で同一営業日を識別するキー列）を付けます。
 - すべての足は基底の1秒足から直接生成します（例: 5分足や15分足も1秒足から作ります）。
 - 確定値（final）と速報値（live）は別DAG（処理の流れ＝依存グラフ）にします。
@@ -107,7 +107,7 @@ var list = await ctx.Set<Bar>().ToListAsync();
 
 トラブル対策（抜粋）
 - 反映が遅い場合は、起動直後に数秒待機し、短いポーリングで再試行してください。
-- 期待件数が足りない場合は、TimeFrame の条件と dayKey、そして WindowStart の投影を確認してください。
+- 期待件数が足りない場合は、`TimeFrame` の条件と `dayKey`、そして `WindowStart` の投影を確認してください。
 - `ToListAsync()` が例外になる場合は、対象が Stream の可能性があります。Table を対象にしてください。
 
 参考
