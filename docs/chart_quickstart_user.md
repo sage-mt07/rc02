@@ -12,7 +12,7 @@
 - Table を RocksDB（内部ストレージ）にマテリアライズし、
   `ToListAsync()` で高速に取得できます。
 
-最短5ステップで試す
+5ステップで動作を確認する
 1) 接続先を設定する
 - Kafka / ksqlDB / Schema Registry を起動しておきます。
 - `appsettings.json` に最低限の接続先を設定します。
