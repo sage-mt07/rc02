@@ -62,10 +62,10 @@ public class TumbleContext : KsqlContext
         }
         else
         {
-            // NOTE: 現行DSLでは TimeFrame() 直後に GroupBy() を許可していないため、
-            // サンプルではシンプル版と同等クエリを適用。TimeFrame 版は設計更新後に有効化する。
+            // MarketSchedule連携版（正しいチェーン順：From → TimeFrame → Tumbling → GroupBy → Select）
             b.Entity<OneMinuteCandle>().ToQuery(q => q
                 .From<DedupRateRecord>()
+                .TimeFrame<MarketSchedule>((r, s) => r.Broker == s.Broker && r.Symbol == s.Symbol && r.Ts >= s.OpenTime && r.Ts < s.CloseTime)
                 .Tumbling(x => x.Ts, new Kafka.Ksql.Linq.Query.Dsl.Windows { Minutes = new[] { 1 } })
                 .GroupBy(x => new { x.Broker, x.Symbol })
                 .Select(g => new OneMinuteCandle

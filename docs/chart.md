@@ -25,13 +25,15 @@
 - grace は「親 + 1 秒」で段階的に増やします（遅延到着を確実に取り込みます）。
 - Table は Streamiz により RocksDB へマテリアライズされ、`ToListAsync()` で参照できます。
 
-最小の書き方（順番）
-- TimeFrame → Tumbling → GroupBy → Select →（必要なら）WhenEmpty
+最小の書き方（順番：正）
+- From → TimeFrame → Tumbling → GroupBy → Select →（必要なら）WhenEmpty
 
-構成の順番
-- TimeFrame → Tumbling → GroupBy → Select →（必要なら）WhenEmpty
+補足（順番の根拠）
+- TimeFrame() は「スケジュールでの絞り込み/境界確定」を行い、その後 Tumbling() で窓を張る。
+- Tumbling() が窓境界（WindowStart）を定義し、GroupBy()/Select() で OHLC 等の集計を定める。
 
 ポイント
+- From: 入力ストリーム（例: DedupRateRecord）を指定
 - TimeFrame: 営業時間の拘束が必要なときだけ。日足以上は `dayKey` を付ける
 - Tumbling: minutes/hours/days/months をまとめて指定できる
 - GroupBy: 主キー（例: Broker, Symbol）
@@ -41,14 +43,14 @@
 ``` mermaid
 
 flowchart TB
-  %% 上流
+  %% ============ 上流 ============
   subgraph Upstream["上流（取引時間外除外）"]
     raw["<raw>"]
     filtered["<raw>_filtered\nLINQ: Where(...) 等で取引時間外を除外"]
     raw --> filtered
   end
 
-  %% DSL
+  %% ============ DSL ============
   subgraph DSL["C# アプリケーション / DSL (LINQ式ツリー)"]
     TF["TimeFrame<MarketSchedule>\nLINQ: Join/Where(dayKey: MarketDate)"]
     Tumble["Tumbling\nLINQ: Window式（複数足まとめて生成）"]
@@ -57,7 +59,7 @@ flowchart TB
   end
   filtered --> TF --> Tumble --> GroupBy --> Select
 
-  %% WhenEmpty（HB/Prev合流）
+  %% ============ WhenEmpty（HB/Prev合流） ============
   subgraph Fill["欠損埋めフロー（WhenEmpty 記述時のみ）"]
     HB["HB: HeartBeat\n(Tumbling が次の WindowStart を提示)"]
     Prev["Prev: 直近の確定レコード"]
@@ -69,7 +71,7 @@ flowchart TB
   Prev -.->|前バケット値| Apply
   Join --> Apply
 
-  %% 1s_final ハブ
+  %% ============ 1s_final ハブ ============
   subgraph Hub["確定 1 秒足ハブ"]
     final1s["bar_1s_final (TABLE)"]
     final1s_s["bar_1s_final_s (STREAM)\n※上位足の唯一の親入力"]
@@ -77,7 +79,7 @@ flowchart TB
   end
   Apply -->|DDL/CSAS/CTAS| final1s
 
-  %% 上位足（flat派生）
+  %% ============ 上位足（flat派生） ============
   subgraph Live["上位足 (live系: EMIT CHANGES)"]
     m1["bar_1m_live"]
     m5["bar_5m_live"]
@@ -93,25 +95,40 @@ flowchart TB
   final1s_s --> d1
   final1s_s --> w1
 
-  %% ローカルキャッシュと読み取り
+  %% ============ ローカルキャッシュ / 読み取り ============
   subgraph Cache["ローカルキャッシュ / 読み取り"]
     streamiz["Streamiz"]
-    rocks["RocksDB 状態ストア\nLINQ: ToListAsync() で参照"]
-    pushpull["LINQ: ForEachAsync()/Push/Pull\n（ライブ購読）"]
-    streamiz --> rocks
+    rocks["RocksDB 状態ストア"]
+    timebucket["LINQ: TimeBucket(from,to[,keyPrefix])\n（時間範囲で取得／前方一致キーにも対応）"]
+    streamiz --> rocks --> timebucket
   end
+
+  %% 並行するストリーム購読
+  subgraph StreamRead["ストリーム購読（ライブ）"]
+    pushpull["LINQ: ForEachAsync()/Push/Pull"]
+  end
+
+  %% live 出力→利用面へ
   m1 --> streamiz
   m5 --> streamiz
   m15 --> streamiz
   h1 --> streamiz
   d1 --> streamiz
   w1 --> streamiz
+
   m1 --> pushpull
   m5 --> pushpull
   m15 --> pushpull
   h1 --> pushpull
   d1 --> pushpull
   w1 --> pushpull
+
+  %% ============ スタイル定義 ============
+  %% 色：緑=入力, 紫=DSL/変換, 青=DB/ストリーム, オレンジ=出力, 黄=WhenEmpty補助
+  classDef in fill:#e9f7ef,stroke:#27ae60,color:#145a32;
+  classDef dsl fill:#efe9fb,stroke:#8e44ad,color:#4a235a;
+  classDef gen fill:#efe9fb,stroke:#8e44ad,color:#4a235a;
+  classDef db fill:#eaf2fb,stroke:#2980b9,color
 
 
 
@@ -132,14 +149,21 @@ flowchart TB
 - `dayKey` は「日/週/月などの境界を安定させる」ためのマーカーです。
 - 分/時間足では原則不要です（指定しても構いません）。
 
-### 2.2 Tumbling（複数足をまとめて宣言）
+### 2.2 TimeFrame と Tumbling（複数足をまとめて宣言）
 ```csharp
-.Tumbling(r => r.Timestamp, 
-    Minutes = new[]{ 5, 15, 30 },
-    Hours   = new[]{ 1, 4, 8 },
-    Days    = new[]{ 1, 7 },
-    Months  = new[]{ 1, 12 }
-, grace: TimeSpan.FromMinutes(2))
+q.From<DedupRateRecord>()
+ .TimeFrame<MarketSchedule>((r, s) =>
+        r.Broker == s.Broker
+     && r.Symbol == s.Symbol
+     && s.OpenTime <= r.Ts && r.Ts < s.CloseTime)
+ .Tumbling(r => r.Ts,
+     new Windows {
+         Minutes = new[]{ 5, 15, 30 },
+         Hours   = new[]{ 1, 4, 8 },
+         Days    = new[]{ 1, 7 },
+         Months  = new[]{ 1, 12 }
+     },
+     grace: TimeSpan.FromMinutes(2))
 ```
 使いどころ
 - 1 回の宣言で複数の足をまとめて指定できます。
@@ -153,17 +177,21 @@ flowchart TB
 主キーの考え方
 - GroupBy キー + バケット列（WindowStart）が主キーになります。
 
-### 2.4 Select（投影＝仕様）
+### 2.4 GroupBy と Select（投影＝仕様）
 ```csharp
-.Select(g => new {
-    g.Key.Broker,
-    g.Key.Symbol,
-    g.WindowStart(),                    // ← バケット列（“式”で認識、列名は任意）
-    Open  = g.EarliestByOffset(x => x.Bid),
-    High  = g.Max(x => x.Bid),
-    Low   = g.Min(x => x.Bid),
-    Close = g.LatestByOffset(x => x.Bid)
-})
+q.From<DedupRateRecord>()
+ .TimeFrame<MarketSchedule>((r, s) => r.Broker == s.Broker && r.Symbol == s.Symbol && s.OpenTime <= r.Ts && r.Ts < s.CloseTime)
+ .Tumbling(r => r.Ts, new Windows { Minutes = new[]{ 1 } })
+ .GroupBy(r => new { r.Broker, r.Symbol })
+ .Select(g => new OneMinuteCandle {
+     Broker   = g.Key.Broker,
+     Symbol   = g.Key.Symbol,
+     BarStart = g.WindowStart(),            // ← バケット列（“式”で認識、列名は任意）
+     Open  = g.EarliestByOffset(x => x.Bid),
+     High  = g.Max(x => x.Bid),
+     Low   = g.Min(x => x.Bid),
+     Close = g.LatestByOffset(x => x.Bid)
+ })
 ```
 作るときの注意
 - `g.WindowStart()` を必ず 1 回投影してください（列名は任意、式で識別します）。
@@ -297,4 +325,3 @@ EventSet<Rate>()
 ```
 
 > 実行モード（live/final）や命名/物理化は実行プロファイルで決定（DSL には出さない）
-
