@@ -38,6 +38,57 @@
 - Select: 集計仕様そのもの（ここに書いた内容が真実）
 - WhenEmpty: 欠損埋めをしたいときだけ書く
 
+``` mermaid
+
+flowchart TD
+    subgraph "C# アプリケーション"
+        DSL["DSL（足生成）"]
+    end
+
+    DSL --> TF["TimeFrame<MarketSchedule>"]
+    TF --> Tumble["Tumbling (複数足生成)"]
+    Tumble --> GroupBy["GroupBy (主キー指定)"]
+    GroupBy --> Select["Select (OHLC 仕様)"]
+    Select --> WhenEmpty["WhenEmpty (任意: 欠損埋め)"]
+
+    subgraph "KSQL Generator"
+        KSQL["KSQL Generator"]
+    end
+    WhenEmpty --> KSQL
+
+    KSQL -->|DDL/CSAS/CTAS| KsqlDB["KsqlDB"]
+
+    %% KsqlDBと外部
+    subgraph "ローカルキャッシュ"
+        Streamiz["Streamiz"]
+        RocksDB["RocksDB\n状態ストア"]
+        Streamiz --> RocksDB
+    end
+    KsqlDB --> Streamiz
+
+    subgraph "スキーマ管理"
+        SchemaRegistry["Schema Registry"]
+        AvroSer["Avro Serializer/\nDeserializer"]
+        SchemaRegistry --> AvroSer
+    end
+    KsqlDB -->|Read/Write| SchemaRegistry
+
+    subgraph "Kafka"
+        KafkaTopics["Kafka Topics"]
+    end
+    AvroSer --> KafkaTopics
+    KafkaTopics --> KsqlDB
+
+    %% 運用系
+    subgraph "運用機能"
+        DLQ["DLQ / Retry / Commit"]
+        Streaming["Streaming Push/Pull"]
+    end
+    KsqlDB --> DLQ
+    KsqlDB --> Streaming
+
+``` 
+
 ## 2. 処理の詳細（ここから深掘り）
 
 ### 2.1 TimeFrame と dayKey（営業日の境界）
