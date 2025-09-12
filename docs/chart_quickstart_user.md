@@ -112,3 +112,8 @@ var list = await ctx.Set<Bar>().ToListAsync();
 
 参考
 - 詳細は `docs/chart.md` を参照してください。
+
+成功確認チェックリスト
+- 送信後、`bar_1m_live` にレコードが出る。
+- `ToListAsync()` で 0 件なら TimeFrame 条件と `g.WindowStart()` を再確認。
+- `ksqlDB` の `SHOW TABLES` で `bar_1m_live` / `bar_1d_live` が見える。
