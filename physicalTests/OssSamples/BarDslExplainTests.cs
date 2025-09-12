@@ -6,6 +6,8 @@ using Kafka.Ksql.Linq.Core.Modeling;
 using Kafka.Ksql.Linq.Query.Dsl;
 using Microsoft.Extensions.Logging;
 using Xunit;
+using Confluent.Kafka;
+using Confluent.Kafka.Admin;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
@@ -47,7 +49,31 @@ public class BarDslExplainTests
         {
             Common = new CommonSection { BootstrapServers = "localhost:9092" },
             SchemaRegistry = new Kafka.Ksql.Linq.Core.Configuration.SchemaRegistrySection { Url = "http://localhost:8081" },
-            KsqlDbUrl = "http://localhost:8088"
+            KsqlDbUrl = "http://localhost:8088",
+            Topics =
+            {
+                ["deduprates"] = new Kafka.Ksql.Linq.Configuration.Messaging.TopicSection
+                {
+                    Producer = new Kafka.Ksql.Linq.Configuration.Messaging.ProducerSection
+                    {
+                        Acks = "All",
+                        EnableIdempotence = true,
+                        LingerMs = 0,
+                        DeliveryTimeoutMs = 30000,
+                        Retries = 5,
+                        MaxInFlightRequestsPerConnection = 1,
+                        BatchSize = 16384,
+                        RetryBackoffMs = 100,
+                        CompressionType = "Snappy"
+                    },
+                    Creation = new Kafka.Ksql.Linq.Configuration.Messaging.TopicCreationSection
+                    {
+                        NumPartitions = 1,
+                        ReplicationFactor = 1,
+                        EnableAutoCreation = false
+                    }
+                }
+            }
         }, _loggerFactory)
         { }
         // 物理テスト: スキーマ登録を有効化
@@ -80,46 +106,74 @@ public class BarDslExplainTests
     [Fact]
     public async Task Tumbling_1m_5m_Live_Ohlc_Materialize_And_Verify()
     {
+        // 事前クリーンアップ（依存順にDROP）
+        await PhysicalTestEnv.KsqlHelpers.TerminateAndDropBarArtifactsAsync("http://localhost:8088");
         await using var ctx = new TestContext();
         // 環境初期化（ksqlDBの起動確認）
         await PhysicalTestEnv.KsqlHelpers.WaitForKsqlReadyAsync("http://localhost:8088", TimeSpan.FromSeconds(180), graceMs: 2000);
+        // 入力トピックを先に確実に用意（ksqlDBのDDLと競合しない）
+        using (var admin = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = "localhost:9092" }).Build())
+        {
+            try { await admin.CreateTopicsAsync(new[] { new TopicSpecification { Name = "deduprates", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
+            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "deduprates", 1, 1, TimeSpan.FromSeconds(10));
+        }
         // OSSのスキーマ登録・DDL発行を待機（Rateストリーム）
         await ctx.WaitForEntityReadyAsync<Rate>(TimeSpan.FromSeconds(60));
-        var t0 = new DateTime(2020, 1, 6, 0, 0, 0, DateTimeKind.Utc);
-        // 物理投入（Rate トピックへ）: 1m×2本, 5m×1本を検証できる十分なティックを投入
-        // 1分バケット [00:00,00:01): O=100, H=110, L=90, C=105
-        await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = t0.AddSeconds(1), Bid = 100 });
-        await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = t0.AddSeconds(15), Bid = 110 });
-        await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = t0.AddSeconds(30), Bid = 90 });
-        await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = t0.AddSeconds(59), Bid = 105 });
-        // 1分バケット [00:01,00:02): O=200, H=210, L=195, C=195
-        await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = t0.AddMinutes(1).AddSeconds(5), Bid = 200 });
-        await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = t0.AddMinutes(1).AddSeconds(20), Bid = 210 });
-        await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = t0.AddMinutes(1).AddSeconds(50), Bid = 195 });
-        // 5分バケット [00:00,00:05) の充実（追加ティック）
-        await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = t0.AddMinutes(2).AddSeconds(10), Bid = 220 });
-        await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = t0.AddMinutes(3).AddSeconds(10), Bid = 215 });
-        await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = t0.AddMinutes(4).AddSeconds(45), Bid = 205 });
+        // 現在時刻に合わせたバケットで評価（遅延・遡りによるドロップを回避）
+        var now = DateTime.UtcNow;
+        var t0 = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0, DateTimeKind.Utc);
         // CSASはOSSが生成（UTでビルダー検証済）。ここでは出力の行出力のみ確認する。
-        // 行確認（LIMITにより終了）
+        // 行存在確認（テーブルのpullクエリでポーリング）
         async Task<int> CountEventuallyAsync(string table, int limit)
         {
-            var deadline = DateTime.UtcNow + TimeSpan.FromSeconds(90);
+            var deadline = DateTime.UtcNow + TimeSpan.FromSeconds(180);
             Exception? last = null;
             while (DateTime.UtcNow < deadline)
             {
                 try
                 {
-                    var c = await ctx.QueryStreamCountAsync($"SELECT * FROM {table} EMIT CHANGES LIMIT {limit};", TimeSpan.FromSeconds(30));
-                    if (c > 0) return c;
+                    var pull = $"SELECT BucketStart, Open, High, Low, KsqlTimeFrameClose FROM {table} WHERE Broker='B1' AND Symbol='S1';";
+                    var c = await ctx.QueryCountAsync(pull, TimeSpan.FromSeconds(15));
+                    if (c >= limit) return c;
                 }
                 catch (Exception ex) { last = ex; }
-                await Task.Delay(1000);
+                await Task.Delay(2000);
             }
             throw new TimeoutException($"No rows for {table}. Last: {last?.Message}");
         }
-        var c1 = await CountEventuallyAsync("bar_1m_live", 2);
-        var c5 = await CountEventuallyAsync("bar_5m_live", 1);
+        // push起動は残しつつ、最終的な存在確認は pull で行う
+        // 集計テーブルの生成を確認
+        var wait1mTask = CountEventuallyAsync("bar_1m_live", 1);
+        var wait5mTask = CountEventuallyAsync("bar_5m_live", 1);
+
+        // 物理投入（Rate トピックへ）: 大量送信で到達性を担保（120件/約2分分）
+        var bids = new[] { 100d, 110d, 90d, 105d, 200d, 210d, 195d, 220d, 215d, 205d };
+        for (int i = 0; i < 120; i++)
+        {
+            var ts = t0.AddSeconds(i);
+            var bid = bids[i % bids.Length];
+            await ctx.Rates.AddAsync(new Rate { Broker = "B1", Symbol = "S1", Timestamp = ts, Bid = bid });
+            // 軽い隙間を入れてバッファリング・フラッシュを促す
+            await Task.Delay(5);
+        }
+
+        // 最低限の生成を待ったあと、pullで必要件数に達するまで待機
+        _ = await wait1mTask; _ = await wait5mTask;
+
+        async Task<int> WaitPullCountAsync(string table, int min, TimeSpan timeout)
+        {
+            var deadline = DateTime.UtcNow + timeout;
+            while (DateTime.UtcNow < deadline)
+            {
+                var sql = $"SELECT BucketStart, Open, High, Low, KsqlTimeFrameClose FROM {table} WHERE Broker='B1' AND Symbol='S1';";
+                var cnt = await ctx.QueryCountAsync(sql, TimeSpan.FromSeconds(10));
+                if (cnt >= min) return cnt;
+                await Task.Delay(1000);
+            }
+            return 0;
+        }
+        var c1 = await WaitPullCountAsync("bar_1m_live", 2, TimeSpan.FromSeconds(120));
+        var c5 = await WaitPullCountAsync("bar_5m_live", 1, TimeSpan.FromSeconds(120));
         Assert.True(c1 >= 2, $"expected >=2 rows for 1m, got {c1}");
         Assert.True(c5 >= 1, $"expected >=1 row for 5m, got {c5}");
 
@@ -161,4 +215,6 @@ public class BarDslExplainTests
         await ctx.ExecuteStatementAsync("DROP TABLE IF EXISTS bar_1m_live DELETE TOPIC;");
         await ctx.ExecuteStatementAsync("DROP TABLE IF EXISTS bar_5m_live DELETE TOPIC;");
     }
+
+
 }

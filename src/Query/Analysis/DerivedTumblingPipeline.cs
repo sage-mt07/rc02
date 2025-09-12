@@ -63,8 +63,21 @@ internal static class DerivedTumblingPipeline
     {
         var qm = queryModel.Clone();
         var inputOverride = baseName;
-        if (role != Role.Final1sStream && model.AdditionalSettings.TryGetValue("input", out var inputObj))
+        // For the 1s final stream, the input should be the original source stream (e.g., Rate/deduprates),
+        // not the derived base name (bar). Try to infer from query model sources.
+        if (role == Role.Final1sStream)
+        {
+            var src = queryModel.SourceTypes.FirstOrDefault();
+            if (src != null)
+            {
+                var topicAttr = src.GetCustomAttribute<Kafka.Ksql.Linq.Core.Attributes.KsqlTopicAttribute>();
+                inputOverride = (topicAttr?.Name ?? src.Name).ToLowerInvariant();
+            }
+        }
+        else if (model.AdditionalSettings.TryGetValue("input", out var inputObj))
+        {
             inputOverride = inputObj?.ToString() ?? baseName;
+        }
         if (role == Role.Prev1m || role == Role.Final1sStream)
         {
             qm.Windows.Clear();

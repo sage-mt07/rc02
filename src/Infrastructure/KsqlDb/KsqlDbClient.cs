@@ -123,9 +123,30 @@ internal class KsqlDbClient : IKsqlDbClient, IDisposable
         var json = JsonSerializer.Serialize(payload);
         using var content = new StringContent(json, Encoding.UTF8, "application/json");
         using var cts = timeout.HasValue ? new CancellationTokenSource(timeout.Value) : new CancellationTokenSource(TimeSpan.FromSeconds(15));
-        using var response = await _client.PostAsync("/query", content, cts.Token);
-        response.EnsureSuccessStatusCode();
-        var body = await response.Content.ReadAsStringAsync(cts.Token);
+        HttpResponseMessage? response = null;
+        string body = string.Empty;
+        try
+        {
+            response = await _client.PostAsync("/query", content, cts.Token);
+            body = await response.Content.ReadAsStringAsync(cts.Token);
+            if (!response.IsSuccessStatusCode || body.IndexOf("\"error_code\"", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                // Fall back to push query (EMIT CHANGES LIMIT 1)
+                var push = sql.IndexOf("EMIT CHANGES", StringComparison.OrdinalIgnoreCase) >= 0
+                    ? sql
+                    : (sql.TrimEnd().EndsWith(";", StringComparison.Ordinal) ? sql.TrimEnd()[..^1] : sql) + " EMIT CHANGES LIMIT 1;";
+                return await ExecuteQueryStreamCountAsync(push, TimeSpan.FromSeconds(10));
+            }
+        }
+        catch
+        {
+            // Fall back to push query on transport/protocol errors
+            var push = sql.IndexOf("EMIT CHANGES", StringComparison.OrdinalIgnoreCase) >= 0
+                ? sql
+                : (sql.TrimEnd().EndsWith(";", StringComparison.Ordinal) ? sql.TrimEnd()[..^1] : sql) + " EMIT CHANGES LIMIT 1;";
+            return await ExecuteQueryStreamCountAsync(push, TimeSpan.FromSeconds(10));
+        }
+
         try
         {
             using var doc = JsonDocument.Parse(body);
@@ -142,7 +163,7 @@ internal class KsqlDbClient : IKsqlDbClient, IDisposable
         }
         catch
         {
-            // Fallback: count occurrences of "row"
+            // Fallback: count occurrences of "row" if JSON parsing fails
             var idx = 0; int count = 0;
             while ((idx = body.IndexOf("\"row\"", idx, StringComparison.OrdinalIgnoreCase)) >= 0)
             { count++; idx += 5; }

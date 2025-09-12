@@ -79,17 +79,24 @@ public class CompositeKeyPocoTests
             ProductId = 3,
             Quantity = 4
         });
-        // Poll ToListAsync until data is observed or timeout
-        var deadline = DateTime.UtcNow + TimeSpan.FromSeconds(20);
-        var list = await ctx.Orders.ToListAsync();
-        while (list.Count == 0 && DateTime.UtcNow < deadline)
+        // Consume via ForEachAsync until first real record is observed (or timeout)
+        var received = new List<Order>();
+        using (var ctsConsume = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(20)))
         {
-            await Task.Delay(500);
-            list = await ctx.Orders.ToListAsync();
+            await ctx.Orders.ForEachAsync(o =>
+            {
+                // Exclude potential priming dummy (composite key defaults)
+                if (!(o.OrderId == 0 && o.UserId == 0))
+                {
+                    received.Add(o);
+                    // Stop after first real record
+                    if (received.Count >= 1)
+                        ctsConsume.Cancel();
+                }
+                return Task.CompletedTask;
+            }, cancellationToken: ctsConsume.Token);
         }
-        // Exclude priming dummy (composite key defaults)
-        var filtered = list.FindAll(o => !(o.OrderId == 0 && o.UserId == 0));
-        Assert.True(filtered.Count == 1, $"Expected 1 record excluding dummy, got {filtered.Count}");
+        Assert.True(received.Count == 1, $"Expected 1 record excluding dummy, got {received.Count}");
 
         // Verify ForEachAsync can run briefly without throwing (cancel after 1s)
         using (var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(1)))

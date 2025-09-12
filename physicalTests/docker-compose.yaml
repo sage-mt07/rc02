@@ -14,7 +14,7 @@ services:
       - zookeeper
     ports:
       - "9092:9092"
-      - "9093:9093"
+      - "29092:29092"
     environment:
       KAFKA_HEAP_OPTS: "-Xms1g -Xmx2g"
       KAFKA_BROKER_ID: 1

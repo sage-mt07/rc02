@@ -70,20 +70,7 @@ internal static class DerivationPlanner
             var hbId = $"{baseId}_hb_{tfStr}";
             if (tf.Unit == "s" && tf.Value == 1)
             {
-                var final1s = new DerivedEntity
-                {
-                    Id = $"{baseId}_1s_final",
-                    Role = Role.Final1s,
-                    Timeframe = tf,
-                    KeyShape = keyShapes,
-                    ValueShape = valueShapes,
-                    InputHint = hub,
-                    BasedOnSpec = basedOn,
-                    WeekAnchor = qao.WeekAnchor,
-                    GraceSeconds = graceMap[tfStr]
-                };
-                entities.Add(final1s);
-
+                // Dependency order: create stream first, then table referencing it
                 var final1sStream = new DerivedEntity
                 {
                     Id = hub,
@@ -97,6 +84,20 @@ internal static class DerivationPlanner
                     GraceSeconds = graceMap[tfStr]
                 };
                 entities.Add(final1sStream);
+
+                var final1s = new DerivedEntity
+                {
+                    Id = $"{baseId}_1s_final",
+                    Role = Role.Final1s,
+                    Timeframe = tf,
+                    KeyShape = keyShapes,
+                    ValueShape = valueShapes,
+                    InputHint = hub,
+                    BasedOnSpec = basedOn,
+                    WeekAnchor = qao.WeekAnchor,
+                    GraceSeconds = graceMap[tfStr]
+                };
+                entities.Add(final1s);
 
                 var hb1s = new DerivedEntity
                 {

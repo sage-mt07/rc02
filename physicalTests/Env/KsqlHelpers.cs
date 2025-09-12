@@ -71,4 +71,45 @@ public static class KsqlHelpers
         }
         throw last ?? new InvalidOperationException("CreateContextWithRetryAsync failed without exception");
     }
+
+    public static async Task TerminateAllAsync(string ksqlBaseUrl)
+    {
+        using var http = new HttpClient { BaseAddress = new Uri(ksqlBaseUrl.TrimEnd('/')) };
+        var payload = new { ksql = "TERMINATE ALL;", streamsProperties = new { } };
+        var json = System.Text.Json.JsonSerializer.Serialize(payload);
+        using var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+        try { using var _ = await http.PostAsync("/ksql", content); } catch { }
+    }
+
+    public static async Task DropArtifactsAsync(string ksqlBaseUrl, IEnumerable<string> objectsInDependencyOrder)
+    {
+        using var http = new HttpClient { BaseAddress = new Uri(ksqlBaseUrl.TrimEnd('/')) };
+        foreach (var obj in objectsInDependencyOrder)
+        {
+            var stmt = $"DROP TABLE IF EXISTS {obj} DELETE TOPIC;";
+            var streamStmt = $"DROP STREAM IF EXISTS {obj} DELETE TOPIC;";
+            var payload = new { ksql = stmt, streamsProperties = new { } };
+            var json = System.Text.Json.JsonSerializer.Serialize(payload);
+            using var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+            try { using var resp = await http.PostAsync("/ksql", content); }
+            catch { }
+            // Try as stream too
+            payload = new { ksql = streamStmt, streamsProperties = new { } };
+            json = System.Text.Json.JsonSerializer.Serialize(payload);
+            using var content2 = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+            try { using var resp2 = await http.PostAsync("/ksql", content2); }
+            catch { }
+        }
+    }
+
+    public static Task TerminateAndDropBarArtifactsAsync(string ksqlBaseUrl)
+    {
+        // Drop dependents first (tables), then base stream
+        var order = new[] { "bar_1m_live", "bar_5m_live", "bar_hb_1s", "bar_1s_final", "bar_1s_final_s" };
+        return Task.Run(async () =>
+        {
+            await TerminateAllAsync(ksqlBaseUrl);
+            await DropArtifactsAsync(ksqlBaseUrl, order);
+        });
+    }
 }

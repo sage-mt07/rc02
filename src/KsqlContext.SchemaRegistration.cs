@@ -330,6 +330,9 @@ public abstract partial class KsqlContext
                 _mappingRegistry,
                 _entityModels,
                 Logger);
+
+            // Ensure CTAS/CSAS queries for derived entities are RUNNING before proceeding
+            await WaitForDerivedQueriesRunningAsync(TimeSpan.FromSeconds(60));
             return;
         }
 
@@ -414,6 +417,9 @@ public abstract partial class KsqlContext
                 var result = await ExecuteStatementAsync(sql);
                 if (result.IsSuccess)
                     break;
+                // Treat idempotent CREATE conflicts as success to avoid flakiness across runs
+                if (IsNonFatalCreateConflict(sql, result.Message))
+                    break;
                 attempts++;
                 var retryable = IsRetryableKsqlError(result.Message);
                 if (!retryable || attempts >= maxAttempts)
@@ -426,6 +432,15 @@ public abstract partial class KsqlContext
                 await _delay(TimeSpan.FromMilliseconds(delayMs), default);
                 delayMs = Math.Min(delayMs * 2, 8000);
             }
+        }
+
+        static bool IsNonFatalCreateConflict(string sql, string? message)
+        {
+            if (string.IsNullOrWhiteSpace(sql) || string.IsNullOrWhiteSpace(message)) return false;
+            var s = sql.TrimStart().ToUpperInvariant();
+            if (!s.StartsWith("CREATE ")) return false;
+            var m = message.ToLowerInvariant();
+            return m.Contains("already exists");
         }
 
         TumblingQao BuildQao(EntityModel m)
@@ -475,6 +490,47 @@ public abstract partial class KsqlContext
 
         static string PropertyName(LambdaExpression? e) =>
             e?.Body is MemberExpression m ? m.Member.Name : string.Empty;
+    }
+
+    private async Task WaitForDerivedQueriesRunningAsync(TimeSpan timeout)
+    {
+        var deadline = DateTime.UtcNow + timeout;
+        // Collect derived entity names (those with timeframe/role markers)
+        var targets = _entityModels.Values
+            .Where(m => m.AdditionalSettings.ContainsKey("timeframe") && m.AdditionalSettings.ContainsKey("role"))
+            .Select(m => m.GetTopicName().ToUpperInvariant())
+            .Distinct()
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        if (targets.Count == 0) return;
+
+        while (DateTime.UtcNow < deadline)
+        {
+            try
+            {
+                var qs = await ExecuteStatementAsync("SHOW QUERIES;");
+                if (qs.IsSuccess && !string.IsNullOrWhiteSpace(qs.Message))
+                {
+                    var running = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    var lines = qs.Message.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var line in lines)
+                    {
+                        if (!line.Contains('|')) continue;
+                        var parts = line.Split('|', StringSplitOptions.RemoveEmptyEntries);
+                        if (parts.Length > 3)
+                        {
+                            var entity = parts[1].Trim();
+                            var status = parts[3].Trim();
+                            if (status.Equals("RUNNING", StringComparison.OrdinalIgnoreCase))
+                                running.Add(entity);
+                        }
+                    }
+                    if (targets.All(t => running.Contains(t))) return;
+                }
+            }
+            catch { }
+            await Task.Delay(500);
+        }
+        // Best-effort; continue even if not all queries reported RUNNING to avoid hard hangs in CI
     }
 
     /// <summary>
