@@ -2,8 +2,8 @@
 このガイドは Tick から複数タイムフレームの足を最短手順で生成するための実践メモです。
 
 想定読者
-- Tick から秒足〜月足を生成したい実務ユーザーを想定しています。
-- 実装詳細よりも動かし方を知りたい方向けです。
+- Kafka や ksqlDB を実運用で扱っている開発者を想定しています。
+- 実装の細部より動かす手順を重視する方向けです。
 
 できることの概要
 - Tick から複数タイムフレームの足を一括生成できます（例: 1m/5m/15m/1h/1d）。
@@ -12,7 +12,7 @@
 - Table を RocksDB（内部ストレージ）にマテリアライズし、
   `ToListAsync()` で高速に取得できます。
 
-最短5ステップで試す
+5ステップで動作を確認する
 1) 接続先を設定する
 - Kafka / ksqlDB / Schema Registry を起動しておきます。
 - `appsettings.json` に最低限の接続先を設定します。
@@ -71,7 +71,7 @@ await ctx.Set<Rate>().AddAsync(new Rate {
   Broker = "B1", Symbol = "S1", Timestamp = DateTime.UtcNow, Bid = 100
 });
 ```
-- Stream は `ForEachAsync` で購読して受信します。
+- Stream は `ForEachAsync()` で購読して受信します。
 ```csharp
 await ctx.Set<Bar>().ForEachAsync(b => { Console.WriteLine(b.Symbol); return Task.CompletedTask; });
 ```
@@ -81,14 +81,14 @@ var list = await ctx.Set<Bar>().ToListAsync();
 ```
 
 使うときのポイント
-実装で迷わないためのポイントをまとめました。
+実装時に押さえておくポイントをまとめました。
 - `Select` には `g.WindowStart()` を1回だけ入れます。重複するとエラーです。
 - 日足以上を作る場合は `dayKey` を付けます。これは同一営業日を識別するキー列です。
 - すべての足は基底の1秒足から直接生成します。例として5分足や15分足も1秒足から作ります。
-- 確定値 final と速報値 live は処理の流れ（DAG）を分けます。
-- 取得方式は、Table は `ToListAsync()`、Stream は `ForEachAsync` で購読します。
+- 確定値 final と速報値 live は DAG（処理の流れ＝依存グラフ）を分けます。
+- 取得方式は、Table は `ToListAsync()`、Stream は `ForEachAsync()` で購読します。
 - 伝達時間は環境により変動します。通常は 50〜200ms、起動直後は 0.5〜3 秒が目安です。
-上記を押さえれば、典型的な検証エラーの対処もスムーズです。
+上記を押さえて典型的な検証エラーに備えてください。
 
 自動チェックと対処のコツ
 内部ルールの多くは自動で検証します。エラーが出たら次を確認してください。
@@ -98,7 +98,7 @@ var list = await ctx.Set<Bar>().ToListAsync();
   - 対処: 1分以上の窓サイズは1分単位の整数倍にしてください。例: 1m, 5m, 15m。
 - 「Windows must be multiples of the base unit」などの窓サイズ系エラー
   - 対処: 秒台の細かいサイズ指定を避け、1m/5m/15m/1h/1d など一般的なサイズを選びます。
-これで基礎的な検証エラーは解消できます。続いて命名規約も確認してください。
+これで基礎的な検証エラーを防げます。続いて命名規約も確認してください。
 
 主な命名規約
 - 形式は `<entity>_<timeframe>_(live|final)` です。例: `bar_1m_live`, `bar_1d_live`。
