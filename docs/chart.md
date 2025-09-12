@@ -39,36 +39,46 @@
 - WhenEmpty: 欠損埋めをしたいときだけ書く
 
 ``` mermaid
+
 flowchart TB
-  %% 入力とスケジュールフィルタ
-  subgraph Upstream["上流（取引時間外の除外）"]
+  %% 上流
+  subgraph Upstream["上流（取引時間外除外）"]
     raw["<raw>"]
-    filtered["<raw>_filtered\n(取引時間外を除外)"]
+    filtered["<raw>_filtered\nLINQ: Where(...) 等で取引時間外を除外"]
     raw --> filtered
   end
 
-  %% DSL レイヤ
-  subgraph DSL["C# アプリケーション / DSL"]
-    TF["TimeFrame<MarketSchedule>\n(dayKey: MarketDate など)"]
-    Tumble["Tumbling\n(複数足を一括生成)"]
+  %% DSL
+  subgraph DSL["C# アプリケーション / DSL (LINQ式ツリー)"]
+    TF["TimeFrame<MarketSchedule>\nLINQ: Join/Where(dayKey: MarketDate)"]
+    Tumble["Tumbling\nLINQ: Window式（複数足まとめて生成）"]
     GroupBy["GroupBy(主キー)"]
-    Select["Select(OHLC 等の仕様)"]
+    Select["Select(OHLC 等の仕様)\nLINQ: EarliestByOffset/Max/Min/LatestByOffset"]
   end
+  filtered --> TF --> Tumble --> GroupBy --> Select
 
-  filtered --> TF
-  TF --> Tumble --> GroupBy --> Select
+  %% WhenEmpty（HB/Prev合流）
+  subgraph Fill["欠損埋めフロー（WhenEmpty 記述時のみ）"]
+    HB["HB: HeartBeat\n(Tumbling が次の WindowStart を提示)"]
+    Prev["Prev: 直近の確定レコード"]
+    Join["LEFT JOIN (HB × base series)\n不足バケット検出"]
+    Apply["WhenEmpty(prev, next)\n→ next を埋めて確定"]
+  end
+  Select -->|base series| Join
+  HB -.->|WindowStart 提示| Join
+  Prev -.->|前バケット値| Apply
+  Join --> Apply
 
-  %% 1s_final ハブ（唯一の親）
+  %% 1s_final ハブ
   subgraph Hub["確定 1 秒足ハブ"]
     final1s["bar_1s_final (TABLE)"]
-    final1s_s["bar_1s_final_s (STREAM)\n※ 上位足の唯一の親入力"]
+    final1s_s["bar_1s_final_s (STREAM)\n※上位足の唯一の親入力"]
     final1s --> final1s_s
   end
+  Apply -->|DDL/CSAS/CTAS| final1s
 
-  Select -->|DDL/CSAS/CTAS| final1s
-
-  %% 上位足（すべて 1s_final_s からフラット派生）
-  subgraph Live["上位足（live系: EMIT CHANGES）"]
+  %% 上位足（flat派生）
+  subgraph Live["上位足 (live系: EMIT CHANGES)"]
     m1["bar_1m_live"]
     m5["bar_5m_live"]
     m15["bar_15m_live"]
@@ -76,7 +86,6 @@ flowchart TB
     d1["bar_1d_live"]
     w1["bar_1w_live"]
   end
-
   final1s_s --> m1
   final1s_s --> m5
   final1s_s --> m15
@@ -84,10 +93,11 @@ flowchart TB
   final1s_s --> d1
   final1s_s --> w1
 
-  %% 参照先（省略形）
-  subgraph Storage["ローカルキャッシュ"]
+  %% ローカルキャッシュと読み取り
+  subgraph Cache["ローカルキャッシュ / 読み取り"]
     streamiz["Streamiz"]
-    rocks["RocksDB 状態ストア"]
+    rocks["RocksDB 状態ストア\nLINQ: ToListAsync() で参照"]
+    pushpull["LINQ: ForEachAsync()/Push/Pull\n（ライブ購読）"]
     streamiz --> rocks
   end
   m1 --> streamiz
@@ -96,9 +106,13 @@ flowchart TB
   h1 --> streamiz
   d1 --> streamiz
   w1 --> streamiz
+  m1 --> pushpull
+  m5 --> pushpull
+  m15 --> pushpull
+  h1 --> pushpull
+  d1 --> pushpull
+  w1 --> pushpull
 
-  %% コメント用の注釈
-  classDef hint fill:#fffbe6,stroke:#f0e6a0,color:#333;
 
 
 ``` 
