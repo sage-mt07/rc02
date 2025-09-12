@@ -13,14 +13,14 @@
   `ToListAsync()` で高速に取得できます。
 
 すぐ試す（最短 5 ステップ）
-1) 事前準備をします
+1) 接続先を設定する（事前準備）
 - Kafka / ksqlDB / Schema Registry を起動しておきます。
 - `appsettings.json` に最低限の接続先を設定します。
   - `KsqlDsl:Common:BootstrapServers`
   - `KsqlDsl:SchemaRegistry:Url`
   - `KsqlDsl:KsqlDbUrl`
 
-2) コンテキストを作成します
+2) 接続できる状態を作る（Context 作成）
 ```csharp
 var cfg = new ConfigurationBuilder()
   .AddJsonFile("appsettings.json") // 接続先設定を読み込む
@@ -30,7 +30,7 @@ var ctx = KsqlContextBuilder.Create()
   .BuildContext<MyAppContext>();
 ```
 
-3) モデルを登録します（使う型にトピックを結びつけます）
+3) Rate をトピック "rates" に関連づける（モデル登録）
 ```csharp
 [KsqlTopic("rates")]
 public class Rate
@@ -42,7 +42,7 @@ public class Rate
 }
 ```
 
-4) クエリを定義します（日/週の境界 + 複数足 + OHLC）
+4) 日/週の境界を含む複数足を定義する（クエリ）
 ```csharp
 modelBuilder.Entity<Bar>().ToQuery(q => q
   .From<Rate>()
@@ -64,7 +64,7 @@ modelBuilder.Entity<Bar>().ToQuery(q => q
   }));
 ```
 
-5) 動作を確認します
+5) 送受信を確かめる（動作確認）
 - 送信します（Stream / Table 共通）。
 ```csharp
 await ctx.Set<Rate>().AddAsync(new Rate {
