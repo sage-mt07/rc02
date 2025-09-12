@@ -192,8 +192,6 @@ WHERE Amount > 0;
 - `[KsqlDecimal(precision, scale)]`: 小数の精度（桁数）と小数点以下の桁数を指定。
   - パラメータ: `precision` 総桁数, `scale` 少数桁数。
   - 用例: `[KsqlDecimal(18, 4)]`
-- `[KsqlDatetimeFormat(format)]`: 文字列として表現する日時のフォーマットを指定。
-  - パラメータ: `format` 日時フォーマット文字列（`yyyy-MM-ddTHH:mm:ss.fffZ` など）。
 - `[KsqlKey(order)]`: 複合キーでの順序（並び）を指定。
   - パラメータ: `order` 0 以上の整数。小さいほど先頭キー。
   - 用例: `Broker` を 0、`Symbol` を 1 など。
@@ -201,12 +199,6 @@ WHERE Amount > 0;
   - 備考: 内部計算や一時的なメモ用に使用。
 - `[KsqlTable]`: このエンティティを Table として扱う（デフォルトは Stream）。
   - 備考: 既定動作は Stream。Table にしたい場合のみ付与。
-- `[MaxLength(length)]`: 文字列プロパティの最大長を制限。
-  - パラメータ: `length` 1 以上の整数。
-- `[KsqlTimeFrameClose]`: タイムフレームの確定時刻を示すプロパティを明示。
-  - 備考: 集計の「確定」タイミング列を区別したいケースで使用。
-
-注記: スケジュール範囲の扱いは属性ではなく、`TimeFrame<TSchedule>` と `MarketSchedule` エンティティ（`Open/Close/MarketDate`）の組み合わせで行います。`ScheduleRangeAttribute` は削除されました。
 
 ### コンテキストとビルダー
 - `KsqlContextBuilder.Create()`: ビルダーを作る。
@@ -218,6 +210,7 @@ WHERE Amount > 0;
 ### Fluent API（モデル登録）
 - `ModelBuilder.Entity<T>(readOnly=false, writeOnly=false)`: 型を登録する。
 - `.ToQuery(Func<IQueryBuilder,IQueryBuilder> build)`: ビューを定義する。
+
 - `From<TSource>()`: ソースを指定する。
 - `Join<TRight>(expr)`: 関連を結合する。
 - `Where(expr)`: 条件で絞り込む。

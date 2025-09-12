@@ -49,7 +49,7 @@ modelBuilder.Entity<Bar>()
         Open  = g.EarliestByOffset(x => x.Bid),
         High  = g.Max(x => x.Bid),
         Low   = g.Min(x => x.Bid),
-        KsqlTimeFrameClose = g.LatestByOffset(x => x.Bid)
+        Close = g.LatestByOffset(x => x.Bid)
     }));
 ```
 
@@ -67,7 +67,7 @@ modelBuilder.Entity<Bar>()
 
 ## 7. マルチティア（1m/5m/15m/60m/1d/1wk）の作り方
 - `new Windows { Minutes = new[] { 1, 5, 15, 60 } }` や `Days = new[] { 1, 7 }` のように複数フレームを同時に指定できます。
-- DSL → QueryModel → DDL では、各ティアの CSAS/CTAS が派生作成され、`bar_1m_live`, `bar_5m_live`, `bar_15m_live`, `bar_60m_live`, `bar_1d_live`, `bar_1wk_final` などが生成されます。
+- DSL → QueryModel → DDL では、各ティアの CSAS/CTAS が派生作成され、`bar_1m_live`, `bar_5m_live`, `bar_15m_live`, `bar_60m_live`, `bar_1d_live`, `bar_1wk_final` などが生成されます。派生段の入力射影は `SELECT *`（恒等）であり、アプリ定義の列構成に依存します（特定の列名に固定しません）。
 
 ## 8. Push / Pull の使い分け（HTTP直叩きの推奨形）
 - Push: `SELECT ... EMIT CHANGES LIMIT N`（/query-stream）で「生成の疎通」を待機（取りこぼし防止）。
@@ -170,4 +170,3 @@ for (int i = 0; i < 7; i++)
 - 日次（bar_1d_live）: 平日 5 本のみ生成（休業日は生成されない）。
 - 週次（bar_1wk_final）: 週 1 本生成（平日のみが集計対象）。
 - 週の起点（Monday）は MarketDate 設計で担保されます（ksqlDB の `SIZE 7 DAYS` 自体には曜日アンカーはありません）。
-

@@ -121,15 +121,8 @@ internal static class DerivedTumblingPipeline
 
     private static LambdaExpression BuildInputProjection(Type inputType)
     {
+        // App-agnostic: select all columns (identity -> SELECT *)
         var p = Expression.Parameter(inputType, "x");
-        var props = new[] { "Open", "High", "Low", "KsqlTimeFrameClose" }
-            .Select(n => inputType.GetProperty(n, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase))
-            .Where(pr => pr != null)
-            .Cast<PropertyInfo>()
-            .ToArray();
-        if (props.Length == 0) return Expression.Lambda(p, p);
-        var bindings = props.Select(pr => Expression.Bind(pr, Expression.Property(p, pr)));
-        var body = Expression.MemberInit(Expression.New(inputType), bindings);
-        return Expression.Lambda(body, p);
+        return Expression.Lambda(p, p);
     }
 }

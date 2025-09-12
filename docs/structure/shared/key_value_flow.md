@@ -150,7 +150,7 @@ await ctx.AddAsync(entity);
 ## 8. 型情報・設計情報管理フロー
 
 ### 8.1 PropertyMetaによる型情報一元管理
-- 各POCOプロパティの型・精度（decimal）・フォーマット（KsqlDatetimeFormat等）・属性情報は**PropertyMeta（PropertyInfo＋Attribute配列）**にまとめて保持する。
+- 各POCOプロパティの型・精度（decimal）・属性情報は **PropertyMeta（PropertyInfo＋Attribute配列）** にまとめて保持する。
 - PropertyMetaはFluentAPI設定や設計フェーズで決定され、コード属性やリフレクションには依存しない。
 
 ### 8.2 Mappingによるkey/valueクラス自動生成・登録

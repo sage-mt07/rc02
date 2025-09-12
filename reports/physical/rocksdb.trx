@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="3fd0d185-0379-41ee-85c2-b4f0254e75d0" name="seiji_yfc8940@SAGESOHO01 2025-09-12 18:20:55" runUser="SAGESOHO01\seiji_yfc8940" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-09-12T18:20:55.6801748+09:00" queuing="2025-09-12T18:20:55.6801752+09:00" start="2025-09-12T18:20:23.9659421+09:00" finish="2025-09-12T18:20:55.6846506+09:00" />
+  <TestSettings name="default" id="ed30b4c6-a867-4eef-a19f-0993abcec3dc">
+    <Deployment runDeploymentRoot="seiji_yfc8940_SAGESOHO01_2025-09-12_18_20_55" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="8d33ddfe-73ea-46d6-9d3f-03f840ada098" testId="5a88f032-d48b-3e65-f6b6-dca9ef297733" testName="Kafka.Ksql.Linq.Tests.Integration.RocksDbToListAsyncTests.ToListAsync_Reads_From_RocksDb_Cache" computerName="SAGESOHO01" duration="00:00:31.0813244" startTime="2025-09-12T18:20:55.5112862+09:00" endTime="2025-09-12T18:20:55.5112999+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8d33ddfe-73ea-46d6-9d3f-03f840ada098" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="Kafka.Ksql.Linq.Tests.Integration.RocksDbToListAsyncTests.ToListAsync_Reads_From_RocksDb_Cache" storage="c:\dev\rc02\physicaltests\bin\release\net8.0\kafka.ksql.linq.tests.integration.dll" id="5a88f032-d48b-3e65-f6b6-dca9ef297733">
+      <Execution id="8d33ddfe-73ea-46d6-9d3f-03f840ada098" />
+      <TestMethod codeBase="C:\dev\rc02\physicalTests\bin\Release\net8.0\Kafka.Ksql.Linq.Tests.Integration.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Integration.RocksDbToListAsyncTests" name="ToListAsync_Reads_From_RocksDb_Cache" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="5a88f032-d48b-3e65-f6b6-dca9ef297733" executionId="8d33ddfe-73ea-46d6-9d3f-03f840ada098" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="一覧に存在しない結果" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="読み込まれたすべての結果" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="1" executed="1" passed="1" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.6+bf9b858c26 (64-bit .NET 8.0.19)&#xD;
+[xUnit.net 00:00:00.07]   Discovering: Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.12]   Discovered:  Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.12]   Starting:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+info: Kafka.Ksql.Linq.KsqlContext[0]&#xD;
+      KSQL DDL (simple DlqEnvelope): CREATE STREAM IF NOT EXISTS dead_letter_queue (`Topic` VARCHAR KEY, `Partition` INT KEY, `Offset` BIGINT KEY, TimestampUtc VARCHAR, IngestedAtUtc VARCHAR, PayloadFormatKey VARCHAR, PayloadFormatValue VARCHAR, SchemaIdKey VARCHAR, SchemaIdValue VARCHAR, KeyIsNull BOOLEAN, ErrorType VARCHAR, ErrorMessageShort VARCHAR, StackTraceShort VARCHAR, ErrorFingerprint VARCHAR, ApplicationId VARCHAR, ConsumerGroup VARCHAR, Host VARCHAR, Headers MAP&lt;STRING, STRING&gt;) WITH (KAFKA_TOPIC='dead-letter-queue', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO', VALUE_AVRO_SCHEMA_FULL_NAME='kafka_ksql_linq_messaging.dead_letter_queue_valueAvro', PARTITIONS=1, REPLICAS=1);&#xD;
+info: Kafka.Ksql.Linq.KsqlContext[0]&#xD;
+      KSQL DDL (simple Tick): CREATE TABLE IF NOT EXISTS rocks_to_list_ticks (tick_key STRUCT&lt;Broker VARCHAR, Symbol VARCHAR&gt; PRIMARY KEY, Price DOUBLE) WITH (KAFKA_TOPIC='rocks_to_list_ticks', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO', VALUE_AVRO_SCHEMA_FULL_NAME='kafka_ksql_linq_tests_integration.rocks_to_list_ticks_valueAvro', PARTITIONS=1, REPLICAS=1);&#xD;
+info: Kafka.Ksql.Linq.KsqlContext[0]&#xD;
+      Kafka initialization completed; DLQ topic 'dead-letter-queue' ready with 5000ms retention&#xD;
+info: Streamiz.Kafka.Net.KafkaStream[0]&#xD;
+      stream-application[ksql-dsl-app-rocks_to_list_ticks]  Start creation of the stream application with this configuration: &#xD;
+      	Stream property:&#xD;
+      		client.id: 	&#xD;
+      		num.stream.threads: 	1&#xD;
+      		default.key.serdes: 	Streamiz.Kafka.Net.SchemaRegistry.SerDes.Avro.SchemaAvroSerDes`1[kafka_ksql_linq_tests_integration.rocks_to_list_ticks_keyAvro]&#xD;
+      		default.value.serdes: 	Streamiz.Kafka.Net.SchemaRegistry.SerDes.Avro.SchemaAvroSerDes`1[Avro.Generic.GenericRecord]&#xD;
+      		default.timestamp.extractor: 	Streamiz.Kafka.Net.Processors.Internal.FailOnInvalidTimestamp&#xD;
+      		commit.interval.ms: 	30000&#xD;
+      		processing.guarantee: 	AT_LEAST_ONCE&#xD;
+      		transaction.timeout: 	00:00:10&#xD;
+      		poll.ms: 	100&#xD;
+      		max.poll.records: 	500&#xD;
+      		max.poll.restoring.records: 	1000&#xD;
+      		max.task.idle.ms: 	0&#xD;
+      		buffered.records.per.partition: 	2147483647&#xD;
+      		inner.exception.handler: 	System.Func`2[System.Exception,Streamiz.Kafka.Net.ExceptionHandlerResponse]&#xD;
+      		production.exception.handler: 	System.Func`2[Confluent.Kafka.DeliveryReport`2[System.Byte[],System.Byte[]],Streamiz.Kafka.Net.ProductionExceptionHandlerResponse]&#xD;
+      		deserialization.exception.handler: 	System.Func`4[Streamiz.Kafka.Net.ProcessorContext,Confluent.Kafka.ConsumeResult`2[System.Byte[],System.Byte[]],System.Exception,Streamiz.Kafka.Net.ExceptionHandlerResponse]&#xD;
+      		rocksdb.config.setter: 	System.Action`2[System.String,Streamiz.Kafka.Net.State.RocksDbOptions]&#xD;
+      		follow.metadata: 	False&#xD;
+      		state.dir: 	C:\Users\seiji_yfc8940\AppData\Local\Temp\ksql-dsl-app-rocks_to_list_ticks&#xD;
+      		replication.factor: 	-1&#xD;
+      		windowstore.changelog.additional.retention.ms: 	86400000&#xD;
+      		offset.checkpoint.manager: 	&#xD;
+      		metrics.interval.ms: 	30000&#xD;
+      		metrics.recording.level: 	INFO&#xD;
+      		log.processing.summary: 	00:01:00&#xD;
+      		metrics.reporter: 	System.Action`1[System.Collections.Generic.IEnumerable`1[Streamiz.Kafka.Net.Metrics.Sensor]]&#xD;
+      		expose.librdkafka.stats: 	False&#xD;
+      		start.task.delay.ms: 	5000&#xD;
+      		parallel.processing: 	False&#xD;
+      		max.degree.of.parallelism: 	8&#xD;
+      		statestore.cache.max.bytes: 	5242880&#xD;
+      		application.id: 	ksql-dsl-app-rocks_to_list_ticks&#xD;
+      		schema.registry.url: 	http://localhost:8081&#xD;
+      	Client property:&#xD;
+      		bootstrap.servers: 	localhost:9092&#xD;
+      	Consumer property:&#xD;
+      		max.poll.interval.ms: 	300000&#xD;
+      		enable.auto.commit: 	False&#xD;
+      		enable.auto.offset.store: 	False&#xD;
+      		allow.auto.create.topics: 	False&#xD;
+      		partition.assignment.strategy: 	range&#xD;
+      		auto.offset.reset: 	earliest&#xD;
+      	Producer property:&#xD;
+      		allow.auto.create.topics: 	False&#xD;
+      		partitioner: 	murmur2_random&#xD;
+      	Admin client property:&#xD;
+      		allow.auto.create.topics: 	False&#xD;
+info: Streamiz.Kafka.Net.Processors.Internal.StateDirectory[0]&#xD;
+      No process id found on disk, got fresh process id f139c641-1ea2-43b7-99cd-d9e64e8f2d7f&#xD;
+info: Streamiz.Kafka.Net.Processors.StreamThread[0]&#xD;
+      stream-thread[ksql-dsl-app-rocks_to_list_ticks-f139c641-1ea2-43b7-99cd-d9e64e8f2d7f-stream-thread-0] Creating consumer client&#xD;
+info: Streamiz.Kafka.Net.KafkaStream[0]&#xD;
+      stream-application[ksql-dsl-app-rocks_to_list_ticks] State transition from CREATED to REBALANCING&#xD;
+info: Streamiz.Kafka.Net.KafkaStream[0]&#xD;
+      stream-application[ksql-dsl-app-rocks_to_list_ticks] Starting Streams client with this topology : Topologies:&#xD;
+         Sub-topology: 1&#xD;
+          Source: KSTREAM-SOURCE-0000000004 (topics: [rocks_to_list_ticks-by-stringkey-repartition])&#xD;
+            --&gt; KSTREAM-TOTABLE-0000000005&#xD;
+          Processor: KSTREAM-TOTABLE-0000000005 (stores: [rocks_to_list_ticks])&#xD;
+            --&gt; none&#xD;
+            &lt;-- KSTREAM-SOURCE-0000000004&#xD;
+         Sub-topology: 0&#xD;
+          Source: KSTREAM-SOURCE-0000000000 (topics: [rocks_to_list_ticks])&#xD;
+            --&gt; KSTREAM-KEY-SELECT-0000000001&#xD;
+          Processor: KSTREAM-KEY-SELECT-0000000001 (stores: [])&#xD;
+            --&gt; KSTREAM-FILTER-0000000003&#xD;
+            &lt;-- KSTREAM-SOURCE-0000000000&#xD;
+          Processor: KSTREAM-FILTER-0000000003 (stores: [])&#xD;
+            --&gt; KSTREAM-SINK-0000000002&#xD;
+            &lt;-- KSTREAM-KEY-SELECT-0000000001&#xD;
+          Sink: KSTREAM-SINK-0000000002 (topic: rocks_to_list_ticks-by-stringkey-repartition)&#xD;
+            &lt;-- KSTREAM-FILTER-0000000003&#xD;
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]&#xD;
+      producer:rocks_to_list_ticks config: Acks=All, BatchSize=16384, BootstrapServers=localhost:9092, ClientId=ksql-dsl-client, CompressionType=Snappy, EnableIdempotence=True, LingerMs=5, MaxInFlight=1, RetryBackoffMs=100&#xD;
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]&#xD;
+      schema-registry(producer) config: Url=http://localhost:8081&#xD;
+info: Streamiz.Kafka.Net.Processors.StreamThread[0]&#xD;
+      stream-thread[ksql-dsl-app-rocks_to_list_ticks-f139c641-1ea2-43b7-99cd-d9e64e8f2d7f-stream-thread-0] Starting&#xD;
+info: Streamiz.Kafka.Net.Processors.StreamThread[0]&#xD;
+      stream-thread[ksql-dsl-app-rocks_to_list_ticks-f139c641-1ea2-43b7-99cd-d9e64e8f2d7f-stream-thread-0] State transition from CREATED to STARTING&#xD;
+info: Streamiz.Kafka.Net.Kafka.Internal.StreamsRebalanceListener[0]&#xD;
+      New partitions assign requested : rocks_to_list_ticks [[0]],ksql-dsl-app-rocks_to_list_ticks-rocks_to_list_ticks-by-stringkey-repartition [[0]]&#xD;
+info: Streamiz.Kafka.Net.Processors.StreamThread[0]&#xD;
+      stream-thread[ksql-dsl-app-rocks_to_list_ticks-f139c641-1ea2-43b7-99cd-d9e64e8f2d7f-stream-thread-0] State transition from STARTING to PARTITIONS_ASSIGNED&#xD;
+info: Streamiz.Kafka.Net.Kafka.Internal.StreamsRebalanceListener[0]&#xD;
+      Partition assignment took 00:00:00.2168131 ms.&#xD;
+      	Currently assigned active tasks: 1-0,0-0&#xD;
+info: Streamiz.Kafka.Net.Processors.StreamThread[0]&#xD;
+      stream-thread[ksql-dsl-app-rocks_to_list_ticks-f139c641-1ea2-43b7-99cd-d9e64e8f2d7f-stream-thread-0] State transition from PARTITIONS_ASSIGNED to RUNNING&#xD;
+info: Streamiz.Kafka.Net.KafkaStream[0]&#xD;
+      stream-application[ksql-dsl-app-rocks_to_list_ticks] State transition from REBALANCING to RUNNING&#xD;
+info: Streamiz.Kafka.Net.Processors.Internal.ProcessorStateManager[0]&#xD;
+      State store rocks_to_list_ticks did not find checkpoint offset, hence would default to the starting offset at changelog ksql-dsl-app-rocks_to_list_ticks-rocks_to_list_ticks-changelog [[0]]&#xD;
+info: Streamiz.Kafka.Net.Processors.StreamTask[0]&#xD;
+      stream-task[1|0] Task 1-0 state transition from CREATED to RESTORING&#xD;
+info: Streamiz.Kafka.Net.Processors.StreamTask[0]&#xD;
+      stream-task[1|0] Restoration will start soon.&#xD;
+info: Streamiz.Kafka.Net.Processors.StreamTask[0]&#xD;
+      stream-task[0|0] Task 0-0 state transition from CREATED to RUNNING&#xD;
+info: Streamiz.Kafka.Net.Processors.Internal.StoreChangelogReader[0]&#xD;
+      Finished restoring changelog rocks_to_list_ticks to store ksql-dsl-app-rocks_to_list_ticks-rocks_to_list_ticks-changelog [[0]] with a total number of 0 records&#xD;
+info: Streamiz.Kafka.Net.Processors.StreamTask[0]&#xD;
+      stream-task[1|0] Task 1-0 state transition from RESTORING to RUNNING&#xD;
+info: Streamiz.Kafka.Net.Processors.StreamTask[0]&#xD;
+      stream-task[1|0] Restored and ready to run&#xD;
+info: Streamiz.Kafka.Net.Processors.StreamThread[0]&#xD;
+      Restoration took 467ms for all tasks 1-0,0-0&#xD;
+[xUnit.net 00:00:31.23]   Finished:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>
