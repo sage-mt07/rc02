@@ -11,7 +11,7 @@
 - Table を RocksDB にマテリアライズし、`ToListAsync()` で高速に取得できます。
 
 すぐ試す（最短 5 ステップ）
-1) 前提をそろえます
+1) 事前準備をします
 - Kafka / ksqlDB / Schema Registry を起動しておきます。
 - `appsettings.json` に最低限の接続先を設定します。
   - `KsqlDsl:Common:BootstrapServers`
@@ -20,11 +20,11 @@
 
 2) コンテキストを作成します
 ```csharp
-var cfg = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+var cfg = new ConfigurationBuilder()
+  .AddJsonFile("appsettings.json") // 接続先設定を読み込む
+  .Build();
 var ctx = KsqlContextBuilder.Create()
-  .UseConfiguration(cfg)
-  .UseSchemaRegistry(cfg["KsqlDsl:SchemaRegistry:Url"]!)
-  .EnableLogging(LoggerFactory.Create(b => b.AddConsole()))
+  .UseConfiguration(cfg) // 読み込んだ接続設定を適用
   .BuildContext<MyAppContext>();
 ```
 
