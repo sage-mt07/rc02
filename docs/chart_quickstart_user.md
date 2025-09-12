@@ -71,7 +71,7 @@ await ctx.Set<Rate>().AddAsync(new Rate {
   Broker = "B1", Symbol = "S1", Timestamp = DateTime.UtcNow, Bid = 100
 });
 ```
-- Stream は `ForEachAsync` で購読して受信します。
+- Stream は `ForEachAsync()` で購読して受信します。
 ```csharp
 await ctx.Set<Bar>().ForEachAsync(b => { Console.WriteLine(b.Symbol); return Task.CompletedTask; });
 ```
@@ -86,7 +86,7 @@ var list = await ctx.Set<Bar>().ToListAsync();
 - 日足以上を作る場合は `dayKey` を付けます。これは同一営業日を識別するキー列です。
 - すべての足は基底の1秒足から直接生成します。例として5分足や15分足も1秒足から作ります。
 - 確定値 final と速報値 live は DAG（処理の流れ＝依存グラフ）を分けます。
-- 取得方式は、Table は `ToListAsync()`、Stream は `ForEachAsync` で購読します。
+- 取得方式は、Table は `ToListAsync()`、Stream は `ForEachAsync()` で購読します。
 - 伝達時間は環境により変動します。通常は 50〜200ms、起動直後は 0.5〜3 秒が目安です。
 上記を押さえて典型的な検証エラーに備えてください。
 
