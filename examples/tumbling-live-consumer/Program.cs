@@ -31,46 +31,54 @@ public class MarketSchedule
 
 public class TumbleContext : KsqlContext
 {
-    public TumbleContext(KsqlContextOptions options) : base(options.Configuration!, options.LoggerFactory) { }
-    public TumbleContext(IConfiguration configuration, ILoggerFactory? loggerFactory = null) : base(configuration, loggerFactory) { }
+    private readonly bool _useSchedule;
+    public TumbleContext(KsqlContextOptions options, bool useSchedule = false) : base(options.Configuration!, options.LoggerFactory) { _useSchedule = useSchedule; }
+    public TumbleContext(IConfiguration configuration, ILoggerFactory? loggerFactory = null, bool useSchedule = false) : base(configuration, loggerFactory) { _useSchedule = useSchedule; }
 
     public EventSet<DedupRateRecord> Rates { get; set; }
     public EventSet<OneMinuteCandle> Candles { get; set; }
+    public EventSet<MarketSchedule> Schedules { get; set; }
 
     protected override void OnModelCreating(IModelBuilder b)
     {
-        // Simple 1m tumbling OHLC
-        b.Entity<OneMinuteCandle>().ToQuery(q => q
-            .From<DedupRateRecord>()
-            .Tumbling(x => x.Ts, new Kafka.Ksql.Linq.Query.Dsl.Windows { Minutes = new[] { 1 } })
-            .GroupBy(x => new { x.Broker, x.Symbol })
-            .Select(g => new OneMinuteCandle
-            {
-                Broker = g.Key.Broker,
-                Symbol = g.Key.Symbol,
-                BarStart = g.WindowStart(),
-                Open = g.EarliestByOffset(x => x.Bid),
-                High = g.Max(x => x.Bid),
-                Low = g.Min(x => x.Bid),
-                Close = g.LatestByOffset(x => x.Bid)
-            }));
-
-        // MarketSchedule 連携版（必要に応じて有効化）
-        // b.Entity<OneMinuteCandle>().ToQuery(q => q
-        //    .From<DedupRateRecord>()
-        //    .Tumbling(x => x.Ts, new Kafka.Ksql.Linq.Query.Dsl.Windows { Minutes = new[] { 1 } })
-        //    .TimeFrame<MarketSchedule>((r, s) => r.Broker == s.Broker && r.Symbol == s.Symbol && r.Ts >= s.OpenTime && r.Ts < s.CloseTime)
-        //    .GroupBy(x => new { x.Broker, x.Symbol })
-        //    .Select(g => new OneMinuteCandle
-        //    {
-        //        Broker = g.Key.Broker,
-        //        Symbol = g.Key.Symbol,
-        //        BarStart = g.WindowStart(),
-        //        Open = g.EarliestByOffset(x => x.Bid),
-        //        High = g.Max(x => x.Bid),
-        //        Low = g.Min(x => x.Bid),
-        //        Close = g.LatestByOffset(x => x.Bid)
-        //    }));
+        b.Entity<MarketSchedule>();
+        if (!_useSchedule)
+        {
+            // Simple 1m tumbling OHLC
+            b.Entity<OneMinuteCandle>().ToQuery(q => q
+                .From<DedupRateRecord>()
+                .Tumbling(x => x.Ts, new Kafka.Ksql.Linq.Query.Dsl.Windows { Minutes = new[] { 1 } })
+                .GroupBy(x => new { x.Broker, x.Symbol })
+                .Select(g => new OneMinuteCandle
+                {
+                    Broker = g.Key.Broker,
+                    Symbol = g.Key.Symbol,
+                    BarStart = g.WindowStart(),
+                    Open = g.EarliestByOffset(x => x.Bid),
+                    High = g.Max(x => x.Bid),
+                    Low = g.Min(x => x.Bid),
+                    Close = g.LatestByOffset(x => x.Bid)
+                }));
+        }
+        else
+        {
+            // NOTE: 現行DSLでは TimeFrame() 直後に GroupBy() を許可していないため、
+            // サンプルではシンプル版と同等クエリを適用。TimeFrame 版は設計更新後に有効化する。
+            b.Entity<OneMinuteCandle>().ToQuery(q => q
+                .From<DedupRateRecord>()
+                .Tumbling(x => x.Ts, new Kafka.Ksql.Linq.Query.Dsl.Windows { Minutes = new[] { 1 } })
+                .GroupBy(x => new { x.Broker, x.Symbol })
+                .Select(g => new OneMinuteCandle
+                {
+                    Broker = g.Key.Broker,
+                    Symbol = g.Key.Symbol,
+                    BarStart = g.WindowStart(),
+                    Open = g.EarliestByOffset(x => x.Bid),
+                    High = g.Max(x => x.Bid),
+                    Low = g.Min(x => x.Bid),
+                    Close = g.LatestByOffset(x => x.Bid)
+                }));
+        }
     }
 }
 
@@ -79,7 +87,27 @@ class Program
     static async Task Main(string[] args)
     {
         var cfg = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-        await using var ctx = new TumbleContext(cfg, LoggerFactory.Create(b => b.AddConsole()));
+        bool withSchedule = false;
+        foreach (var a in args)
+        {
+            if (a.Equals("--with-schedule", StringComparison.OrdinalIgnoreCase)) withSchedule = true;
+        }
+
+        await using var ctx = new TumbleContext(cfg, LoggerFactory.Create(b => b.AddConsole()), withSchedule);
+
+        // オプション: スケジュールを1日分シード
+        if (withSchedule)
+        {
+            var today = DateTime.UtcNow.Date;
+            await ctx.Schedules.AddAsync(new MarketSchedule
+            {
+                Broker = "demo",
+                Symbol = "EURUSD",
+                OpenTime = today,
+                CloseTime = today.AddDays(1)
+            });
+            await Task.Delay(500);
+        }
 
         Console.WriteLine("[tumbling] consuming 1m candles (Ctrl+C to stop)");
         using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromMinutes(1));

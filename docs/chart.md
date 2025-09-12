@@ -39,53 +39,67 @@
 - WhenEmpty: 欠損埋めをしたいときだけ書く
 
 ``` mermaid
+flowchart TB
+  %% 入力とスケジュールフィルタ
+  subgraph Upstream["上流（取引時間外の除外）"]
+    raw["<raw>"]
+    filtered["<raw>_filtered\n(取引時間外を除外)"]
+    raw --> filtered
+  end
 
-flowchart TD
-    subgraph "C# アプリケーション"
-        DSL["DSL（足生成）"]
-    end
+  %% DSL レイヤ
+  subgraph DSL["C# アプリケーション / DSL"]
+    TF["TimeFrame<MarketSchedule>\n(dayKey: MarketDate など)"]
+    Tumble["Tumbling\n(複数足を一括生成)"]
+    GroupBy["GroupBy(主キー)"]
+    Select["Select(OHLC 等の仕様)"]
+  end
 
-    DSL --> TF["TimeFrame<MarketSchedule>"]
-    TF --> Tumble["Tumbling (複数足生成)"]
-    Tumble --> GroupBy["GroupBy (主キー指定)"]
-    GroupBy --> Select["Select (OHLC 仕様)"]
-    Select --> WhenEmpty["WhenEmpty (任意: 欠損埋め)"]
+  filtered --> TF
+  TF --> Tumble --> GroupBy --> Select
 
-    subgraph "KSQL Generator"
-        KSQL["KSQL Generator"]
-    end
-    WhenEmpty --> KSQL
+  %% 1s_final ハブ（唯一の親）
+  subgraph Hub["確定 1 秒足ハブ"]
+    final1s["bar_1s_final (TABLE)"]
+    final1s_s["bar_1s_final_s (STREAM)\n※ 上位足の唯一の親入力"]
+    final1s --> final1s_s
+  end
 
-    KSQL -->|DDL/CSAS/CTAS| KsqlDB["KsqlDB"]
+  Select -->|DDL/CSAS/CTAS| final1s
 
-    %% KsqlDBと外部
-    subgraph "ローカルキャッシュ"
-        Streamiz["Streamiz"]
-        RocksDB["RocksDB\n状態ストア"]
-        Streamiz --> RocksDB
-    end
-    KsqlDB --> Streamiz
+  %% 上位足（すべて 1s_final_s からフラット派生）
+  subgraph Live["上位足（live系: EMIT CHANGES）"]
+    m1["bar_1m_live"]
+    m5["bar_5m_live"]
+    m15["bar_15m_live"]
+    h1["bar_1h_live"]
+    d1["bar_1d_live"]
+    w1["bar_1w_live"]
+  end
 
-    subgraph "スキーマ管理"
-        SchemaRegistry["Schema Registry"]
-        AvroSer["Avro Serializer/\nDeserializer"]
-        SchemaRegistry --> AvroSer
-    end
-    KsqlDB -->|Read/Write| SchemaRegistry
+  final1s_s --> m1
+  final1s_s --> m5
+  final1s_s --> m15
+  final1s_s --> h1
+  final1s_s --> d1
+  final1s_s --> w1
 
-    subgraph "Kafka"
-        KafkaTopics["Kafka Topics"]
-    end
-    AvroSer --> KafkaTopics
-    KafkaTopics --> KsqlDB
+  %% 参照先（省略形）
+  subgraph Storage["ローカルキャッシュ"]
+    streamiz["Streamiz"]
+    rocks["RocksDB 状態ストア"]
+    streamiz --> rocks
+  end
+  m1 --> streamiz
+  m5 --> streamiz
+  m15 --> streamiz
+  h1 --> streamiz
+  d1 --> streamiz
+  w1 --> streamiz
 
-    %% 運用系
-    subgraph "運用機能"
-        DLQ["DLQ / Retry / Commit"]
-        Streaming["Streaming Push/Pull"]
-    end
-    KsqlDB --> DLQ
-    KsqlDB --> Streaming
+  %% コメント用の注釈
+  classDef hint fill:#fffbe6,stroke:#f0e6a0,color:#333;
+
 
 ``` 
 
