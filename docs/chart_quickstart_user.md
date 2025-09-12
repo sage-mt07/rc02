@@ -65,27 +65,27 @@ modelBuilder.Entity<Bar>().ToQuery(q => q
 ```
 
 5) 送受信を確かめる
-- 送信します（Stream / Table 共通）。
+- Stream と Table 共通で送信します。
 ```csharp
 await ctx.Set<Rate>().AddAsync(new Rate {
   Broker = "B1", Symbol = "S1", Timestamp = DateTime.UtcNow, Bid = 100
 });
 ```
-- 受信します（Stream は `ForEachAsync` で購読）。
+- Stream は `ForEachAsync` で購読して受信します。
 ```csharp
 await ctx.Set<Bar>().ForEachAsync(b => { Console.WriteLine(b.Symbol); return Task.CompletedTask; });
 ```
-- 取得します（Table は RocksDB から `ToListAsync()` で取得）。
+- Table は RocksDB から `ToListAsync()` で取得します。
 ```csharp
 var list = await ctx.Set<Bar>().ToListAsync();
 ```
 
 使うときのポイント
 実装で迷わないためのポイントをまとめました。
-- `Select` には `g.WindowStart()` を 1 回だけ入れます（重複はエラー）。
-- 日足以上を作る場合は `dayKey`（日足以上で同一営業日を識別するキー列）を付けます。
-- すべての足は基底の1秒足から直接生成します（例: 5分足や15分足も1秒足から作ります）。
-- 確定値（final）と速報値（live）は別DAG（処理の流れ＝依存グラフ）にします。
+- `Select` には `g.WindowStart()` を1回だけ入れます。重複するとエラーです。
+- 日足以上を作る場合は `dayKey` を付けます。これは同一営業日を識別するキー列です。
+- すべての足は基底の1秒足から直接生成します。例として5分足や15分足も1秒足から作ります。
+- 確定値 final と速報値 live は処理の流れ（DAG）を分けます。
 - 取得方式は、Table は `ToListAsync()`、Stream は `ForEachAsync` で購読します。
 - 伝達時間は環境により変動します。通常は 50〜200ms、起動直後は 0.5〜3 秒が目安です。
 上記を押さえれば、典型的な検証エラーの対処もスムーズです。
@@ -93,15 +93,15 @@ var list = await ctx.Set<Bar>().ToListAsync();
 自動チェックと対処のコツ
 内部ルールの多くは自動で検証します。エラーが出たら次を確認してください。
 - 「Windowed query requires exactly one WindowStart()」
-  - 対処: Select に `g.WindowStart()` を 1 回だけ含めてください（重複や欠落に注意）。
+  - 対処: Select に `g.WindowStart()` を1回だけ含めてください。重複や欠落に注意します。
 - 「Windows ≥ 1 minute must be whole-minute multiples」
-  - 対処: 1 分以上の窓サイズは 1 分単位の整数倍にしてください（例: 1m, 5m, 15m）。
+  - 対処: 1分以上の窓サイズは1分単位の整数倍にしてください。例: 1m, 5m, 15m。
 - 「Windows must be multiples of the base unit」などの窓サイズ系エラー
-  - 対処: 秒台の微妙なサイズ指定を避け、一般的なサイズ（1m/5m/15m/1h/1d など）を選んでください。
+  - 対処: 秒台の細かいサイズ指定を避け、1m/5m/15m/1h/1d など一般的なサイズを選びます。
 これで基礎的な検証エラーは解消できます。続いて命名規約も確認してください。
 
 主な命名規約
-- `<entity>_<timeframe>_(live|final)` の形式を使います（例: `bar_1m_live`, `bar_1d_live`）。
+- 形式は `<entity>_<timeframe>_(live|final)` です。例: `bar_1m_live`, `bar_1d_live`。
 - timeframe は `s`=秒, `m`=分, `h`=時間, `d`=日, `mo`=月 です。
 - `1s_final` テーブルが上位足の親になります。
 
