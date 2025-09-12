@@ -1,22 +1,31 @@
 using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Core.Modeling;
+using Kafka.Ksql.Linq.Application;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
-[Topic("orders")]
+[KsqlTopic("orders")]
 public class Order { public int Id { get; set; } public int CustomerId { get; set; } public decimal Amount { get; set; } }
 
-[Topic("customers")]
+[KsqlTopic("customers")]
 public class Customer { public int Id { get; set; } public string Name { get; set; } = string.Empty; public bool IsActive { get; set; } }
 
 public class OrderSummary { public int OrderId { get; set; } public string CustomerName { get; set; } = string.Empty; }
 
 public class ViewContext : KsqlContext
 {
+    public ViewContext(KsqlContextOptions options) : base(options.Configuration!, options.LoggerFactory) { }
+    public ViewContext(Microsoft.Extensions.Configuration.IConfiguration configuration, Microsoft.Extensions.Logging.ILoggerFactory? loggerFactory = null) : base(configuration, loggerFactory) { }
+    public EventSet<Order> Orders { get; set; }
+    public EventSet<Customer> Customers { get; set; }
+    public EventSet<OrderSummary> Summaries { get; set; }
     protected override void OnModelCreating(IModelBuilder b)
     {
+        // ToQuery 定義はそのまま
         b.Entity<Order>();
         b.Entity<Customer>();
         b.Entity<OrderSummary>().ToQuery(q => q
@@ -32,18 +41,14 @@ class Program
     static async Task Main()
     {
         var cfg = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-        var ctx = KsqlContextBuilder.Create()
-            .UseConfiguration(cfg)
-            .UseSchemaRegistry(cfg["KsqlDsl:SchemaRegistry:Url"]!)
-            .EnableLogging(LoggerFactory.Create(b => b.AddConsole()))
-            .BuildContext<ViewContext>();
+        await using var ctx = new ViewContext(cfg, LoggerFactory.Create(b => b.AddConsole()));
 
         // Produce sample rows
-        await ctx.Set<Customer>().AddAsync(new Customer { Id = 1, Name = "Alice", IsActive = true });
-        await ctx.Set<Order>().AddAsync(new Order { Id = 100, CustomerId = 1, Amount = 42.0m });
+        await ctx.Customers.AddAsync(new Customer { Id = 1, Name = "Alice", IsActive = true });
+        await ctx.Orders.AddAsync(new Order { Id = 100, CustomerId = 1, Amount = 42.0m });
 
         await Task.Delay(500);
         using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromMinutes(5));
-        await ctx.Set<OrderSummary>().ForEachAsync(s => { Console.WriteLine($"{s.OrderId}:{s.CustomerName}"); return Task.CompletedTask; }, cancellationToken: cts.Token);
+        await ctx.Summaries.ForEachAsync(s => { Console.WriteLine($"{s.OrderId}:{s.CustomerName}"); return Task.CompletedTask; }, cancellationToken: cts.Token);
     }
 }

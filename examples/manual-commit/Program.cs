@@ -1,11 +1,13 @@
 using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Application;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
-[Topic("manual-commit-orders")]
+[KsqlTopic("manual-commit-orders")]
 public class ManualCommitOrder
 {
     public int OrderId { get; set; }
@@ -14,12 +16,9 @@ public class ManualCommitOrder
 
 public class ManualCommitContext : KsqlContext
 {
-    protected override void OnModelCreating(IModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<ManualCommitOrder>();
-    }
-
-    public EventSet<ManualCommitOrder> Orders => Set<ManualCommitOrder>();
+    public ManualCommitContext(KsqlContextOptions options) : base(options.Configuration!, options.LoggerFactory) { }
+    public EventSet<ManualCommitOrder> Orders { get; set; }
+    protected override void OnModelCreating(IModelBuilder modelBuilder) { }
 }
 
 class Program
@@ -30,11 +29,7 @@ class Program
             .AddJsonFile("appsettings.json")
             .Build();
 
-        var context = KsqlContextBuilder.Create()
-            .UseConfiguration(configuration)
-            .UseSchemaRegistry(configuration["KsqlDsl:SchemaRegistry:Url"]!)
-            .EnableLogging(LoggerFactory.Create(builder => builder.AddConsole()))
-            .BuildContext<ManualCommitContext>();
+        await using var context = new ManualCommitContext(configuration, LoggerFactory.Create(b => b.AddConsole()));
 
         var order = new ManualCommitOrder
         {

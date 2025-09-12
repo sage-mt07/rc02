@@ -1,25 +1,27 @@
 using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Application;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
-[Topic("orders")]
+[KsqlTopic("orders")]
 public class Order
 {
     public int Id { get; set; }
 
-    [DecimalPrecision(18, 2)]
+    [KsqlDecimal(precision: 18, scale: 2)]
     public decimal Amount { get; set; }
 }
 
 public class OrderContext : KsqlContext
 {
-    protected override void OnModelCreating(IModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<Order>();
-    }
+    public OrderContext(KsqlContextOptions options) : base(options.Configuration!, options.LoggerFactory) { }
+    public OrderContext(Microsoft.Extensions.Configuration.IConfiguration configuration, Microsoft.Extensions.Logging.ILoggerFactory? loggerFactory = null) : base(configuration, loggerFactory) { }
+    public EventSet<Order> Orders { get; set; }
+    protected override void OnModelCreating(IModelBuilder modelBuilder) { }
 }
 
 class Program
@@ -30,11 +32,7 @@ class Program
             .AddJsonFile("appsettings.json")
             .Build();
 
-        var context = KsqlContextBuilder.Create()
-            .UseConfiguration(configuration)
-            .UseSchemaRegistry(configuration["KsqlDsl:SchemaRegistry:Url"]!)
-            .EnableLogging(LoggerFactory.Create(builder => builder.AddConsole()))
-            .BuildContext<OrderContext>();
+        await using var context = new OrderContext(configuration, LoggerFactory.Create(b => b.AddConsole()));
 
         var order = new Order
         {
@@ -42,10 +40,10 @@ class Program
             Amount = -42.5m
         };
 
-        await context.Set<Order>().AddAsync(order);
+        await context.Orders.AddAsync(order);
         await Task.Delay(500);
 
-        await context.Set<Order>()
+        await context.Orders
             .OnError(ErrorAction.DLQ)
             .WithRetry(3)
             .ForEachAsync(o =>

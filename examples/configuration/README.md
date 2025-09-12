@@ -1,27 +1,9 @@
-# Configuration Example
+# configuration (consolidated)
 
-This sample demonstrates how to switch logging output between development and production environments using **Kafka.Ksql.Linq**.
-The default `appsettings.json` is tuned for debugging with `LogLevel:Debug`.
-`Program.cs` is copied from the Hello World example. `appsettings.Development.json` enables verbose logging for development, while
-`appsettings.Production.json` suppresses most output for a quieter runtime. Replace the file referenced in `Program.cs` as needed before running.
-`docker-compose.yml` provides the required Kafka and ksqlDB services.
+appsettings.json からの設定読み込みと Builder/属性マッピングの最小例をまとめます。
+従来の以下を統合対象とします。
+- `examples/configuration`（記事的）
+- `examples/configuration-mapping`
 
-## Prerequisites
+現時点では従来プロジェクトを参照してください（コードは順次こちらへ移行します）。
 
-- .NET 8 SDK
-- Docker (for Kafka and ksqlDB)
-
-## Setup
-
-1. Start the local Kafka stack:
-   ```bash
-   docker-compose up -d
-   ```
-2. Run your application with the desired configuration, for example:
-   ```bash
-   dotnet run --no-build --environment Development
-   ```
-
-## Design Document Reference
-
-- [ロギングとクエリ可視化](../../docs/oss_design_combined.md#8ロギングとクエリ可視化)

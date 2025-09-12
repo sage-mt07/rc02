@@ -1,16 +1,18 @@
 using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Core.Abstractions;
+using Kafka.Ksql.Linq.Core.Attributes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Kafka.Ksql.Linq.Application;
 using System;
 using System.Threading.Tasks;
 
-[Topic("hello-world")]
+[KsqlTopic("hello-world")]
 public class HelloMessage
 {
     public int Id { get; set; }
 
-    [AvroTimestamp]
+    [KsqlTimestamp]
     public DateTime CreatedAt { get; set; }
 
     public string Text { get; set; } = string.Empty;
@@ -18,10 +20,9 @@ public class HelloMessage
 
 public class HelloKafkaContext : KsqlContext
 {
-    protected override void OnModelCreating(IModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<HelloMessage>();
-    }
+    public HelloKafkaContext(KsqlContextOptions options) : base(options.Configuration!, options.LoggerFactory) { }
+    public EventSet<HelloMessage> HelloMessages { get; set; }
+    protected override void OnModelCreating(IModelBuilder modelBuilder) { }
 }
 
 class Program
@@ -46,11 +47,11 @@ class Program
             Text = "Hello World"
         };
 
-        await context.Set<HelloMessage>().AddAsync(message);
+        await context.HelloMessages.AddAsync(message);
         // wait briefly for message to be published
         await Task.Delay(500);
 
-        await context.Set<HelloMessage>().ForEachAsync(m =>
+        await context.HelloMessages.ForEachAsync(m =>
         {
             Console.WriteLine($"Received: {m.Text}");
             return Task.CompletedTask;

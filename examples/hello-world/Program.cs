@@ -4,13 +4,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Application;
 
-[Topic("hello-world")]
+[KsqlTopic("hello-world")]
 public class HelloMessage
 {
     public int Id { get; set; }
 
-    [AvroTimestamp]
+    [KsqlTimestamp]
     public DateTime CreatedAt { get; set; }
 
     public string Text { get; set; } = string.Empty;
@@ -18,9 +20,11 @@ public class HelloMessage
 
 public class HelloKafkaContext : KsqlContext
 {
+    public HelloKafkaContext(KsqlContextOptions options) : base(options.Configuration!, options.LoggerFactory) { }
+    public HelloKafkaContext(Microsoft.Extensions.Configuration.IConfiguration configuration, Microsoft.Extensions.Logging.ILoggerFactory? loggerFactory = null) : base(configuration, loggerFactory) { }
+    public EventSet<HelloMessage> HelloMessages { get; set; }
     protected override void OnModelCreating(IModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<HelloMessage>();
     }
 }
 
@@ -32,11 +36,7 @@ class Program
             .AddJsonFile("appsettings.json")
             .Build();
 
-        var context = KsqlContextBuilder.Create()
-            .UseConfiguration(configuration)
-            .UseSchemaRegistry(configuration["KsqlDsl:SchemaRegistry:Url"]!)
-            .EnableLogging(LoggerFactory.Create(builder => builder.AddConsole()))
-            .BuildContext<HelloKafkaContext>();
+        await using var context = new HelloKafkaContext(configuration, LoggerFactory.Create(b => b.AddConsole()));
 
         var message = new HelloMessage
         {
@@ -45,11 +45,11 @@ class Program
             Text = "Hello World"
         };
 
-        await context.Set<HelloMessage>().AddAsync(message);
+        await context.HelloMessages.AddAsync(message);
         // wait until the stream is ready
         await context.WaitForEntityReadyAsync<HelloMessage>(TimeSpan.FromSeconds(5));
 
-        await context.Set<HelloMessage>().ForEachAsync(m =>
+        await context.HelloMessages.ForEachAsync(m =>
         {
             Console.WriteLine($"Received: {m.Text}");
             return Task.CompletedTask;

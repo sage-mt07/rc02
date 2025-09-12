@@ -1,6 +1,7 @@
 using Kafka.Ksql.Linq;
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Attributes;
+using Kafka.Ksql.Linq.Application;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -11,8 +12,10 @@ public class RefData { public string Key { get; set; } = ""; public string Value
 
 public class CacheContext : KsqlContext
 {
-    protected override void OnModelCreating(IModelBuilder b)
-        => b.Entity<RefData>();
+    public CacheContext(KsqlContextOptions options) : base(options.Configuration!, options.LoggerFactory) { }
+    public CacheContext(Microsoft.Extensions.Configuration.IConfiguration configuration, Microsoft.Extensions.Logging.ILoggerFactory? loggerFactory = null) : base(configuration, loggerFactory) { }
+    public EventSet<RefData> RefDatas { get; set; }
+    protected override void OnModelCreating(IModelBuilder b) { }
 }
 
 class Program
@@ -20,13 +23,9 @@ class Program
     static async Task Main()
     {
         var cfg = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-        var ctx = KsqlContextBuilder.Create()
-            .UseConfiguration(cfg)
-            .UseSchemaRegistry(cfg["KsqlDsl:SchemaRegistry:Url"]!)
-            .EnableLogging(LoggerFactory.Create(b => b.AddConsole()))
-            .BuildContext<CacheContext>();
+        await using var ctx = new CacheContext(cfg, LoggerFactory.Create(b => b.AddConsole()));
 
-        var rows = await ctx.Set<RefData>().ToListAsync();
+        var rows = await ctx.RefDatas.ToListAsync();
         Console.WriteLine($"Rows: {rows.Count}");
     }
 }
