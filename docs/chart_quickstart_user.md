@@ -71,11 +71,11 @@ await ctx.Set<Rate>().AddAsync(new Rate {
   Broker = "B1", Symbol = "S1", Timestamp = DateTime.UtcNow, Bid = 100
 });
 ```
-- 受信します（Stream は `Push（購読方式）`）。
+- 受信します（Stream は `ForEachAsync` で購読）。
 ```csharp
 await ctx.Set<Bar>().ForEachAsync(b => { Console.WriteLine(b.Symbol); return Task.CompletedTask; });
 ```
-- 取得します（Table は RocksDB から `Pull（取得方式）` します）。
+- 取得します（Table は RocksDB から `ToListAsync()` で取得）。
 ```csharp
 var list = await ctx.Set<Bar>().ToListAsync();
 ```
