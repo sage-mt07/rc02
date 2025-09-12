@@ -103,7 +103,7 @@ var list = await ctx.Set<Bar>().ToListAsync();
 命名規約（代表）
 - `<entity>_<timeframe>_(live|final)` の形式を使います（例: `bar_1m_live`, `bar_1d_live`）。
 - timeframe は `s`=秒, `m`=分, `h`=時間, `d`=日, `mo`=月 です。
-- 1s_final / 1s_final_s は上位足の唯一の親です。
+- `1s_final` テーブルが上位足の親になります。
 
 トラブル対策（抜粋）
 - 反映が遅い場合は、起動直後に数秒待機し、短いポーリングで再試行してください。
