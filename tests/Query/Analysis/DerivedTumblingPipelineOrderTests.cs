@@ -45,8 +45,8 @@ public class DerivedTumblingPipelineOrderTests
             _ => typeof(object), new MappingRegistry(), new(), NullLoggerFactory.Instance.CreateLogger("test"));
 
         Assert.Collection(order,
-            ddl => Assert.StartsWith("CREATE TABLE foo_1s_final", ddl),
             ddl => Assert.StartsWith("CREATE STREAM foo_1s_final_s", ddl),
+            ddl => Assert.StartsWith("CREATE TABLE foo_1s_final", ddl),
             ddl => Assert.StartsWith("CREATE TABLE foo_hb_1s", ddl),
             ddl => Assert.StartsWith("CREATE TABLE foo_1m_live", ddl),
             ddl => Assert.StartsWith("CREATE TABLE foo_5m_live", ddl)

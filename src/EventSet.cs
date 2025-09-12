@@ -187,7 +187,7 @@ public abstract class EventSet<T> : IEntitySet<T> where T : class
         IAsyncEnumerable<(T Entity, Dictionary<string, string> Headers, MessageMeta Meta)> source,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        var registrar = _commitManager as ICommitRegistrar;
+        var registrar = _commitManager as global::Kafka.Ksql.Linq.EventSet<object>.ICommitRegistrar;
         await foreach (var (entity, headers, meta) in source.WithCancellation(cancellationToken))
         {
             registrar?.Track(entity!, meta);

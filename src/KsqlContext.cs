@@ -118,7 +118,7 @@ public abstract partial class KsqlContext : IKsqlContext
                  _loggerFactory);
             _dlqProducer = new Kafka.Ksql.Linq.Messaging.Producers.DlqProducer(_producerManager, _dslOptions.DlqTopicName);
 
-            _commitManager = new ManualCommitManager();
+            _commitManager = new ManualCommitManager(_loggerFactory?.CreateLogger<Messaging.Consumers.ManualCommitManager>());
 
             ConfigureModel();
             ResolveEntityConfigurations();
