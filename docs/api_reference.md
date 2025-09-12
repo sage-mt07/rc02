@@ -206,7 +206,7 @@ WHERE Amount > 0;
 - `[KsqlTimeFrameClose]`: タイムフレームの確定時刻を示すプロパティを明示。
   - 備考: 集計の「確定」タイミング列を区別したいケースで使用。
 
-注記: スケジュール範囲の扱いは属性ではなく、`TimeFrame<TSchedule>` と `MarketSchedule` エンティティ（`Open/Close/MarketDate`）の組み合わせで行います。`[ScheduleRange]` は現行実装で使用していないため公開リファレンスから除外しました。
+注記: スケジュール範囲の扱いは属性ではなく、`TimeFrame<TSchedule>` と `MarketSchedule` エンティティ（`Open/Close/MarketDate`）の組み合わせで行います。`ScheduleRangeAttribute` は削除されました。
 
 ### コンテキストとビルダー
 - `KsqlContextBuilder.Create()`: ビルダーを作る。

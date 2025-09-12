@@ -1,8 +1,5 @@
-using Kafka.Ksql.Linq.Core.Attributes;
-
 namespace DailyComparisonLib.Models;
 
-[ScheduleRange(nameof(OpenTime), nameof(CloseTime))]
 public class MarketSchedule
 {
     public string Broker { get; set; } = null!;
