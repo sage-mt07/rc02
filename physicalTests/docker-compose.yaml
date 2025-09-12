@@ -59,14 +59,19 @@ services:
       KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
       KSQL_KSQL_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
       KSQL_STREAMS_NUM_STREAM_THREADS: 2      
-      KSQL_HEAP_OPTS: "-Xms3g -Xmx4g -XX:+UseG1GC -XX:MaxGCPauseMillis=200"
+      # GC settings (optimize pause time)
+      KSQL_HEAP_OPTS: "-Xms3g -Xmx4g -XX:+UseG1GC -XX:MaxGCPauseMillis=100"
       # ksqlDBのメモリ関連設定
       KSQL_KSQL_STREAMS_CACHE_MAX_BYTES_BUFFERING: "1073741824"  # 1GB
       KSQL_KSQL_STREAMS_COMMIT_INTERVAL_MS: "2000"
       # RocksDBのメモリ設定
       KSQL_KSQL_STREAMS_STATE_DIR: "/tmp/kafka-streams"  
-      KSQL_LOG4J_ROOT_LOGLEVEL: DEBUG
-      KSQL_LOG4J_LOGGERS: "io.confluent.ksql.logging.query.QueryLogger:DEBUG"
+      # Logging: reduce verbosity for performance
+      KSQL_LOG4J_ROOT_LOGLEVEL: INFO
+      # KSQL_LOG4J_LOGGERS removed to avoid DEBUG noise
+      # Query timeout tuning
+      KSQL_KSQL_QUERY_TIMEOUT_MS: "300000"               # 5 minutes
+      KSQL_KSQL_QUERY_PULL_MAX_ALLOWED_OFFSET_LAG: "9223372036854775807"
         
   schema-registry:
     image: confluentinc/cp-schema-registry:7.4.10

@@ -29,3 +29,8 @@ dotnet run
 ## License
 - ソースコードは [MIT License](./LICENSE) の下で公開
 - ドキュメントは [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/) の下で公開
+
+## Roadmap
+- 2025 Q4
+  - Oneshot対応: ksqldbに単発登録を行うPod構成に対応する機能を提供
+  - .NET 10 対応: 最新ランタイムでの動作保証

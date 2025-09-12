@@ -8,6 +8,9 @@ using Microsoft.Extensions.Logging;
 using Xunit;
 using Confluent.Kafka;
 using Confluent.Kafka.Admin;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 
 namespace Kafka.Ksql.Linq.Tests.Integration;
 
@@ -141,10 +144,45 @@ public class BarDslExplainTests
             }
             throw new TimeoutException($"No rows for {table}. Last: {last?.Message}");
         }
-        // push起動は残しつつ、最終的な存在確認は pull で行う
-        // 集計テーブルの生成を確認
-        var wait1mTask = CountEventuallyAsync("bar_1m_live", 1);
-        var wait5mTask = CountEventuallyAsync("bar_5m_live", 1);
+        // push起動はHTTP直叩きで統一（SDK差異を回避）
+        async Task<int> QueryStreamCountHttpAsync(string sql, int limit, TimeSpan timeout)
+        {
+            using var http = new HttpClient { BaseAddress = new Uri("http://localhost:8088") };
+            var payload = new
+            {
+                sql,
+                properties = new System.Collections.Generic.Dictionary<string, object>
+                {
+                    ["ksql.streams.auto.offset.reset"] = "earliest"
+                }
+            };
+            var json = JsonSerializer.Serialize(payload);
+            using var content = new StringContent(json, Encoding.UTF8, "application/json");
+            using var cts = new CancellationTokenSource(timeout);
+            using var req = new HttpRequestMessage(HttpMethod.Post, "/query-stream") { Content = content };
+            using var resp = await http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, cts.Token);
+            resp.EnsureSuccessStatusCode();
+            await using var stream = await resp.Content.ReadAsStreamAsync(cts.Token);
+            using var reader = new System.IO.StreamReader(stream, Encoding.UTF8);
+            int count = 0;
+            while (!reader.EndOfStream && !cts.IsCancellationRequested)
+            {
+                var line = await reader.ReadLineAsync();
+                if (line == null) break;
+                if (line.IndexOf("\"row\"", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    count++;
+                    if (count >= limit) break;
+                }
+            }
+            return count;
+        }
+
+        // 集計テーブルの生成をpushで待機（取りこぼし防止のためAddAsync前に起動）
+        async Task<int> WaitPushAsync(string table, int limit, TimeSpan timeout)
+            => await QueryStreamCountHttpAsync($"SELECT * FROM {table} WHERE Broker='B1' AND Symbol='S1' EMIT CHANGES LIMIT {limit};", limit, timeout);
+        var wait1mTask = WaitPushAsync("bar_1m_live", 2, TimeSpan.FromSeconds(180));
+        var wait5mTask = WaitPushAsync("bar_5m_live", 1, TimeSpan.FromSeconds(180));
 
         // 物理投入（Rate トピックへ）: 大量送信で到達性を担保（120件/約2分分）
         var bids = new[] { 100d, 110d, 90d, 105d, 200d, 210d, 195d, 220d, 215d, 205d };
@@ -157,23 +195,51 @@ public class BarDslExplainTests
             await Task.Delay(5);
         }
 
-        // 最低限の生成を待ったあと、pullで必要件数に達するまで待機
+        // 生成をpushで確認
         _ = await wait1mTask; _ = await wait5mTask;
 
-        async Task<int> WaitPullCountAsync(string table, int min, TimeSpan timeout)
+        async Task<int> WaitPullCountHttpAsync(string table, int min, TimeSpan timeout)
         {
+            using var http = new HttpClient { BaseAddress = new Uri("http://localhost:8088") };
             var deadline = DateTime.UtcNow + timeout;
             while (DateTime.UtcNow < deadline)
             {
                 var sql = $"SELECT BucketStart, Open, High, Low, KsqlTimeFrameClose FROM {table} WHERE Broker='B1' AND Symbol='S1';";
-                var cnt = await ctx.QueryCountAsync(sql, TimeSpan.FromSeconds(10));
-                if (cnt >= min) return cnt;
+                var payload = new { sql };
+                var json = JsonSerializer.Serialize(payload);
+                using var content = new StringContent(json, Encoding.UTF8, "application/json");
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                try
+                {
+                    using var resp = await http.PostAsync("/query", content, cts.Token);
+                    resp.EnsureSuccessStatusCode();
+                    var body = await resp.Content.ReadAsStringAsync(cts.Token);
+                    int cnt = 0;
+                    try
+                    {
+                        using var doc = JsonDocument.Parse(body);
+                        if (doc.RootElement.ValueKind == JsonValueKind.Array)
+                        {
+                            foreach (var el in doc.RootElement.EnumerateArray())
+                            {
+                                if (el.ValueKind == JsonValueKind.Object && el.TryGetProperty("row", out _)) cnt++;
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        // fallback: count occurrences of \"row\"
+                        int idx = 0; while ((idx = body.IndexOf("\"row\"", idx, StringComparison.OrdinalIgnoreCase)) >= 0) { cnt++; idx += 5; }
+                    }
+                    if (cnt >= min) return cnt;
+                }
+                catch { /* ignore and retry */ }
                 await Task.Delay(1000);
             }
             return 0;
         }
-        var c1 = await WaitPullCountAsync("bar_1m_live", 2, TimeSpan.FromSeconds(120));
-        var c5 = await WaitPullCountAsync("bar_5m_live", 1, TimeSpan.FromSeconds(120));
+        var c1 = await WaitPullCountHttpAsync("bar_1m_live", 2, TimeSpan.FromSeconds(120));
+        var c5 = await WaitPullCountHttpAsync("bar_5m_live", 1, TimeSpan.FromSeconds(120));
         Assert.True(c1 >= 2, $"expected >=2 rows for 1m, got {c1}");
         Assert.True(c5 >= 1, $"expected >=1 row for 5m, got {c5}");
 

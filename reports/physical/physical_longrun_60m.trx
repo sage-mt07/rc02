@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="594b0ac5-6a02-42e2-9383-c398f7068f19" name="@sagesoho01 2025-09-12 14:43:13" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-09-12T14:43:13.0313335+09:00" queuing="2025-09-12T14:43:13.0313335+09:00" start="2025-09-12T14:41:17.5704781+09:00" finish="2025-09-12T14:43:13.0392671+09:00" />
+  <TestSettings name="default" id="3c81bb03-cb32-4847-aeb3-d37dd008209a">
+    <Deployment runDeploymentRoot="_sagesoho01_2025-09-12_14_43_13" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="482509ac-16eb-4a34-b4ad-1815d0c6add2" testId="757c3dd1-71d9-1640-b489-8396c560c560" testName="Kafka.Ksql.Linq.Tests.Integration.BarDslLongRunTests.LongRun_1h_Ohlc_And_Grace_Verify" computerName="sagesoho01" duration="00:02:02.5653537" startTime="2025-09-12T14:43:12.9146663+09:00" endTime="2025-09-12T14:43:12.9146802+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="482509ac-16eb-4a34-b4ad-1815d0c6add2" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="Kafka.Ksql.Linq.Tests.Integration.BarDslLongRunTests.LongRun_1h_Ohlc_And_Grace_Verify" storage="/mnt/c/dev/rc02/physicaltests/bin/release/net8.0/kafka.ksql.linq.tests.integration.dll" id="757c3dd1-71d9-1640-b489-8396c560c560">
+      <Execution id="482509ac-16eb-4a34-b4ad-1815d0c6add2" />
+      <TestMethod codeBase="/mnt/c/dev/rc02/physicalTests/bin/Release/net8.0/Kafka.Ksql.Linq.Tests.Integration.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Integration.BarDslLongRunTests" name="LongRun_1h_Ohlc_And_Grace_Verify" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="757c3dd1-71d9-1640-b489-8396c560c560" executionId="482509ac-16eb-4a34-b4ad-1815d0c6add2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="1" executed="1" passed="1" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.6+bf9b858c26 (64-bit .NET 8.0.19)
+[xUnit.net 00:00:00.22]   Discovering: Kafka.Ksql.Linq.Tests.Integration
+[xUnit.net 00:00:00.28]   Discovered:  Kafka.Ksql.Linq.Tests.Integration
+[xUnit.net 00:00:00.28]   Starting:    Kafka.Ksql.Linq.Tests.Integration
+[xUnit.net 00:02:02.90]   Finished:    Kafka.Ksql.Linq.Tests.Integration
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>
