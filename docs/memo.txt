@@ -1,0 +1,164 @@
+marketscheduleを週で運用するためのデータ例を追加
+
+
+追加しました。marketschedule を週運用（月曜起点・土日休み）する際の具体的なデータ例を docs/advanced_rules.md に追記しました。
+
+追加箇所: docs/advanced_rules.md「付録: marketschedule を週で運用するためのデータ例」
+内容概要:
+概念レコード（Mon–Fri のみ、UTC 09:00–15:00、MarketDate は各営業日）
+ksqlDB での CREATE STREAM と INSERT 例
+.NET（AddAsync）での投入コード例（当週の月曜を求めて平日5日分投入）
+Rate 側の投入例（月〜日を投入しても TimeFrame で除外）
+期待される挙動（bar_1d_live は平日5本、bar_1wk_final は週1本、週起点は MarketDate 設計で保証）
+この内容で利用者が「週を月曜スタート、土日休み」の運用をすぐ試せるはずです。必要であれば README から advanced_rules.md へのリンクも追加します。
+
+1 file changed
+
+Undo
+
+View changes
+advanced_rules.md
++82
+-0
+
+2025/5/1はどんな表現になる？
+必ず、月曜日からスケジュールがスタートするように登録すればいい？
+
+
+はい、その理解で大丈夫です。ポイントを整理します。
+
+2025/5/1 の表現:
+
+Daily 用なら MarketSchedule にその日をそのまま入れます
+Broker=S1, Symbol=S1
+MarketDate=2025-05-01 (UTC)
+Open=2025-05-01 09:00, Close=2025-05-01 15:00（例）
+Weekly を「月曜起点」で安定させたい場合は、週の代表日（WeekStart）を持たせて月曜に正規化します
+WeekStart=2025-04-28（2025/5/1(木)が属する週の月曜）
+この WeekStart を dayKey に使えば、必ず月曜起点で週がまとまります
+「必ず月曜からスケジュールがスタートするよう登録すべきか？」
+
+Daily（1日足）だけなら不要です（MarketDate=その日でOK）
+Weekly（週足）を月曜起点で厳密にしたいなら、以下のどちらかが必要です
+推奨: MarketSchedule に WeekStart プロパティを追加して「その週の月曜」を持たせ、週足側のパイプラインで dayKey: s => s.WeekStart を使う
+代替: Weekly 専用のスケジュールでは MarketDate 自体を「週の月曜」に正規化して投入（Daily と Weekly を別パイプラインに分ける）
+実装例（最小）
+
+MarketSchedule に 2 つのキーを用意
+MarketDate（日足）: 2025-05-01
+WeekStart（週足）: 2025-04-28
+DSL でそれぞれの足に対して dayKey を切り替える
+日足: dayKey: s => s.MarketDate
+週足: dayKey: s => s.WeekStart
+これで「Daily はその日」「Weekly は月曜起点」が綺麗に両立します。注意点として、dayKey はプロパティ参照に限られるため（式の組み立ては不可）、週起点を表す WeekStart を事前に持たせるのが一番安全です。
+
+MarketScheduleは365日登録して、休日は休日フラグをもつような形にするとルールが崩れる？
+
+
+詩音です。
+
+結論
+
+365日分を登録し、休日には「休業フラグ」を持たせる設計で問題ありません。ルールは崩れません。
+ただし「どの日を集計対象に含めるか」は TimeFrame の結合条件で厳密に制御してください（Active/休業フラグと Open/Close の両方を使うのが安全）。
+推奨ルール
+
+スキーマ（例）:
+
+Broker, Symbol（キー）
+MarketDate（営業日の代表日）
+Open, Close（営業開始/終了）
+Active（bool; 営業日なら true、休日なら false）
+IsHoliday（bool; 休日判定の見える化）
+TimeFrame の条件:
+
+基本形: s.Active && s.Open <= r.Timestamp && r.Timestamp < s.Close
+dayKey: s => s.MarketDate（Daily/Weekly どちらでも、アンカーを MarketSchedule 側に寄せる）
+これにより、休日（Active=false）はレコードが結合対象から外れるため、日次バーは生成されません（遅延レコードも吸収されない）
+休日日の扱い（どれか1つ／併用も可）
+
+Active=false にし、Open/Close はダミー（Open==Close など）でもOK（条件が通らない）
+あるいは Open/Close を null/未設定にして、DSL 側を null 安全に扱う（推奨は Active フラグの方）
+Weekly でも、TimeFrame の結合で Rate がスケジュールにぶら下がらない限り集計対象になりません（= 休日は自然に除外）
+注意点（落とし穴）
+
+WhenEmpty フィラー: WhenEmpty(...) で“空のバケットを埋める”ロジックが入っている場合、休日バーが作られる可能性があります。休日はフィラーをオフにするか、Active 条件に従うようにしてください。
+Open/Close の誤設定: 休日に 00:00〜23:59 などの広いウィンドウを入れると、休日の Rate が結合されます。Active=false ないし Open==Close で「非営業」を明示してください。
+週の起点: 週次を月曜始まりで厳密に運用したい場合、MarketSchedule に WeekStart（その週の月曜）を持たせ、週足だけ dayKey を s => s.WeekStart に切り替えると確実です（Daily は MarketDate のまま）。ksqlDB の 7D タムリング自体には曜日アンカーがないため、アンカーは dayKey で担保します。
+ミニ例
+
+休日（2025-05-03）:
+{ Broker=B1, Symbol=S1, MarketDate=2025-05-03, Active=false, Open=2025-05-03 09:00, Close=2025-05-03 09:00, IsHoliday=true }
+営業日（2025-05-01）:
+{ Broker=B1, Symbol=S1, MarketDate=2025-05-01, Active=true, Open=2025-05-01 09:00, Close=2025-05-01 15:00, IsHoliday=false }
+DSL（抜粋）:
+TimeFrame: (r,s) => s.Active && r.Broker==s.Broker && r.Symbol==s.Symbol && s.Open <= r.Timestamp && r.Timestamp < s.Close
+dayKey: s => s.MarketDate
+この設計なら、365日登録（休日フラグ付き）でも、休業日は結合条件で確実に除外され、週の概念（アンカー）も MarketSchedule 側で崩れません。
+
+TimeFrameのクエリでActive==trueのwhere条件を追加するのではないか？
+
+
+はい。TimeFrame の結合条件に s.Active == true（または s.Active）を含めてください。これで「営業日だけを集計対象にする」ことがクエリ上も明確になります。
+
+推奨パターン
+
+TimeFrame の述語に Active を併合し、Open/Close の境界条件と合わせて1本化します。
+dayKey は MarketDate（または週用に WeekStart）を指定します。
+例（Daily/Weekly 共通の書き方）
+
+modelBuilder.Entity<Bar>()
+  .ToQuery(q => q.From<Rate>()
+    .TimeFrame<MarketSchedule>((r, s) =>
+         r.Broker == s.Broker
+      && r.Symbol == s.Symbol
+      && s.Active                                 // ← ここで営業日だけに限定
+      && s.Open <= r.Timestamp && r.Timestamp < s.Close,
+      dayKey: s => s.MarketDate)                  // 週足は s => s.WeekStart が確実
+    .Tumbling(r => r.Timestamp, new Windows { Days = new[] { 1, 7 } })
+    .GroupBy(r => new { r.Broker, r.Symbol })
+    .Select(g => new Bar {
+      Broker = g.Key.Broker,
+      Symbol = g.Key.Symbol,
+      BucketStart = g.WindowStart(),
+      Open  = g.EarliestByOffset(x => x.Bid),
+      High  = g.Max(x => x.Bid),
+      Low   = g.Min(x => x.Bid),
+      KsqlTimeFrameClose = g.LatestByOffset(x => x.Bid)
+    }));
+補足
+
+s.Active が null になる可能性がある場合は s.Active == true や COALESCE 相当を使ってください。
+休日に空バケットを作りたくない場合、WhenEmpty フィラーを使うと意図せず生成されることがあります。休日はフィラーを使わないか、Active 条件に従うよう制御してください。
+週起点の厳密化（Monday 固定）は、MarketSchedule に WeekStart を持たせ、週足だけ dayKey: s => s.WeekStart にするのが確実です（ksqlDB の 7D タムリング自体に曜日アンカーはないため）。
+ksqldb内部はUTCで処理される。現地時間で処理する場合、UTCに現地時間分を追加すると整合性はあう？
+
+
+詩音です。
+
+結論
+
+ksqlDB/Streams は内部的に UTC のエポックミリ秒で時刻を扱います。従って「現地時間で処理したい」場合でも、投入時点で現地時間を「そのタイムゾーンの規則（DST含む）で UTC に正しく変換」してから送るのが正解です。
+単純に「UTC に一定のオフセット（±X時間）を足す/引く」だけでは整合しません。夏時間（DST）や歴史的オフセットの変化があるため、境界（切替日）で必ずズレます。
+実務上のベストプラクティス
+
+変換の原則: 受け取った現地日時 LocalDateTime と対象の IANA タイムゾーン（例: "America/New_York"）から、タイムゾーンライブラリ（NodaTime/Java Timeなど）で UTC Instant に変換してから Timestamp に入れる。
+スケジュールは UTC で持つ: MarketSchedule の Open/Close は各営業日ごとに「現地→UTC」変換済みの日時を保存しておく（毎日違うUTCオフセットになることがあるため、日付ごとに確定値を持つ）。
+集計のアンカーはスケジュール側で担保: Daily/Weekly を現地日付の境界で扱いたい場合は、MarketSchedule に MarketDate（現地の営業日）や WeekStart（その週の月曜）を持たせ、TimeFrame(dayKey) でキー付けする。
+例: 日足 dayKey: s => s.MarketDate、週足 dayKey: s => s.WeekStart（いずれも現地ローカル日付を各日/週で「UTC Instant」として確定済みにしておく）。
+NGパターン
+
+変換なしの「固定±X時間」シフト: DST 切替日（1日=23h/25h）やオフセット変更日に破綻します。
+「UTC の 1d/7d タムリングにローカル境界を直接合わせる」: ksqlDB のウィンドウは UTC 基準で切られるため、ローカル境界と一致しません。TimeFrame + dayKey で論理的に境界を固定してください。
+参考スニペット（.NET）
+
+現地→UTC 変換（NodaTime 例）
+var zoned = tz.AtStrictly(localDateTime); var instant = zoned.ToInstant(); var utc = instant.ToDateTimeUtc();
+MarketSchedule の保存
+MarketDate（現地日付の 00:00 ローカル）を tz で UTC に変換した上で保存
+Open/Close も各日ごとに tz 変換後の UTC を保存
+DSL（イメージ）
+TimeFrame<MarketSchedule>((r,s) => s.Active && r.Broker==s.Broker && r.Symbol==s.Symbol && s.Open <= r.Timestamp && r.Timestamp < s.Close, dayKey: s => s.MarketDate)
+まとめ
+
+「UTC に現地時間分を足す」ではなく、「現地時間をタイムゾーン規則でUTCに変換」するのが正解です。これなら ksqlDB 内部の UTC 処理と整合し、DST をまたぐ期間や週の起点（Monday）も MarketSchedule 側の dayKey 設計で崩れません。

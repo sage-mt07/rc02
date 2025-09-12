@@ -23,16 +23,16 @@ var ctx = KsqlContextBuilder.Create()
 - 要約: まず ctx を作り、以後の操作はここから始めます。
 
 ### 2. エンティティを登録する（使う型を決める）
-- トピック名を `[Topic]` で指定します。
-- 時刻は `[AvroTimestamp]` を付けます。
+- トピック名を `[KsqlTopic]` で指定します。
+- 時刻は `[KsqlTimestamp]` を付けます。
 - `OnModelCreating` で `Entity<T>()` を登録します。
 
 ```csharp
-[Topic("basic-produce-consume")]
+[KsqlTopic("basic-produce-consume")]
 public class BasicMessage
 {
   public int Id { get; set; }
-  [AvroTimestamp] public DateTime CreatedAt { get; set; }
+  [KsqlTimestamp] public DateTime CreatedAt { get; set; }
   public string Text { get; set; } = string.Empty;
 }
 
@@ -102,8 +102,8 @@ await foreach (var rec in ctx.Dlq.ReadAsync())
 ---
 
 ## 主要アノテーションとAPI
-- [Topic]: エンティティをトピックに結びます。
-- [AvroTimestamp]: イベント時刻を Avro 互換で扱います。
+- [KsqlTopic]: エンティティをトピックに結びます。
+- [KsqlTimestamp]: イベント時刻を Avro 互換で扱います。
 - [KsqlTable]: Table として扱うことを示す（Stream は既定）。
 - Entity<T>(): 型を登録して操作を可能にします。
 - ToQuery(...), Where(...): ビューと絞り込みを定義します。
@@ -182,15 +182,31 @@ WHERE Amount > 0;
 ## API リファレンス（一覧）
 
 ### 属性（Attributes）
-- `[Topic(name)]`: トピック名を指定する。
-- `[AvroTimestamp]`: 時刻を Avro 互換で出力する。
-- `[KsqlDecimal(precision, scale)]`: 小数の桁数を指定する。
-- `[KsqlDatetimeFormat(format)]`: 日時の形式を指定する。
-- `[KsqlKey(order)]`: 複合キーの順序を指定する。
-- `[KsqlIgnore]`: スキーマから項目を除外する。
- - `[KsqlTable]`: Table として扱うことを示す（デフォルトは Stream）。
-- `[MaxLength(length)]`: 文字列の最大長を制限する。
-- `[ScheduleRange(openProp, closeProp)]`: 有効期間を示す。
+- `[KsqlTopic(name)]`: エンティティを Kafka トピックへバインドする。
+  - パラメータ: `name` トピック名（必須）。
+  - オプションプロパティ: `PartitionCount`（既定 1）, `ReplicationFactor`（既定 1）。
+  - 用例: `[KsqlTopic("orders")]` / `[KsqlTopic("orders", PartitionCount=3, ReplicationFactor=2)]`
+- `[KsqlTimestamp]`: 当該プロパティをイベントタイム（タイムスタンプ）として扱う。
+  - 対象型: `DateTime` または `DateTimeOffset` を推奨（UTC を想定）。
+  - 備考: 生成される KSQL の `TIMESTAMP` に対応。
+- `[KsqlDecimal(precision, scale)]`: 小数の精度（桁数）と小数点以下の桁数を指定。
+  - パラメータ: `precision` 総桁数, `scale` 少数桁数。
+  - 用例: `[KsqlDecimal(18, 4)]`
+- `[KsqlDatetimeFormat(format)]`: 文字列として表現する日時のフォーマットを指定。
+  - パラメータ: `format` 日時フォーマット文字列（`yyyy-MM-ddTHH:mm:ss.fffZ` など）。
+- `[KsqlKey(order)]`: 複合キーでの順序（並び）を指定。
+  - パラメータ: `order` 0 以上の整数。小さいほど先頭キー。
+  - 用例: `Broker` を 0、`Symbol` を 1 など。
+- `[KsqlIgnore]`: スキーマ定義および送受信からプロパティを除外。
+  - 備考: 内部計算や一時的なメモ用に使用。
+- `[KsqlTable]`: このエンティティを Table として扱う（デフォルトは Stream）。
+  - 備考: 既定動作は Stream。Table にしたい場合のみ付与。
+- `[MaxLength(length)]`: 文字列プロパティの最大長を制限。
+  - パラメータ: `length` 1 以上の整数。
+- `[KsqlTimeFrameClose]`: タイムフレームの確定時刻を示すプロパティを明示。
+  - 備考: 集計の「確定」タイミング列を区別したいケースで使用。
+
+注記: スケジュール範囲の扱いは属性ではなく、`TimeFrame<TSchedule>` と `MarketSchedule` エンティティ（`Open/Close/MarketDate`）の組み合わせで行います。`[ScheduleRange]` は現行実装で使用していないため公開リファレンスから除外しました。
 
 ### コンテキストとビルダー
 - `KsqlContextBuilder.Create()`: ビルダーを作る。
