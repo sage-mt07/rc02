@@ -82,9 +82,9 @@ var list = await ctx.Set<Bar>().ToListAsync();
 以下は利用者が実装時に意識しておくと迷わない要点です。
 - Select の投影に `g.WindowStart()` を一度だけ含めて、ウィンドウ開始時刻の列を出力してください。列名は自由です（例: `BucketStart = g.WindowStart()`）。複数回入れるとエラーになります。
 - 日足以上を作る場合は、dayKey（例: MarketDate）を付けてください。
-- 多段ロールアップは行わないでください（5m→15m ではなく、1s_final から派生させます）。
-- 確定系列に Hopping を混在させないでください（速報用途は別 DAG に分けます）。
-- 取得方式は、Table は `ToListAsync()`、Stream は Push（`ForEachAsync`）です。
+- すべての足は基底の1秒足から直接生成します（例: 5分足や15分足も1秒足から作ります）。
+- 確定値と速報値は処理を分けてください。
+- 取得方式は、Table は `ToListAsync()`、Stream は `ForEachAsync` で購読します。
 - 伝達時間は環境により変動します。通常は 50〜200ms、起動直後は 0.5〜3 秒が目安です。
 
 自動チェックと対処のコツ（困ったら見る）
