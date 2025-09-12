@@ -86,6 +86,7 @@ var list = await ctx.Set<Bar>().ToListAsync();
 - 確定値と速報値は処理を分けてください。
 - 取得方式は、Table は `ToListAsync()`、Stream は `ForEachAsync` で購読します。
 - 伝達時間は環境により変動します。通常は 50〜200ms、起動直後は 0.5〜3 秒が目安です。
+上記を押さえたら、典型的な検証エラーと対処法も把握しておくとスムーズです。
 
 自動チェックと対処のコツ（困ったら見る）
 内部ルールの多くは自動で検証します。エラーが出たら次を確認してください。
@@ -95,7 +96,7 @@ var list = await ctx.Set<Bar>().ToListAsync();
   - 対処: 1 分以上の窓サイズは 1 分単位の整数倍にしてください（例: 1m, 5m, 15m）。
 - 「Windows must be multiples of the base unit」などの窓サイズ系エラー
   - 対処: 秒台の微妙なサイズ指定を避け、一般的なサイズ（1m/5m/15m/1h/1d など）を選んでください。
-※ BaseUnit や grace の詳細は内部で調整されます。通常は利用者が設定・調整する必要はありません。
+これで基礎的な検証エラーは解消できます。続いて命名規約も確認してください。
 
 命名規約（代表）
 - `<entity>_<timeframe>_(live|final)` の形式を使います（例: `bar_1m_live`, `bar_1d_live`）。
