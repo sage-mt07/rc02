@@ -15,8 +15,8 @@
 8) よく使うパターン（リンク集）→ 成功確認チェックリスト
 
 ### 早見表（クイックリンク）
-- 用語集（SQL Server ⇔ Kafka）: 本ページ末尾の「用語集（SQL Server と Kafka の同名異義語）」
-- 関数/型対応表（主要関数）: docs/ksql-function-type-mapping.md
+- 用語集（SQL Server ⇔ Kafka）: [用語集（SQL Server と Kafka の同名異義語）](#用語集sql-server-と-kafka-の同名異義語)
+- 関数/型対応表（主要関数）: `docs/ksql-function-type-mapping.md`
 ## 概要
 本ガイドは、Kafka/ksqlDBの仕組みを理解するために、考え方・用語・クエリの違いを実務目線で整理します。
 
@@ -58,6 +58,20 @@ flowchart LR
   T --> Pull[スナップショット (Pull)]
 ```
 
+### JOIN（時間窓の要点）
+```mermaid
+sequenceDiagram
+  participant S1 as Stream A
+  participant S2 as Stream B
+  participant J as ksqlDB (S-S Join)
+  Note over S1,S2: WITHIN 5 MINUTES の例
+  S1-->>J: A(key=x, t=10:00)
+  S2-->>J: B(key=x, t=10:03)
+  J-->>S1: A⨝B を出力（10:00〜10:05 内）
+  S2-->>J: B(key=x, t=10:08)
+  J-->>S2: 窓外のため結合なし
+```
+
 ## Pull vs Push（概念）
 - Pull: いまの答えを1回だけ返す。SQL Server の SELECT に近い。
 - Push: 新しいイベントが来るたび更新を流す。通知・監視に向く。
@@ -73,6 +87,18 @@ sequenceDiagram
   loop 新しいイベント到着
     K-->>C: 増分行を配信
   end
+```
+
+### オフセットの初期位置（latest / earliest）
+```mermaid
+gantt
+dateFormat  HH:mm
+axisFormat  %H:%M
+section Topic offsets
+history :a1, 00:00, 8m
+section Consumer start
+latest  :milestone, m1, 08:00, 0m
+earliest:milestone, m2, 00:00, 0m
 ```
 
 ## Retention / latest / earliest（運用の前提）

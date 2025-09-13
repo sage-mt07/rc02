@@ -112,14 +112,20 @@ public class BarScheduleDataTests
 
         var daily = models[typeof(Bar1dLive)].QueryModel!;
         Assert.Contains("1d", daily.Windows);
-        var dailySql = KsqlCreateStatementBuilder.Build("bar_1d_live", daily);
+        // Windowed CREATE with tumbling 1d and live (EMIT CHANGES)
+        var dailySql = KsqlCreateWindowedStatementBuilder.Build("bar_1d_live", daily, "1d");
         Assert.StartsWith("CREATE TABLE bar_1d_live", dailySql, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("WINDOW TUMBLING (SIZE 1 DAYS)", dailySql, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("EMIT CHANGES", dailySql, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("EARLIEST_BY_OFFSET(Bid)", dailySql);
 
         var weekly = models[typeof(Bar1wkFinal)].QueryModel!;
         Assert.Contains("7d", weekly.Windows);
-        var weeklySql = KsqlCreateStatementBuilder.Build("bar_1wk_final", weekly);
+        // Windowed CREATE with tumbling 7d and final (EMIT FINAL)
+        var weeklySql = KsqlCreateWindowedStatementBuilder.Build("bar_1wk_final", weekly, "7d", emitOverride: "EMIT FINAL");
         Assert.StartsWith("CREATE TABLE bar_1wk_final", weeklySql, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("WINDOW TUMBLING (SIZE 7 DAYS)", weeklySql, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("EMIT FINAL", weeklySql, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("MAX(Bid) AS High", weeklySql);
         Assert.Contains("MIN(Bid) AS Low", weeklySql);
     }

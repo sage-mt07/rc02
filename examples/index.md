@@ -1,31 +1,60 @@
-# Examples Index (Consolidated)
+﻿# Examples Index（統合版）
 
-このフォルダはサンプルを次の方針で統合しました。従来パスは段階的に非推奨化します（各フォルダの `DEPRECATED.md` を参照）。
+このフォルダ配下のサンプルを、目的別に素早く辿れるよう整理しました。まずは前提を満たしてから、関心のあるカテゴリへ進んでください。
 
-- basics: 最小の送受信（hello-world を統合）
-- configuration: appsettings と Builder/属性マッピングの最小例（configuration, configuration-mapping を統合）
-- error-handling: Retry/OnError/DLQ を単一サンプルで切替（error-handling, error-handling-dlq を統合）
-- query-basics: フィルタと View 相当の ToQuery を併載（query-filter, view-toquery を統合）
-- windowing: tumbling live と 1m→5m ロールアップ検証を併載（必要に応じて入門/検証に分割）
-- advanced: daily-comparison（高度シナリオ）と oss-bars-verify（OSS検証）
+## 共通前提（最初に一度だけ）
+- .NET 8 SDK をインストール
+- ローカルの Kafka + Schema Registry + ksqlDB を起動
+  - `docker-compose -f tools/docker-compose.kafka.yml up -d`
 
-共通の起動コマンド
-- `docker-compose -f tools/docker-compose.kafka.yml up -d`
+## 実行方法（共通）
+- 例: `basic-produce-consume`
+  - `cd examples/basic-produce-consume`
+  - `dotnet run`
+- 例で必要な `appsettings.json` は各フォルダ内に同梱（または README 参照）
 
 ---
 
-## Consolidated Entrypoints
+## Basics（最初に触る）
+- `basic-produce-consume`：Producer/Consumer の基本。`BasicMessage` を送信し `ForEachAsync` で受信
+- `hello-world`：最小構成で POCO 定義→送信→待機→受信（All-in-`Program.cs`）
 
-- basics/ … 最小POCO + 送受信（従来: basic-produce-consume, hello-world）
-- configuration/ … appsettings + Builder/属性（従来: configuration, configuration-mapping）
-- error-handling/ … Retry/OnError/DLQ 切替（従来: error-handling, error-handling-dlq）
-- query-basics/ … `.Where(...)` と View/ToQuery（従来: query-filter, view-toquery）
-- windowing/ … WhenEmpty/Tumbling/1m→5mロールアップ（従来: tumbling-live-consumer, rollup-1m-5m-verify）
-- advanced/ … daily-comparison, oss-bars-verify
+ワンライナー実行（basics/README.md 準拠）
+```
+dotnet run --project examples/basic-produce-consume
+```
 
-補助サンプル（個別テーマ）
-- headers-meta/ … ヘッダー付与と受信メタの利用
-- schema-attributes/ … [KsqlKey], [KsqlDecimal], [KsqlTimestamp] の典型例
-- manual-commit/ … autoCommit:false + Commit()
-- table-cache-lookup/ … `[KsqlTable]` とキャッシュの利用
-- whenempty-schedule/ … WhenEmpty スケジュールの入門例
+## Configuration（設定・属性）
+- `configuration`：appsettings.json と Builder 設定の最小構成（接続/Topic/Consumer/Producer）
+- `configuration-mapping`：環境別のログ設定（Development/Production）切替と構成例
+- `schema-attributes`：`[KsqlKey]` / `[KsqlDecimal]` / `[KsqlTimestamp]` の使い方
+- `headers-meta`：メッセージヘッダとメタ情報の取り扱い
+
+## Query Basics（LINQ→KSQL 基本）
+- `query-basics`：LINQ→KSQL の基本形（View/ToQuery の基礎と導入）
+- `query-filter`：`.Where(...)` によるフィルタ
+- `view-toquery`：View/ToQuery の基礎
+- `table-cache-lookup`：`[KsqlTable]` とローカルキャッシュ参照
+
+## Windowing（時間窓・集計｜統合）
+- `windowing`：TUMBLING/HOPPING/SESSION の基礎に加え、ライブ集計（Push）と 1分→5分ロールアップを集約
+  - 統合対象: `examples/tumbling-live-consumer` / `examples/rollup-1m-5m-verify`
+- `whenempty-schedule`：WhenEmpty スケジュールの挙動
+
+## Error Handling（運用・再処理）
+- `error-handling`：OnError/Retry の基本（リトライ戦略の導入）
+- `error-handling-dlq`：不正メッセージを DLQ に退避（`.OnError(ErrorAction.DLQ)`）
+- `manual-commit`：手動コミット（autoCommit: false）での確定制御
+- `retry-onerror`：再試行（Retry）パターン
+
+## Advanced（検証・応用）
+- `daily-comparison`：日次集計（レート取り込み→1/5/60分→日次までの集計検証）
+- `oss-bars-verify`：Bar 系の OSS 検証
+- `deduprates-producer`：重複排除レートの投入
+
+---
+
+## 参考ドキュメント（クリックで開く）
+- OnModelCreating サンプル集：`docs/onmodelcreating_samples.md`
+- 関数/型対応表：`docs/ksql-function-type-mapping.md`
+- SQLServer→ksqlDB ガイド：`docs/sqlserver-to-kafka-guide.md`

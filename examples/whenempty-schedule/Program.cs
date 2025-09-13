@@ -1,100 +1,101 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 
-// docs/chart.md の WhenEmpty を MarketSchedule と組み合わせて再現する最小サンプル
-// - 1分バケットでOHLC集計
-// - 空バケットは previous.Close で埋める（WhenEmpty）
+// WhenEmpty schedule sample based on docs/chart.md
+// Chart steps: From → TimeFrame → Tumbling → GroupBy/Select → (optional) WhenEmpty → Rollup
 
-public class Tick
-{
-    public string Broker { get; set; } = string.Empty;
-    public string Symbol { get; set; } = string.Empty;
-    public DateTime TimestampUtc { get; set; }
-    public decimal Bid { get; set; }
-}
+public record Tick(string Broker, string Symbol, DateTime TimestampUtc, decimal Bid);
 
-public class MarketSchedule
-{
-    public string Broker { get; set; } = string.Empty;
-    public string Symbol { get; set; } = string.Empty;
-    public DateTime OpenTimeUtc { get; set; }
-    public DateTime CloseTimeUtc { get; set; }
-}
+public record MarketSchedule(string Broker, string Symbol, DateTime OpenTimeUtc, DateTime CloseTimeUtc);
 
-// docs/chart.md の足POCO（Rate）に合わせる
-public class Rate
-{
-    public string Broker { get; set; } = string.Empty;
-    public string Symbol { get; set; } = string.Empty;
-    public DateTime BucketStart { get; set; }
-    public decimal Open { get; set; }
-    public decimal High { get; set; }
-    public decimal Low { get; set; }
-    public decimal Close { get; set; }
-}
+public record Rate(string Broker, string Symbol, DateTime BucketStart, decimal Open, decimal High, decimal Low, decimal Close);
 
-static class WhenEmptyBars
+static class WhenEmptyChart
 {
-    public static List<Rate> Build1mBarsWithWhenEmpty(string broker, string symbol, MarketSchedule sch, IEnumerable<Tick> ticks)
+    private static DateTime FloorToMinute(DateTime t)
+        => new DateTime((t.Ticks / TimeSpan.TicksPerMinute) * TimeSpan.TicksPerMinute, DateTimeKind.Utc);
+
+    private static IEnumerable<DateTime> EnumerateMinutes(DateTime startUtc, DateTime endUtc)
     {
-        var tz = DateTimeKind.Utc;
-        var open = sch.OpenTimeUtc;
-        var close = sch.CloseTimeUtc;
-        if (open.Kind != DateTimeKind.Utc || close.Kind != DateTimeKind.Utc)
+        for (var t = FloorToMinute(startUtc); t < FloorToMinute(endUtc); t = t.AddMinutes(1))
+            yield return t;
+    }
+
+    // Step: GroupBy/Select for 1-minute OHLC
+    private static Rate? AggregateMinute(string broker, string symbol, DateTime bucket, IReadOnlyList<Tick> ticks)
+    {
+        var next = bucket.AddMinutes(1);
+        var group = ticks.Where(t => t.TimestampUtc >= bucket && t.TimestampUtc < next).ToList();
+        if (group.Count == 0) return null;
+        var o = group.First().Bid;
+        var h = group.Max(x => x.Bid);
+        var l = group.Min(x => x.Bid);
+        var c = group.Last().Bid;
+        return new Rate(broker, symbol, bucket, o, h, l, c);
+    }
+
+    // Step: WhenEmpty (fill with previous close)
+    private static Rate FillFromPrevious(string broker, string symbol, DateTime bucket, Rate prev)
+    {
+        var c = prev.Close;
+        return new Rate(broker, symbol, bucket, c, c, c, c);
+    }
+
+    // Build 1m bars with optional WhenEmpty filler as in docs/chart.md
+    public static List<Rate> Build1m(string broker, string symbol, MarketSchedule sch, IEnumerable<Tick> source)
+    {
+        if (sch.OpenTimeUtc.Kind != DateTimeKind.Utc || sch.CloseTimeUtc.Kind != DateTimeKind.Utc)
             throw new ArgumentException("Schedule must be UTC");
 
-        // 対象銘柄のティックのみ、セッション範囲に絞る
-        var src = ticks.Where(t => t.Broker == broker && t.Symbol == symbol)
-                       .Where(t => t.TimestampUtc >= open && t.TimestampUtc < close)
-                       .OrderBy(t => t.TimestampUtc)
-                       .ToList();
-
-        // 分境界リストを生成
-        static DateTime FloorMin(DateTime dt) => new DateTime((dt.Ticks / TimeSpan.TicksPerMinute) * TimeSpan.TicksPerMinute, DateTimeKind.Utc);
-        var start = FloorMin(open);
-        var end = FloorMin(close);
-        var minutes = new List<DateTime>();
-        for (var t = start; t < end; t = t.AddMinutes(1)) minutes.Add(t);
+        // From → TimeFrame (schedule) → Tumbling(1m)
+        var ticks = source
+            .Where(t => t.Broker == broker && t.Symbol == symbol)
+            .Where(t => t.TimestampUtc >= sch.OpenTimeUtc && t.TimestampUtc < sch.CloseTimeUtc)
+            .OrderBy(t => t.TimestampUtc)
+            .ToList();
 
         var bars = new List<Rate>();
         Rate? prev = null;
-        int idx = 0;
-        foreach (var m in minutes)
+        foreach (var minute in EnumerateMinutes(sch.OpenTimeUtc, sch.CloseTimeUtc))
         {
-            var next = m.AddMinutes(1);
-            var group = new List<Tick>();
-            while (idx < src.Count && src[idx].TimestampUtc >= m && src[idx].TimestampUtc < next)
+            var agg = AggregateMinute(broker, symbol, minute, ticks);
+            if (agg != null)
             {
-                group.Add(src[idx]);
-                idx++;
-            }
-
-            if (group.Count > 0)
-            {
-                var o = group.First().Bid;
-                var h = group.Max(x => x.Bid);
-                var l = group.Min(x => x.Bid);
-                var c = group.Last().Bid;
-                var bar = new Rate { Broker = broker, Symbol = symbol, BucketStart = m, Open = o, High = h, Low = l, Close = c };
-                bars.Add(bar);
-                prev = bar;
+                bars.Add(agg);
+                prev = agg;
             }
             else if (prev != null)
             {
-                // WhenEmpty: 直前の Close で埋める（O=H=L=C=prev.Close）
-                var c = prev.Close;
-                var bar = new Rate { Broker = broker, Symbol = symbol, BucketStart = m, Open = c, High = c, Low = c, Close = c };
-                bars.Add(bar);
-                prev = bar;
+                // WhenEmpty: 欠損バケットを直前 Close で埋める（O=H=L=C=prev.Close）
+                var filled = FillFromPrevious(broker, symbol, minute, prev);
+                bars.Add(filled);
+                prev = filled;
             }
             else
             {
-                // 初回に前日引継ぎが無いケースはスキップ（本番は prev_1m を参照）
+                // 先頭バケットが欠損で前値がない場合はスキップ（後続に値が出れば以降は埋まる）
             }
         }
         return bars;
+    }
+
+    // Optional: 5m rollup from 1m bars
+    public static List<Rate> Rollup5m(IEnumerable<Rate> bars)
+    {
+        static DateTime Floor5m(DateTime t) => new DateTime((t.Ticks / TimeSpan.FromMinutes(5).Ticks) * TimeSpan.FromMinutes(5).Ticks, DateTimeKind.Utc);
+        return bars
+            .GroupBy(b => (b.Broker, b.Symbol, Bucket: Floor5m(b.BucketStart)))
+            .OrderBy(g => g.Key.Bucket)
+            .Select(g => new Rate(
+                g.First().Broker,
+                g.First().Symbol,
+                g.Key.Bucket,
+                g.OrderBy(x => x.BucketStart).First().Open,
+                g.Max(x => x.High),
+                g.Min(x => x.Low),
+                g.OrderBy(x => x.BucketStart).Last().Close))
+            .ToList();
     }
 }
 
@@ -102,63 +103,31 @@ class Program
 {
     static void Main()
     {
-        var broker = "B1"; var symbol = "S1";
+        var broker = "B1";
+        var symbol = "S1";
         var today = DateTime.UtcNow.Date;
-        var sch = new MarketSchedule
-        {
-            Broker = broker,
-            Symbol = symbol,
-            OpenTimeUtc = today.AddHours(0),
-            CloseTimeUtc = today.AddHours(0).AddMinutes(10) // 10分だけの短いセッション
-        };
+        var schedule = new MarketSchedule(broker, symbol, today.AddHours(0), today.AddHours(0).AddMinutes(10));
 
-        // 1秒毎に+0.01の決定列。2分目を丸ごと欠損させ、WhenEmpty の補完を観察する
+        // Synthetic data with a missing minute (60-119s)
         var ticks = new List<Tick>();
-        var cursor = sch.OpenTimeUtc;
+        var ts = schedule.OpenTimeUtc;
         decimal price = 100m;
         for (int s = 0; s < 600; s++)
         {
-            if (!(s >= 60 && s < 120)) // 2分目は欠損
-            {
-                ticks.Add(new Tick { Broker = broker, Symbol = symbol, TimestampUtc = cursor, Bid = Math.Round(price, 4, MidpointRounding.AwayFromZero) });
-            }
-            cursor = cursor.AddSeconds(1);
+            if (s < 60 || s >= 120)
+                ticks.Add(new Tick(broker, symbol, ts, Math.Round(price, 4, MidpointRounding.AwayFromZero)));
+            ts = ts.AddSeconds(1);
             price += 0.01m;
         }
 
-        var bars = WhenEmptyBars.Build1mBarsWithWhenEmpty(broker, symbol, sch, ticks);
-
-        Console.WriteLine("ticks (first 80s; missing 60-119s):");
-        foreach (var t in ticks.Where(t => t.TimestampUtc < sch.OpenTimeUtc.AddSeconds(80)))
-            Console.WriteLine($"{t.TimestampUtc:HH:mm:ss} {t.Bid:F4}");
-
-        Console.WriteLine($"bars(1m)={bars.Count}");
-        foreach (var b in bars.Take(6))
-        {
+        var bars1m = WhenEmptyChart.Build1m(broker, symbol, schedule, ticks);
+        Console.WriteLine($"1m bars: {bars1m.Count}");
+        foreach (var b in bars1m.Take(6))
             Console.WriteLine($"{b.BucketStart:HH:mm} O:{b.Open} H:{b.High} L:{b.Low} C:{b.Close}");
-        }
-        // 5分ロールアップ（1分のロールアップ）。WhenEmpty で埋まった1分も反映され、常に5分バーが得られる
-        static DateTime Floor5m(DateTime t) => new DateTime((t.Ticks / TimeSpan.FromMinutes(5).Ticks) * TimeSpan.FromMinutes(5).Ticks, DateTimeKind.Utc);
-        var bars5 = bars
-            .GroupBy(b => Floor5m(b.BucketStart))
-            .OrderBy(g => g.Key)
-            .Select(g => new Rate
-            {
-                Broker = broker,
-                Symbol = symbol,
-                BucketStart = g.Key,
-                Open = g.OrderBy(x => x.BucketStart).First().Open,
-                High = g.Max(x => x.High),
-                Low = g.Min(x => x.Low),
-                Close = g.OrderBy(x => x.BucketStart).Last().Close
-            })
-            .ToList();
 
-        Console.WriteLine($"bars(5m)={bars5.Count}");
-        foreach (var b in bars5)
+        var bars5m = WhenEmptyChart.Rollup5m(bars1m);
+        Console.WriteLine($"5m bars: {bars5m.Count}");
+        foreach (var b in bars5m)
             Console.WriteLine($"[5m] {b.BucketStart:HH:mm} O:{b.Open} H:{b.High} L:{b.Low} C:{b.Close}");
-
-        // 2分目(=open+1m)が WhenEmpty により O=H=L=C=前分の Close で埋まること、
-        // かつ 5分バーがロールアップで得られることを示す
     }
 }

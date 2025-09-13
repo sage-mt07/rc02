@@ -18,6 +18,7 @@ internal static class RoleTraits
             Role.Final1s => new(true, "FINAL"),
             Role.Final1sStream => new(false, null),
             Role.Prev1m => new(true, "FINAL"),
+            Role.Fill => new(true, "CHANGES"),
             _ => new(false, null)
         };
     }

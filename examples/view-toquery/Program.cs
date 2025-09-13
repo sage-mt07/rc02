@@ -9,12 +9,26 @@ using System;
 using System.Threading.Tasks;
 
 [KsqlTopic("orders")]
-public class Order { public int Id { get; set; } public int CustomerId { get; set; } public decimal Amount { get; set; } }
+public class Order 
+{ 
+    public int Id { get; set; } 
+    public int CustomerId { get; set; } 
+    public decimal Amount { get; set; } 
+}
 
 [KsqlTopic("customers")]
-public class Customer { public int Id { get; set; } public string Name { get; set; } = string.Empty; public bool IsActive { get; set; } }
+public class Customer 
+{ 
+    public int Id { get; set; } 
+    public string Name { get; set; } = string.Empty; 
+    public bool IsActive { get; set; } 
+}
 
-public class OrderSummary { public int OrderId { get; set; } public string CustomerName { get; set; } = string.Empty; }
+public class OrderSummary 
+{ 
+    public int OrderId { get; set; } 
+    public string CustomerName { get; set; } = string.Empty; 
+}
 
 public class ViewContext : KsqlContext
 {

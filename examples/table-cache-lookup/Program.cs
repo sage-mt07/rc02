@@ -8,7 +8,11 @@ using System;
 using System.Threading.Tasks;
 
 [KsqlTable]
-public class RefData { public string Key { get; set; } = ""; public string Value { get; set; } = ""; }
+public class RefData 
+{
+     public string Key { get; set; } = ""; 
+     public string Value { get; set; } = ""; 
+}
 
 public class CacheContext : KsqlContext
 {

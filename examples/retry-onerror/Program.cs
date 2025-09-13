@@ -8,7 +8,11 @@ using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Application;
 
 [KsqlTopic("retry-demo")]
-public class Item { public int Id { get; set; } public string Text { get; set; } = ""; }
+public class Item 
+{ 
+    public int Id { get; set; } 
+    public string Text { get; set; } = ""; 
+}
 
 public class RetryContext : KsqlContext
 {

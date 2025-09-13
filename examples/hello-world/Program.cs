@@ -22,9 +22,11 @@ public class HelloKafkaContext : KsqlContext
 {
     public HelloKafkaContext(KsqlContextOptions options) : base(options.Configuration!, options.LoggerFactory) { }
     public HelloKafkaContext(Microsoft.Extensions.Configuration.IConfiguration configuration, Microsoft.Extensions.Logging.ILoggerFactory? loggerFactory = null) : base(configuration, loggerFactory) { }
-    public EventSet<HelloMessage> HelloMessages { get; set; }
+    public EventSet<HelloMessage> HelloMessages { get; set; } = null!;
     protected override void OnModelCreating(IModelBuilder modelBuilder)
     {
+        // 最小のエンティティ登録（Topic/Schema は属性から解決）
+        modelBuilder.Entity<HelloMessage>();
     }
 }
 
@@ -33,7 +35,7 @@ class Program
     static async Task Main(string[] args)
     {
         var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .Build();
 
         await using var context = new HelloKafkaContext(configuration, LoggerFactory.Create(b => b.AddConsole()));
