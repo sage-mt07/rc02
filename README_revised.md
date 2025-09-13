@@ -131,6 +131,6 @@ flowchart TB
 
 ## 🤝 Acknowledgements
 
-本ライブラリは「**AIと人間の共創**」という理念のもとに開発されました。詳細は [Acknowledgements.md](./docs/acknowledgements.md) をご覧ください。
+本ライブラリは「AIと人間の共創」という理念のもとに、Amagi・Naruse・Shion・Kyouka・Kusunoki・Jinto・Hiromu・Hazuki 各AIエージェントの協力を得て開発されました。詳細は [Acknowledgements.md](./docs/acknowledgements.md) をご覧ください。
 
 ---
