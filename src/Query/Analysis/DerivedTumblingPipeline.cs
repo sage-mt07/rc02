@@ -38,7 +38,16 @@ internal static class DerivedTumblingPipeline
         {
             var role = Enum.Parse<Role>((string)m.AdditionalSettings["role"]);
             var tf = (string)m.AdditionalSettings["timeframe"];
-            if (tf != "1s" && role != Role.Live)
+            var allow = role switch
+            {
+                Role.Final1sStream or Role.Final1s => tf == "1s",
+                Role.Prev1m => tf == "1m",
+                Role.Live => true,
+                Role.Hb => true,
+                Role.Fill => true,
+                _ => true
+            };
+            if (!allow)
                 continue;
             var (ddl, dt, ns) = BuildDdlAndRegister(baseName, queryModel, m, role, resolveType);
             logger.LogInformation("KSQL DDL (derived {Entity}): {Sql}", m.TopicName, ddl);
@@ -109,7 +118,9 @@ internal static class DerivedTumblingPipeline
             var bucketCol = queryModel.BucketColumnName ?? "BucketStart";
             var hbName = $"{baseName}_hb_{tf}";
             var liveName = $"{baseName}_{tf}_live";
-            ddl = KsqlFillStatementBuilder.Build(name, keys, projection, bucketCol, hbName, liveName);
+            // Optionally include prev_1m when timeframe is 1m to enable previous-close fill
+            string? prevName = tf.Equals("1m", StringComparison.OrdinalIgnoreCase) ? $"{baseName}_prev_1m" : null;
+            ddl = KsqlFillStatementBuilder.Build(name, keys, projection, bucketCol, hbName, liveName, prevName);
             if (!string.IsNullOrWhiteSpace(emit) && !ddl.Contains("EMIT ", StringComparison.OrdinalIgnoreCase))
                 ddl = ddl.Replace(";", $" {emit};");
         }

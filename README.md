@@ -10,26 +10,18 @@
 - 前提: .NET 8, Kafka, ksqlDB, Schema Registry
 - インストール: dotnet add package Kafka.Ksql.Linq
 ```
-
-class Program
-{
-    static async Task Main(string[] args)
+    await using var context = new HelloKafkaContext(configuration, LoggerFactory.Create(b => b.AddConsole()));
+    var message = new HelloMessage
     {
-        await using var context = new HelloKafkaContext(configuration, LoggerFactory.Create(b => b.AddConsole()));
-
-        var message = new HelloMessage
-        {
-            Id = Random.Shared.Next(),
-            Text = "Hello World"
-        };
-        await context.HelloMessages.AddAsync(message);
-        await context.HelloMessages.ForEachAsync(m =>
-        {
-            Console.WriteLine($"Received: {m.Text}");
-            return Task.CompletedTask;
-        });
-    }
-}
+        Id = Random.Shared.Next(),
+        Text = "Hello World"
+    };
+    await context.HelloMessages.AddAsync(message);
+    await context.HelloMessages.ForEachAsync(m =>
+    {
+        Console.WriteLine($"Received: {m.Text}");
+        return Task.CompletedTask;
+    });
 ```
 
 
@@ -85,9 +77,9 @@ flowchart TB
 
 ## ドキュメント（リファレンス）
 - 利用者向け
-　- SQLServer→ksqlDB ガイド: `docs/sqlserver-to-kafka-guide.md`
-　- API: `docs/api_reference.md`
-　- Configuration: `docs/configuration_reference.md`
+  - SQLServer→ksqlDB ガイド: `docs/sqlserver-to-kafka-guide.md`
+  - API: `docs/api_reference.md`
+  - Configuration: `docs/configuration_reference.md`
 - 内部構造理解のためのガイド
   - Advanced: `docs/advanced_rules.md`
 

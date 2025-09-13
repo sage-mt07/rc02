@@ -18,7 +18,8 @@ internal static class KsqlFillStatementBuilder
         string[] projection,
         string bucketColumn,
         string hbTable,
-        string liveTable)
+        string liveTable,
+        string? prevTable = null)
     {
         if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("name required", nameof(name));
         if (keys == null) keys = Array.Empty<string>();
@@ -30,16 +31,34 @@ internal static class KsqlFillStatementBuilder
         var sb = new StringBuilder();
         sb.Append($"CREATE TABLE {name} WITH (KAFKA_TOPIC='{name}', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS\n");
 
-        // SELECT clause: project keys, bucket, and value columns from live when present.
+        // SELECT clause: project keys, bucket, and value columns.
+        // If prev is provided, use COALESCE(l.col, p.<close>) for OHLC-like columns.
         var selectParts = new System.Collections.Generic.List<string>();
         foreach (var k in keys)
             selectParts.Add($"h.KEY->{k.ToUpperInvariant()} AS {k}");
         selectParts.Add($"h.{bucketColumn} AS {bucketColumn}");
+
+        // Heuristic: choose close column name from projection
+        string? closeCol = projection.FirstOrDefault(c => string.Equals(c, "KsqlTimeFrameClose", StringComparison.OrdinalIgnoreCase))
+            ?? projection.FirstOrDefault(c => string.Equals(c, "Close", StringComparison.OrdinalIgnoreCase));
+        bool hasPrev = !string.IsNullOrWhiteSpace(prevTable) && closeCol != null;
         foreach (var col in projection)
         {
             if (keys.Contains(col, StringComparer.OrdinalIgnoreCase)) continue;
             if (string.Equals(col, bucketColumn, StringComparison.OrdinalIgnoreCase)) continue;
-            selectParts.Add($"l.{col} AS {col}");
+            if (hasPrev && (
+                string.Equals(col, "Open", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(col, "High", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(col, "Low", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(col, closeCol, StringComparison.OrdinalIgnoreCase)))
+            {
+                // Fallback to previous close when live is missing
+                selectParts.Add($"COALESCE(l.{col}, p.{closeCol}) AS {col}");
+            }
+            else
+            {
+                selectParts.Add($"l.{col} AS {col}");
+            }
         }
         sb.Append("SELECT ").Append(string.Join(", ", selectParts)).AppendLine();
 
@@ -49,9 +68,17 @@ internal static class KsqlFillStatementBuilder
         onParts.Add($"h.{bucketColumn} = l.{bucketColumn}");
         sb.Append(string.Join(" AND ", onParts)).AppendLine();
 
+        if (hasPrev)
+        {
+            // Join prev on keys and bucket for the same timeframe
+            sb.Append($"LEFT JOIN {prevTable} p ON ");
+            var onPrev = keys.Select(k => $"h.KEY->{k.ToUpperInvariant()} = p.KEY->{k.ToUpperInvariant()}").ToList();
+            onPrev.Add($"h.{bucketColumn} = p.{bucketColumn}");
+            sb.Append(string.Join(" AND ", onPrev)).AppendLine();
+        }
+
         // Emit changes by default for Fill role.
         sb.Append("EMIT CHANGES;");
         return sb.ToString();
     }
 }
-
