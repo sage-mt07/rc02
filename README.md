@@ -6,23 +6,15 @@
 - Streams/Tables, Pull/Push をサポート（実行モードは自動推論）
 - エラー処理（DLQ）/ リトライ / コミットの運用補助
 
-## クイックスタート（ローカルで10分）
+## クイックスタート
+- 前提: .NET 8, Kafka, ksqlDB, Schema Registry
+- インストール: dotnet add package Kafka.Ksql.Linq
 ```
-git clone <repository-url>
-cd rc02
-dotnet restore
-
-docker-compose -f tools/docker-compose.kafka.yml up -d
-
-# 実行例（examples は順次追加中）
-# cd examples/hello-world && dotnet run
-
 public class HelloMessage
 {
     public int Id { get; set; }
     public string Text { get; set; } = string.Empty;
 }
-
 public class HelloKafkaContext : KsqlContext
 {
     public HelloKafkaContext(KsqlContextOptions options) : base(options.Configuration!, options.LoggerFactory) { }
