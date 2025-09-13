@@ -201,23 +201,34 @@ public abstract partial class KsqlContext : IKsqlContext
 
     public Task<KsqlDbResponse> ExecuteStatementAsync(string statement)
     {
+        _logger?.LogInformation("ksql execute: {Kind} SQL={Preview}", "EXECUTE", Preview(statement));
         return _ksqlDbClient.ExecuteStatementAsync(statement);
     }
 
     public Task<KsqlDbResponse> ExecuteExplainAsync(string ksql)
     {
         var rewritten = TryQualifySimpleJoin(ksql);
+        _logger?.LogInformation("ksql execute: {Kind} SQL={Preview}", "EXPLAIN", Preview(rewritten));
         return _ksqlDbClient.ExecuteExplainAsync(rewritten);
     }
 
     public Task<int> QueryStreamCountAsync(string sql, TimeSpan? timeout = null)
     {
+        _logger?.LogInformation("ksql execute: {Kind} SQL={Preview}", "QUERY_STREAM_COUNT", Preview(sql));
         return _ksqlDbClient.ExecuteQueryStreamCountAsync(sql, timeout);
     }
 
     public Task<int> QueryCountAsync(string sql, TimeSpan? timeout = null)
     {
+        _logger?.LogInformation("ksql execute: {Kind} SQL={Preview}", "QUERY_PULL_COUNT", Preview(sql));
         return _ksqlDbClient.ExecutePullQueryCountAsync(sql, timeout);
+    }
+
+    private static string Preview(string? sql, int max = 120)
+    {
+        if (string.IsNullOrWhiteSpace(sql)) return string.Empty;
+        sql = sql.Replace("\n", " ").Replace("\r", " ").Trim();
+        return sql.Length <= max ? sql : sql.Substring(0, max) + "...";
     }
 
     public Task<System.Collections.Generic.List<object?[]>> QueryRowsAsync(string sql, TimeSpan? timeout = null)

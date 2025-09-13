@@ -166,8 +166,8 @@ public class ToQueryEndToEndTests
         const string expectedTable = "CREATE TABLE rate_1s_final WITH (KAFKA_TOPIC='rate_1s_final', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS\nSELECT BROKER AS Broker, SYMBOL AS Symbol, WINDOWSTART AS BucketStart, EARLIEST_BY_OFFSET(Bid) AS Open, MAX(Bid) AS High, MIN(Bid) AS Low, LATEST_BY_OFFSET(Bid) AS Close\nFROM deduprates_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)\nGROUP BY BROKER, SYMBOL\nEMIT FINAL;";
         const string expectedStream = "CREATE STREAM rate_1s_final_s WITH (KAFKA_TOPIC='rate_1s_final_s', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS\nSELECT *\nFROM rate_1s_final o\nEMIT CHANGES;";
 
-        Assert.Equal(expectedTable, tableSql);
-        Assert.Equal(expectedStream, streamSql);
+        Assert.Equal(NL(expectedTable), NL(tableSql));
+        Assert.Equal(NL(expectedStream), NL(streamSql));
     }
 
     [Fact]
@@ -225,8 +225,8 @@ public class ToQueryEndToEndTests
         const string expectedTable = "CREATE TABLE bidstats_1s_final WITH (KAFKA_TOPIC='bidstats_1s_final', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS\nSELECT BROKER AS Broker, SYMBOL AS Symbol, WINDOWSTART AS BucketStart, COUNT(*) AS Count, AVG(Bid) AS Avg\nFROM deduprates_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)\nGROUP BY BROKER, SYMBOL\nEMIT FINAL;";
         const string expectedStream = "CREATE STREAM bidstats_1s_final_s WITH (KAFKA_TOPIC='bidstats_1s_final_s', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS\nSELECT *\nFROM bidstats_1s_final o\nEMIT CHANGES;";
 
-        Assert.Equal(expectedTable, tableSql);
-        Assert.Equal(expectedStream, streamSql);
+        Assert.Equal(NL(expectedTable), NL(tableSql));
+        Assert.Equal(NL(expectedStream), NL(streamSql));
     }
 
     [Fact]
@@ -285,7 +285,13 @@ public class ToQueryEndToEndTests
         const string expectedTable = "CREATE TABLE rate_broker_1s_final WITH (KAFKA_TOPIC='rate_broker_1s_final', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS\nSELECT BROKER AS BROKER, WINDOWSTART AS BucketStart, EARLIEST_BY_OFFSET(Bid) AS Open, MAX(Bid) AS High, MIN(Bid) AS Low, LATEST_BY_OFFSET(Bid) AS Close\nFROM deduprates_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)\nGROUP BY BROKER\nEMIT FINAL;";
         const string expectedStream = "CREATE STREAM rate_broker_1s_final_s WITH (KAFKA_TOPIC='rate_broker_1s_final_s', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS\nSELECT *\nFROM rate_broker_1s_final o\nEMIT CHANGES;";
 
-        Assert.Equal(expectedTable, tableSql);
-        Assert.Equal(expectedStream, streamSql);
+        Assert.Equal(NL(expectedTable), NL(tableSql));
+        Assert.Equal(NL(expectedStream), NL(streamSql));
+
+    }
+
+    private static string NL(string s)
+    {
+        return s.Replace("\r\n", "\n");
     }
 }

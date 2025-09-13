@@ -102,10 +102,11 @@ public class EnsureQueryEntityDdlAsyncTests
             await task;
         }
 
-        Assert.Equal(2, logger.Messages.Count);
-        Assert.Contains("CREATE STREAM", logger.Messages[0]);
-        Assert.Contains("INSERT INTO", logger.Messages[1]);
-        Assert.DoesNotContain("CREATE TABLE AS", string.Join("\n", logger.Messages));
+        var ddlMsgs = logger.Messages.Where(m => !m.StartsWith("ksql execute:", StringComparison.OrdinalIgnoreCase)).ToList();
+        Assert.Equal(2, ddlMsgs.Count);
+        Assert.Contains("CREATE STREAM", ddlMsgs[0]);
+        Assert.Contains("INSERT INTO", ddlMsgs[1]);
+        Assert.DoesNotContain("CREATE TABLE AS", string.Join("\n", ddlMsgs));
         Assert.Equal(2, client.Statements.Count);
         Assert.Contains("CREATE STREAM", client.Statements[0]);
         Assert.Contains("INSERT INTO", client.Statements[1]);
@@ -149,9 +150,10 @@ public class EnsureQueryEntityDdlAsyncTests
             await task;
         }
 
-        Assert.Single(logger.Messages);
-        Assert.Contains("CREATE TABLE", logger.Messages[0]);
-        Assert.Contains("AS", logger.Messages[0]);
+        var ddlMsgs = logger.Messages.Where(m => !m.StartsWith("ksql execute:", StringComparison.OrdinalIgnoreCase)).ToList();
+        Assert.Single(ddlMsgs);
+        Assert.Contains("CREATE TABLE", ddlMsgs[0]);
+        Assert.Contains("AS", ddlMsgs[0]);
         Assert.Equal(3, client.Statements.Count);
         Assert.Contains("CREATE TABLE", client.Statements[0]);
         Assert.Contains("SHOW QUERIES", client.Statements[1]);
@@ -197,10 +199,11 @@ public class EnsureQueryEntityDdlAsyncTests
             await task;
         }
 
-        Assert.Equal(2, logger.Messages.Count);
-        Assert.Contains("CREATE TABLE", logger.Messages[0]);
-        Assert.DoesNotContain("CREATE TABLE AS", logger.Messages[0]);
-        Assert.Contains("INSERT INTO", logger.Messages[1]);
+        var ddlMsgs = logger.Messages.Where(m => !m.StartsWith("ksql execute:", StringComparison.OrdinalIgnoreCase)).ToList();
+        Assert.Equal(2, ddlMsgs.Count);
+        Assert.Contains("CREATE TABLE", ddlMsgs[0]);
+        Assert.DoesNotContain("CREATE TABLE AS", ddlMsgs[0]);
+        Assert.Contains("INSERT INTO", ddlMsgs[1]);
         Assert.Equal(2, client.Statements.Count);
         Assert.Contains("CREATE TABLE", client.Statements[0]);
 
@@ -245,9 +248,10 @@ public class EnsureQueryEntityDdlAsyncTests
             await task;
         }
 
-        Assert.Single(logger.Messages);
-        Assert.Contains("CREATE TABLE", logger.Messages[0]);
-        Assert.Contains("AS", logger.Messages[0]);
+        var ddlMsgs = logger.Messages.Where(m => !m.StartsWith("ksql execute:", StringComparison.OrdinalIgnoreCase)).ToList();
+        Assert.Single(ddlMsgs);
+        Assert.Contains("CREATE TABLE", ddlMsgs[0]);
+        Assert.Contains("AS", ddlMsgs[0]);
         Assert.Equal(3, client.Statements.Count);
         Assert.Contains("CREATE TABLE", client.Statements[0]);
         Assert.Contains("SHOW QUERIES", client.Statements[1]);

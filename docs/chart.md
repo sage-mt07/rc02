@@ -253,6 +253,95 @@ q.From<DedupRateRecord>()
 
 ---
 
+## 6. 1m→5m ロールアップ（設計/検証）
+
+### 6.1 設計（同一ソースから 1m/5m をフラット派生）
+実装は「From → TimeFrame（任意）→ Tumbling → GroupBy → Select」。複数足は Windows でまとめて宣言します。
+
+```csharp
+// 例: DedupRateRecord (Ts, Broker, Symbol, Bid)
+b.Entity<Candle1m>().ToQuery(q => q
+    .From<DedupRateRecord>()
+    .Tumbling(r => r.Ts, new Windows { Minutes = new[] { 1 } })
+    .GroupBy(r => new { r.Broker, r.Symbol })
+    .Select(g => new Candle1m {
+        Broker   = g.Key.Broker,
+        Symbol   = g.Key.Symbol,
+        BarStart = g.WindowStart(),
+        Open  = g.EarliestByOffset(x => x.Bid),
+        High  = g.Max(x => x.Bid),
+        Low   = g.Min(x => x.Bid),
+        Close = g.LatestByOffset(x => x.Bid)
+    }));
+
+b.Entity<Candle5m>().ToQuery(q => q
+    .From<DedupRateRecord>()
+    .Tumbling(r => r.Ts, new Windows { Minutes = new[] { 5 } })
+    .GroupBy(r => new { r.Broker, r.Symbol })
+    .Select(g => new Candle5m {
+        Broker   = g.Key.Broker,
+        Symbol   = g.Key.Symbol,
+        BarStart = g.WindowStart(),
+        Open  = g.EarliestByOffset(x => x.Bid),
+        High  = g.Max(x => x.Bid),
+        Low   = g.Min(x => x.Bid),
+        Close = g.LatestByOffset(x => x.Bid)
+    }));
+```
+
+ポイント
+- 1m/5m は 1s_final からフラットに派生（多段ロールアップは行わない）
+- grace は親 + 1 秒で自動伝播（詳細は 2.2）
+
+### 6.2 検証（1m の集約結果と 5m の一致を確認）
+アプリ側で 1m を 5m に再集約し、OHLC の一致をチェックします。
+
+```csharp
+// 前提: ctx.Set<Candle1m>().ToListAsync(), ctx.Set<Candle5m>().ToListAsync() で
+//       同一期間・同一銘柄の 1m/5m を取得済み
+
+static DateTime FloorTo5Min(DateTime dt)
+{
+    var ticks5m = TimeSpan.FromMinutes(5).Ticks;
+    return new DateTime((dt.Ticks / ticks5m) * ticks5m, DateTimeKind.Utc);
+}
+
+var grouped1m = oneMin
+    .GroupBy(c => FloorTo5Min(c.BarStart))
+    .ToDictionary(g => g.Key, g => new {
+        Open  = g.OrderBy(x => x.BarStart).First().Open,
+        High  = g.Max(x => x.High),
+        Low   = g.Min(x => x.Low),
+        Close = g.OrderBy(x => x.BarStart).Last().Close
+    });
+
+var mismatches = new List<string>();
+foreach (var b5 in fiveMin.OrderBy(x => x.BarStart))
+{
+    if (!grouped1m.TryGetValue(b5.BarStart, out var roll))
+    {
+        mismatches.Add($"[missing] no 1m group for 5m {b5.BarStart:HH:mm}");
+        continue;
+    }
+    bool eq(decimal a, decimal b) => a == b; // 設計上は厳密一致
+    if (!eq(b5.Open, roll.Open) || !eq(b5.High, roll.High) || !eq(b5.Low, roll.Low) || !eq(b5.Close, roll.Close))
+    {
+        mismatches.Add($"[mismatch] 5m {b5.BarStart:HH:mm} O:{b5.Open}/{roll.Open} H:{b5.High}/{roll.High} L:{b5.Low}/{roll.Low} C:{b5.Close}/{roll.Close}");
+    }
+}
+
+if (mismatches.Count == 0)
+    Console.WriteLine("[ok] 5m equals rollup from 1m");
+else
+    foreach (var m in mismatches) Console.WriteLine(m);
+```
+
+補足
+- 上記の検証は examples/rollup-1m-5m-verify に近い内容です。
+- 実際の検証では取引時間の拘束や WhenEmpty による補完有無を加味してください。
+
+---
+
 ## 6. 拡張ポイント
 - Aggregation Policy（例: VWAP, Volume, Trades）
 - MarketSchedule（dayKey = MarketDate など）

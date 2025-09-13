@@ -227,7 +227,19 @@ internal class KafkaProducerManager : IDisposable
                 context.Headers[kvp.Key] = kvp.Value;
         }
 
-        await producer.SendAsync(keyObj, valueObj, context, cancellationToken).ConfigureAwait(false);
+        _logger?.LogInformation("kafka produce: topic={Topic}, entity={Entity}, method={Method}",
+            producer.TopicName, typeof(TPOCO).Name, "SendAsync");
+        try
+        {
+            await producer.SendAsync(keyObj, valueObj, context, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex,
+                "Produce failed. Topic={Topic}, Entity={Entity}, Method=SendAsync, Error={ErrorType}: {Message}",
+                producer.TopicName, typeof(TPOCO).Name, ex.GetType().Name, ex.Message);
+            throw;
+        }
     }
 
     public async Task DeleteAsync<TPOCO>(TPOCO entity, CancellationToken cancellationToken = default) where TPOCO : class

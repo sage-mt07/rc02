@@ -1,12 +1,12 @@
-# <img src="LinqKsql-logo.png" alt="LinqKsql" width="100" height="100" style="vertical-align:middle;margin-right:8px;"/> &nbsp; &nbsp; Kafka.Ksql.Linq &nbsp;&nbsp;<img src="experimental.png" alt="Experimental"  height="30" style="vertical-align:middle;margin-right:8px;"/>
+﻿# <img src="LinqKsql-logo.png" alt="LinqKsql" width="100" height="100" style="vertical-align:middle;margin-right:8px;"/> &nbsp; &nbsp; Kafka.Ksql.Linq &nbsp;&nbsp;<img src="experimental.png" alt="Experimental"  height="30" style="vertical-align:middle;margin-right:8px;"/>
 
-## 特徴
-- LINQ ライクに Kafka/ksqlDB を扱える
-- Avro + Schema Registry 対応の型安全 DSL
-- Window/集約処理や Push/Pull クエリ対応
-- DLQ / Retry / Commit を含むエラーハンドリング
+## 概要
+- LINQ で Kafka/ksqlDB を操作する C# ライブラリ
+- Avro + Schema Registry を前提とした型安全な DSL
+- Streams/Tables, Pull/Push をサポート（実行モードは自動推論）
+- エラー処理（DLQ）/ リトライ / コミットの運用補助
 
-## Quick Start
+## クイックスタート（ローカルで10分）
 ```
 git clone <repository-url>
 cd rc02
@@ -14,10 +14,10 @@ dotnet restore
 
 docker-compose -f tools/docker-compose.kafka.yml up -d
 
-cd examples/hello-world
-dotnet run
+# 実行例（examples は順次追加中）
+# cd examples/hello-world && dotnet run
 ```
-## structure
+## 構成イメージ
 1) DSL 全体アーキテクチャ図
 ``` mermaid
 flowchart TB
@@ -96,23 +96,24 @@ flowchart TB
     class STREAM,TABLE,STATE,ROCKS,KSQLS,KSQLT,TOPIC dim;
 ```
 
-## Examples
-- サンプル一覧: [exsamples/index.md](./examples/index.md)
+## 例（Examples）
+- 目次: `docs/examples/index.md`
+- OnModelCreating サンプル集: `docs/onmodelcreating_samples.md`
 
-## Reference
-- API: docs/api_reference.md
-- Configuration: docs/configuration_reference.md
-- Advanced: docs/advanced_rules.md
+## ドキュメント（リファレンス）
+- 関数/型対応表: `docs/ksql-function-type-mapping.md`
+- SQLServer→ksqlDB ガイド: `docs/sqlserver-to-kafka-guide.md`
+- API: `docs/api_reference.md`
+- Configuration: `docs/configuration_reference.md`
+- Advanced: `docs/advanced_rules.md`
 
-## License
-- ソースコードは [MIT License](./LICENSE) の下で公開
-- ドキュメントは [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/) の下で公開
-
-## Roadmap
-- 2025 Q4
-  - Oneshot対応: ksqldbに単発登録を行うPod構成に対応する機能を提供
-  - .NET 10 対応: 最新ランタイムでの動作保証
+## ライセンス / ロードマップ
+- License: [MIT License](./LICENSE)
+- Docs: 一部 CC BY 4.0 を想定
+- Roadmap（例）
+  - 安定化と examples 追加
+  - .NET 10 対応
 
 
 ## Acknowledgements
-　- [Acknowledgements](./docs/acknowledgements.md)
+- [Acknowledgements](./docs/acknowledgements.md)

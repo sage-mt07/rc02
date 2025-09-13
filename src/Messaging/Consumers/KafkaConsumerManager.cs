@@ -196,6 +196,9 @@ internal class KafkaConsumerManager : IDisposable
             }
             catch (Exception ex)
             {
+                _logger?.LogError(ex,
+                    "Consume mapping failed. Topic={Topic}, Partition={Partition}, Offset={Offset}, Error={ErrorType}: {Message}",
+                    result.Topic, result.Partition.Value, result.Offset.Value, ex.GetType().Name, ex.Message);
                 await HandleMappingException(result, ex, _dlqProducer, consumer, _dlq, _limiter, cancellationToken).ConfigureAwait(false);
                 continue;
             }

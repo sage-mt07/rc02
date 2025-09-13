@@ -57,11 +57,9 @@ public class KafkaConsumerAutoCommitTests
     }
 
     [Fact]
-    public async Task ConsumeAsync_CallsBind_WhenEnableAutoCommitFalse()
+    public async Task ConsumeAsync_DoesNotBind_WhenEnableAutoCommitTrue_FromTopic()
     {
-        var (mgr, _, _, _, mock) = BuildManager(enableAutoCommit: false);
-        mock.Setup(x => x.Bind(typeof(TestEntity), It.IsAny<string>(), It.IsAny<object>()))
-            .Verifiable();
+        var (mgr, _, _, _, mock) = BuildManager(enableAutoCommit: true);
 
         using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(10));
         try
@@ -73,20 +71,20 @@ public class KafkaConsumerAutoCommitTests
         }
         catch { /* ignore */ }
 
-        mock.Verify(x => x.Bind(typeof(TestEntity), It.IsAny<string>(), It.IsAny<object>()), Times.Once);
+        mock.Verify(x => x.Bind(typeof(TestEntity), It.IsAny<string>(), It.IsAny<object>()), Times.Never);
     }
 
     [Fact]
     public void BuildConsumerConfig_Respects_EnableAutoCommit_FromTopic()
     {
-        var (mgr, _, _, _, _) = BuildManager(enableAutoCommit: false);
+        var (mgr, _, _, _, _) = BuildManager(enableAutoCommit: true);
         var cfg = PrivateAccessor.InvokePrivate<Confluent.Kafka.ConsumerConfig>(
             mgr,
             name: "BuildConsumerConfig",
             parameterTypes: new[] { typeof(string), typeof(Kafka.Ksql.Linq.Configuration.Abstractions.KafkaSubscriptionOptions), typeof(string), typeof(bool) },
             args: new object?[] { "test-topic", new Kafka.Ksql.Linq.Configuration.Abstractions.KafkaSubscriptionOptions(), null, true }
         );
-        Assert.False(cfg.EnableAutoCommit);
+        Assert.True(cfg.EnableAutoCommit);
         Assert.Equal("ut-group", cfg.GroupId);
     }
 }

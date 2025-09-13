@@ -1,6 +1,7 @@
 using Kafka.Ksql.Linq.Core.Abstractions;
 using Kafka.Ksql.Linq.Core.Dlq;
 using Kafka.Ksql.Linq.Core.Extensions;
+using Microsoft.Extensions.Logging;
 using Kafka.Ksql.Linq.Messaging;
 using Kafka.Ksql.Linq.Messaging.Internal;
 using Kafka.Ksql.Linq.Query.Abstractions;
@@ -237,6 +238,24 @@ public abstract class EventSet<T> : IEntitySet<T> where T : class
                     }
 
                     var dlq = context.DlqOptions;
+                    var logger2 = (context as KsqlContext)?.Logger;
+                    // When retries are exhausted (or not configured), emit a warning indicating final failure
+                    if (_errorHandlingContext.ErrorAction == ErrorAction.Retry && attempt == maxAttempts)
+                    {
+                        logger2?.LogWarning(
+                            "All retry attempts exhausted for {EntityType} on topic {Topic}. Error={ErrorType}: {Message}",
+                            typeof(T).Name,
+                            GetTopicName(),
+                            ex.GetType().Name,
+                            ex.Message);
+                    }
+                    // Emit error with context for handler failure
+                    logger2?.LogError(ex,
+                        "Handler failed for {EntityType} on topic {Topic}. Error={ErrorType}: {Message}",
+                        typeof(T).Name,
+                        GetTopicName(),
+                        ex.GetType().Name,
+                        ex.Message);
                     if (_dlqProducer != null && dlq.EnableForHandlerError && DlqGuard.ShouldSend(dlq, context.DlqLimiter, ex.GetType()))
                     {
                         var env = DlqEnvelopeFactory.From(
