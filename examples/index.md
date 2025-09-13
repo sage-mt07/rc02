@@ -39,7 +39,7 @@ dotnet run --project examples/basic-produce-consume
 ## Windowing（時間窓・集計｜統合）
 - `windowing`：TUMBLING/HOPPING/SESSION の基礎に加え、ライブ集計（Push）と 1分→5分ロールアップを集約
   - 統合対象: `examples/tumbling-live-consumer` / `examples/rollup-1m-5m-verify`
-- `whenempty-schedule`：WhenEmpty スケジュールの挙動
+- `whenempty-schedule`：WhenEmpty スケジュールの挙動（DSLでの利用時は Select に WindowStart() を1回含めること）
 
 ## Error Handling（運用・再処理）
 - `error-handling`：OnError/Retry の基本（リトライ戦略の導入）

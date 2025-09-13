@@ -17,7 +17,8 @@ internal static class RoleTraits
             Role.Final => new(true, "FINAL"),
             Role.Final1s => new(true, "FINAL"),
             Role.Final1sStream => new(false, null),
-            Role.Prev1m => new(true, "FINAL"),
+            // Prev1m is a non-windowed table built via explicit join; no EMIT override
+            Role.Prev1m => new(false, null),
             Role.Fill => new(true, "CHANGES"),
             _ => new(false, null)
         };

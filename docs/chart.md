@@ -39,6 +39,7 @@
 - GroupBy: 主キー（例: Broker, Symbol）
 - Select: 集計仕様そのもの（ここに書いた内容が真実）
 - WhenEmpty: 欠損埋めをしたいときだけ書く
+  - 注意: WhenEmpty/Prev/Fill の連携には Select 内で WindowStart() を1回含めること（バケット列が必須）
 
 ``` mermaid
 

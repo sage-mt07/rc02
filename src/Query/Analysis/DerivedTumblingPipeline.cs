@@ -115,7 +115,7 @@ internal static class DerivedTumblingPipeline
             // Note: prev_1m join and filler specifics will be added in a later pass.
             var keys = model.AdditionalSettings.TryGetValue("keys", out var kObj) ? (string[])kObj! : Array.Empty<string>();
             var projection = model.AdditionalSettings.TryGetValue("projection", out var pObj) ? (string[])pObj! : Array.Empty<string>();
-            var bucketCol = queryModel.BucketColumnName ?? "BucketStart";
+            var bucketCol = queryModel.BucketColumnName ?? throw new InvalidOperationException("WhenEmpty/Fill requires WindowStart() in Select to define the bucket column.");
             var hbName = $"{baseName}_hb_{tf}";
             var liveName = $"{baseName}_{tf}_live";
             // Optionally include prev_1m when timeframe is 1m to enable previous-close fill
@@ -124,7 +124,18 @@ internal static class DerivedTumblingPipeline
             if (!string.IsNullOrWhiteSpace(emit) && !ddl.Contains("EMIT ", StringComparison.OrdinalIgnoreCase))
                 ddl = ddl.Replace(";", $" {emit};");
         }
-        else if (role == Role.Prev1m || role == Role.Final1sStream)
+        else if (role == Role.Prev1m)
+        {
+            var keys = model.AdditionalSettings.TryGetValue("keys", out var kObj2) ? (string[])kObj2! : Array.Empty<string>();
+            var projection2 = model.AdditionalSettings.TryGetValue("projection", out var pObj2) ? (string[])pObj2! : Array.Empty<string>();
+            var bucketCol2 = queryModel.BucketColumnName ?? throw new InvalidOperationException("Prev requires WindowStart() in Select to define the bucket column.");
+            var hbName2 = $"{baseName}_hb_{tf}"; // tf should be 1m
+            var liveName2 = $"{baseName}_{tf}_live";
+            ddl = KsqlPrevStatementBuilder.Build(name, keys, projection2, bucketCol2, hbName2, liveName2, 1);
+            if (!string.IsNullOrWhiteSpace(emit) && !ddl.Contains("EMIT ", StringComparison.OrdinalIgnoreCase))
+                ddl = ddl.Replace(";", $" {emit};");
+        }
+        else if (role == Role.Final1sStream)
         {
             Func<Type, string> resolver = _ => inputOverride;
             ddl = KsqlCreateStatementBuilder.Build(name, qm, null, null, resolver);
