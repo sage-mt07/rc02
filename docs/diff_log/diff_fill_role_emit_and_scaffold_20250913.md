@@ -9,7 +9,7 @@
 Implications
 - Fill-derived CREATE statements now consistently include EMIT CHANGES.
 - Initial Fill DDL ensures contiguous buckets materialize by joining *_hb_<tf> with *_<tf>_live.
-- When timeframe is 1m and prev_1m is available, projection uses COALESCE(l.col, p.Close) for Open/High/Low/Close-equivalent columns.
+- When prev is available (e.g., prev_1m for 1m), projection generically falls back via COALESCE(l.col, p.col) per column; app-defined filler semantics are respected without Close 固定。
 
 Next
 - Incorporate prev_1m into Fill DDL (LEFT JOIN + COALESCE/CASE) to project previous-close fillers.

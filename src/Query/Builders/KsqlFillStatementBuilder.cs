@@ -38,27 +38,15 @@ internal static class KsqlFillStatementBuilder
             selectParts.Add($"h.KEY->{k.ToUpperInvariant()} AS {k}");
         selectParts.Add($"h.{bucketColumn} AS {bucketColumn}");
 
-        // Heuristic: choose close column name from projection
-        string? closeCol = projection.FirstOrDefault(c => string.Equals(c, "KsqlTimeFrameClose", StringComparison.OrdinalIgnoreCase))
-            ?? projection.FirstOrDefault(c => string.Equals(c, "Close", StringComparison.OrdinalIgnoreCase));
-        bool hasPrev = !string.IsNullOrWhiteSpace(prevTable) && closeCol != null;
+        // If prev is provided, fallback generically to prev.{col} for any value column
+        bool hasPrev = !string.IsNullOrWhiteSpace(prevTable);
         foreach (var col in projection)
         {
             if (keys.Contains(col, StringComparer.OrdinalIgnoreCase)) continue;
             if (string.Equals(col, bucketColumn, StringComparison.OrdinalIgnoreCase)) continue;
-            if (hasPrev && (
-                string.Equals(col, "Open", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(col, "High", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(col, "Low", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(col, closeCol, StringComparison.OrdinalIgnoreCase)))
-            {
-                // Fallback to previous close when live is missing
-                selectParts.Add($"COALESCE(l.{col}, p.{closeCol}) AS {col}");
-            }
-            else
-            {
-                selectParts.Add($"l.{col} AS {col}");
-            }
+            // Fallback to previous value for the same bucket time when live is missing
+            var expr = hasPrev ? $"COALESCE(l.{col}, p.{col})" : $"l.{col}";
+            selectParts.Add($"{expr} AS {col}");
         }
         sb.Append("SELECT ").Append(string.Join(", ", selectParts)).AppendLine();
 
