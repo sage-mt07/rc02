@@ -1,4 +1,4 @@
-<img src="LinqKsql-logo.png" alt="LinqKsql" width="100" height="100" style="vertical-align:middle;margin-right:8px;"/> &nbsp; &nbsp; Kafka.Ksql.Linq &nbsp;&nbsp;<img src="experimental.png" alt="Experimental"  height="30" style="vertical-align:middle;margin-right:8px;"/>
+# <img src="LinqKsql-logo.png" alt="LinqKsql" width="100" height="100" style="vertical-align:middle;margin-right:8px;"/> &nbsp; &nbsp; Kafka.Ksql.Linq &nbsp;&nbsp;<img src="experimental.png" alt="Experimental"  height="30" style="vertical-align:middle;margin-right:8px;"/>
 
 > Kafka/ksqlDBを型安全に操作するLINQスタイルのC# DSLライブラリ
 
@@ -49,7 +49,7 @@ await context.HelloMessages.ForEachAsync(m =>
 
 Kafka.Ksql.Linq がどのように Kafka 環境へ接続され、処理を実現するかを以下に示します。
 
-### 1. DSL 全体アーキテクチャ図
+### 全体アーキテクチャ図
 
 ```mermaid
 flowchart TB
