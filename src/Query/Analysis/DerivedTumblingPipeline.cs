@@ -100,7 +100,20 @@ internal static class DerivedTumblingPipeline
             _ => $"{baseName}_{tf}"
         };
         string ddl;
-        if (role == Role.Prev1m || role == Role.Final1sStream)
+        if (role == Role.Fill)
+        {
+            // Experimental: Build Fill DDL by driving from HB and left-joining live.
+            // Note: prev_1m join and filler specifics will be added in a later pass.
+            var keys = model.AdditionalSettings.TryGetValue("keys", out var kObj) ? (string[])kObj! : Array.Empty<string>();
+            var projection = model.AdditionalSettings.TryGetValue("projection", out var pObj) ? (string[])pObj! : Array.Empty<string>();
+            var bucketCol = queryModel.BucketColumnName ?? "BucketStart";
+            var hbName = $"{baseName}_hb_{tf}";
+            var liveName = $"{baseName}_{tf}_live";
+            ddl = KsqlFillStatementBuilder.Build(name, keys, projection, bucketCol, hbName, liveName);
+            if (!string.IsNullOrWhiteSpace(emit) && !ddl.Contains("EMIT ", StringComparison.OrdinalIgnoreCase))
+                ddl = ddl.Replace(";", $" {emit};");
+        }
+        else if (role == Role.Prev1m || role == Role.Final1sStream)
         {
             Func<Type, string> resolver = _ => inputOverride;
             ddl = KsqlCreateStatementBuilder.Build(name, qm, null, null, resolver);

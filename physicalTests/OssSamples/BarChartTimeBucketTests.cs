@@ -124,11 +124,12 @@ public class BarChartTimeBucketTests
         Assert.True(rows5m.Count >= 1, "5m bucket not produced");
     }
 
-    [Fact(Skip = "WhenEmpty DSL is not implemented; placeholder for future implementation")]
+    [Fact(Skip = "WhenEmpty fill KSQL is pending; will verify via TimeBucket once implemented")]
     public void WhenEmpty_Fills_Missing_Minute_With_Previous_Close()
     {
         // docs/chart.md の WhenEmpty（欠損埋め）に対応する検証
-        // 現在 DSL に WhenEmpty が未実装のため Skip。実装後は 1分の欠損を直前 Close で埋めることを TimeBucket 経由で確認する。
+        // フィジカル生成（HB/Prev JOIN + Fill 投影）の具象化が未反映のため Skip。
+        // 実装後は 1分の欠損を直前 Close で埋めることを TimeBucket 経由で確認する。
     }
 
     // RuntimeRocks/TestContext は TimeBucket テスト用の最小ダミー（外部依存なし）
@@ -138,4 +139,3 @@ public class BarChartTimeBucketTests
         private static async IAsyncEnumerable<(string, object)> AsyncEmpty() { await Task.CompletedTask; yield break; }
     }
 }
-

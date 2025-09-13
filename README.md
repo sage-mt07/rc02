@@ -10,29 +10,11 @@
 - 前提: .NET 8, Kafka, ksqlDB, Schema Registry
 - インストール: dotnet add package Kafka.Ksql.Linq
 ```
-public class HelloMessage
-{
-    public int Id { get; set; }
-    public string Text { get; set; } = string.Empty;
-}
-public class HelloKafkaContext : KsqlContext
-{
-    public HelloKafkaContext(KsqlContextOptions options) : base(options.Configuration!, options.LoggerFactory) { }
-    public HelloKafkaContext(Microsoft.Extensions.Configuration.IConfiguration configuration, Microsoft.Extensions.Logging.ILoggerFactory? loggerFactory = null) : base(configuration, loggerFactory) { }
-    public EventSet<HelloMessage> HelloMessages { get; set; }
-    protected override void OnModelCreating(IModelBuilder modelBuilder)
-    {
-    }
-}
 
 class Program
 {
     static async Task Main(string[] args)
     {
-        var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
-            .Build();
-
         await using var context = new HelloKafkaContext(configuration, LoggerFactory.Create(b => b.AddConsole()));
 
         var message = new HelloMessage
@@ -92,54 +74,22 @@ flowchart TB
     ST --- RDB
     ST -. 状態ストア .- E
 ``` 
-2) Produce / Consume と API（Stream・Table・RocksDB）
-``` mermaid
-flowchart TB
-    %% Stream API
-    subgraph STREAM["Stream"]
-        SAdd["AddAsync(payload)"]
-        SFor["ForEachAsync(handler, token)"]
-    end
 
-    %% Table API
-    subgraph TABLE["Table"]
-        TAdd["AddAsync(entity)"]
-        TList["ToListAsync()"]
-    end
-
-    %% ksqlDB / Topics / StateStore
-    KSQLS["ksqlDB STREAM"]
-    KSQLT["ksqlDB TABLE (changelog)"]
-    TOPIC[(Kafka Topic)]
-    STATE["State Store\n(Streamiz)"]
-    ROCKS[(RocksDB)]
-
-    %% Stream: produce & consume
-    SAdd -->|produce| TOPIC
-    TOPIC -->|source| KSQLS
-    SFor <-->|push consume| KSQLS
-
-    %% Table: upsert & fast read
-    TAdd -->|upsert| KSQLT
-    KSQLT -->|materialized store| STATE
-    STATE --- ROCKS
-    TList -->|read via local store| STATE
-
-    %% 説明ラベル
-    classDef dim fill:#f6f8fa,stroke:#d0d7de,color:#24292f;
-    class STREAM,TABLE,STATE,ROCKS,KSQLS,KSQLT,TOPIC dim;
-```
-
-## 例（Examples）
+## Examples
 - 目次: `docs/examples/index.md`
+  - Basics(AddAsync/ForEachAsync)
+  - Query Basics（LINQ→KSQL 基本）
+  - Windowing（時間窓・集計｜統合）
+  - Error Handling（運用・再処理）
 - OnModelCreating サンプル集: `docs/onmodelcreating_samples.md`
 
 ## ドキュメント（リファレンス）
-- 関数/型対応表: `docs/ksql-function-type-mapping.md`
-- SQLServer→ksqlDB ガイド: `docs/sqlserver-to-kafka-guide.md`
-- API: `docs/api_reference.md`
-- Configuration: `docs/configuration_reference.md`
-- Advanced: `docs/advanced_rules.md`
+- 利用者向け
+　- SQLServer→ksqlDB ガイド: `docs/sqlserver-to-kafka-guide.md`
+　- API: `docs/api_reference.md`
+　- Configuration: `docs/configuration_reference.md`
+- 内部構造理解のためのガイド
+  - Advanced: `docs/advanced_rules.md`
 
 ## ライセンス / ロードマップ
 - License: [MIT License](./LICENSE)
@@ -150,4 +100,4 @@ flowchart TB
 
 
 ## Acknowledgements
-- [Acknowledgements](./docs/acknowledgements.md)
+- 本ライブラリは「AIと人間の共創」を理念に開発されました。[Acknowledgements](./docs/acknowledgements.md)

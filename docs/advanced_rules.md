@@ -170,3 +170,82 @@ for (int i = 0; i < 7; i++)
 - 日次（bar_1d_live）: 平日 5 本のみ生成（休業日は生成されない）。
 - 週次（bar_1wk_final）: 週 1 本生成（平日のみが集計対象）。
 - 週の起点（Monday）は MarketDate 設計で担保されます（ksqlDB の `SIZE 7 DAYS` 自体には曜日アンカーはありません）。
+
+1) DSL 全体アーキテクチャ図
+``` mermaid
+flowchart TB
+    subgraph App["C# アプリケーション"]
+        A[LINQ / DSL 呼び出し]
+    end
+
+    A --> B[DSL]
+    B --> C[Query Builder]
+    C --> D[KSQL Generator]
+    D -->|DDL/CSAS/CTAS| E[KsqlDB]
+    E -->|Read/Write| F[(Kafka Topics)]
+
+    %% 補助コンポーネント
+    subgraph Schema["Schema Management"]
+        SR[(Schema Registry)]
+        AV[Avro Serializer/Deserializer]
+    end
+
+    D --> SR
+    SR --- AV
+    AV --- F
+
+    %% 運用・モード
+    subgraph Ops["運用機能"]
+        EH[DLQ / Retry / Commit]
+        MODE[Streaming Mode\nPush / Pull]
+    end
+
+    E ---> EH
+    E ---> MODE
+
+    %% キャッシュ層
+    subgraph Cache["ローカルキャッシュ"]
+        ST[Streamiz]
+        RDB[(RocksDB)]
+    end
+    ST --- RDB
+    ST -. 状態ストア .- E
+``` 
+
+2) Produce / Consume と API（Stream・Table・RocksDB）
+``` mermaid
+flowchart TB
+    %% Stream API
+    subgraph STREAM["Stream"]
+        SAdd["AddAsync(payload)"]
+        SFor["ForEachAsync(handler, token)"]
+    end
+
+    %% Table API
+    subgraph TABLE["Table"]
+        TAdd["AddAsync(entity)"]
+        TList["ToListAsync()"]
+    end
+
+    %% ksqlDB / Topics / StateStore
+    KSQLS["ksqlDB STREAM"]
+    KSQLT["ksqlDB TABLE (changelog)"]
+    TOPIC[(Kafka Topic)]
+    STATE["State Store\n(Streamiz)"]
+    ROCKS[(RocksDB)]
+
+    %% Stream: produce & consume
+    SAdd -->|produce| TOPIC
+    TOPIC -->|source| KSQLS
+    SFor <-->|push consume| KSQLS
+
+    %% Table: upsert & fast read
+    TAdd -->|upsert| KSQLT
+    KSQLT -->|materialized store| STATE
+    STATE --- ROCKS
+    TList -->|read via local store| STATE
+
+    %% 説明ラベル
+    classDef dim fill:#f6f8fa,stroke:#d0d7de,color:#24292f;
+    class STREAM,TABLE,STATE,ROCKS,KSQLS,KSQLT,TOPIC dim;
+```
