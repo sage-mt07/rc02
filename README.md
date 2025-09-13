@@ -17,23 +17,9 @@ docker-compose -f tools/docker-compose.kafka.yml up -d
 # 実行例（examples は順次追加中）
 # cd examples/hello-world && dotnet run
 
-using Kafka.Ksql.Linq;
-using Kafka.Ksql.Linq.Core.Abstractions;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
-using Kafka.Ksql.Linq.Core.Attributes;
-using Kafka.Ksql.Linq.Application;
-
-[KsqlTopic("hello-world")]
 public class HelloMessage
 {
     public int Id { get; set; }
-
-    [KsqlTimestamp]
-    public DateTime CreatedAt { get; set; }
-
     public string Text { get; set; } = string.Empty;
 }
 
@@ -60,14 +46,9 @@ class Program
         var message = new HelloMessage
         {
             Id = Random.Shared.Next(),
-            CreatedAt = DateTime.UtcNow,
             Text = "Hello World"
         };
-
         await context.HelloMessages.AddAsync(message);
-        // wait until the stream is ready
-        await context.WaitForEntityReadyAsync<HelloMessage>(TimeSpan.FromSeconds(5));
-
         await context.HelloMessages.ForEachAsync(m =>
         {
             Console.WriteLine($"Received: {m.Text}");
