@@ -37,7 +37,8 @@ public class RocksDbToListAsyncTests
         var options = new KsqlDslOptions
         {
             Common = new CommonSection { BootstrapServers = EnvRocksDbTests.KafkaBootstrapServers },
-            SchemaRegistry = new SchemaRegistrySection { Url = EnvRocksDbTests.SchemaRegistryUrl }
+            SchemaRegistry = new SchemaRegistrySection { Url = EnvRocksDbTests.SchemaRegistryUrl },
+            KsqlDbUrl = EnvRocksDbTests.KsqlDbUrl
         };
         options.Entities.Add(new EntityConfiguration { Entity = nameof(Tick), EnableCache = true, SourceTopic = "rocks_to_list_ticks" });
         options.Topics.Add("rocks_to_list_ticks", new Kafka.Ksql.Linq.Configuration.Messaging.TopicSection
@@ -81,5 +82,6 @@ public static class EnvRocksDbTests
 {
     internal const string SchemaRegistryUrl = "http://127.0.0.1:18081";
     internal const string KafkaBootstrapServers = "127.0.0.1:39092";
+    internal const string KsqlDbUrl = "http://127.0.0.1:18088";
 }
 

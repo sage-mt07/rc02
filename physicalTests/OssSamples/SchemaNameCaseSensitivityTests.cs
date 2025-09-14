@@ -54,7 +54,8 @@ public class SchemaNameCaseSensitivityTests
         var options = new KsqlDslOptions
         {
             Common = new CommonSection { BootstrapServers = EnvSchemaNameCaseSensitivityTests.KafkaBootstrapServers },
-            SchemaRegistry = new SchemaRegistrySection { Url = EnvSchemaNameCaseSensitivityTests.SchemaRegistryUrl }
+            SchemaRegistry = new SchemaRegistrySection { Url = EnvSchemaNameCaseSensitivityTests.SchemaRegistryUrl },
+            KsqlDbUrl = EnvSchemaNameCaseSensitivityTests.KsqlDbUrl
         };
 
         // Map entity to dedicated topic to avoid SR conflicts

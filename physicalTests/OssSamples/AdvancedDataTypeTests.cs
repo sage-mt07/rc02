@@ -54,7 +54,8 @@ public class AdvancedDataTypeTests
         var options = new KsqlDslOptions
         {
             Common = new CommonSection { BootstrapServers = EnvAdvancedDataTypeTests.KafkaBootstrapServers },
-            SchemaRegistry = new SchemaRegistrySection { Url = EnvAdvancedDataTypeTests.SchemaRegistryUrl }
+            SchemaRegistry = new SchemaRegistrySection { Url = EnvAdvancedDataTypeTests.SchemaRegistryUrl },
+            KsqlDbUrl = EnvAdvancedDataTypeTests.KsqlDbUrl
         };
         options.Topics.Add("records", new Configuration.Messaging.TopicSection { Consumer = new Configuration.Messaging.ConsumerSection { AutoOffsetReset = "Earliest", GroupId = Guid.NewGuid().ToString() } });
 

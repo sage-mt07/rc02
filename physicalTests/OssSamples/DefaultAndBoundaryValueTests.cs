@@ -43,7 +43,8 @@ public class DefaultAndBoundaryValueTests
         var options = new KsqlDslOptions
         {
             Common = new CommonSection { BootstrapServers = EnvDefaultAndBoundaryValueTests.KafkaBootstrapServers },
-            SchemaRegistry = new SchemaRegistrySection { Url = EnvDefaultAndBoundaryValueTests.SchemaRegistryUrl }
+            SchemaRegistry = new SchemaRegistrySection { Url = EnvDefaultAndBoundaryValueTests.SchemaRegistryUrl },
+            KsqlDbUrl = EnvDefaultAndBoundaryValueTests.KsqlDbUrl
         };
         // Ensure fresh consumption for each test run
         options.Topics.Add("alltyperecords", new Configuration.Messaging.TopicSection

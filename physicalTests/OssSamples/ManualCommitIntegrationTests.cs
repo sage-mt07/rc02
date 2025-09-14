@@ -1,4 +1,5 @@
 using Kafka.Ksql.Linq.Configuration;
+using Confluent.Kafka;
 using Kafka.Ksql.Linq.Core.Configuration;
 using Xunit;
 
@@ -24,7 +25,8 @@ public class ManualCommitIntegrationTests
         var options = new KsqlDslOptions
         {
             Common = new CommonSection { BootstrapServers = EnvManualCommitIntegrationTests.KafkaBootstrapServers },
-            SchemaRegistry = new SchemaRegistrySection { Url = EnvManualCommitIntegrationTests.SchemaRegistryUrl }
+            SchemaRegistry = new SchemaRegistrySection { Url = EnvManualCommitIntegrationTests.SchemaRegistryUrl },
+            KsqlDbUrl = EnvManualCommitIntegrationTests.KsqlDbUrl
         };
 
         options.Topics.Add("manual_commit", new Kafka.Ksql.Linq.Configuration.Messaging.TopicSection
@@ -32,7 +34,8 @@ public class ManualCommitIntegrationTests
             Consumer = new Kafka.Ksql.Linq.Configuration.Messaging.ConsumerSection
             {
                 AutoOffsetReset = "Earliest",
-                GroupId = groupId
+                GroupId = groupId,
+                EnableAutoCommit = false
             }
         });
 
@@ -69,11 +72,19 @@ public class ManualCommitIntegrationTests
                 return Task.CompletedTask;
             }, autoCommit: false, cancellationToken: consumeCts.Token);
         }
+        // verify commit is visible at broker side before re-consuming
+        await WaitForCommittedOffsetAsync(
+            EnvManualCommitIntegrationTests.KafkaBootstrapServers,
+            groupId,
+            "manual_commit",
+            minOffset: 3,
+            timeout: TimeSpan.FromSeconds(30));
 
         // verify resuming from the committed offset
         await using (var ctx = new ManualCommitContext(options))
         {
-            using var consumeCts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            await Task.Delay(2000);
+            using var consumeCts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
             ManualCommitContext.Sample? received = null;
             await ctx.Samples.ForEachAsync((sample, _, _) =>
             {
@@ -86,10 +97,41 @@ public class ManualCommitIntegrationTests
             Assert.Equal(4, received!.Id);
         }
     }
+
+    private static async Task WaitForCommittedOffsetAsync(string bootstrap, string groupId, string topic, long minOffset, TimeSpan timeout)
+    {
+        var cfg = new ConsumerConfig
+        {
+            BootstrapServers = bootstrap,
+            GroupId = groupId,
+            EnableAutoCommit = false,
+            EnableAutoOffsetStore = false,
+            AllowAutoCreateTopics = false,
+        };
+        using var consumer = new ConsumerBuilder<Ignore, Ignore>(cfg).Build();
+        var tps = new List<TopicPartition> { new TopicPartition(topic, new Partition(0)) };
+        var deadline = DateTime.UtcNow + timeout;
+        while (DateTime.UtcNow < deadline)
+        {
+            try
+            {
+                var committed = consumer.Committed(tps, TimeSpan.FromSeconds(2));
+                if (committed != null && committed.Count > 0)
+                {
+                    var off = committed[0].Offset;
+                    if (off != Offset.Unset && off.Value >= minOffset) return;
+                }
+            }
+            catch { }
+            await Task.Delay(250);
+        }
+        // no throw; best-effort wait
+    }
 }
 
 public static class EnvManualCommitIntegrationTests
 {
     internal const string SchemaRegistryUrl = "http://127.0.0.1:18081";
     internal const string KafkaBootstrapServers = "127.0.0.1:39092";
+    internal const string KsqlDbUrl = "http://127.0.0.1:18088";
 }

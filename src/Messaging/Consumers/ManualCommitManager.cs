@@ -59,6 +59,7 @@ internal class ManualCommitManager : ICommitManager, EventSet<object>.ICommitReg
         }
         _meta.Add(entity, new MetaBox(meta));
         _logger?.LogDebug("ManualCommit track: topic={Topic} p={Partition} off={Offset}", meta.Topic, meta.Partition, meta.Offset);
+        try { Console.WriteLine($"[ManualCommit][track] topic={meta.Topic} p={meta.Partition} off={meta.Offset}"); } catch {}
         var key = (meta.Topic, meta.Partition);
         lock (_lock)
         {
@@ -92,6 +93,45 @@ internal class ManualCommitManager : ICommitManager, EventSet<object>.ICommitReg
             {
                 bind.Commit(tpo);
                 _logger?.LogInformation("ManualCommit commit sent: topic={Topic} p={Partition} nextOff={Offset}", meta.Topic, meta.Partition, meta.Offset + 1);
+                try
+                {
+                    // Best-effort: observe committed offset from the consumer for diagnostics
+                    var consumer = bind.Consumer;
+                    var committedMi = consumer.GetType().GetMethod("Committed", new[] { typeof(IEnumerable<TopicPartition>), typeof(TimeSpan) });
+                    if (committedMi != null)
+                    {
+                        var tps = new[] { new TopicPartition(meta.Topic, new Partition(meta.Partition)) };
+                        var res = committedMi.Invoke(consumer, new object[] { tps, TimeSpan.FromSeconds(2) });
+                        // Try to read first offset via reflection
+                        var enumerable = res as System.Collections.IEnumerable;
+                        long? committedValue = null;
+                        if (enumerable != null)
+                        {
+                            foreach (var item in enumerable)
+                            {
+                                var offProp = item.GetType().GetProperty("Offset");
+                                var offVal = offProp?.GetValue(item);
+                                if (offVal is Offset off)
+                                {
+                                    committedValue = off.Value;
+                                    break;
+                                }
+                                else if (offVal != null)
+                                {
+                                    // fallback for older client types
+                                    committedValue = (long)(offVal.GetType().GetProperty("Value")?.GetValue(offVal) ?? -1L);
+                                    break;
+                                }
+                            }
+                        }
+                        _logger?.LogInformation("ManualCommit observed committed: topic={Topic} p={Partition} committedOff={Committed}", meta.Topic, meta.Partition, committedValue);
+                        Console.WriteLine($"[ManualCommit][observed] topic={meta.Topic} p={meta.Partition} committed={committedValue}");
+                    }
+                }
+                catch (System.Exception obsEx)
+                {
+                    _logger?.LogDebug(obsEx, "ManualCommit committed observation failed");
+                }
             }
             catch (System.Exception ex)
             {

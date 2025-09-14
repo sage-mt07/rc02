@@ -39,6 +39,7 @@ public class NoKeyPocoTests
         {
             Common = new CommonSection { BootstrapServers = EnvNoKeyPocoTests.KafkaBootstrapServers },
             SchemaRegistry = new SchemaRegistrySection { Url = EnvNoKeyPocoTests.SchemaRegistryUrl },
+            KsqlDbUrl = EnvNoKeyPocoTests.KsqlDbUrl,
             Topics = new Dictionary<string, Configuration.Messaging.TopicSection>()
         };
         options.Topics.Add("records_no_key", new Configuration.Messaging.TopicSection { Consumer = new Configuration.Messaging.ConsumerSection { AutoOffsetReset = "Earliest", GroupId = Guid.NewGuid().ToString() } });

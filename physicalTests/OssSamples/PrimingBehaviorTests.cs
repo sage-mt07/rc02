@@ -31,7 +31,8 @@ public class PrimingBehaviorTests
         var options = new KsqlDslOptions
         {
             Common = new CommonSection { BootstrapServers = EnvPrimingBehaviorTests.KafkaBootstrapServers },
-            SchemaRegistry = new SchemaRegistrySection { Url = EnvPrimingBehaviorTests.SchemaRegistryUrl }
+            SchemaRegistry = new SchemaRegistrySection { Url = EnvPrimingBehaviorTests.SchemaRegistryUrl },
+            KsqlDbUrl = EnvPrimingBehaviorTests.KsqlDbUrl
         };
         options.Topics.Add("priming_records", new Kafka.Ksql.Linq.Configuration.Messaging.TopicSection
         {

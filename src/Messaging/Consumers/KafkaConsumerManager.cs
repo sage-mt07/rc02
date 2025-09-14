@@ -153,6 +153,7 @@ internal class KafkaConsumerManager : IDisposable
             consumer.Commit(tps);
         }
         consumer.Subscribe(topicName);
+        try { Console.WriteLine($"[ConsumeInternal] subscribed topic={topicName} group={config.GroupId} autoCommit={config.EnableAutoCommit}"); } catch {}
         if (config.EnableAutoCommit != true)
             _commitManager.Bind(typeof(TPOCO), topicName, consumer);
 
@@ -291,7 +292,9 @@ internal class KafkaConsumerManager : IDisposable
         DefaultValueBinder.ApplyDefaults(topicConfig.Consumer!);
         if (string.IsNullOrWhiteSpace(groupId))
             groupId = topicConfig.Consumer.GroupId;
-        var enableAutoCommit = hasConfig ? topicConfig.Consumer.EnableAutoCommit : autoCommit;
+        // Respect the caller's intent: prefer the explicit autoCommit flag from the API
+        // Topic configuration may provide defaults, but should not override the method parameter.
+        var enableAutoCommit = autoCommit;
 
         var consumerConfig = new ConsumerConfig
         {
@@ -308,6 +311,8 @@ internal class KafkaConsumerManager : IDisposable
             FetchMaxBytes = topicConfig.Consumer.FetchMaxBytes,
             IsolationLevel = Enum.Parse<IsolationLevel>(topicConfig.Consumer.IsolationLevel)
         };
+
+        try { Console.WriteLine($"[ConsumerConfig] topic={topicName} group={groupId} enableAutoCommit={enableAutoCommit} autoOffsetReset={topicConfig.Consumer.AutoOffsetReset}"); } catch {}
 
         if (!hasConfig && subscriptionOptions != null)
         {

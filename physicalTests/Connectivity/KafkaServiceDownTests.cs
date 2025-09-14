@@ -10,7 +10,7 @@ namespace Kafka.Ksql.Linq.Tests.Integration;
 [Collection("Connectivity")]
 public class KafkaServiceDownTests
 {
-    [KsqlTopic("orders")]
+    [KsqlTopic("orders_srvdown")]
     public class Order
     {
         public int Id { get; set; }

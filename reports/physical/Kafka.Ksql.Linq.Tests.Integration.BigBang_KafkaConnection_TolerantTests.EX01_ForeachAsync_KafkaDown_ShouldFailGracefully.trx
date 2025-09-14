@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="f66d85c5-24aa-4c98-a768-d575f072da01" name="seiji_yfc8940@SAGESOHO01 2025-09-14 18:54:11" runUser="SAGESOHO01\seiji_yfc8940" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-09-14T18:54:11.5835359+09:00" queuing="2025-09-14T18:54:11.5835360+09:00" start="2025-09-14T18:54:07.6177488+09:00" finish="2025-09-14T18:54:11.5878198+09:00" />
+  <TestSettings name="default" id="7bb79ddf-6d68-4aea-ae5b-40e5643d1f3d">
+    <Deployment runDeploymentRoot="seiji_yfc8940_SAGESOHO01_2025-09-14_18_54_11" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="9e4b439f-ec19-4067-8f9d-754ce6775d4d" testId="fa46f409-6539-d06f-aa37-8cfd2c4998c0" testName="Kafka.Ksql.Linq.Tests.Integration.BigBang_KafkaConnection_TolerantTests.EX01_ForeachAsync_KafkaDown_ShouldFailGracefully" computerName="SAGESOHO01" duration="00:00:03.4032311" startTime="2025-09-14T18:54:11.5179978+09:00" endTime="2025-09-14T18:54:11.5180083+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9e4b439f-ec19-4067-8f9d-754ce6775d4d" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="Kafka.Ksql.Linq.Tests.Integration.BigBang_KafkaConnection_TolerantTests.EX01_ForeachAsync_KafkaDown_ShouldFailGracefully" storage="c:\dev\rc02\physicaltests\bin\release\net8.0\kafka.ksql.linq.tests.integration.dll" id="fa46f409-6539-d06f-aa37-8cfd2c4998c0">
+      <Execution id="9e4b439f-ec19-4067-8f9d-754ce6775d4d" />
+      <TestMethod codeBase="C:\dev\rc02\physicalTests\bin\Release\net8.0\Kafka.Ksql.Linq.Tests.Integration.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Integration.BigBang_KafkaConnection_TolerantTests" name="EX01_ForeachAsync_KafkaDown_ShouldFailGracefully" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="fa46f409-6539-d06f-aa37-8cfd2c4998c0" executionId="9e4b439f-ec19-4067-8f9d-754ce6775d4d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="一覧に存在しない結果" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="読み込まれたすべての結果" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="1" executed="1" passed="1" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.6+bf9b858c26 (64-bit .NET 8.0.19)&#xD;
+[xUnit.net 00:00:00.06]   Discovering: Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.11]   Discovered:  Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.12]   Starting:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+[ConsumerConfig] topic=orders group=default-group enableAutoCommit=True autoOffsetReset=Latest&#xD;
+[ConsumeInternal] subscribed topic=orders group=default-group autoCommit=True&#xD;
+[xUnit.net 00:00:03.55]   Finished:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

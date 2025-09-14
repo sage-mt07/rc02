@@ -1,0 +1,19 @@
+Test\tOutcome\tPassed\tFailed\tWhen
+Kafka.Ksql.Linq.Tests.Integration.BigBang_KafkaConnection_StrictTests.EX02_AddAsync_KafkaDown_ShouldLogAndTimeout	Completed	1	0	2025-09-14 18:50:50
+Kafka.Ksql.Linq.Tests.Integration.BigBang_KafkaConnection_StrictTests.EX02_ForeachAsync_KafkaDown_ShouldLogAndTimeout	Completed	1	0	2025-09-14 18:52:37
+Kafka.Ksql.Linq.Tests.Integration.BigBang_KafkaConnection_TolerantTests.EX01_AddAsync_KafkaDown_ShouldFailGracefully	Completed	1	0	2025-09-14 18:53:20
+Kafka.Ksql.Linq.Tests.Integration.BigBang_KafkaConnection_TolerantTests.EX01_ForeachAsync_KafkaDown_ShouldFailGracefully	Completed	1	0	2025-09-14 18:54:11
+Kafka.Ksql.Linq.Tests.Integration.KafkaServiceDownTests.AddAsync_ShouldThrow_WhenKafkaIsDown	Completed	1	0	2025-09-14 18:55:22
+Kafka.Ksql.Linq.Tests.Integration.KafkaServiceDownTests.ForeachAsync_ShouldThrow_WhenKafkaIsDown	Completed	1	0	2025-09-14 18:56:20
+Kafka.Ksql.Linq.Tests.Integration.KsqlDbServiceDownTests.ExecuteStatement_ShouldFail_WhenKsqlDbDown	Completed	1	0	2025-09-14 18:57:08
+Kafka.Ksql.Linq.Tests.Integration.SchemaRegistryResetTests.Setup_ShouldRegisterAllSchemas	Completed	1	0	2025-09-14 18:57:47
+Kafka.Ksql.Linq.Tests.Integration.SchemaRegistryResetTests.DuplicateSchemaRegistration_ShouldSucceed	Completed	1	0	2025-09-14 18:58:26
+Kafka.Ksql.Linq.Tests.Integration.SchemaRegistryResetTests.UpperCaseSubjects_ShouldNotExist	Completed	1	0	2025-09-14 18:59:05
+Kafka.Ksql.Linq.Tests.Integration.KafkaAdminServiceIntegrationTests.EnsureTopic_CreatesWithConfiguredStructure	Completed	1	0	2025-09-14 18:59:44
+Kafka.Ksql.Linq.Tests.Integration.InvalidQueryTests.GeneratedQuery_IsRejected(ksql: "SELECT ID, COUNT(*) FROM ORDERS GROUP BY ID;")	Completed	2	0	2025-09-14 19:00:21
+Kafka.Ksql.Linq.Tests.Integration.InvalidQueryTests.GeneratedQuery_IsRejected(ksql: "SELECT CASE WHEN ID=1 THEN 'A' ELSE 2 END FROM ORD"···)	Completed	0	0	2025-09-14 19:00:59
+Kafka.Ksql.Linq.Tests.Integration.KsqlSyntaxTests.GeneratedQuery_IsValidInKsqlDb(ksql: "CREATE STREAM test_stream AS SELECT * FROM source "···)	Completed	0	0	2025-09-14 19:01:38
+Kafka.Ksql.Linq.Tests.Integration.KsqlSyntaxTests.GeneratedQuery_IsValidInKsqlDb(ksql: "SELECT CustomerId, COUNT(*) FROM orders GROUP BY C"···)	Completed	2	0	2025-09-14 19:02:15
+Kafka.Ksql.Linq.Tests.Integration.ReservedKeyQuotingTests.CreateStream_WithReservedKeyFields_ShouldSucceed	Completed	1	0	2025-09-14 19:02:54
+Kafka.Ksql.Linq.Tests.Integration.AdvancedDataTypeTests.Decimal_DateTime_Enum_RoundTrip	Completed	1	0	2025-09-14 19:04:01
+Kafka.Ksql.Linq.Tests.Integration.BarDslMultiTierTests.MultiTier_1m_5m_15m_60m_Create_And_Ohlc_Sanity	Failed	0	1	2025-09-14 19:06:18

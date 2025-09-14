@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="3e249ad8-8f50-426c-aa76-ee0ee9e5e274" name="seiji_yfc8940@SAGESOHO01 2025-09-14 18:55:22" runUser="SAGESOHO01\seiji_yfc8940" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-09-14T18:55:22.3282376+09:00" queuing="2025-09-14T18:55:22.3282381+09:00" start="2025-09-14T18:54:57.1301433+09:00" finish="2025-09-14T18:55:22.3343017+09:00" />
+  <TestSettings name="default" id="6dcff0ef-2ee0-43a5-8fa5-9b5cb0da0393">
+    <Deployment runDeploymentRoot="seiji_yfc8940_SAGESOHO01_2025-09-14_18_55_22" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="8b31830e-db06-420d-9140-907e49fac526" testId="52a48a8d-aaad-2671-a532-2ce974e3f69a" testName="Kafka.Ksql.Linq.Tests.Integration.KafkaServiceDownTests.AddAsync_ShouldThrow_WhenKafkaIsDown" computerName="SAGESOHO01" duration="00:00:24.6278683" startTime="2025-09-14T18:55:22.2590437+09:00" endTime="2025-09-14T18:55:22.2590577+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8b31830e-db06-420d-9140-907e49fac526" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="Kafka.Ksql.Linq.Tests.Integration.KafkaServiceDownTests.AddAsync_ShouldThrow_WhenKafkaIsDown" storage="c:\dev\rc02\physicaltests\bin\release\net8.0\kafka.ksql.linq.tests.integration.dll" id="52a48a8d-aaad-2671-a532-2ce974e3f69a">
+      <Execution id="8b31830e-db06-420d-9140-907e49fac526" />
+      <TestMethod codeBase="C:\dev\rc02\physicalTests\bin\Release\net8.0\Kafka.Ksql.Linq.Tests.Integration.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Integration.KafkaServiceDownTests" name="AddAsync_ShouldThrow_WhenKafkaIsDown" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="52a48a8d-aaad-2671-a532-2ce974e3f69a" executionId="8b31830e-db06-420d-9140-907e49fac526" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="一覧に存在しない結果" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="読み込まれたすべての結果" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="1" executed="1" passed="1" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.6+bf9b858c26 (64-bit .NET 8.0.19)&#xD;
+[xUnit.net 00:00:00.07]   Discovering: Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.12]   Discovered:  Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.12]   Starting:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+%3|1757843701.600|FAIL|ksql-dsl-client-admin#producer-1| [thrd:127.0.0.1:39092/bootstrap]: 127.0.0.1:39092/bootstrap: Connect to ipv4#127.0.0.1:39092 failed: Unknown error (after 2036ms in state CONNECT)&#xD;
+%3|1757843701.600|ERROR|ksql-dsl-client-admin#producer-1| [thrd:127.0.0.1:39092/bootstrap]: 1/1 brokers are down&#xD;
+%3|1757843701.600|ERROR|ksql-dsl-client-admin#producer-1| [thrd:app]: ksql-dsl-client-admin#producer-1: 127.0.0.1:39092/bootstrap: Connect to ipv4#127.0.0.1:39092 failed: Unknown error (after 2036ms in state CONNECT)&#xD;
+%3|1757843701.786|FAIL|ksql-dsl-client#producer-2| [thrd:127.0.0.1:39092/bootstrap]: 127.0.0.1:39092/bootstrap: Connect to ipv4#127.0.0.1:39092 failed: Unknown error (after 2041ms in state CONNECT)&#xD;
+%3|1757843701.786|ERROR|ksql-dsl-client#producer-2| [thrd:127.0.0.1:39092/bootstrap]: 1/1 brokers are down&#xD;
+%3|1757843701.786|ERROR|ksql-dsl-client#producer-2| [thrd:app]: ksql-dsl-client#producer-2: 127.0.0.1:39092/bootstrap: Connect to ipv4#127.0.0.1:39092 failed: Unknown error (after 2041ms in state CONNECT)&#xD;
+%3|1757843703.864|FAIL|ksql-dsl-client#producer-2| [thrd:127.0.0.1:39092/bootstrap]: 127.0.0.1:39092/bootstrap: Connect to ipv4#127.0.0.1:39092 failed: Unknown error (after 2030ms in state CONNECT, 1 identical error(s) suppressed)&#xD;
+%3|1757843703.864|ERROR|ksql-dsl-client#producer-2| [thrd:app]: ksql-dsl-client#producer-2: 127.0.0.1:39092/bootstrap: Connect to ipv4#127.0.0.1:39092 failed: Unknown error (after 2030ms in state CONNECT, 1 identical error(s) suppressed)&#xD;
+%3|1757843704.641|FAIL|ksql-dsl-client-admin#producer-1| [thrd:127.0.0.1:39092/bootstrap]: 127.0.0.1:39092/bootstrap: Connect to ipv4#127.0.0.1:39092 failed: Unknown error (after 2054ms in state CONNECT, 1 identical error(s) suppressed)&#xD;
+%3|1757843704.641|ERROR|ksql-dsl-client-admin#producer-1| [thrd:app]: ksql-dsl-client-admin#producer-1: 127.0.0.1:39092/bootstrap: Connect to ipv4#127.0.0.1:39092 failed: Unknown error (after 2054ms in state CONNECT, 1 identical error(s) suppressed)&#xD;
+%6|1757843706.647|FAIL|ksql-dsl-client-admin#producer-1| [thrd:127.0.0.1:39092/bootstrap]: 127.0.0.1:39092/bootstrap: Disconnected while requesting ApiVersion: might be caused by incorrect security.protocol configuration (connecting to a SSL listener?) or broker version is &lt; 0.10 (see api.version.request) (after 1ms in state APIVERSION_QUERY)&#xD;
+%3|1757843706.647|ERROR|ksql-dsl-client-admin#producer-1| [thrd:app]: ksql-dsl-client-admin#producer-1: 127.0.0.1:39092/bootstrap: Disconnected while requesting ApiVersion: might be caused by incorrect security.protocol configuration (connecting to a SSL listener?) or broker version is &lt; 0.10 (see api.version.request) (after 1ms in state APIVERSION_QUERY)&#xD;
+%6|1757843706.820|FAIL|ksql-dsl-client#producer-2| [thrd:127.0.0.1:39092/bootstrap]: 127.0.0.1:39092/bootstrap: Disconnected while requesting ApiVersion: might be caused by incorrect security.protocol configuration (connecting to a SSL listener?) or broker version is &lt; 0.10 (see api.version.request) (after 1ms in state APIVERSION_QUERY)&#xD;
+%3|1757843706.820|ERROR|ksql-dsl-client#producer-2| [thrd:app]: ksql-dsl-client#producer-2: 127.0.0.1:39092/bootstrap: Disconnected while requesting ApiVersion: might be caused by incorrect security.protocol configuration (connecting to a SSL listener?) or broker version is &lt; 0.10 (see api.version.request) (after 1ms in state APIVERSION_QUERY)&#xD;
+[xUnit.net 00:00:24.78]   Finished:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

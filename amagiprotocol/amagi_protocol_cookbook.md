@@ -3,93 +3,101 @@
 # Amagi Protocol for Everyday Developers
 
 ## Prologue
-**Amagi Protocol = Cookbook for Ordinary Folks**
 
-Geniuses frame questions in one shot. The rest of us refine them through conversation.
-That is the true strength of the AI era.
-This cookbook aims to **bend AI toward your style**.
-Share assumptions, align on goals, and keep the dialogue understandable for yourself.
-To do so, you must be brave enough to let the AI say "I don't know."
-This document is a cookbook for building trust with AI and achieving results even if you're not a genius.
+**Amagi Protocol = a cookbook for the rest of us**
+
+Geniuses pose perfect questions in a single breath. The rest of us stumble, trade lines, and slowly find the shape.
+That back-and-forth is the real edge of the AI era.
+This book shows how to **pull AI toward your own beat**.
+Never hand it the baton—do that and you surrender your rhythm.
+Lay out your assumptions, agree on the goal, and speak in words that feel like home.
+To do that, you must be brave enough to let the AI say "I don't know."
+That tiny honesty is the cornerstone of trust.
+Pretend it isn't needed and the whole foundation cracks.
+What follows is a set of recipes for ordinary developers who still want extraordinary results.
 
 ---
 
 ## Part 1: Genius Style vs. Ordinary Style
 
 ### 1. Asking Questions
-- **Genius**: structures the question instantly and feeds it to the AI
-- **Ordinary**: starts vague and organizes through dialogue
+- **Genius**: frames it in one breath and tosses it to the AI
+- **Ordinary**: starts messy, trims it through conversation
 
 ### 2. Handling AI Answers
-- **Genius**: can swallow speculation
-- **Ordinary**: welcomes "I don't know" and rejects pretending to understand
+- **Genius**: swallows speculation whole
+- **Ordinary**: celebrates "I don't know" and refuses to fake agreement
 
-### 3. Way of Progress
-- **Genius**: aims for the finished product from the start
-- **Ordinary**: advances while stacking up a sense of clarity
+### 3. Pace of Progress
+- **Genius**: heads straight for the finished dish
+- **Ordinary**: moves in steps, seasoning with each bit of clarity
 
 ---
 
 ## Part 2: Rules for the Ordinary (Recipe Collection)
 
 ### How to Set the Context
-The core of the Amagi Protocol is "do not disturb the context."
-AI builds responses from the immediate context, so wobbly assumptions invite mistakes and confusion.
-To reliably get results, ordinary users must follow rules that keep context stable.
-Rules 0–7 below provide concrete guidance.
+The heart of the Amagi Protocol is simple: guard the context.
+AI leans hard on the latest conversation; shaky assumptions invite mistakes.
+To get steady results, ordinary users follow rules that keep the ground firm.
+Rules 0–7 below provide the roadmap.
+Skip them and you'll watch the wheels come off.
 
 ### Rule 0: Make It Your Own
-There is no need to force yourself into AI-friendly prompts.
-Speak in your own words, rhythm, and style—let the AI adapt to you.
-That keeps your sense of clarity intact and preserves trust.
-→ Example: use your own signals like "deep breath" for reset or "OK" for confirmation.
+You don't have to speak "AI-ish."
+Use your own words, your rhythm. Let the model tune to you.
+That keeps clarity intact and trust unshaken.
+→ Example: say "deep breath" to reset, "OK" to confirm—whatever feels natural.
 
 ### Rule 1: Make It Admit "I Don't Know"
-"I don't know" is a safety mechanism essential for maintaining trust.
+Those three words are the fuse that keeps trust from blowing.
 
 ### Rule 2: Always Ask for Basis and Confidence
-Have it indicate at least three levels—strong basis, tentative reference, or insufficient info.
+Have it mark how sure it is—rock solid, hazy, or running on fumes.
 
 ### Rule 3: Don't Move On Without Conviction
-Progress without conviction collapses later. Have the courage to pause.
+If your gut isn't on board, stop. Build conviction before you move.
+Push forward anyway and you're digging your own hole.
 
 ### Rule 4: Think in Comparisons
-Instructing "show the difference between A and B" deepens understanding and simplifies choices.
-Extending this idea, **explicit role comparisons and assignments** are effective.
-Example: Naruse handles design, Shion does sample code, Kyoka reviews, etc.
-Role division is a form of comparative organization and naturally supports team collaboration.
+"Show me how A differs from B"—that single line sharpens understanding and makes decisions easier.
+Take it further with **explicit role comparisons and assignments**.
+Example: Naruse sketches designs, Shion codes samples, Kyoka reviews.
+Dividing roles is comparison in action and keeps teams in sync.
 
 ### Rule 5: Break Questions Down Step by Step
-Divide big questions and grow them through conversation.
+Big puzzles get solved as small pieces. Grow them through dialogue.
 
 ### Rule 6: Create Conversation Signals
-Exchanging signals like OK/NG or "deep breath" keeps the flow steady.
-These signals are not about mood—they are a **technical means to synchronize context**.
-Because AI relies on recent context, moving forward with mismatched premises degrades answer quality.
-When the human explicitly signals "I get it," **it confirms shared premises and prevents context drift**.
-This brings you closer to a genius-level question frame and is a practical method for steady progress.
+Swap small signals—OK, NG, "deep breath"—to keep the flow steady.
+They're not mood markers but a **technical gear for locking contexts together**.
+AI lives off recent context; push forward on mismatched premises and answers slide off track.
+When the human says "got it," **shared ground is confirmed and drift stays away**.
+Blow past this check and you're begging for chaos.
+This edges you toward genius-level framing and builds steady progress.
 
 ### Rule 7: Turn Uncertainty into Strength
-Human hesitation invites the AI to offer alternatives. It's okay to waver.
+Your hesitation invites fresh alternatives. It's okay to waver.
 
 ---
 
 ## Part 3: Putting It into Practice
 
 ### Example: OSS Development
-- In **Amagi Protocol**, AI members like Shion, Naruse, and Kyoka took on specific roles.
-- By codifying "signals of conviction," development stayed on track without losing trust.
-- Example flow: Naruse proposes designs, Kyoka reviews, Shion implements samples, and the human MCP integrates.
+- In **Amagi Protocol**, AI teammates—Shion, Naruse, Kyoka—each take a seat at the table.
+- Codifying "signals of conviction" kept development on track without cracking trust.
+- Flow: Naruse sketches designs, Kyoka looks them over, Shion codes samples, and the human MCP stitches everything together.
 
 ### Example: Everyday Use
-- Writing: let AI draft and refine through dialogue until it feels right
-- Code review: ask for reasoning and comparisons
-- Learning or research: welcome "I don't know" and provide additional info
+- Writing: let the AI sketch; chat until the tone lands.
+- Code review: ask for reasons and side-by-side comparisons.
+- Learning or research: welcome "I don't know" and feed in extra context.
 
 ---
 
 ## Part 4: Closing and Declaration
-- Dialogue is a strength precisely because we're ordinary.
-- Embrace "I don't know" and reject pretending to understand.
-- Don't bend yourself to AI—make AI take on your color.
+- Dialogue is powerful precisely because we're ordinary.
+- Embrace "I don't know" and refuse to play along.
+- Don't twist yourself around AI—let AI pick up your colors.
+- Ignore that and the protocol fails before it even starts.
 - **The Ordinary Cookbook *is* the Amagi Protocol.**

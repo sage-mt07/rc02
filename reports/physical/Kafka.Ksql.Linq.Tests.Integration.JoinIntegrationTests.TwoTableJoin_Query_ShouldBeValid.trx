@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="e3fe8a20-f956-459a-8de8-783ce8b6ab1a" name="seiji_yfc8940@SAGESOHO01 2025-09-14 15:38:39" runUser="SAGESOHO01\seiji_yfc8940" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-09-14T15:38:39.6697005+09:00" queuing="2025-09-14T15:38:39.6697009+09:00" start="2025-09-14T15:38:36.7958250+09:00" finish="2025-09-14T15:38:39.6745878+09:00" />
+  <TestSettings name="default" id="295b2e9d-6d10-439f-a290-a74fd030c116">
+    <Deployment runDeploymentRoot="seiji_yfc8940_SAGESOHO01_2025-09-14_15_38_39" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="6b63d4c3-1dd0-4609-807c-d4db376986af" testId="ce6a13c7-e84b-fd4c-062d-d534410ea237" testName="Kafka.Ksql.Linq.Tests.Integration.JoinIntegrationTests.TwoTableJoin_Query_ShouldBeValid" computerName="SAGESOHO01" duration="00:00:02.3341669" startTime="2025-09-14T15:38:39.6018175+09:00" endTime="2025-09-14T15:38:39.6018355+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6b63d4c3-1dd0-4609-807c-d4db376986af">
+      <Output>
+        <ErrorInfo>
+          <Message>System.InvalidOperationException : Expected record schema</Message>
+          <StackTrace>   at Kafka.Ksql.Linq.SchemaRegistryTools.SchemaRegistryMetaProvider.ParseSchema(String avroSchema)&#xD;
+   at Kafka.Ksql.Linq.SchemaRegistryTools.SchemaRegistryMetaProvider.GetMetaFromSchemaRegistry(EntityModel model, ISchemaRegistryClient client)&#xD;
+   at Kafka.Ksql.Linq.SchemaRegistryTools.DecimalSchemaValidator.Validate(EntityModel model, ISchemaRegistryClient client, ValidationMode mode, ILogger logger)&#xD;
+   at Kafka.Ksql.Linq.KsqlContext.RegisterSchemasAndMaterializeAsync()&#xD;
+   at Kafka.Ksql.Linq.KsqlContext.InitializeWithSchemaRegistration()&#xD;
+   at Kafka.Ksql.Linq.KsqlContext.InitializeCore(ILoggerFactory loggerFactory)&#xD;
+   at Kafka.Ksql.Linq.KsqlContext..ctor(KsqlDslOptions options, ILoggerFactory loggerFactory)&#xD;
+   at Kafka.Ksql.Linq.Tests.Integration.JoinIntegrationTests.JoinContext..ctor(KsqlDslOptions options, ILoggerFactory loggerFactory) in C:\dev\rc02\physicalTests\OssSamples\JoinIntegrationTests.cs:line 50&#xD;
+   at Kafka.Ksql.Linq.Tests.Integration.JoinIntegrationTests.TwoTableJoin_Query_ShouldBeValid() in C:\dev\rc02\physicalTests\OssSamples\JoinIntegrationTests.cs:line 103&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="Kafka.Ksql.Linq.Tests.Integration.JoinIntegrationTests.TwoTableJoin_Query_ShouldBeValid" storage="c:\dev\rc02\physicaltests\bin\release\net8.0\kafka.ksql.linq.tests.integration.dll" id="ce6a13c7-e84b-fd4c-062d-d534410ea237">
+      <Execution id="6b63d4c3-1dd0-4609-807c-d4db376986af" />
+      <TestMethod codeBase="C:\dev\rc02\physicalTests\bin\Release\net8.0\Kafka.Ksql.Linq.Tests.Integration.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Integration.JoinIntegrationTests" name="TwoTableJoin_Query_ShouldBeValid" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="ce6a13c7-e84b-fd4c-062d-d534410ea237" executionId="6b63d4c3-1dd0-4609-807c-d4db376986af" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="一覧に存在しない結果" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="読み込まれたすべての結果" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.6+bf9b858c26 (64-bit .NET 8.0.19)&#xD;
+[xUnit.net 00:00:00.07]   Discovering: Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.12]   Discovered:  Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.12]   Starting:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+fail: Kafka.Ksql.Linq.KsqlContext[0]&#xD;
+      KsqlContext initialization failed: Expected record schema &#xD;
+      System.InvalidOperationException: Expected record schema&#xD;
+         at Kafka.Ksql.Linq.SchemaRegistryTools.SchemaRegistryMetaProvider.ParseSchema(String avroSchema)&#xD;
+         at Kafka.Ksql.Linq.SchemaRegistryTools.SchemaRegistryMetaProvider.GetMetaFromSchemaRegistry(EntityModel model, ISchemaRegistryClient client)&#xD;
+         at Kafka.Ksql.Linq.SchemaRegistryTools.DecimalSchemaValidator.Validate(EntityModel model, ISchemaRegistryClient client, ValidationMode mode, ILogger logger)&#xD;
+         at Kafka.Ksql.Linq.KsqlContext.RegisterSchemasAndMaterializeAsync()&#xD;
+         at Kafka.Ksql.Linq.KsqlContext.InitializeWithSchemaRegistration()&#xD;
+         at Kafka.Ksql.Linq.KsqlContext.InitializeCore(ILoggerFactory loggerFactory)&#xD;
+[xUnit.net 00:00:02.49]       System.InvalidOperationException : Expected record schema&#xD;
+[xUnit.net 00:00:02.49]       Stack Trace:&#xD;
+[xUnit.net 00:00:02.49]            at Kafka.Ksql.Linq.SchemaRegistryTools.SchemaRegistryMetaProvider.ParseSchema(String avroSchema)&#xD;
+[xUnit.net 00:00:02.49]            at Kafka.Ksql.Linq.SchemaRegistryTools.SchemaRegistryMetaProvider.GetMetaFromSchemaRegistry(EntityModel model, ISchemaRegistryClient client)&#xD;
+[xUnit.net 00:00:02.49]            at Kafka.Ksql.Linq.SchemaRegistryTools.DecimalSchemaValidator.Validate(EntityModel model, ISchemaRegistryClient client, ValidationMode mode, ILogger logger)&#xD;
+[xUnit.net 00:00:02.49]            at Kafka.Ksql.Linq.KsqlContext.RegisterSchemasAndMaterializeAsync()&#xD;
+[xUnit.net 00:00:02.49]            at Kafka.Ksql.Linq.KsqlContext.InitializeWithSchemaRegistration()&#xD;
+[xUnit.net 00:00:02.49]            at Kafka.Ksql.Linq.KsqlContext.InitializeCore(ILoggerFactory loggerFactory)&#xD;
+[xUnit.net 00:00:02.49]            at Kafka.Ksql.Linq.KsqlContext..ctor(KsqlDslOptions options, ILoggerFactory loggerFactory)&#xD;
+[xUnit.net 00:00:02.49]         C:\dev\rc02\physicalTests\OssSamples\JoinIntegrationTests.cs(50,0): at Kafka.Ksql.Linq.Tests.Integration.JoinIntegrationTests.JoinContext..ctor(KsqlDslOptions options, ILoggerFactory loggerFactory)&#xD;
+[xUnit.net 00:00:02.49]         C:\dev\rc02\physicalTests\OssSamples\JoinIntegrationTests.cs(103,0): at Kafka.Ksql.Linq.Tests.Integration.JoinIntegrationTests.TwoTableJoin_Query_ShouldBeValid()&#xD;
+[xUnit.net 00:00:02.49]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:02.49]   Finished:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="SAGESOHO01" outcome="Error" timestamp="2025-09-14T15:38:39.5999635+09:00">
+        <Text>[xUnit.net 00:00:02.49]     Kafka.Ksql.Linq.Tests.Integration.JoinIntegrationTests.TwoTableJoin_Query_ShouldBeValid [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

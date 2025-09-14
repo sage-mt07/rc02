@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="874579bb-8583-4a84-b1ea-ad9953979bb8" name="seiji_yfc8940@SAGESOHO01 2025-09-14 19:00:59" runUser="SAGESOHO01\seiji_yfc8940" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-09-14T19:00:59.6991707+09:00" queuing="2025-09-14T19:00:59.6991711+09:00" start="2025-09-14T19:00:59.1482055+09:00" finish="2025-09-14T19:00:59.6994851+09:00" />
+  <TestSettings name="default" id="c25b56d9-dec7-4d7a-ab84-8561c9b3ade9">
+    <Deployment runDeploymentRoot="seiji_yfc8940_SAGESOHO01_2025-09-14_19_00_59" />
+  </TestSettings>
+  <TestLists>
+    <TestList name="一覧に存在しない結果" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="読み込まれたすべての結果" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="0" executed="0" passed="0" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.6+bf9b858c26 (64-bit .NET 8.0.19)&#xD;
+[xUnit.net 00:00:00.07]   Discovering: Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.13]   Discovered:  Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.13]   Starting:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.14]   Finished:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="SAGESOHO01" outcome="Warning" timestamp="2025-09-14T19:00:59.6305231+09:00">
+        <Text>[xUnit.net 00:00:00.13] Kafka.Ksql.Linq.Tests.Integration: Exception filtering tests: TestCaseFilter 演算子 '|' または '&amp;' がありません の形式が正しくありません。正しい形式を指定してもう一度お試しください。形式が正しくないと、テストが実行されないことがあります。</Text>
+      </RunInfo>
+      <RunInfo computerName="SAGESOHO01" outcome="Warning" timestamp="2025-09-14T19:00:59.6441300+09:00">
+        <Text>指定のテストケース フィルター `FullyQualifiedName=Kafka.Ksql.Linq.Tests.Integration.InvalidQueryTests.GeneratedQuery_IsRejected(ksql: SELECT CASE WHEN ID=1 THEN 'A' ELSE 2 END FROM ORD···)` に一致するテストは C:\dev\rc02\physicalTests\bin\Release\net8.0\Kafka.Ksql.Linq.Tests.Integration.dll にありません</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="07ea5914-8d30-4e76-b6eb-779cd26753de" name="seiji_yfc8940@SAGESOHO01 2025-09-14 15:37:26" runUser="SAGESOHO01\seiji_yfc8940" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-09-14T15:37:26.1670735+09:00" queuing="2025-09-14T15:37:26.1670738+09:00" start="2025-09-14T15:37:14.8158890+09:00" finish="2025-09-14T15:37:26.1719561+09:00" />
+  <TestSettings name="default" id="2d2bf267-4f7b-409c-bc76-e8b96e651429">
+    <Deployment runDeploymentRoot="seiji_yfc8940_SAGESOHO01_2025-09-14_15_37_26" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="49e2fece-eecf-4d9d-aed8-051547ba316f" testId="4d1ab506-de68-e93b-e77a-c25236b29b8f" testName="Kafka.Ksql.Linq.Tests.Integration.CompositeKeyPocoTests.SendAndReceive_CompositeKeyPoco" computerName="SAGESOHO01" duration="00:00:10.7180759" startTime="2025-09-14T15:37:26.0963704+09:00" endTime="2025-09-14T15:37:26.0963798+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="49e2fece-eecf-4d9d-aed8-051547ba316f" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="Kafka.Ksql.Linq.Tests.Integration.CompositeKeyPocoTests.SendAndReceive_CompositeKeyPoco" storage="c:\dev\rc02\physicaltests\bin\release\net8.0\kafka.ksql.linq.tests.integration.dll" id="4d1ab506-de68-e93b-e77a-c25236b29b8f">
+      <Execution id="49e2fece-eecf-4d9d-aed8-051547ba316f" />
+      <TestMethod codeBase="C:\dev\rc02\physicalTests\bin\Release\net8.0\Kafka.Ksql.Linq.Tests.Integration.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Integration.CompositeKeyPocoTests" name="SendAndReceive_CompositeKeyPoco" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="4d1ab506-de68-e93b-e77a-c25236b29b8f" executionId="49e2fece-eecf-4d9d-aed8-051547ba316f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="一覧に存在しない結果" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="読み込まれたすべての結果" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="1" executed="1" passed="1" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.6+bf9b858c26 (64-bit .NET 8.0.19)&#xD;
+[xUnit.net 00:00:00.08]   Discovering: Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.15]   Discovered:  Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.16]   Starting:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+dbug: Kafka.Ksql.Linq.Infrastructure.Admin.KafkaAdminService[0]&#xD;
+      KafkaAdminService initialized with BootstrapServers: 127.0.0.1:39092&#xD;
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]&#xD;
+      producer:orders_compkey config: Acks=All, BatchNumMessages=10000, BatchSize=16384, BootstrapServers=127.0.0.1:39092, ClientId=ksql-dsl-client, CompressionType=Snappy, EnableIdempotence=True, LingerMs=5, MaxInFlight=1, MessageTimeoutMs=120000, RetryBackoffMs=100&#xD;
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]&#xD;
+      schema-registry(producer) config: Url=http://127.0.0.1:18081&#xD;
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]&#xD;
+      kafka produce: topic=orders_compkey, entity=Order, method=SendAsync&#xD;
+info: Kafka.Ksql.Linq.Messaging.Consumers.KafkaConsumerManager[0]&#xD;
+      consumer:orders_compkey config: AutoCommitIntervalMs=5000, AutoOffsetReset=Earliest, BootstrapServers=127.0.0.1:39092, ClientId=ksql-dsl-client, EnableAutoCommit=True, FetchMaxBytes=52428800, FetchMinBytes=1, GroupId=c6532a4a-15c7-460d-abe3-956bd0cc43f6, HeartbeatIntervalMs=3000, IsolationLevel=ReadUncommitted, MaxPollIntervalMs=300000, SessionTimeoutMs=30000&#xD;
+info: Kafka.Ksql.Linq.Messaging.Consumers.KafkaConsumerManager[0]&#xD;
+      schema-registry(consumer) config: Url=http://127.0.0.1:18081&#xD;
+info: Kafka.Ksql.Linq.Messaging.Consumers.KafkaConsumerManager[0]&#xD;
+      consumer:orders_compkey config: AutoCommitIntervalMs=5000, AutoOffsetReset=Earliest, BootstrapServers=127.0.0.1:39092, ClientId=ksql-dsl-client, EnableAutoCommit=True, FetchMaxBytes=52428800, FetchMinBytes=1, GroupId=c6532a4a-15c7-460d-abe3-956bd0cc43f6, HeartbeatIntervalMs=3000, IsolationLevel=ReadUncommitted, MaxPollIntervalMs=300000, SessionTimeoutMs=30000&#xD;
+dbug: Kafka.Ksql.Linq.Infrastructure.Admin.KafkaAdminService[0]&#xD;
+      KafkaAdminService disposed&#xD;
+[xUnit.net 00:00:10.92]   Finished:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>
