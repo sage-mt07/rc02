@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TestRun id="7f383d3d-84c7-4397-b802-e241fd76da13" name="seiji_yfc8940@SAGESOHO01 2025-09-14 18:18:06" runUser="SAGESOHO01\seiji_yfc8940" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
-  <Times creation="2025-09-14T18:18:06.3547670+09:00" queuing="2025-09-14T18:18:06.3547688+09:00" start="2025-09-14T18:17:30.4079704+09:00" finish="2025-09-14T18:18:06.3610713+09:00" />
-  <TestSettings name="default" id="ac74c1a1-4471-40c3-bcd8-6fffe31518f6">
-    <Deployment runDeploymentRoot="seiji_yfc8940_SAGESOHO01_2025-09-14_18_18_06" />
+<TestRun id="c556ce4d-8444-49bf-9499-4501963b08dd" name="seiji_yfc8940@SAGESOHO01 2025-09-14 19:28:12" runUser="SAGESOHO01\seiji_yfc8940" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-09-14T19:28:12.6610078+09:00" queuing="2025-09-14T19:28:12.6610082+09:00" start="2025-09-14T19:27:41.9814242+09:00" finish="2025-09-14T19:28:12.6658646+09:00" />
+  <TestSettings name="default" id="ee4a26d7-4ad2-4bf0-ba9d-57080242c343">
+    <Deployment runDeploymentRoot="seiji_yfc8940_SAGESOHO01_2025-09-14_19_28_12" />
   </TestSettings>
   <Results>
-    <UnitTestResult executionId="c7e31d64-6c17-4e4b-a2b4-ebb3b2b3ce78" testId="6e9b6ef9-ac09-772f-de65-0a61c351b479" testName="Kafka.Ksql.Linq.Tests.Integration.ManualCommitIntegrationTests.ManualCommit_PersistsOffset" computerName="SAGESOHO01" duration="00:00:35.1840994" startTime="2025-09-14T18:18:06.2812113+09:00" endTime="2025-09-14T18:18:06.2812230+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c7e31d64-6c17-4e4b-a2b4-ebb3b2b3ce78" />
+    <UnitTestResult executionId="3c3dce2a-bd57-4fbd-bae3-ac2c849509e7" testId="6e9b6ef9-ac09-772f-de65-0a61c351b479" testName="Kafka.Ksql.Linq.Tests.Integration.ManualCommitIntegrationTests.ManualCommit_PersistsOffset" computerName="SAGESOHO01" duration="00:00:30.1135777" startTime="2025-09-14T19:28:12.5796935+09:00" endTime="2025-09-14T19:28:12.5797096+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3c3dce2a-bd57-4fbd-bae3-ac2c849509e7" />
   </Results>
   <TestDefinitions>
     <UnitTest name="Kafka.Ksql.Linq.Tests.Integration.ManualCommitIntegrationTests.ManualCommit_PersistsOffset" storage="c:\dev\rc02\physicaltests\bin\release\net8.0\kafka.ksql.linq.tests.integration.dll" id="6e9b6ef9-ac09-772f-de65-0a61c351b479">
-      <Execution id="c7e31d64-6c17-4e4b-a2b4-ebb3b2b3ce78" />
+      <Execution id="3c3dce2a-bd57-4fbd-bae3-ac2c849509e7" />
       <TestMethod codeBase="C:\dev\rc02\physicalTests\bin\Release\net8.0\Kafka.Ksql.Linq.Tests.Integration.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Integration.ManualCommitIntegrationTests" name="ManualCommit_PersistsOffset" />
     </UnitTest>
   </TestDefinitions>
   <TestEntries>
-    <TestEntry testId="6e9b6ef9-ac09-772f-de65-0a61c351b479" executionId="c7e31d64-6c17-4e4b-a2b4-ebb3b2b3ce78" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6e9b6ef9-ac09-772f-de65-0a61c351b479" executionId="3c3dce2a-bd57-4fbd-bae3-ac2c849509e7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
   </TestEntries>
   <TestLists>
     <TestList name="一覧に存在しない結果" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
@@ -24,20 +24,20 @@
     <Counters total="1" executed="1" passed="1" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
     <Output>
       <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.6+bf9b858c26 (64-bit .NET 8.0.19)&#xD;
-[xUnit.net 00:00:00.26]   Discovering: Kafka.Ksql.Linq.Tests.Integration&#xD;
-[xUnit.net 00:00:00.31]   Discovered:  Kafka.Ksql.Linq.Tests.Integration&#xD;
-[xUnit.net 00:00:00.32]   Starting:    Kafka.Ksql.Linq.Tests.Integration&#xD;
-[ConsumerConfig] topic=manual_commit group=4685c808-136c-4ae1-9657-f718c1c63b22 enableAutoCommit=False autoOffsetReset=Earliest&#xD;
-[ConsumeInternal] subscribed topic=manual_commit group=4685c808-136c-4ae1-9657-f718c1c63b22 autoCommit=False&#xD;
+[xUnit.net 00:00:00.07]   Discovering: Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.13]   Discovered:  Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.13]   Starting:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+[ConsumerConfig] topic=manual_commit group=693fb8f9-074a-4783-9206-179eb1eb6d31 enableAutoCommit=False autoOffsetReset=Earliest&#xD;
+[ConsumeInternal] subscribed topic=manual_commit group=693fb8f9-074a-4783-9206-179eb1eb6d31 autoCommit=False&#xD;
 [ManualCommit][track] topic=manual_commit p=0 off=0&#xD;
 [ManualCommit][track] topic=manual_commit p=0 off=1&#xD;
 [ManualCommit][track] topic=manual_commit p=0 off=2&#xD;
 [ManualCommit][observed] topic=manual_commit p=0 committed=3&#xD;
-[ConsumerConfig] topic=manual_commit group=4685c808-136c-4ae1-9657-f718c1c63b22 enableAutoCommit=False autoOffsetReset=Earliest&#xD;
-[ConsumeInternal] subscribed topic=manual_commit group=4685c808-136c-4ae1-9657-f718c1c63b22 autoCommit=False&#xD;
+[ConsumerConfig] topic=manual_commit group=693fb8f9-074a-4783-9206-179eb1eb6d31 enableAutoCommit=False autoOffsetReset=Earliest&#xD;
+[ConsumeInternal] subscribed topic=manual_commit group=693fb8f9-074a-4783-9206-179eb1eb6d31 autoCommit=False&#xD;
 [ManualCommit][track] topic=manual_commit p=0 off=3&#xD;
 [ManualCommit][observed] topic=manual_commit p=0 committed=4&#xD;
-[xUnit.net 00:00:35.54]   Finished:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:30.28]   Finished:    Kafka.Ksql.Linq.Tests.Integration&#xD;
 </StdOut>
     </Output>
   </ResultSummary>

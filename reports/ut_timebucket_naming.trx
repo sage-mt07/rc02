@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="b0762db9-85ba-4f53-96d5-ca5f21f73fca" name="seiji_yfc8940@SAGESOHO01 2025-09-14 20:29:35" runUser="SAGESOHO01\seiji_yfc8940" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-09-14T20:29:35.2839698+09:00" queuing="2025-09-14T20:29:35.2839701+09:00" start="2025-09-14T20:29:34.4802648+09:00" finish="2025-09-14T20:29:35.2880957+09:00" />
+  <TestSettings name="default" id="5e24d6d7-2a71-411f-9e6f-15164178a611">
+    <Deployment runDeploymentRoot="seiji_yfc8940_SAGESOHO01_2025-09-14_20_29_35" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="efeb4038-9bd2-476f-9877-8ebb9206f573" testId="f55a174c-479b-bea7-936f-c198edfc1b36" testName="Kafka.Ksql.Linq.Tests.Unit.TimeBucketNamingTests.LiveTopicName_1m_And_5m_Are_Correct" computerName="SAGESOHO01" duration="00:00:00.0000972" startTime="2025-09-14T20:29:35.2014673+09:00" endTime="2025-09-14T20:29:35.2014674+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="efeb4038-9bd2-476f-9877-8ebb9206f573" />
+    <UnitTestResult executionId="1238e1fe-9f6e-4112-8257-7fee8c722f86" testId="6a7aae2c-0b57-833f-e932-de280a28ef6f" testName="Kafka.Ksql.Linq.Tests.Unit.TimeBucketNamingTests.FinalTopicName_1s_Is_Correct" computerName="SAGESOHO01" duration="00:00:00.0018354" startTime="2025-09-14T20:29:35.1998605+09:00" endTime="2025-09-14T20:29:35.1998701+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1238e1fe-9f6e-4112-8257-7fee8c722f86" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="Kafka.Ksql.Linq.Tests.Unit.TimeBucketNamingTests.LiveTopicName_1m_And_5m_Are_Correct" storage="c:\dev\rc02\tests\bin\release\net8.0\kafka.ksql.linq.tests.dll" id="f55a174c-479b-bea7-936f-c198edfc1b36">
+      <Execution id="efeb4038-9bd2-476f-9877-8ebb9206f573" />
+      <TestMethod codeBase="C:\dev\rc02\tests\bin\Release\net8.0\Kafka.Ksql.Linq.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Unit.TimeBucketNamingTests" name="LiveTopicName_1m_And_5m_Are_Correct" />
+    </UnitTest>
+    <UnitTest name="Kafka.Ksql.Linq.Tests.Unit.TimeBucketNamingTests.FinalTopicName_1s_Is_Correct" storage="c:\dev\rc02\tests\bin\release\net8.0\kafka.ksql.linq.tests.dll" id="6a7aae2c-0b57-833f-e932-de280a28ef6f">
+      <Execution id="1238e1fe-9f6e-4112-8257-7fee8c722f86" />
+      <TestMethod codeBase="C:\dev\rc02\tests\bin\Release\net8.0\Kafka.Ksql.Linq.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Unit.TimeBucketNamingTests" name="FinalTopicName_1s_Is_Correct" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="f55a174c-479b-bea7-936f-c198edfc1b36" executionId="efeb4038-9bd2-476f-9877-8ebb9206f573" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6a7aae2c-0b57-833f-e932-de280a28ef6f" executionId="1238e1fe-9f6e-4112-8257-7fee8c722f86" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="一覧に存在しない結果" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="読み込まれたすべての結果" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="2" executed="2" passed="2" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.4.5+1caef2f33e (64-bit .NET 8.0.19)&#xD;
+[xUnit.net 00:00:00.30]   Discovering: Kafka.Ksql.Linq.Tests&#xD;
+[xUnit.net 00:00:00.36]   Discovered:  Kafka.Ksql.Linq.Tests&#xD;
+[xUnit.net 00:00:00.36]   Starting:    Kafka.Ksql.Linq.Tests&#xD;
+[xUnit.net 00:00:00.39]   Finished:    Kafka.Ksql.Linq.Tests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

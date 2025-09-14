@@ -119,7 +119,7 @@ internal class KsqlDbClient : IKsqlDbClient, IDisposable
 
     public async Task<int> ExecutePullQueryCountAsync(string sql, TimeSpan? timeout = null)
     {
-        var payload = new { sql };
+        var payload = new { ksql = sql, streamsProperties = new { } };
         var json = JsonSerializer.Serialize(payload);
         using var content = new StringContent(json, Encoding.UTF8, "application/json");
         using var cts = timeout.HasValue ? new CancellationTokenSource(timeout.Value) : new CancellationTokenSource(TimeSpan.FromSeconds(15));
@@ -173,7 +173,7 @@ internal class KsqlDbClient : IKsqlDbClient, IDisposable
 
     public async Task<System.Collections.Generic.List<object?[]>> ExecutePullQueryRowsAsync(string sql, TimeSpan? timeout = null)
     {
-        var payload = new { sql };
+        var payload = new { ksql = sql, streamsProperties = new { } };
         var json = JsonSerializer.Serialize(payload);
         using var content = new StringContent(json, Encoding.UTF8, "application/json");
         using var cts = timeout.HasValue ? new CancellationTokenSource(timeout.Value) : new CancellationTokenSource(TimeSpan.FromSeconds(15));

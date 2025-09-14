@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TestRun id="40fcac04-880d-42dc-86e4-693e74b9ded5" name="seiji_yfc8940@SAGESOHO01 2025-09-14 18:53:19" runUser="SAGESOHO01\seiji_yfc8940" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
-  <Times creation="2025-09-14T18:53:19.9770905+09:00" queuing="2025-09-14T18:53:19.9770910+09:00" start="2025-09-14T18:53:13.3083620+09:00" finish="2025-09-14T18:53:19.9813149+09:00" />
-  <TestSettings name="default" id="b299de90-c9d0-4900-8ce8-9cf41282b9a5">
-    <Deployment runDeploymentRoot="seiji_yfc8940_SAGESOHO01_2025-09-14_18_53_19" />
+<TestRun id="5a520b1a-88f6-4597-8055-46333a0758e0" name="seiji_yfc8940@SAGESOHO01 2025-09-14 19:25:47" runUser="SAGESOHO01\seiji_yfc8940" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-09-14T19:25:47.5746625+09:00" queuing="2025-09-14T19:25:47.5746629+09:00" start="2025-09-14T19:25:41.8552944+09:00" finish="2025-09-14T19:25:47.5786247+09:00" />
+  <TestSettings name="default" id="eb5c71c5-b3e9-4402-a145-2d0671b0a87b">
+    <Deployment runDeploymentRoot="seiji_yfc8940_SAGESOHO01_2025-09-14_19_25_47" />
   </TestSettings>
   <Results>
-    <UnitTestResult executionId="11fae2a4-12b9-4a89-8c80-869657da512d" testId="e7664d42-1a36-a709-59e4-00b5e1d7cc8f" testName="Kafka.Ksql.Linq.Tests.Integration.BigBang_KafkaConnection_TolerantTests.EX01_AddAsync_KafkaDown_ShouldFailGracefully" computerName="SAGESOHO01" duration="00:00:06.1192851" startTime="2025-09-14T18:53:19.9109359+09:00" endTime="2025-09-14T18:53:19.9109501+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="11fae2a4-12b9-4a89-8c80-869657da512d" />
+    <UnitTestResult executionId="cac741f7-0725-4090-b3cb-46c03501d90a" testId="e7664d42-1a36-a709-59e4-00b5e1d7cc8f" testName="Kafka.Ksql.Linq.Tests.Integration.BigBang_KafkaConnection_TolerantTests.EX01_AddAsync_KafkaDown_ShouldFailGracefully" computerName="SAGESOHO01" duration="00:00:05.1620834" startTime="2025-09-14T19:25:47.5075046+09:00" endTime="2025-09-14T19:25:47.5075160+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cac741f7-0725-4090-b3cb-46c03501d90a" />
   </Results>
   <TestDefinitions>
     <UnitTest name="Kafka.Ksql.Linq.Tests.Integration.BigBang_KafkaConnection_TolerantTests.EX01_AddAsync_KafkaDown_ShouldFailGracefully" storage="c:\dev\rc02\physicaltests\bin\release\net8.0\kafka.ksql.linq.tests.integration.dll" id="e7664d42-1a36-a709-59e4-00b5e1d7cc8f">
-      <Execution id="11fae2a4-12b9-4a89-8c80-869657da512d" />
+      <Execution id="cac741f7-0725-4090-b3cb-46c03501d90a" />
       <TestMethod codeBase="C:\dev\rc02\physicalTests\bin\Release\net8.0\Kafka.Ksql.Linq.Tests.Integration.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Integration.BigBang_KafkaConnection_TolerantTests" name="EX01_AddAsync_KafkaDown_ShouldFailGracefully" />
     </UnitTest>
   </TestDefinitions>
   <TestEntries>
-    <TestEntry testId="e7664d42-1a36-a709-59e4-00b5e1d7cc8f" executionId="11fae2a4-12b9-4a89-8c80-869657da512d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e7664d42-1a36-a709-59e4-00b5e1d7cc8f" executionId="cac741f7-0725-4090-b3cb-46c03501d90a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
   </TestEntries>
   <TestLists>
     <TestList name="一覧に存在しない結果" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
@@ -24,16 +24,16 @@
     <Counters total="1" executed="1" passed="1" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
     <Output>
       <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.6+bf9b858c26 (64-bit .NET 8.0.19)&#xD;
-[xUnit.net 00:00:00.06]   Discovering: Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.07]   Discovering: Kafka.Ksql.Linq.Tests.Integration&#xD;
 [xUnit.net 00:00:00.11]   Discovered:  Kafka.Ksql.Linq.Tests.Integration&#xD;
 [xUnit.net 00:00:00.12]   Starting:    Kafka.Ksql.Linq.Tests.Integration&#xD;
-%3|1757843597.838|FAIL|ksql-dsl-client-admin#producer-1| [thrd:127.0.0.1:39092/bootstrap]: 127.0.0.1:39092/bootstrap: Connect to ipv4#127.0.0.1:39092 failed: Unknown error (after 2047ms in state CONNECT)&#xD;
-%3|1757843597.838|ERROR|ksql-dsl-client-admin#producer-1| [thrd:127.0.0.1:39092/bootstrap]: 1/1 brokers are down&#xD;
-%3|1757843597.838|ERROR|ksql-dsl-client-admin#producer-1| [thrd:app]: ksql-dsl-client-admin#producer-1: 127.0.0.1:39092/bootstrap: Connect to ipv4#127.0.0.1:39092 failed: Unknown error (after 2047ms in state CONNECT)&#xD;
-%3|1757843597.992|FAIL|ksql-dsl-client#producer-2| [thrd:127.0.0.1:39092/bootstrap]: 127.0.0.1:39092/bootstrap: Connect to ipv4#127.0.0.1:39092 failed: Unknown error (after 2027ms in state CONNECT)&#xD;
-%3|1757843597.992|ERROR|ksql-dsl-client#producer-2| [thrd:127.0.0.1:39092/bootstrap]: 1/1 brokers are down&#xD;
-%3|1757843597.992|ERROR|ksql-dsl-client#producer-2| [thrd:app]: ksql-dsl-client#producer-2: 127.0.0.1:39092/bootstrap: Connect to ipv4#127.0.0.1:39092 failed: Unknown error (after 2027ms in state CONNECT)&#xD;
-[xUnit.net 00:00:06.27]   Finished:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+%3|1757845546.300|FAIL|ksql-dsl-client-admin#producer-1| [thrd:127.0.0.1:39092/bootstrap]: 127.0.0.1:39092/bootstrap: Connect to ipv4#127.0.0.1:39092 failed: Unknown error (after 2025ms in state CONNECT)&#xD;
+%3|1757845546.300|ERROR|ksql-dsl-client-admin#producer-1| [thrd:127.0.0.1:39092/bootstrap]: 1/1 brokers are down&#xD;
+%3|1757845546.300|ERROR|ksql-dsl-client-admin#producer-1| [thrd:app]: ksql-dsl-client-admin#producer-1: 127.0.0.1:39092/bootstrap: Connect to ipv4#127.0.0.1:39092 failed: Unknown error (after 2025ms in state CONNECT)&#xD;
+%3|1757845546.457|FAIL|ksql-dsl-client#producer-2| [thrd:127.0.0.1:39092/bootstrap]: 127.0.0.1:39092/bootstrap: Connect to ipv4#127.0.0.1:39092 failed: Unknown error (after 2018ms in state CONNECT)&#xD;
+%3|1757845546.457|ERROR|ksql-dsl-client#producer-2| [thrd:127.0.0.1:39092/bootstrap]: 1/1 brokers are down&#xD;
+%3|1757845546.457|ERROR|ksql-dsl-client#producer-2| [thrd:app]: ksql-dsl-client#producer-2: 127.0.0.1:39092/bootstrap: Connect to ipv4#127.0.0.1:39092 failed: Unknown error (after 2018ms in state CONNECT)&#xD;
+[xUnit.net 00:00:05.31]   Finished:    Kafka.Ksql.Linq.Tests.Integration&#xD;
 </StdOut>
     </Output>
   </ResultSummary>

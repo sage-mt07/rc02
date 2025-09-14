@@ -12,6 +12,7 @@ public class DdlSchemaBuilder
     private readonly List<ColumnDefinition> _columns = new();
     private string? _keySchemaFullName;
     private string? _valueSchemaFullName;
+    private string? _timestampColumn;
 
     public DdlSchemaBuilder(string objectName, DdlObjectType objectType, string topicName, int partitions = 1, short replicas = 1)
     {
@@ -41,6 +42,12 @@ public class DdlSchemaBuilder
         return this;
     }
 
+    public DdlSchemaBuilder WithTimestamp(string? columnName)
+    {
+        _timestampColumn = columnName;
+        return this;
+    }
+
     public DdlSchemaDefinition Build()
     {
         return new DdlSchemaDefinition(
@@ -51,6 +58,7 @@ public class DdlSchemaBuilder
             _replicas,
             _keySchemaFullName,
             _valueSchemaFullName,
-            _columns);
+            _columns,
+            _timestampColumn);
     }
 }

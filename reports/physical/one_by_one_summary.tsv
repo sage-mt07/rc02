@@ -17,3 +17,9 @@ Kafka.Ksql.Linq.Tests.Integration.KsqlSyntaxTests.GeneratedQuery_IsValidInKsqlDb
 Kafka.Ksql.Linq.Tests.Integration.ReservedKeyQuotingTests.CreateStream_WithReservedKeyFields_ShouldSucceed	Completed	1	0	2025-09-14 19:02:54
 Kafka.Ksql.Linq.Tests.Integration.AdvancedDataTypeTests.Decimal_DateTime_Enum_RoundTrip	Completed	1	0	2025-09-14 19:04:01
 Kafka.Ksql.Linq.Tests.Integration.BarDslMultiTierTests.MultiTier_1m_5m_15m_60m_Create_And_Ohlc_Sanity	Failed	0	1	2025-09-14 19:06:18
+Kafka.Ksql.Linq.Tests.Integration.BarScheduleWeekendTests.WeekdaysOnly_DailyBars_With_MarketSchedule	Failed	0	1	2025-09-14 19:09:42
+Kafka.Ksql.Linq.Tests.Integration.CompositeKeyPocoTests.SendAndReceive_CompositeKeyPoco	Completed	1	0	2025-09-14 19:10:27
+Kafka.Ksql.Linq.Tests.Integration.DefaultAndBoundaryValueTests.DefaultValuesRoundTrip	Completed	1	0	2025-09-14 19:11:34
+Kafka.Ksql.Linq.Tests.Integration.DefaultAndBoundaryValueTests.DecimalPrecisionRoundTrip	Completed	1	0	2025-09-14 19:12:49
+Kafka.Ksql.Linq.Tests.Integration.DefaultAndBoundaryValueTests.BoundaryValuesRoundTrip	Completed	1	0	2025-09-14 19:14:06
+Kafka.Ksql.Linq.Tests.Integration.DlqIntegrationTests.ForEachAsync_OnErrorDlq_WritesToDlq	Failed	0	1	2025-09-14 19:15:01

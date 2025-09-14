@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TestRun id="202acf2c-e9bd-45db-a40e-8d71c710b4ad" name="seiji_yfc8940@SAGESOHO01 2025-09-14 18:57:08" runUser="SAGESOHO01\seiji_yfc8940" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
-  <Times creation="2025-09-14T18:57:08.1582141+09:00" queuing="2025-09-14T18:57:08.1582146+09:00" start="2025-09-14T18:56:57.9340727+09:00" finish="2025-09-14T18:57:08.1653985+09:00" />
-  <TestSettings name="default" id="0cce00da-73b8-4efb-8ce7-deb763854f20">
-    <Deployment runDeploymentRoot="seiji_yfc8940_SAGESOHO01_2025-09-14_18_57_08" />
+<TestRun id="b20f0e77-4eca-411d-80ba-063293565dc7" name="seiji_yfc8940@SAGESOHO01 2025-09-14 19:25:04" runUser="SAGESOHO01\seiji_yfc8940" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-09-14T19:25:04.3272489+09:00" queuing="2025-09-14T19:25:04.3272494+09:00" start="2025-09-14T19:24:54.1404978+09:00" finish="2025-09-14T19:25:04.3327989+09:00" />
+  <TestSettings name="default" id="acf0d250-5009-4ac8-9042-71589db516a3">
+    <Deployment runDeploymentRoot="seiji_yfc8940_SAGESOHO01_2025-09-14_19_25_04" />
   </TestSettings>
   <Results>
-    <UnitTestResult executionId="cb451bbf-7f59-439b-a4ae-d7fee32a2289" testId="ccf2bf61-9a31-6941-50d4-73c008678752" testName="Kafka.Ksql.Linq.Tests.Integration.KsqlDbServiceDownTests.ExecuteStatement_ShouldFail_WhenKsqlDbDown" computerName="SAGESOHO01" duration="00:00:09.6120781" startTime="2025-09-14T18:57:08.0684810+09:00" endTime="2025-09-14T18:57:08.0684987+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cb451bbf-7f59-439b-a4ae-d7fee32a2289" />
+    <UnitTestResult executionId="9c997991-9958-467a-bdfa-c0ab94112373" testId="ccf2bf61-9a31-6941-50d4-73c008678752" testName="Kafka.Ksql.Linq.Tests.Integration.KsqlDbServiceDownTests.ExecuteStatement_ShouldFail_WhenKsqlDbDown" computerName="SAGESOHO01" duration="00:00:09.6247642" startTime="2025-09-14T19:25:04.2491382+09:00" endTime="2025-09-14T19:25:04.2491500+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9c997991-9958-467a-bdfa-c0ab94112373" />
   </Results>
   <TestDefinitions>
     <UnitTest name="Kafka.Ksql.Linq.Tests.Integration.KsqlDbServiceDownTests.ExecuteStatement_ShouldFail_WhenKsqlDbDown" storage="c:\dev\rc02\physicaltests\bin\release\net8.0\kafka.ksql.linq.tests.integration.dll" id="ccf2bf61-9a31-6941-50d4-73c008678752">
-      <Execution id="cb451bbf-7f59-439b-a4ae-d7fee32a2289" />
+      <Execution id="9c997991-9958-467a-bdfa-c0ab94112373" />
       <TestMethod codeBase="C:\dev\rc02\physicalTests\bin\Release\net8.0\Kafka.Ksql.Linq.Tests.Integration.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Integration.KsqlDbServiceDownTests" name="ExecuteStatement_ShouldFail_WhenKsqlDbDown" />
     </UnitTest>
   </TestDefinitions>
   <TestEntries>
-    <TestEntry testId="ccf2bf61-9a31-6941-50d4-73c008678752" executionId="cb451bbf-7f59-439b-a4ae-d7fee32a2289" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ccf2bf61-9a31-6941-50d4-73c008678752" executionId="9c997991-9958-467a-bdfa-c0ab94112373" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
   </TestEntries>
   <TestLists>
     <TestList name="一覧に存在しない結果" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
@@ -25,9 +25,9 @@
     <Output>
       <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.6+bf9b858c26 (64-bit .NET 8.0.19)&#xD;
 [xUnit.net 00:00:00.06]   Discovering: Kafka.Ksql.Linq.Tests.Integration&#xD;
-[xUnit.net 00:00:00.12]   Discovered:  Kafka.Ksql.Linq.Tests.Integration&#xD;
-[xUnit.net 00:00:00.13]   Starting:    Kafka.Ksql.Linq.Tests.Integration&#xD;
-[xUnit.net 00:00:09.78]   Finished:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.11]   Discovered:  Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.11]   Starting:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:09.77]   Finished:    Kafka.Ksql.Linq.Tests.Integration&#xD;
 </StdOut>
     </Output>
   </ResultSummary>

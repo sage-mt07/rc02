@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TestRun id="9ed53f9a-1038-4c56-8bdb-ef7788dfd43d" name="seiji_yfc8940@SAGESOHO01 2025-09-14 15:38:36" runUser="SAGESOHO01\seiji_yfc8940" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
-  <Times creation="2025-09-14T15:38:36.0168493+09:00" queuing="2025-09-14T15:38:36.0168497+09:00" start="2025-09-14T15:38:19.6945823+09:00" finish="2025-09-14T15:38:36.0216740+09:00" />
-  <TestSettings name="default" id="023854b9-3cbf-41c7-ad65-170d526a82b5">
-    <Deployment runDeploymentRoot="seiji_yfc8940_SAGESOHO01_2025-09-14_15_38_36" />
+<TestRun id="8b487e26-65bc-40c2-90c3-923c86d08960" name="seiji_yfc8940@SAGESOHO01 2025-09-14 19:15:01" runUser="SAGESOHO01\seiji_yfc8940" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-09-14T19:15:01.3158190+09:00" queuing="2025-09-14T19:15:01.3158195+09:00" start="2025-09-14T19:14:44.6494911+09:00" finish="2025-09-14T19:15:01.3228929+09:00" />
+  <TestSettings name="default" id="ed27f8be-a65a-4f28-8b6e-3c270e4757cb">
+    <Deployment runDeploymentRoot="seiji_yfc8940_SAGESOHO01_2025-09-14_19_15_01" />
   </TestSettings>
   <Results>
-    <UnitTestResult executionId="38d61648-f83a-4dda-949d-36e96a61946e" testId="6dc1c76e-ddda-5058-33dc-fc758c3924b0" testName="Kafka.Ksql.Linq.Tests.Integration.DlqIntegrationTests.ForEachAsync_OnErrorDlq_WritesToDlq" computerName="SAGESOHO01" duration="00:00:15.7740389" startTime="2025-09-14T15:38:35.9400578+09:00" endTime="2025-09-14T15:38:35.9400726+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="38d61648-f83a-4dda-949d-36e96a61946e">
+    <UnitTestResult executionId="d60da09a-bd79-4249-8d18-c2cfb3e99b03" testId="6dc1c76e-ddda-5058-33dc-fc758c3924b0" testName="Kafka.Ksql.Linq.Tests.Integration.DlqIntegrationTests.ForEachAsync_OnErrorDlq_WritesToDlq" computerName="SAGESOHO01" duration="00:00:16.0840248" startTime="2025-09-14T19:15:01.2389045+09:00" endTime="2025-09-14T19:15:01.2389165+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d60da09a-bd79-4249-8d18-c2cfb3e99b03">
       <Output>
         <ErrorInfo>
           <Message>System.InvalidOperationException : DDL execution failed for Order: {"error_code":404,"message":"HTTP 404 Not Found"}</Message>
-          <StackTrace>   at Kafka.Ksql.Linq.KsqlContext.EnsureSimpleEntityDdlAsync(Type type, EntityModel model)&#xD;
-   at Kafka.Ksql.Linq.KsqlContext.RegisterSchemasAndMaterializeAsync()&#xD;
-   at Kafka.Ksql.Linq.KsqlContext.InitializeWithSchemaRegistration()&#xD;
-   at Kafka.Ksql.Linq.KsqlContext.InitializeCore(ILoggerFactory loggerFactory)&#xD;
-   at Kafka.Ksql.Linq.KsqlContext..ctor(KsqlDslOptions options, ILoggerFactory loggerFactory)&#xD;
+          <StackTrace>   at Kafka.Ksql.Linq.KsqlContext.EnsureSimpleEntityDdlAsync(Type type, EntityModel model) in C:\dev\rc02\src\KsqlContext.SchemaRegistration.cs:line 183&#xD;
+   at Kafka.Ksql.Linq.KsqlContext.RegisterSchemasAndMaterializeAsync() in C:\dev\rc02\src\KsqlContext.SchemaRegistration.cs:line 123&#xD;
+   at Kafka.Ksql.Linq.KsqlContext.InitializeWithSchemaRegistration() in C:\dev\rc02\src\KsqlContext.SchemaRegistration.cs:line 28&#xD;
+   at Kafka.Ksql.Linq.KsqlContext.InitializeCore(ILoggerFactory loggerFactory) in C:\dev\rc02\src\KsqlContext.cs:line 131&#xD;
+   at Kafka.Ksql.Linq.KsqlContext..ctor(KsqlDslOptions options, ILoggerFactory loggerFactory) in C:\dev\rc02\src\KsqlContext.cs:line 95&#xD;
    at Kafka.Ksql.Linq.Tests.Integration.DlqIntegrationTests.OrderContext..ctor(KsqlDslOptions options) in C:\dev\rc02\physicalTests\OssSamples\DlqIntegrationTests.cs:line 28&#xD;
    at Kafka.Ksql.Linq.Tests.Integration.DlqIntegrationTests.ForEachAsync_OnErrorDlq_WritesToDlq() in C:\dev\rc02\physicalTests\OssSamples\DlqIntegrationTests.cs:line 52&#xD;
 --- End of stack trace from previous location ---</StackTrace>
@@ -23,12 +23,12 @@
   </Results>
   <TestDefinitions>
     <UnitTest name="Kafka.Ksql.Linq.Tests.Integration.DlqIntegrationTests.ForEachAsync_OnErrorDlq_WritesToDlq" storage="c:\dev\rc02\physicaltests\bin\release\net8.0\kafka.ksql.linq.tests.integration.dll" id="6dc1c76e-ddda-5058-33dc-fc758c3924b0">
-      <Execution id="38d61648-f83a-4dda-949d-36e96a61946e" />
+      <Execution id="d60da09a-bd79-4249-8d18-c2cfb3e99b03" />
       <TestMethod codeBase="C:\dev\rc02\physicalTests\bin\Release\net8.0\Kafka.Ksql.Linq.Tests.Integration.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Integration.DlqIntegrationTests" name="ForEachAsync_OnErrorDlq_WritesToDlq" />
     </UnitTest>
   </TestDefinitions>
   <TestEntries>
-    <TestEntry testId="6dc1c76e-ddda-5058-33dc-fc758c3924b0" executionId="38d61648-f83a-4dda-949d-36e96a61946e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6dc1c76e-ddda-5058-33dc-fc758c3924b0" executionId="d60da09a-bd79-4249-8d18-c2cfb3e99b03" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
   </TestEntries>
   <TestLists>
     <TestList name="一覧に存在しない結果" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
@@ -38,25 +38,25 @@
     <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
     <Output>
       <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.6+bf9b858c26 (64-bit .NET 8.0.19)&#xD;
-[xUnit.net 00:00:00.06]   Discovering: Kafka.Ksql.Linq.Tests.Integration&#xD;
-[xUnit.net 00:00:00.11]   Discovered:  Kafka.Ksql.Linq.Tests.Integration&#xD;
-[xUnit.net 00:00:00.11]   Starting:    Kafka.Ksql.Linq.Tests.Integration&#xD;
-[xUnit.net 00:00:15.92]       System.InvalidOperationException : DDL execution failed for Order: {"error_code":404,"message":"HTTP 404 Not Found"}&#xD;
-[xUnit.net 00:00:15.92]       Stack Trace:&#xD;
-[xUnit.net 00:00:15.92]            at Kafka.Ksql.Linq.KsqlContext.EnsureSimpleEntityDdlAsync(Type type, EntityModel model)&#xD;
-[xUnit.net 00:00:15.92]            at Kafka.Ksql.Linq.KsqlContext.RegisterSchemasAndMaterializeAsync()&#xD;
-[xUnit.net 00:00:15.92]            at Kafka.Ksql.Linq.KsqlContext.InitializeWithSchemaRegistration()&#xD;
-[xUnit.net 00:00:15.92]            at Kafka.Ksql.Linq.KsqlContext.InitializeCore(ILoggerFactory loggerFactory)&#xD;
-[xUnit.net 00:00:15.92]            at Kafka.Ksql.Linq.KsqlContext..ctor(KsqlDslOptions options, ILoggerFactory loggerFactory)&#xD;
-[xUnit.net 00:00:15.92]         C:\dev\rc02\physicalTests\OssSamples\DlqIntegrationTests.cs(28,0): at Kafka.Ksql.Linq.Tests.Integration.DlqIntegrationTests.OrderContext..ctor(KsqlDslOptions options)&#xD;
-[xUnit.net 00:00:15.92]         C:\dev\rc02\physicalTests\OssSamples\DlqIntegrationTests.cs(52,0): at Kafka.Ksql.Linq.Tests.Integration.DlqIntegrationTests.ForEachAsync_OnErrorDlq_WritesToDlq()&#xD;
-[xUnit.net 00:00:15.92]         --- End of stack trace from previous location ---&#xD;
-[xUnit.net 00:00:15.93]   Finished:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.08]   Discovering: Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.13]   Discovered:  Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.14]   Starting:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:16.26]       System.InvalidOperationException : DDL execution failed for Order: {"error_code":404,"message":"HTTP 404 Not Found"}&#xD;
+[xUnit.net 00:00:16.26]       Stack Trace:&#xD;
+[xUnit.net 00:00:16.26]         C:\dev\rc02\src\KsqlContext.SchemaRegistration.cs(183,0): at Kafka.Ksql.Linq.KsqlContext.EnsureSimpleEntityDdlAsync(Type type, EntityModel model)&#xD;
+[xUnit.net 00:00:16.26]         C:\dev\rc02\src\KsqlContext.SchemaRegistration.cs(123,0): at Kafka.Ksql.Linq.KsqlContext.RegisterSchemasAndMaterializeAsync()&#xD;
+[xUnit.net 00:00:16.26]         C:\dev\rc02\src\KsqlContext.SchemaRegistration.cs(28,0): at Kafka.Ksql.Linq.KsqlContext.InitializeWithSchemaRegistration()&#xD;
+[xUnit.net 00:00:16.26]         C:\dev\rc02\src\KsqlContext.cs(131,0): at Kafka.Ksql.Linq.KsqlContext.InitializeCore(ILoggerFactory loggerFactory)&#xD;
+[xUnit.net 00:00:16.26]         C:\dev\rc02\src\KsqlContext.cs(95,0): at Kafka.Ksql.Linq.KsqlContext..ctor(KsqlDslOptions options, ILoggerFactory loggerFactory)&#xD;
+[xUnit.net 00:00:16.26]         C:\dev\rc02\physicalTests\OssSamples\DlqIntegrationTests.cs(28,0): at Kafka.Ksql.Linq.Tests.Integration.DlqIntegrationTests.OrderContext..ctor(KsqlDslOptions options)&#xD;
+[xUnit.net 00:00:16.26]         C:\dev\rc02\physicalTests\OssSamples\DlqIntegrationTests.cs(52,0): at Kafka.Ksql.Linq.Tests.Integration.DlqIntegrationTests.ForEachAsync_OnErrorDlq_WritesToDlq()&#xD;
+[xUnit.net 00:00:16.26]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:16.26]   Finished:    Kafka.Ksql.Linq.Tests.Integration&#xD;
 </StdOut>
     </Output>
     <RunInfos>
-      <RunInfo computerName="SAGESOHO01" outcome="Error" timestamp="2025-09-14T15:38:35.9385703+09:00">
-        <Text>[xUnit.net 00:00:15.92]     Kafka.Ksql.Linq.Tests.Integration.DlqIntegrationTests.ForEachAsync_OnErrorDlq_WritesToDlq [FAIL]</Text>
+      <RunInfo computerName="SAGESOHO01" outcome="Error" timestamp="2025-09-14T19:15:01.2374170+09:00">
+        <Text>[xUnit.net 00:00:16.26]     Kafka.Ksql.Linq.Tests.Integration.DlqIntegrationTests.ForEachAsync_OnErrorDlq_WritesToDlq [FAIL]</Text>
       </RunInfo>
     </RunInfos>
   </ResultSummary>

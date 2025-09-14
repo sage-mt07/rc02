@@ -12,17 +12,18 @@ namespace Kafka.Ksql.Linq.Query.Builders;
 /// </summary>
 internal static class KsqlCreateWindowedStatementBuilder
 {
-    public static string Build(string name, KsqlQueryModel model, string timeframe, string? emitOverride = null, string? inputOverride = null)
+    public static string Build(string name, KsqlQueryModel model, string timeframe, string? emitOverride = null, string? inputOverride = null, RenderOptions? options = null)
     {
         if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("name required", nameof(name));
         if (model is null) throw new ArgumentNullException(nameof(model));
         if (string.IsNullOrWhiteSpace(timeframe)) throw new ArgumentException("timeframe required", nameof(timeframe));
-        var baseSql = KsqlCreateStatementBuilder.Build(name, model);
+        var baseSql = KsqlCreateStatementBuilder.Build(name, model, options: options);
         if (!string.IsNullOrWhiteSpace(emitOverride))
             baseSql = baseSql.Replace("EMIT CHANGES", emitOverride);
         if (!string.IsNullOrWhiteSpace(inputOverride))
             baseSql = OverrideFrom(baseSql, inputOverride);
         var window = FormatWindow(timeframe);
+        // Optional GRACE insertion using simple heuristic: if model has AdditionalSettings[graceSeconds] on adapted entity, caller should pre-embed.
         var sql = InjectWindowAfterFrom(baseSql, window);
         return sql;
     }
@@ -57,6 +58,7 @@ internal static class KsqlCreateWindowedStatementBuilder
         if (!int.TryParse(timeframe[..^1], out var val)) val = 1;
         return unit switch
         {
+            's' => $"WINDOW TUMBLING (SIZE {val} SECONDS)",
             'm' => $"WINDOW TUMBLING (SIZE {val} MINUTES)",
             'h' => $"WINDOW TUMBLING (SIZE {val} HOURS)",
             'd' => $"WINDOW TUMBLING (SIZE {val} DAYS)",

@@ -10,4 +10,5 @@ public record DdlSchemaDefinition(
     short Replicas,
     string? KeySchemaFullName,
     string? ValueSchemaFullName,
-    IReadOnlyList<ColumnDefinition> Columns);
+    IReadOnlyList<ColumnDefinition> Columns,
+    string? TimestampColumn = null);

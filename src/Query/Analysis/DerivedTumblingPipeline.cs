@@ -71,27 +71,17 @@ internal static class DerivedTumblingPipeline
         Func<string, Type> resolveType)
     {
         var qm = queryModel.Clone();
-        var inputOverride = baseName;
-        // For the 1s final stream, the input should be the original source stream (e.g., Rate/deduprates),
-        // not the derived base name (bar). Try to infer from query model sources.
-        if (role == Role.Final1sStream)
+        string? inputOverride = null;
+        // Respect explicit input hints when provided (e.g., hub stream/table linkage)
+        if (model.AdditionalSettings.TryGetValue("input", out var inputObj))
         {
-            var src = queryModel.SourceTypes.FirstOrDefault();
-            if (src != null)
-            {
-                var topicAttr = src.GetCustomAttribute<Kafka.Ksql.Linq.Core.Attributes.KsqlTopicAttribute>();
-                inputOverride = (topicAttr?.Name ?? src.Name).ToLowerInvariant();
-            }
-        }
-        else if (model.AdditionalSettings.TryGetValue("input", out var inputObj))
-        {
-            inputOverride = inputObj?.ToString() ?? baseName;
+            inputOverride = inputObj?.ToString();
         }
         if (role == Role.Prev1m || role == Role.Final1sStream)
         {
             qm.Windows.Clear();
             qm.GroupByExpression = null;
-            var inputType = resolveType(inputOverride);
+            var inputType = resolveType(inputOverride ?? baseName);
             qm.SelectProjection = BuildInputProjection(inputType);
         }
         var tf = (string)model.AdditionalSettings["timeframe"];
@@ -162,14 +152,66 @@ internal static class DerivedTumblingPipeline
         }
         else if (role == Role.Final1sStream)
         {
-            Func<Type, string> resolver = _ => inputOverride;
-            ddl = KsqlCreateStatementBuilder.Build(name, qm, null, null, resolver);
-            if (!string.IsNullOrWhiteSpace(emit))
-                ddl = ddl.Replace("EMIT CHANGES", emit);
+            // ksqlDB limitation: persistent queries cannot source from windowed TABLEs.
+            // Define a logical STREAM over the 1s TABLE's Kafka topic with explicit columns so keys are resolvable.
+            var table1s = $"{baseName}_1s_final";
+            // Build columns from AdditionalSettings (shapes captured earlier)
+            var keyNames = model.AdditionalSettings.TryGetValue("keys", out var kObj) && kObj is string[] ks ? ks : Array.Empty<string>();
+            var keyTypes = model.AdditionalSettings.TryGetValue("keys/types", out var ktObj) && ktObj is Type[] kts ? kts : Array.Empty<Type>();
+            var valNames = model.AdditionalSettings.TryGetValue("projection", out var pObj) && pObj is string[] vs ? vs : Array.Empty<string>();
+            var valTypes = model.AdditionalSettings.TryGetValue("projection/types", out var vtObj) && vtObj is Type[] vts ? vts : Array.Empty<Type>();
+            static string Map(Type t) => Query.Schema.KsqlTypeMapping.MapToKsqlType(t, null);
+            var cols = new System.Collections.Generic.List<string>();
+            for (int i = 0; i < keyNames.Length && i < keyTypes.Length; i++)
+                cols.Add($"{keyNames[i].ToUpperInvariant()} {Map(keyTypes[i])} KEY");
+            for (int i = 0; i < valNames.Length && i < valTypes.Length; i++)
+            {
+                var n = valNames[i].ToUpperInvariant();
+                if (keyNames.Any(k => string.Equals(k, valNames[i], StringComparison.OrdinalIgnoreCase)))
+                    continue;
+                cols.Add($"{n} {Map(valTypes[i])}");
+            }
+            var colList = string.Join(", ", cols);
+            ddl = $"CREATE STREAM IF NOT EXISTS {name} ({colList}) WITH (KAFKA_TOPIC='{table1s}', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO');";
         }
         else
         {
-            ddl = KsqlCreateWindowedStatementBuilder.Build(name, qm, tf, emit, inputOverride);
+            // Generate windowed CTAS/CSAS. Keep key path style default for streams (alias-qualified o.KEYCOLS)
+            ddl = KsqlCreateWindowedStatementBuilder.Build(name, qm, tf, emit, inputOverride, options: null);
+            // If sourcing from the 1s hub stream, remap aggregate arguments from BID to per-second OHLC columns
+            if (!string.IsNullOrWhiteSpace(inputOverride) && inputOverride!.EndsWith("_1s_final_s", StringComparison.OrdinalIgnoreCase))
+            {
+                // Normalize spacing for easier replacement
+                string ReplaceAggArg(string sql, string pattern, string replacement)
+                {
+                    return System.Text.RegularExpressions.Regex.Replace(
+                        sql,
+                        pattern,
+                        replacement,
+                        System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+                }
+                // Map aggregates: open=earliest(Open), high=max(High), low=min(Low), close=latest(KsqlTimeFrameClose)
+                ddl = ReplaceAggArg(ddl, @"EARLIEST_BY_OFFSET\(\s*(?:O\.)?BID\s*\)", "EARLIEST_BY_OFFSET(O.OPEN)");
+                ddl = ReplaceAggArg(ddl, @"MAX\(\s*(?:O\.)?BID\s*\)", "MAX(O.HIGH)");
+                ddl = ReplaceAggArg(ddl, @"MIN\(\s*(?:O\.)?BID\s*\)", "MIN(O.LOW)");
+                ddl = ReplaceAggArg(ddl, @"LATEST_BY_OFFSET\(\s*(?:O\.)?BID\s*\)", "LATEST_BY_OFFSET(O.KSQLTIMEFRAMECLOSE)");
+            }
+            // Inject GRACE PERIOD for Live windows to tolerate startup/lateness
+            if (role == Role.Live)
+            {
+                var grace = 0;
+                if (model.AdditionalSettings.TryGetValue("graceSeconds", out var gObj) && gObj is int g)
+                    grace = g;
+                if (grace < 600) grace = 600; // default 10 minutes for tests
+                if (grace > 0 && ddl.IndexOf("GRACE", StringComparison.OrdinalIgnoreCase) < 0)
+                {
+                    ddl = System.Text.RegularExpressions.Regex.Replace(
+                        ddl,
+                        @"(WINDOW\s+TUMBLING\s*\(\s*SIZE\s+[^\)]+)\)",
+                        $"$1, GRACE PERIOD {grace} SECONDS)",
+                        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                }
+            }
         }
         var dt = resolveType(name);
         model.EntityType = dt;

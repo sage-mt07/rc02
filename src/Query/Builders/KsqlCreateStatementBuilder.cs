@@ -272,7 +272,9 @@ public static class KsqlCreateStatementBuilder
             var alias = kv.Key;
             var keys = kv.Value.Keys;
             var style = kv.Value.Style;
-            if (style != KeyPathStyle.None && keys.Count == 1)
+            if (style == KeyPathStyle.None)
+                continue; // keep original alias-qualified key paths for streams
+            if (keys.Count == 1)
             {
                 var lone = keys.First();
                 var standAlonePattern = @"\bKEY\b";

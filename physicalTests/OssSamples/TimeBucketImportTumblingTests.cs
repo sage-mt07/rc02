@@ -65,8 +65,20 @@ public class TimeBucketImportTumblingTests
                 {
                     Producer = new Kafka.Ksql.Linq.Configuration.Messaging.ProducerSection
                     {
+                        // Ensure immediate send for small test messages
+                        Acks = "All",
+                        EnableIdempotence = true,
+                        MaxInFlightRequestsPerConnection = 1,
                         LingerMs = 0,
-                        BatchNumMessages = 1
+                        BatchNumMessages = 1,
+                        DeliveryTimeoutMs = 30000,
+                        RetryBackoffMs = 100,
+                        // Optional low-latency tweaks
+                        AdditionalProperties = new System.Collections.Generic.Dictionary<string, string>
+                        {
+                            ["socket.keepalive.enable"] = "true",
+                            ["queue.buffering.max.ms"] = "0"
+                        }
                     }
                 }
             }
@@ -108,6 +120,8 @@ public class TimeBucketImportTumblingTests
         await PhysicalTestEnv.Health.WaitForKafkaAsync(brokers, TimeSpan.FromSeconds(180));
         await PhysicalTestEnv.Health.WaitForHttpOkAsync(srUrl.TrimEnd('/') + "/subjects", TimeSpan.FromSeconds(180));
         await PhysicalTestEnv.KsqlHelpers.WaitForKsqlReadyAsync(ksqlUrl, TimeSpan.FromSeconds(180), graceMs: 3000);
+        // Drop any previously created artifacts to avoid conflicts
+        try { await PhysicalTestEnv.KsqlHelpers.TerminateAndDropBarArtifactsAsync(ksqlUrl); } catch { }
 
         // Pre-create source and DLQ topics
         using (var admin = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = brokers }).Build())
@@ -119,16 +133,55 @@ public class TimeBucketImportTumblingTests
         }
         // Create context (may issue schema registration and DDLs)
         using var ctx = new TestContext();
-        await ctx.WaitForEntityReadyAsync<Bar>(TimeSpan.FromSeconds(180));
 
         var broker = "B"; var symbol = "S";
         var baseTime = DateTime.UtcNow.AddMinutes(-8);
 
-        // Import ticks (2 points in the first minute, 1 point in a later minute)
-        await ctx.Ticks.AddAsync(new Tick { Broker = broker, Symbol = symbol, TimestampUtc = baseTime.AddSeconds(10), Bid = 100m });
-        await ctx.Ticks.AddAsync(new Tick { Broker = broker, Symbol = symbol, TimestampUtc = baseTime.AddSeconds(40), Bid = 104m });
-        await ctx.Ticks.AddAsync(new Tick { Broker = broker, Symbol = symbol, TimestampUtc = baseTime.AddMinutes(2).AddSeconds(5), Bid = 102m });
+        // Kick off push queries (Emit Changes) in separate tasks to ensure materialization
+        async Task<int> QueryStreamCountHttpAsync(string table, int limit, TimeSpan timeout)
+        {
+            using var http = new HttpClient { BaseAddress = new Uri(ksqlUrl) };
+            var sql = $"SELECT * FROM {table} WHERE Broker='{broker}' AND Symbol='{symbol}' EMIT CHANGES LIMIT {limit};";
+            var payload = new { sql };
+            var json = System.Text.Json.JsonSerializer.Serialize(payload);
+            using var req = new HttpRequestMessage(HttpMethod.Post, "/query-stream")
+            {
+                Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json")
+            };
+            using var cts = new CancellationTokenSource(timeout);
+            using var resp = await http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, cts.Token);
+            resp.EnsureSuccessStatusCode();
+            await using var stream = await resp.Content.ReadAsStreamAsync(cts.Token);
+            using var reader = new System.IO.StreamReader(stream, System.Text.Encoding.UTF8);
+            int count = 0;
+            while (!reader.EndOfStream && !cts.IsCancellationRequested)
+            {
+                var line = await reader.ReadLineAsync();
+                if (line == null) break;
+                if (line.IndexOf("\"row\"", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    count++;
+                    if (count >= limit) break;
+                }
+            }
+            return count;
+        }
 
+        var wait1mTask = QueryStreamCountHttpAsync("bar_1m_live", 1, TimeSpan.FromSeconds(180));
+        var wait5mTask = QueryStreamCountHttpAsync("bar_5m_live", 1, TimeSpan.FromSeconds(180));
+
+        // Import a continuous sequence of ticks (~2 minutes) to ensure materialization
+        var bids = new decimal[] { 100m, 110m, 95m, 105m, 120m, 115m, 112m, 118m };
+        for (int i = 0; i < 120; i++)
+        {
+            var ts = baseTime.AddSeconds(i);
+            var bid = bids[i % bids.Length];
+            await ctx.Ticks.AddAsync(new Tick { Broker = broker, Symbol = symbol, TimestampUtc = ts, Bid = bid });
+            await Task.Delay(5);
+        }
+
+        // Ensure derived tables exist before querying
+        await WaitTablesReadyAsync(new Uri(ksqlUrl), TimeSpan.FromSeconds(180));
         // Wait until 1m/5m tables produce rows (ksqlDB table path)
         var rowsTable1m = await QueryRowsAsync(
             $"SELECT Broker, Symbol, BucketStart, Open, High, Low, Close FROM bar_1m_live WHERE Broker='{broker}' AND Symbol='{symbol}' LIMIT 10;",
@@ -138,6 +191,8 @@ public class TimeBucketImportTumblingTests
             $"SELECT Broker, Symbol, BucketStart, Open, High, Low, Close FROM bar_5m_live WHERE Broker='{broker}' AND Symbol='{symbol}' LIMIT 10;",
             new Uri("http://127.0.0.1:18088"),
             TimeSpan.FromSeconds(15));
+        // Ensure push observers saw rows as well (materialization complete)
+        _ = await wait1mTask; _ = await wait5mTask;
         Assert.True(rowsTable1m.Count >= 1, "1m table pull returned no rows");
         Assert.True(rowsTable5m.Count >= 1, "5m table pull returned no rows");
 
@@ -192,5 +247,34 @@ public class TimeBucketImportTumblingTests
         }
         catch { }
         return rows;
+    }
+
+    private static async Task WaitTablesReadyAsync(Uri baseUrl, TimeSpan timeout)
+    {
+        using var http = new HttpClient { BaseAddress = baseUrl };
+        var deadline = DateTime.UtcNow + timeout;
+        var sqls = new[]
+        {
+            "SELECT * FROM bar_1m_live LIMIT 0;",
+            "SELECT * FROM bar_5m_live LIMIT 0;"
+        };
+        while (DateTime.UtcNow < deadline)
+        {
+            var allOk = true;
+            foreach (var s in sqls)
+            {
+                var payload = new { sql = s, properties = new System.Collections.Generic.Dictionary<string, object>() };
+                using var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
+                try
+                {
+                    using var resp = await http.PostAsync("/query", content);
+                    if (!resp.IsSuccessStatusCode) { allOk = false; break; }
+                }
+                catch { allOk = false; break; }
+            }
+            if (allOk) return;
+            await Task.Delay(1000);
+        }
+        throw new TimeoutException("bar_1m_live/bar_5m_live not ready within timeout");
     }
 }

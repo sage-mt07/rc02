@@ -26,6 +26,17 @@ public class EntityModelDdlAdapter : IDdlSchemaProvider
             _model.Partitions > 0 ? _model.Partitions : 1,
             _model.ReplicationFactor > 0 ? _model.ReplicationFactor : (short)1)
             .WithSchemaFullNames(_model.KeySchemaFullName, _model.ValueSchemaFullName);
+        // Detect timestamp column from model attributes
+        string? tsColumn = null;
+        try
+        {
+            var tsProp = _model.AllProperties.FirstOrDefault(p => p.GetCustomAttributes(true).OfType<Kafka.Ksql.Linq.Core.Attributes.KsqlTimestampAttribute>().Any());
+            if (tsProp != null)
+                tsColumn = KsqlNameUtils.Sanitize(tsProp.Name);
+        }
+        catch { }
+        if (!string.IsNullOrWhiteSpace(tsColumn))
+            builder.WithTimestamp(tsColumn);
 
         var keys = _model.AdditionalSettings.TryGetValue("keys", out var kObj) && kObj is string[] kArr
             ? kArr

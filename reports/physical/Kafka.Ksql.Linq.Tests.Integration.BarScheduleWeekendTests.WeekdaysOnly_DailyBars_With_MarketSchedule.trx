@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TestRun id="37e6245d-c926-4d69-98c1-5c53d09b1d5b" name="seiji_yfc8940@SAGESOHO01 2025-09-14 15:37:13" runUser="SAGESOHO01\seiji_yfc8940" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
-  <Times creation="2025-09-14T15:37:13.9246403+09:00" queuing="2025-09-14T15:37:13.9246406+09:00" start="2025-09-14T15:34:32.1707207+09:00" finish="2025-09-14T15:37:13.9304177+09:00" />
-  <TestSettings name="default" id="f71a6976-8622-4778-8e1d-6f708198e51f">
-    <Deployment runDeploymentRoot="seiji_yfc8940_SAGESOHO01_2025-09-14_15_37_13" />
+<TestRun id="25ac9f8a-5423-46ef-97d1-058b519eaab2" name="seiji_yfc8940@SAGESOHO01 2025-09-14 19:09:41" runUser="SAGESOHO01\seiji_yfc8940" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-09-14T19:09:41.9558478+09:00" queuing="2025-09-14T19:09:41.9558484+09:00" start="2025-09-14T19:06:55.0204318+09:00" finish="2025-09-14T19:09:41.9672972+09:00" />
+  <TestSettings name="default" id="c43451f4-51f8-45cc-bab0-9c87f57b453f">
+    <Deployment runDeploymentRoot="seiji_yfc8940_SAGESOHO01_2025-09-14_19_09_41" />
   </TestSettings>
   <Results>
-    <UnitTestResult executionId="710b3434-ae42-47f3-8e2d-66ccaf150761" testId="b56b9373-6c2f-5739-b8b6-dadbd353152b" testName="Kafka.Ksql.Linq.Tests.Integration.BarScheduleWeekendTests.WeekdaysOnly_DailyBars_With_MarketSchedule" computerName="SAGESOHO01" duration="00:02:41.2020215" startTime="2025-09-14T15:37:13.8517952+09:00" endTime="2025-09-14T15:37:13.8518089+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="710b3434-ae42-47f3-8e2d-66ccaf150761">
+    <UnitTestResult executionId="b286cccf-71aa-435f-b32d-eb06c9ec6c1d" testId="b56b9373-6c2f-5739-b8b6-dadbd353152b" testName="Kafka.Ksql.Linq.Tests.Integration.BarScheduleWeekendTests.WeekdaysOnly_DailyBars_With_MarketSchedule" computerName="SAGESOHO01" duration="00:02:46.3458189" startTime="2025-09-14T19:09:41.8621261+09:00" endTime="2025-09-14T19:09:41.8621617+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b286cccf-71aa-435f-b32d-eb06c9ec6c1d">
       <Output>
         <ErrorInfo>
           <Message>System.Net.Http.HttpRequestException : Response status code does not indicate success: 400 (Bad Request).</Message>
@@ -20,12 +20,12 @@
   </Results>
   <TestDefinitions>
     <UnitTest name="Kafka.Ksql.Linq.Tests.Integration.BarScheduleWeekendTests.WeekdaysOnly_DailyBars_With_MarketSchedule" storage="c:\dev\rc02\physicaltests\bin\release\net8.0\kafka.ksql.linq.tests.integration.dll" id="b56b9373-6c2f-5739-b8b6-dadbd353152b">
-      <Execution id="710b3434-ae42-47f3-8e2d-66ccaf150761" />
+      <Execution id="b286cccf-71aa-435f-b32d-eb06c9ec6c1d" />
       <TestMethod codeBase="C:\dev\rc02\physicalTests\bin\Release\net8.0\Kafka.Ksql.Linq.Tests.Integration.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Integration.BarScheduleWeekendTests" name="WeekdaysOnly_DailyBars_With_MarketSchedule" />
     </UnitTest>
   </TestDefinitions>
   <TestEntries>
-    <TestEntry testId="b56b9373-6c2f-5739-b8b6-dadbd353152b" executionId="710b3434-ae42-47f3-8e2d-66ccaf150761" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b56b9373-6c2f-5739-b8b6-dadbd353152b" executionId="b286cccf-71aa-435f-b32d-eb06c9ec6c1d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
   </TestEntries>
   <TestLists>
     <TestList name="一覧に存在しない結果" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
@@ -35,9 +35,11 @@
     <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
     <Output>
       <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.6+bf9b858c26 (64-bit .NET 8.0.19)&#xD;
-[xUnit.net 00:00:00.06]   Discovering: Kafka.Ksql.Linq.Tests.Integration&#xD;
-[xUnit.net 00:00:00.11]   Discovered:  Kafka.Ksql.Linq.Tests.Integration&#xD;
-[xUnit.net 00:00:00.11]   Starting:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.07]   Discovering: Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.12]   Discovered:  Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.13]   Starting:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+info: Kafka.Ksql.Linq.Infrastructure.Admin.KafkaAdminService[0]&#xD;
+      DB topic created: deduprates&#xD;
 info: Kafka.Ksql.Linq.KsqlContext[0]&#xD;
       ksql execute: EXECUTE SQL=SHOW TOPICS;&#xD;
 info: Kafka.Ksql.Linq.KsqlContext[0]&#xD;
@@ -146,6 +148,8 @@ info: Kafka.Ksql.Linq.KsqlContext[0]&#xD;
       ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;&#xD;
 info: Kafka.Ksql.Linq.KsqlContext[0]&#xD;
       ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;&#xD;
+info: Kafka.Ksql.Linq.Infrastructure.Admin.KafkaAdminService[0]&#xD;
+      DB topic created: marketschedule&#xD;
 info: Kafka.Ksql.Linq.KsqlContext[0]&#xD;
       ksql execute: EXECUTE SQL=SHOW TOPICS;&#xD;
 info: Kafka.Ksql.Linq.KsqlContext[0]&#xD;
@@ -715,8 +719,6 @@ info: Kafka.Ksql.Linq.KsqlContext[0]&#xD;
 info: Kafka.Ksql.Linq.KsqlContext[0]&#xD;
       ksql execute: EXECUTE SQL=SHOW QUERIES;&#xD;
 info: Kafka.Ksql.Linq.KsqlContext[0]&#xD;
-      ksql execute: EXECUTE SQL=SHOW QUERIES;&#xD;
-info: Kafka.Ksql.Linq.KsqlContext[0]&#xD;
       Kafka initialization completed; DLQ topic 'dead-letter-queue' ready with 5000ms retention&#xD;
 info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]&#xD;
       producer:marketschedule config: Acks=All, BatchNumMessages=10000, BatchSize=16384, BootstrapServers=127.0.0.1:39092, ClientId=ksql-dsl-client, CompressionType=Snappy, EnableIdempotence=True, LingerMs=5, MaxInFlight=1, MessageTimeoutMs=120000, RetryBackoffMs=100&#xD;
@@ -748,19 +750,19 @@ info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]&#xD;
       kafka produce: topic=deduprates, entity=Rate, method=SendAsync&#xD;
 info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]&#xD;
       kafka produce: topic=deduprates, entity=Rate, method=SendAsync&#xD;
-[xUnit.net 00:02:41.35]       System.Net.Http.HttpRequestException : Response status code does not indicate success: 400 (Bad Request).&#xD;
-[xUnit.net 00:02:41.35]       Stack Trace:&#xD;
-[xUnit.net 00:02:41.35]            at System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode()&#xD;
-[xUnit.net 00:02:41.35]         C:\dev\rc02\physicalTests\OssSamples\BarScheduleWeekendTests.cs(117,0): at Kafka.Ksql.Linq.Tests.Integration.BarScheduleWeekendTests.CountRowsAsync(String sql, TimeSpan timeout)&#xD;
-[xUnit.net 00:02:41.35]         C:\dev\rc02\physicalTests\OssSamples\BarScheduleWeekendTests.cs(174,0): at Kafka.Ksql.Linq.Tests.Integration.BarScheduleWeekendTests.WeekdaysOnly_DailyBars_With_MarketSchedule()&#xD;
-[xUnit.net 00:02:41.35]         C:\dev\rc02\physicalTests\OssSamples\BarScheduleWeekendTests.cs(182,0): at Kafka.Ksql.Linq.Tests.Integration.BarScheduleWeekendTests.WeekdaysOnly_DailyBars_With_MarketSchedule()&#xD;
-[xUnit.net 00:02:41.35]         --- End of stack trace from previous location ---&#xD;
-[xUnit.net 00:02:41.36]   Finished:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:02:46.51]       System.Net.Http.HttpRequestException : Response status code does not indicate success: 400 (Bad Request).&#xD;
+[xUnit.net 00:02:46.51]       Stack Trace:&#xD;
+[xUnit.net 00:02:46.51]            at System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode()&#xD;
+[xUnit.net 00:02:46.51]         C:\dev\rc02\physicalTests\OssSamples\BarScheduleWeekendTests.cs(117,0): at Kafka.Ksql.Linq.Tests.Integration.BarScheduleWeekendTests.CountRowsAsync(String sql, TimeSpan timeout)&#xD;
+[xUnit.net 00:02:46.51]         C:\dev\rc02\physicalTests\OssSamples\BarScheduleWeekendTests.cs(174,0): at Kafka.Ksql.Linq.Tests.Integration.BarScheduleWeekendTests.WeekdaysOnly_DailyBars_With_MarketSchedule()&#xD;
+[xUnit.net 00:02:46.51]         C:\dev\rc02\physicalTests\OssSamples\BarScheduleWeekendTests.cs(182,0): at Kafka.Ksql.Linq.Tests.Integration.BarScheduleWeekendTests.WeekdaysOnly_DailyBars_With_MarketSchedule()&#xD;
+[xUnit.net 00:02:46.51]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:02:46.52]   Finished:    Kafka.Ksql.Linq.Tests.Integration&#xD;
 </StdOut>
     </Output>
     <RunInfos>
-      <RunInfo computerName="SAGESOHO01" outcome="Error" timestamp="2025-09-14T15:37:13.8501929+09:00">
-        <Text>[xUnit.net 00:02:41.35]     Kafka.Ksql.Linq.Tests.Integration.BarScheduleWeekendTests.WeekdaysOnly_DailyBars_With_MarketSchedule [FAIL]</Text>
+      <RunInfo computerName="SAGESOHO01" outcome="Error" timestamp="2025-09-14T19:09:41.8596597+09:00">
+        <Text>[xUnit.net 00:02:46.51]     Kafka.Ksql.Linq.Tests.Integration.BarScheduleWeekendTests.WeekdaysOnly_DailyBars_With_MarketSchedule [FAIL]</Text>
       </RunInfo>
     </RunInfos>
   </ResultSummary>

@@ -72,21 +72,7 @@ internal static class DerivationPlanner
             var hbId = $"{baseId}_hb_{tfStr}";
             if (tf.Unit == "s" && tf.Value == 1)
             {
-                // Dependency order: create stream first, then table referencing it
-                var final1sStream = new DerivedEntity
-                {
-                    Id = hub,
-                    Role = Role.Final1sStream,
-                    Timeframe = tf,
-                    KeyShape = keyShapes,
-                    ValueShape = valueShapes,
-                    InputHint = hub,
-                    BasedOnSpec = basedOn,
-                    WeekAnchor = qao.WeekAnchor,
-                    GraceSeconds = graceMap[tfStr]
-                };
-                entities.Add(final1sStream);
-
+                // Dependency order per docs: create TABLE first, then STREAM referencing it
                 var final1s = new DerivedEntity
                 {
                     Id = $"{baseId}_1s_final",
@@ -94,12 +80,28 @@ internal static class DerivationPlanner
                     Timeframe = tf,
                     KeyShape = keyShapes,
                     ValueShape = valueShapes,
-                    InputHint = hub,
+                    // 1s TABLE is derived directly from the original source (no hub dependency)
+                    InputHint = null,
                     BasedOnSpec = basedOn,
                     WeekAnchor = qao.WeekAnchor,
                     GraceSeconds = graceMap[tfStr]
                 };
                 entities.Add(final1s);
+
+                var final1sStream = new DerivedEntity
+                {
+                    Id = hub,
+                    Role = Role.Final1sStream,
+                    Timeframe = tf,
+                    KeyShape = keyShapes,
+                    ValueShape = valueShapes,
+                    // 1s STREAM reads from the 1s TABLE
+                    InputHint = final1s.Id,
+                    BasedOnSpec = basedOn,
+                    WeekAnchor = qao.WeekAnchor,
+                    GraceSeconds = graceMap[tfStr]
+                };
+                entities.Add(final1sStream);
 
                 if (enableHb)
                 {
@@ -129,6 +131,7 @@ internal static class DerivationPlanner
                 Timeframe = tf,
                 KeyShape = keyShapes,
                 ValueShape = valueShapes,
+                // Live frames aggregate from the 1s hub stream
                 InputHint = hub,
                 BasedOnSpec = basedOn,
                 WeekAnchor = qao.WeekAnchor,

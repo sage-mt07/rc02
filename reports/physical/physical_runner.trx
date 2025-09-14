@@ -1,27 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TestRun id="4139f052-0ffe-49af-bd0b-37bdbb95fe27" name="@00b529138bd1 2025-09-14 10:04:44" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
-  <Times creation="2025-09-14T10:04:44.9612782+00:00" queuing="2025-09-14T10:04:44.9612782+00:00" start="2025-09-14T10:04:39.6781734+00:00" finish="2025-09-14T10:04:44.9666398+00:00" />
-  <TestSettings name="default" id="059a1750-5252-4321-8fb4-199e8b28decb">
-    <Deployment runDeploymentRoot="_00b529138bd1_2025-09-14_10_04_44" />
+<TestRun id="22753cba-c946-4007-947c-89496bb52728" name="@65ac6cc2d086 2025-09-14 11:56:16" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-09-14T11:56:16.1215304+00:00" queuing="2025-09-14T11:56:16.1215304+00:00" start="2025-09-14T11:51:41.4532432+00:00" finish="2025-09-14T11:56:16.1289161+00:00" />
+  <TestSettings name="default" id="9864330e-5245-4bb7-8627-897c6133ebcf">
+    <Deployment runDeploymentRoot="_65ac6cc2d086_2025-09-14_11_56_16" />
   </TestSettings>
   <Results>
-    <UnitTestResult executionId="11e9fffe-27ab-4ea6-9f69-0ce680c1df51" testId="d4f95360-fa20-03e1-5810-a5fd78838e0d" testName="Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket" computerName="00b529138bd1" duration="00:00:04.2355753" startTime="2025-09-14T10:04:44.8689224+00:00" endTime="2025-09-14T10:04:44.8689392+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="11e9fffe-27ab-4ea6-9f69-0ce680c1df51">
+    <UnitTestResult executionId="c9d6ed96-24b7-4976-999b-81f020fd903c" testId="d4f95360-fa20-03e1-5810-a5fd78838e0d" testName="Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket" computerName="65ac6cc2d086" duration="00:05:03.1405209" startTime="2025-09-14T11:56:16.0283597+00:00" endTime="2025-09-14T11:56:16.0283733+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c9d6ed96-24b7-4976-999b-81f020fd903c">
       <Output>
         <ErrorInfo>
-          <Message>Confluent.SchemaRegistry.SchemaRegistryException : Schema being registered is incompatible with an earlier schema for subject "bar-value", details: [{errorType:'TYPE_MISMATCH', description:'The type (path '/fields/0/type') of a field in the new schema does not match with the old schema', additionalInfo:'reader type: BYTES not compatible with writer type: DOUBLE'}, {errorType:'TYPE_MISMATCH', description:'The type (path '/fields/1/type') of a field in the new schema does not match with the old schema', additionalInfo:'reader type: BYTES not compatible with writer type: DOUBLE'}, {errorType:'TYPE_MISMATCH', description:'The type (path '/fields/2/type') of a field in the new schema does not match with the old schema', additionalInfo:'reader type: BYTES not compatible with writer type: DOUBLE'}, {errorType:'READER_FIELD_MISSING_DEFAULT_VALUE', description:'The field 'Close' at path '/fields/3' in the new schema has no default value and is missing in the old schema', additionalInfo:'Close'}, {oldSchemaVersion: 1}, {oldSchema: '{"type":"record","name":"bar_valueAvro","namespace":"kafka_ksql_linq_tests_integration","fields":[{"name":"Open","type":"double","default":0},{"name":"High","type":"double","default":0},{"name":"Low","type":"double","default":0},{"name":"KsqlTimeFrameClose","type":"double","default":0}]}'}, {compatibility: 'BACKWARD'}]; error code: 409</Message>
-          <StackTrace>   at Confluent.SchemaRegistry.RestService.ExecuteOnOneInstanceAsync(Func`1 createRequest)
-   at Confluent.SchemaRegistry.RestService.RequestAsync[T](String endPoint, HttpMethod method, Object[] jsonBody)
-   at Confluent.SchemaRegistry.RestService.RegisterSchemaWithResponseAsync(String subject, Schema schema, Boolean normalize)
-   at Confluent.Shared.CollectionUtils.ConcurrentDictionaryExtensions.GetOrAddAsync[TKey,TValue](ConcurrentDictionary`2 dictionary, TKey key, Func`2 valueFactory)
-   at Confluent.SchemaRegistry.CachedSchemaRegistryClient.RegisterSchemaWithResponseAsync(String subject, Schema schema, Boolean normalize)
-   at Confluent.SchemaRegistry.CachedSchemaRegistryClient.RegisterSchemaAsync(String subject, Schema schema, Boolean normalize)
-   at Kafka.Ksql.Linq.SchemaRegistryTools.SchemaRegistryExtensions.RegisterSchemaIfNewAsync(ISchemaRegistryClient client, String subject, String schema) in C:\dev\rc02\src\SchemaRegistryTools\SchemaRegistryExtensions.cs:line 36
-   at Kafka.Ksql.Linq.KsqlContext.RegisterSchemasAndMaterializeAsync() in C:\dev\rc02\src\KsqlContext.SchemaRegistration.cs:line 107
-   at Kafka.Ksql.Linq.KsqlContext.InitializeWithSchemaRegistration() in C:\dev\rc02\src\KsqlContext.SchemaRegistration.cs:line 28
-   at Kafka.Ksql.Linq.KsqlContext.InitializeCore(ILoggerFactory loggerFactory) in C:\dev\rc02\src\KsqlContext.cs:line 131
-   at Kafka.Ksql.Linq.KsqlContext..ctor(KsqlDslOptions options, ILoggerFactory loggerFactory) in C:\dev\rc02\src\KsqlContext.cs:line 95
-   at Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.TestContext..ctor() in C:\dev\rc02\physicalTests\OssSamples\TimeBucketImportTumblingTests.cs:line 49
-   at Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket() in C:\dev\rc02\physicalTests\OssSamples\TimeBucketImportTumblingTests.cs:line 121
+          <Message>System.TimeoutException : bar_1m_live/bar_5m_live not ready within timeout</Message>
+          <StackTrace>   at Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.WaitTablesReadyAsync(Uri baseUrl, TimeSpan timeout) in C:\dev\rc02\physicalTests\OssSamples\TimeBucketImportTumblingTests.cs:line 278
+   at Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket() in C:\dev\rc02\physicalTests\OssSamples\TimeBucketImportTumblingTests.cs:line 184
 --- End of stack trace from previous location ---</StackTrace>
         </ErrorInfo>
       </Output>
@@ -29,12 +18,12 @@
   </Results>
   <TestDefinitions>
     <UnitTest name="Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket" storage="/src/physicaltests/bin/release/net8.0/kafka.ksql.linq.tests.integration.dll" id="d4f95360-fa20-03e1-5810-a5fd78838e0d">
-      <Execution id="11e9fffe-27ab-4ea6-9f69-0ce680c1df51" />
+      <Execution id="c9d6ed96-24b7-4976-999b-81f020fd903c" />
       <TestMethod codeBase="/src/physicalTests/bin/Release/net8.0/Kafka.Ksql.Linq.Tests.Integration.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests" name="Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket" />
     </UnitTest>
   </TestDefinitions>
   <TestEntries>
-    <TestEntry testId="d4f95360-fa20-03e1-5810-a5fd78838e0d" executionId="11e9fffe-27ab-4ea6-9f69-0ce680c1df51" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d4f95360-fa20-03e1-5810-a5fd78838e0d" executionId="c9d6ed96-24b7-4976-999b-81f020fd903c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
   </TestEntries>
   <TestLists>
     <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
@@ -44,55 +33,675 @@
     <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
     <Output>
       <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.6+bf9b858c26 (64-bit .NET 8.0.20)
-[xUnit.net 00:00:00.23]   Discovering: Kafka.Ksql.Linq.Tests.Integration
-[xUnit.net 00:00:00.30]   Discovered:  Kafka.Ksql.Linq.Tests.Integration
-[xUnit.net 00:00:00.30]   Starting:    Kafka.Ksql.Linq.Tests.Integration
-fail: Kafka.Ksql.Linq.KsqlContext[0]
-      Schema registration failed for Bar
-      Confluent.SchemaRegistry.SchemaRegistryException: Schema being registered is incompatible with an earlier schema for subject "bar-value", details: [{errorType:'TYPE_MISMATCH', description:'The type (path '/fields/0/type') of a field in the new schema does not match with the old schema', additionalInfo:'reader type: BYTES not compatible with writer type: DOUBLE'}, {errorType:'TYPE_MISMATCH', description:'The type (path '/fields/1/type') of a field in the new schema does not match with the old schema', additionalInfo:'reader type: BYTES not compatible with writer type: DOUBLE'}, {errorType:'TYPE_MISMATCH', description:'The type (path '/fields/2/type') of a field in the new schema does not match with the old schema', additionalInfo:'reader type: BYTES not compatible with writer type: DOUBLE'}, {errorType:'READER_FIELD_MISSING_DEFAULT_VALUE', description:'The field 'Close' at path '/fields/3' in the new schema has no default value and is missing in the old schema', additionalInfo:'Close'}, {oldSchemaVersion: 1}, {oldSchema: '{"type":"record","name":"bar_valueAvro","namespace":"kafka_ksql_linq_tests_integration","fields":[{"name":"Open","type":"double","default":0},{"name":"High","type":"double","default":0},{"name":"Low","type":"double","default":0},{"name":"KsqlTimeFrameClose","type":"double","default":0}]}'}, {compatibility: 'BACKWARD'}]; error code: 409
-         at Confluent.SchemaRegistry.RestService.ExecuteOnOneInstanceAsync(Func`1 createRequest)
-         at Confluent.SchemaRegistry.RestService.RequestAsync[T](String endPoint, HttpMethod method, Object[] jsonBody)
-         at Confluent.SchemaRegistry.RestService.RegisterSchemaWithResponseAsync(String subject, Schema schema, Boolean normalize)
-         at Confluent.Shared.CollectionUtils.ConcurrentDictionaryExtensions.GetOrAddAsync[TKey,TValue](ConcurrentDictionary`2 dictionary, TKey key, Func`2 valueFactory)
-         at Confluent.SchemaRegistry.CachedSchemaRegistryClient.RegisterSchemaWithResponseAsync(String subject, Schema schema, Boolean normalize)
-         at Confluent.SchemaRegistry.CachedSchemaRegistryClient.RegisterSchemaAsync(String subject, Schema schema, Boolean normalize)
-         at Kafka.Ksql.Linq.SchemaRegistryTools.SchemaRegistryExtensions.RegisterSchemaIfNewAsync(ISchemaRegistryClient client, String subject, String schema) in C:\dev\rc02\src\SchemaRegistryTools\SchemaRegistryExtensions.cs:line 36
-         at Kafka.Ksql.Linq.KsqlContext.RegisterSchemasAndMaterializeAsync() in C:\dev\rc02\src\KsqlContext.SchemaRegistration.cs:line 107
-fail: Kafka.Ksql.Linq.KsqlContext[0]
-      KsqlContext initialization failed: Schema being registered is incompatible with an earlier schema for subject "bar-value", details: [{errorType:'TYPE_MISMATCH', description:'The type (path '/fields/0/type') of a field in the new schema does not match with the old schema', additionalInfo:'reader type: BYTES not compatible with writer type: DOUBLE'}, {errorType:'TYPE_MISMATCH', description:'The type (path '/fields/1/type') of a field in the new schema does not match with the old schema', additionalInfo:'reader type: BYTES not compatible with writer type: DOUBLE'}, {errorType:'TYPE_MISMATCH', description:'The type (path '/fields/2/type') of a field in the new schema does not match with the old schema', additionalInfo:'reader type: BYTES not compatible with writer type: DOUBLE'}, {errorType:'READER_FIELD_MISSING_DEFAULT_VALUE', description:'The field 'Close' at path '/fields/3' in the new schema has no default value and is missing in the old schema', additionalInfo:'Close'}, {oldSchemaVersion: 1}, {oldSchema: '{"type":"record","name":"bar_valueAvro","namespace":"kafka_ksql_linq_tests_integration","fields":[{"name":"Open","type":"double","default":0},{"name":"High","type":"double","default":0},{"name":"Low","type":"double","default":0},{"name":"KsqlTimeFrameClose","type":"double","default":0}]}'}, {compatibility: 'BACKWARD'}]; error code: 409 
-      Confluent.SchemaRegistry.SchemaRegistryException: Schema being registered is incompatible with an earlier schema for subject "bar-value", details: [{errorType:'TYPE_MISMATCH', description:'The type (path '/fields/0/type') of a field in the new schema does not match with the old schema', additionalInfo:'reader type: BYTES not compatible with writer type: DOUBLE'}, {errorType:'TYPE_MISMATCH', description:'The type (path '/fields/1/type') of a field in the new schema does not match with the old schema', additionalInfo:'reader type: BYTES not compatible with writer type: DOUBLE'}, {errorType:'TYPE_MISMATCH', description:'The type (path '/fields/2/type') of a field in the new schema does not match with the old schema', additionalInfo:'reader type: BYTES not compatible with writer type: DOUBLE'}, {errorType:'READER_FIELD_MISSING_DEFAULT_VALUE', description:'The field 'Close' at path '/fields/3' in the new schema has no default value and is missing in the old schema', additionalInfo:'Close'}, {oldSchemaVersion: 1}, {oldSchema: '{"type":"record","name":"bar_valueAvro","namespace":"kafka_ksql_linq_tests_integration","fields":[{"name":"Open","type":"double","default":0},{"name":"High","type":"double","default":0},{"name":"Low","type":"double","default":0},{"name":"KsqlTimeFrameClose","type":"double","default":0}]}'}, {compatibility: 'BACKWARD'}]; error code: 409
-         at Confluent.SchemaRegistry.RestService.ExecuteOnOneInstanceAsync(Func`1 createRequest)
-         at Confluent.SchemaRegistry.RestService.RequestAsync[T](String endPoint, HttpMethod method, Object[] jsonBody)
-         at Confluent.SchemaRegistry.RestService.RegisterSchemaWithResponseAsync(String subject, Schema schema, Boolean normalize)
-         at Confluent.Shared.CollectionUtils.ConcurrentDictionaryExtensions.GetOrAddAsync[TKey,TValue](ConcurrentDictionary`2 dictionary, TKey key, Func`2 valueFactory)
-         at Confluent.SchemaRegistry.CachedSchemaRegistryClient.RegisterSchemaWithResponseAsync(String subject, Schema schema, Boolean normalize)
-         at Confluent.SchemaRegistry.CachedSchemaRegistryClient.RegisterSchemaAsync(String subject, Schema schema, Boolean normalize)
-         at Kafka.Ksql.Linq.SchemaRegistryTools.SchemaRegistryExtensions.RegisterSchemaIfNewAsync(ISchemaRegistryClient client, String subject, String schema) in C:\dev\rc02\src\SchemaRegistryTools\SchemaRegistryExtensions.cs:line 36
-         at Kafka.Ksql.Linq.KsqlContext.RegisterSchemasAndMaterializeAsync() in C:\dev\rc02\src\KsqlContext.SchemaRegistration.cs:line 107
-         at Kafka.Ksql.Linq.KsqlContext.InitializeWithSchemaRegistration() in C:\dev\rc02\src\KsqlContext.SchemaRegistration.cs:line 28
-         at Kafka.Ksql.Linq.KsqlContext.InitializeCore(ILoggerFactory loggerFactory) in C:\dev\rc02\src\KsqlContext.cs:line 131
-[xUnit.net 00:00:04.59]       Confluent.SchemaRegistry.SchemaRegistryException : Schema being registered is incompatible with an earlier schema for subject "bar-value", details: [{errorType:'TYPE_MISMATCH', description:'The type (path '/fields/0/type') of a field in the new schema does not match with the old schema', additionalInfo:'reader type: BYTES not compatible with writer type: DOUBLE'}, {errorType:'TYPE_MISMATCH', description:'The type (path '/fields/1/type') of a field in the new schema does not match with the old schema', additionalInfo:'reader type: BYTES not compatible with writer type: DOUBLE'}, {errorType:'TYPE_MISMATCH', description:'The type (path '/fields/2/type') of a field in the new schema does not match with the old schema', additionalInfo:'reader type: BYTES not compatible with writer type: DOUBLE'}, {errorType:'READER_FIELD_MISSING_DEFAULT_VALUE', description:'The field 'Close' at path '/fields/3' in the new schema has no default value and is missing in the old schema', additionalInfo:'Close'}, {oldSchemaVersion: 1}, {oldSchema: '{"type":"record","name":"bar_valueAvro","namespace":"kafka_ksql_linq_tests_integration","fields":[{"name":"Open","type":"double","default":0},{"name":"High","type":"double","default":0},{"name":"Low","type":"double","default":0},{"name":"KsqlTimeFrameClose","type":"double","default":0}]}'}, {compatibility: 'BACKWARD'}]; error code: 409
-[xUnit.net 00:00:04.59]       Stack Trace:
-[xUnit.net 00:00:04.59]            at Confluent.SchemaRegistry.RestService.ExecuteOnOneInstanceAsync(Func`1 createRequest)
-[xUnit.net 00:00:04.59]            at Confluent.SchemaRegistry.RestService.RequestAsync[T](String endPoint, HttpMethod method, Object[] jsonBody)
-[xUnit.net 00:00:04.59]            at Confluent.SchemaRegistry.RestService.RegisterSchemaWithResponseAsync(String subject, Schema schema, Boolean normalize)
-[xUnit.net 00:00:04.59]            at Confluent.Shared.CollectionUtils.ConcurrentDictionaryExtensions.GetOrAddAsync[TKey,TValue](ConcurrentDictionary`2 dictionary, TKey key, Func`2 valueFactory)
-[xUnit.net 00:00:04.59]            at Confluent.SchemaRegistry.CachedSchemaRegistryClient.RegisterSchemaWithResponseAsync(String subject, Schema schema, Boolean normalize)
-[xUnit.net 00:00:04.59]            at Confluent.SchemaRegistry.CachedSchemaRegistryClient.RegisterSchemaAsync(String subject, Schema schema, Boolean normalize)
-[xUnit.net 00:00:04.59]         C:\dev\rc02\src\SchemaRegistryTools\SchemaRegistryExtensions.cs(36,0): at Kafka.Ksql.Linq.SchemaRegistryTools.SchemaRegistryExtensions.RegisterSchemaIfNewAsync(ISchemaRegistryClient client, String subject, String schema)
-[xUnit.net 00:00:04.59]         C:\dev\rc02\src\KsqlContext.SchemaRegistration.cs(107,0): at Kafka.Ksql.Linq.KsqlContext.RegisterSchemasAndMaterializeAsync()
-[xUnit.net 00:00:04.59]         C:\dev\rc02\src\KsqlContext.SchemaRegistration.cs(28,0): at Kafka.Ksql.Linq.KsqlContext.InitializeWithSchemaRegistration()
-[xUnit.net 00:00:04.59]         C:\dev\rc02\src\KsqlContext.cs(131,0): at Kafka.Ksql.Linq.KsqlContext.InitializeCore(ILoggerFactory loggerFactory)
-[xUnit.net 00:00:04.59]         C:\dev\rc02\src\KsqlContext.cs(95,0): at Kafka.Ksql.Linq.KsqlContext..ctor(KsqlDslOptions options, ILoggerFactory loggerFactory)
-[xUnit.net 00:00:04.59]         C:\dev\rc02\physicalTests\OssSamples\TimeBucketImportTumblingTests.cs(49,0): at Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.TestContext..ctor()
-[xUnit.net 00:00:04.59]         C:\dev\rc02\physicalTests\OssSamples\TimeBucketImportTumblingTests.cs(121,0): at Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket()
-[xUnit.net 00:00:04.59]         --- End of stack trace from previous location ---
-[xUnit.net 00:00:04.59]   Finished:    Kafka.Ksql.Linq.Tests.Integration
+[xUnit.net 00:00:00.24]   Discovering: Kafka.Ksql.Linq.Tests.Integration
+[xUnit.net 00:00:00.31]   Discovered:  Kafka.Ksql.Linq.Tests.Integration
+[xUnit.net 00:00:00.31]   Starting:    Kafka.Ksql.Linq.Tests.Integration
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW TOPICS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      KSQL DDL (simple Tick): CREATE STREAM IF NOT EXISTS ticks (Broker VARCHAR KEY, Symbol VARCHAR KEY, TimestampUtc TIMESTAMP, Bid DECIMAL(18, 2)) WITH (KAFKA_TOPIC='ticks', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO', VALUE_AVRO_SCHEMA_FULL_NAME='kafka_ksql_linq_tests_integration.ticks_valueAvro', PARTITIONS=1, REPLICAS=1);
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=CREATE STREAM IF NOT EXISTS ticks (Broker VARCHAR KEY, Symbol VARCHAR KEY, TimestampUtc TIMESTAMP, Bid DECIMAL(18, 2)) W...
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW TOPICS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      KSQL DDL (simple DlqEnvelope): CREATE STREAM IF NOT EXISTS dead_letter_queue (`Topic` VARCHAR KEY, `Partition` INT KEY, `Offset` BIGINT KEY, TimestampUtc VARCHAR, IngestedAtUtc VARCHAR, PayloadFormatKey VARCHAR, PayloadFormatValue VARCHAR, SchemaIdKey VARCHAR, SchemaIdValue VARCHAR, KeyIsNull BOOLEAN, ErrorType VARCHAR, ErrorMessageShort VARCHAR, StackTraceShort VARCHAR, ErrorFingerprint VARCHAR, ApplicationId VARCHAR, ConsumerGroup VARCHAR, Host VARCHAR, Headers MAP&lt;STRING, STRING&gt;) WITH (KAFKA_TOPIC='dead-letter-queue', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO', VALUE_AVRO_SCHEMA_FULL_NAME='kafka_ksql_linq_messaging.dead_letter_queue_valueAvro', PARTITIONS=1, REPLICAS=1);
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=CREATE STREAM IF NOT EXISTS dead_letter_queue (`Topic` VARCHAR KEY, `Partition` INT KEY, `Offset` BIGINT KEY, TimestampU...
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      KSQL DDL (derived bar_1s_final_s): CREATE STREAM bar_1s_final_s WITH (KAFKA_TOPIC='bar_1s_final_s', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+      SELECT *
+      FROM ticks o
+      EMIT CHANGES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=CREATE STREAM bar_1s_final_s WITH (KAFKA_TOPIC='bar_1s_final_s', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS SELECT * FRO...
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      KSQL DDL (derived bar_1s_final): CREATE TABLE bar_1s_final WITH (KAFKA_TOPIC='bar_1s_final', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+      SELECT BROKER AS Broker, SYMBOL AS Symbol, WINDOWSTART AS BucketStart, EARLIEST_BY_OFFSET(Bid) AS Open, MAX(Bid) AS High, MIN(Bid) AS Low, LATEST_BY_OFFSET(Bid) AS Close
+      FROM bar_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)
+      GROUP BY BROKER, SYMBOL
+      EMIT FINAL;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=CREATE TABLE bar_1s_final WITH (KAFKA_TOPIC='bar_1s_final', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS SELECT BROKER AS ...
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      KSQL DDL (derived bar_1m_live): CREATE TABLE bar_1m_live WITH (KAFKA_TOPIC='bar_1m_live', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+      SELECT BROKER AS Broker, SYMBOL AS Symbol, WINDOWSTART AS BucketStart, EARLIEST_BY_OFFSET(Bid) AS Open, MAX(Bid) AS High, MIN(Bid) AS Low, LATEST_BY_OFFSET(Bid) AS Close
+      FROM bar_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)
+      GROUP BY BROKER, SYMBOL
+      EMIT CHANGES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=CREATE TABLE bar_1m_live WITH (KAFKA_TOPIC='bar_1m_live', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS SELECT BROKER AS Br...
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      KSQL DDL (derived bar_5m_live): CREATE TABLE bar_5m_live WITH (KAFKA_TOPIC='bar_5m_live', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+      SELECT BROKER AS Broker, SYMBOL AS Symbol, WINDOWSTART AS BucketStart, EARLIEST_BY_OFFSET(Bid) AS Open, MAX(Bid) AS High, MIN(Bid) AS Low, LATEST_BY_OFFSET(Bid) AS Close
+      FROM bar_1s_final_s o WINDOW TUMBLING (SIZE 5 MINUTES)
+      GROUP BY BROKER, SYMBOL
+      EMIT CHANGES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=CREATE TABLE bar_5m_live WITH (KAFKA_TOPIC='bar_5m_live', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS SELECT BROKER AS Br...
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW QUERIES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      Kafka initialization completed; DLQ topic 'dead-letter-queue' ready with 5000ms retention
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      producer:ticks config: Acks=All, BatchNumMessages=1, BatchSize=16384, BootstrapServers=kafka:29092, ClientId=ksql-dsl-client, CompressionType=Snappy, EnableIdempotence=True, LingerMs=5, MaxInFlight=1, MessageTimeoutMs=30000, RetryBackoffMs=100, SocketKeepaliveEnable=True, additional.socket.keepalive.enable=true, additional.queue.buffering.max.ms=0
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      schema-registry(producer) config: Url=http://schema-registry:8081
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+info: Kafka.Ksql.Linq.Messaging.Producers.KafkaProducerManager[0]
+      kafka produce: topic=ticks, entity=Tick, method=SendAsync
+[xUnit.net 00:05:03.50]       System.TimeoutException : bar_1m_live/bar_5m_live not ready within timeout
+[xUnit.net 00:05:03.50]       Stack Trace:
+[xUnit.net 00:05:03.50]         C:\dev\rc02\physicalTests\OssSamples\TimeBucketImportTumblingTests.cs(278,0): at Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.WaitTablesReadyAsync(Uri baseUrl, TimeSpan timeout)
+[xUnit.net 00:05:03.50]         C:\dev\rc02\physicalTests\OssSamples\TimeBucketImportTumblingTests.cs(184,0): at Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket()
+[xUnit.net 00:05:03.50]         --- End of stack trace from previous location ---
+[xUnit.net 00:05:03.51]   Finished:    Kafka.Ksql.Linq.Tests.Integration
 </StdOut>
     </Output>
     <RunInfos>
-      <RunInfo computerName="00b529138bd1" outcome="Error" timestamp="2025-09-14T10:04:44.8660580+00:00">
-        <Text>[xUnit.net 00:00:04.58]     Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket [FAIL]</Text>
+      <RunInfo computerName="65ac6cc2d086" outcome="Error" timestamp="2025-09-14T11:56:16.0267006+00:00">
+        <Text>[xUnit.net 00:05:03.50]     Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket [FAIL]</Text>
       </RunInfo>
     </RunInfos>
   </ResultSummary>

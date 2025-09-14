@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TestRun id="257f570b-7f4d-4f25-a265-b7be3780ef50" name="seiji_yfc8940@SAGESOHO01 2025-09-14 16:19:22" runUser="SAGESOHO01\seiji_yfc8940" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
-  <Times creation="2025-09-14T16:19:22.2597126+09:00" queuing="2025-09-14T16:19:22.2597129+09:00" start="2025-09-14T16:18:45.3779887+09:00" finish="2025-09-14T16:19:22.2654352+09:00" />
-  <TestSettings name="default" id="8d463faa-d2a7-46a0-a0a1-d828d7d1d8b0">
-    <Deployment runDeploymentRoot="seiji_yfc8940_SAGESOHO01_2025-09-14_16_19_22" />
+<TestRun id="ba463622-b302-48d1-9787-a7462adb699f" name="seiji_yfc8940@SAGESOHO01 2025-09-14 19:12:49" runUser="SAGESOHO01\seiji_yfc8940" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-09-14T19:12:49.3809854+09:00" queuing="2025-09-14T19:12:49.3809858+09:00" start="2025-09-14T19:12:11.4353380+09:00" finish="2025-09-14T19:12:49.3857335+09:00" />
+  <TestSettings name="default" id="69423f89-3a22-444c-9187-95f61e384bd4">
+    <Deployment runDeploymentRoot="seiji_yfc8940_SAGESOHO01_2025-09-14_19_12_49" />
   </TestSettings>
   <Results>
-    <UnitTestResult executionId="ff3ac735-9926-46bd-9a42-9af454df5356" testId="17213b85-711d-b805-3bc7-22d3d12a9709" testName="Kafka.Ksql.Linq.Tests.Integration.DefaultAndBoundaryValueTests.DecimalPrecisionRoundTrip" computerName="SAGESOHO01" duration="00:00:36.3669021" startTime="2025-09-14T16:19:22.1911851+09:00" endTime="2025-09-14T16:19:22.1912018+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ff3ac735-9926-46bd-9a42-9af454df5356" />
+    <UnitTestResult executionId="34baef75-bef9-4ebb-b66b-6656fb8d92b6" testId="17213b85-711d-b805-3bc7-22d3d12a9709" testName="Kafka.Ksql.Linq.Tests.Integration.DefaultAndBoundaryValueTests.DecimalPrecisionRoundTrip" computerName="SAGESOHO01" duration="00:00:37.3474800" startTime="2025-09-14T19:12:49.3020053+09:00" endTime="2025-09-14T19:12:49.3020409+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="34baef75-bef9-4ebb-b66b-6656fb8d92b6" />
   </Results>
   <TestDefinitions>
     <UnitTest name="Kafka.Ksql.Linq.Tests.Integration.DefaultAndBoundaryValueTests.DecimalPrecisionRoundTrip" storage="c:\dev\rc02\physicaltests\bin\release\net8.0\kafka.ksql.linq.tests.integration.dll" id="17213b85-711d-b805-3bc7-22d3d12a9709">
-      <Execution id="ff3ac735-9926-46bd-9a42-9af454df5356" />
+      <Execution id="34baef75-bef9-4ebb-b66b-6656fb8d92b6" />
       <TestMethod codeBase="C:\dev\rc02\physicalTests\bin\Release\net8.0\Kafka.Ksql.Linq.Tests.Integration.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Integration.DefaultAndBoundaryValueTests" name="DecimalPrecisionRoundTrip" />
     </UnitTest>
   </TestDefinitions>
   <TestEntries>
-    <TestEntry testId="17213b85-711d-b805-3bc7-22d3d12a9709" executionId="ff3ac735-9926-46bd-9a42-9af454df5356" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="17213b85-711d-b805-3bc7-22d3d12a9709" executionId="34baef75-bef9-4ebb-b66b-6656fb8d92b6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
   </TestEntries>
   <TestLists>
     <TestList name="一覧に存在しない結果" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
@@ -24,10 +24,12 @@
     <Counters total="1" executed="1" passed="1" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
     <Output>
       <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.6+bf9b858c26 (64-bit .NET 8.0.19)&#xD;
-[xUnit.net 00:00:00.06]   Discovering: Kafka.Ksql.Linq.Tests.Integration&#xD;
-[xUnit.net 00:00:00.10]   Discovered:  Kafka.Ksql.Linq.Tests.Integration&#xD;
-[xUnit.net 00:00:00.11]   Starting:    Kafka.Ksql.Linq.Tests.Integration&#xD;
-[xUnit.net 00:00:36.50]   Finished:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.07]   Discovering: Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.13]   Discovered:  Kafka.Ksql.Linq.Tests.Integration&#xD;
+[xUnit.net 00:00:00.13]   Starting:    Kafka.Ksql.Linq.Tests.Integration&#xD;
+[ConsumerConfig] topic=alltyperecords group=dcaed45f-a34f-40aa-8734-d89a225c3e00 enableAutoCommit=True autoOffsetReset=Earliest&#xD;
+[ConsumeInternal] subscribed topic=alltyperecords group=dcaed45f-a34f-40aa-8734-d89a225c3e00 autoCommit=True&#xD;
+[xUnit.net 00:00:37.51]   Finished:    Kafka.Ksql.Linq.Tests.Integration&#xD;
 </StdOut>
     </Output>
   </ResultSummary>

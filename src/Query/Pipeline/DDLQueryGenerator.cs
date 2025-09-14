@@ -68,11 +68,13 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
             withParts.Add("VALUE_FORMAT='AVRO'");
             if (!string.IsNullOrWhiteSpace(schema.ValueSchemaFullName))
                 withParts.Add($"VALUE_AVRO_SCHEMA_FULL_NAME='{schema.ValueSchemaFullName}'");
+            if (!string.IsNullOrWhiteSpace(schema.TimestampColumn))
+                withParts.Add($"TIMESTAMP='{schema.TimestampColumn}'");
             withParts.Add($"PARTITIONS={partitions}");
             withParts.Add($"REPLICAS={replicas}");
             var withClause = string.Join(", ", withParts);
 
-            var query = $"CREATE STREAM IF NOT EXISTS {streamName} ({columns}) WITH ({withClause});";
+            var query = $"CREATE OR REPLACE STREAM {streamName} ({columns}) WITH ({withClause});";
 
             return query;
         }
