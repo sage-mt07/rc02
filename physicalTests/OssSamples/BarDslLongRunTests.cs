@@ -40,9 +40,9 @@ public class BarDslLongRunTests
         private static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(b => b.AddConsole().SetMinimumLevel(LogLevel.Information));
         public TestContext() : base(new KsqlDslOptions
         {
-            Common = new CommonSection { BootstrapServers = "localhost:9092" },
-            SchemaRegistry = new Kafka.Ksql.Linq.Core.Configuration.SchemaRegistrySection { Url = "http://localhost:8081" },
-            KsqlDbUrl = "http://localhost:8088"
+            Common = new CommonSection { BootstrapServers = "127.0.0.1:39092" },
+            SchemaRegistry = new Kafka.Ksql.Linq.Core.Configuration.SchemaRegistrySection { Url = "http://127.0.0.1:18081" },
+            KsqlDbUrl = "http://127.0.0.1:18088"
         }, _loggerFactory) { }
         protected override bool SkipSchemaRegistration => false;
         public EventSet<Rate> Rates { get; set; } = null!;
@@ -70,9 +70,9 @@ public class BarDslLongRunTests
     public async Task LongRun_1h_Ohlc_And_Grace_Verify()
     {
         await using var ctx = new TestContext();
-        await PhysicalTestEnv.KsqlHelpers.WaitForKsqlReadyAsync("http://localhost:8088", TimeSpan.FromSeconds(180), graceMs: 2000);
+        await PhysicalTestEnv.KsqlHelpers.WaitForKsqlReadyAsync("http://127.0.0.1:18088", TimeSpan.FromSeconds(180), graceMs: 2000);
 
-        using (var admin = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = "localhost:9092" }).Build())
+        using (var admin = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = "127.0.0.1:39092" }).Build())
         {
             try { await admin.CreateTopicsAsync(new[] { new TopicSpecification { Name = "deduprates", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
             await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "deduprates", 1, 1, TimeSpan.FromSeconds(10));
@@ -117,7 +117,7 @@ public class BarDslLongRunTests
         // Use HTTP /query to fetch rows
         static async Task<List<object?[]>> QueryRowsHttpAsync(string sql, TimeSpan timeout)
         {
-            using var http = new HttpClient { BaseAddress = new Uri("http://localhost:8088") };
+            using var http = new HttpClient { BaseAddress = new Uri("http://127.0.0.1:18088") };
             using var cts = new CancellationTokenSource(timeout);
 
             async Task<List<object?[]>> ParseArrayAsync(HttpResponseMessage resp, CancellationToken token)

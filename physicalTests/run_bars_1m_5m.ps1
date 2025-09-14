@@ -1,6 +1,6 @@
 param(
   [int]$DurationMinutes = 2,
-  [string]$KsqlUrl = "http://localhost:8088"
+  [string]$KsqlUrl = "http://127.0.0.1:18088"
 )
 
 $ErrorActionPreference = 'Stop'

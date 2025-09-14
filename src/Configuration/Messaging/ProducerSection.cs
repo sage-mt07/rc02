@@ -22,6 +22,13 @@ public class ProducerSection
     [DefaultValue(16384)]
     public int BatchSize { get; init; }
 
+    /// <summary>
+    /// Maximum number of messages batched in one MessageSet.
+    /// Set to 1 to flush each record (with LingerMs=0).
+    /// </summary>
+    [DefaultValue(10000)]
+    public int BatchNumMessages { get; init; }
+
     [DefaultValue(120000)]
     public int DeliveryTimeoutMs { get; init; }
 

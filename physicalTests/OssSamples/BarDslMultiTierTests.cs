@@ -40,9 +40,9 @@ public class BarDslMultiTierTests
         private static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(b => b.AddConsole().SetMinimumLevel(LogLevel.Information));
         public TestContext() : base(new KsqlDslOptions
         {
-            Common = new CommonSection { BootstrapServers = "localhost:9092" },
-            SchemaRegistry = new Kafka.Ksql.Linq.Core.Configuration.SchemaRegistrySection { Url = "http://localhost:8081" },
-            KsqlDbUrl = "http://localhost:8088"
+            Common = new CommonSection { BootstrapServers = "127.0.0.1:39092" },
+            SchemaRegistry = new Kafka.Ksql.Linq.Core.Configuration.SchemaRegistrySection { Url = "http://127.0.0.1:18081" },
+            KsqlDbUrl = "http://127.0.0.1:18088"
         }, _loggerFactory) { }
         protected override bool SkipSchemaRegistration => false;
         public EventSet<Rate> Rates { get; set; } = null!;
@@ -68,7 +68,7 @@ public class BarDslMultiTierTests
 
     private static async Task<int> QueryStreamCountHttpAsync(string sql, int limit, TimeSpan timeout)
     {
-        using var http = new HttpClient { BaseAddress = new Uri("http://localhost:8088") };
+        using var http = new HttpClient { BaseAddress = new Uri("http://127.0.0.1:18088") };
         var payload = new
         {
             sql,
@@ -101,7 +101,7 @@ public class BarDslMultiTierTests
 
     private static async Task<List<object?[]>> QueryRowsHttpAsync(string sql, TimeSpan timeout)
     {
-        using var http = new HttpClient { BaseAddress = new Uri("http://localhost:8088") };
+        using var http = new HttpClient { BaseAddress = new Uri("http://127.0.0.1:18088") };
         var payload = new { sql, properties = new Dictionary<string, object>() };
         var json = JsonSerializer.Serialize(payload);
         using var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -149,10 +149,10 @@ public class BarDslMultiTierTests
     [Trait("Category", "Integration")]
     public async Task MultiTier_1m_5m_15m_60m_Create_And_Ohlc_Sanity()
     {
-        await PhysicalTestEnv.KsqlHelpers.WaitForKsqlReadyAsync("http://localhost:8088", TimeSpan.FromSeconds(180), graceMs: 2000);
+        await PhysicalTestEnv.KsqlHelpers.WaitForKsqlReadyAsync("http://127.0.0.1:18088", TimeSpan.FromSeconds(180), graceMs: 2000);
         await using var ctx = new TestContext();
 
-        using (var admin = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = "localhost:9092" }).Build())
+        using (var admin = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = "127.0.0.1:39092" }).Build())
         {
             try { await admin.CreateTopicsAsync(new[] { new TopicSpecification { Name = "deduprates", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
             await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "deduprates", 1, 1, TimeSpan.FromSeconds(10));

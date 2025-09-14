@@ -95,6 +95,29 @@ internal static class DerivedTumblingPipeline
             qm.SelectProjection = BuildInputProjection(inputType);
         }
         var tf = (string)model.AdditionalSettings["timeframe"];
+        // Infer bucket column name when not present on the query model (e.g., tests building models directly)
+        static string? InferBucketColumnName(KsqlQueryModel m, EntityModel em)
+        {
+            if (!string.IsNullOrWhiteSpace(m.BucketColumnName)) return m.BucketColumnName;
+            static string? Pick(IEnumerable<string> cols)
+            {
+                var exact = cols.FirstOrDefault(x => string.Equals(x, "BucketStart", StringComparison.OrdinalIgnoreCase));
+                if (!string.IsNullOrEmpty(exact)) return exact;
+                return cols.FirstOrDefault(x => !string.IsNullOrEmpty(x) && x.IndexOf("bucket", StringComparison.OrdinalIgnoreCase) >= 0);
+            }
+            if (em.AdditionalSettings.TryGetValue("projection", out var pObj) && pObj is string[] projection)
+            {
+                var c = Pick(projection);
+                if (!string.IsNullOrWhiteSpace(c)) return c;
+            }
+            if (em.AdditionalSettings.TryGetValue("keys", out var kObj) && kObj is string[] keys)
+            {
+                var c = Pick(keys);
+                if (!string.IsNullOrWhiteSpace(c)) return c;
+            }
+            return null;
+        }
+        var inferredBucket = InferBucketColumnName(qm, model);
         var spec = RoleTraits.For(role);
         var emit = spec.Emit != null ? $"EMIT {spec.Emit}" : null;
         var name = role switch
@@ -115,7 +138,7 @@ internal static class DerivedTumblingPipeline
             // Note: prev_1m join and filler specifics will be added in a later pass.
             var keys = model.AdditionalSettings.TryGetValue("keys", out var kObj) ? (string[])kObj! : Array.Empty<string>();
             var projection = model.AdditionalSettings.TryGetValue("projection", out var pObj) ? (string[])pObj! : Array.Empty<string>();
-            var bucketCol = queryModel.BucketColumnName ?? throw new InvalidOperationException("WhenEmpty/Fill requires WindowStart() in Select to define the bucket column.");
+            var bucketCol = inferredBucket ?? throw new InvalidOperationException("WhenEmpty/Fill requires WindowStart() in Select to define the bucket column.");
             var hbName = $"{baseName}_hb_{tf}";
             var liveName = $"{baseName}_{tf}_live";
             // Optionally include prev_1m when timeframe is 1m to enable previous-close fill
@@ -128,7 +151,7 @@ internal static class DerivedTumblingPipeline
         {
             var keys = model.AdditionalSettings.TryGetValue("keys", out var kObj2) ? (string[])kObj2! : Array.Empty<string>();
             var projection2 = model.AdditionalSettings.TryGetValue("projection", out var pObj2) ? (string[])pObj2! : Array.Empty<string>();
-            var bucketCol2 = queryModel.BucketColumnName ?? throw new InvalidOperationException("Prev requires WindowStart() in Select to define the bucket column.");
+            var bucketCol2 = inferredBucket ?? throw new InvalidOperationException("Prev requires WindowStart() in Select to define the bucket column.");
             var hbName2 = $"{baseName}_hb_{tf}"; // tf should be 1m
             var liveName2 = $"{baseName}_{tf}_live";
             ddl = KsqlPrevStatementBuilder.Build(name, keys, projection2, bucketCol2, hbName2, liveName2, 1);

@@ -38,9 +38,9 @@ public class KsqlDbServiceDownTests
 // local environment helpers
 public class EnvKsqlDbServiceDownTests
 {
-    internal const string SchemaRegistryUrl = "http://localhost:8081";
-    internal const string KsqlDbUrl = "http://localhost:8088";
-    internal const string KafkaBootstrapServers = "localhost:9092";
+    internal const string SchemaRegistryUrl = "http://127.0.0.1:18081";
+    internal const string KsqlDbUrl = "http://127.0.0.1:18088";
+    internal const string KafkaBootstrapServers = "127.0.0.1:39092";
     internal const string SkipReason = "Skipped in CI due to missing ksqlDB instance or schema setup failure";
 
     internal static bool IsKsqlDbAvailable()

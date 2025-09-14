@@ -96,7 +96,9 @@ internal class KafkaProducerManager : IDisposable
             MaxInFlight = section.Producer.MaxInFlightRequestsPerConnection,
             LingerMs = section.Producer.LingerMs,
             BatchSize = section.Producer.BatchSize,
-            RetryBackoffMs = section.Producer.RetryBackoffMs
+            BatchNumMessages = section.Producer.BatchNumMessages,
+            RetryBackoffMs = section.Producer.RetryBackoffMs,
+            MessageTimeoutMs = section.Producer.DeliveryTimeoutMs
         };
         foreach (var kv in section.Producer.AdditionalProperties)
             pc.Set(kv.Key, kv.Value);
@@ -240,6 +242,7 @@ internal class KafkaProducerManager : IDisposable
                 producer.TopicName, typeof(TPOCO).Name, ex.GetType().Name, ex.Message);
             throw;
         }
+        
     }
 
     public async Task DeleteAsync<TPOCO>(TPOCO entity, CancellationToken cancellationToken = default) where TPOCO : class

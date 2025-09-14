@@ -100,7 +100,7 @@ flowchart TB
   subgraph Cache["ローカルキャッシュ / 読み取り"]
     streamiz["Streamiz"]
     rocks["RocksDB 状態ストア"]
-    timebucket["LINQ: TimeBucket(from,to[,keyPrefix])\n（時間範囲で取得／前方一致キーにも対応）"]
+    timebucket["LINQ: TimeBucket(from,to[,keyPrefix])\n（時間範囲で取得／前方一致キーにも対応）\nctx.TimeBucket からも取得可能"]
     streamiz --> rocks --> timebucket
   end
 
@@ -335,6 +335,16 @@ if (mismatches.Count == 0)
     Console.WriteLine("[ok] 5m equals rollup from 1m");
 else
     foreach (var m in mismatches) Console.WriteLine(m);
+```
+
+TimeBucket を使った取得（ctx 経由）
+
+```csharp
+// KsqlContext ctx; Broker/Symbol は主キー
+var one = await ctx.TimeBucket.Get<Bar>(Period.Minutes(1))
+    .ToListAsync(new[]{ broker, symbol }, CancellationToken.None);
+var five = await ctx.TimeBucket.Get<Bar>(Period.Minutes(5))
+    .ToListAsync(new[]{ broker, symbol }, CancellationToken.None);
 ```
 
 補足

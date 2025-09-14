@@ -50,9 +50,9 @@ public class BarDslExplainTests
 
         public TestContext() : base(new KsqlDslOptions
         {
-            Common = new CommonSection { BootstrapServers = "localhost:9092" },
-            SchemaRegistry = new Kafka.Ksql.Linq.Core.Configuration.SchemaRegistrySection { Url = "http://localhost:8081" },
-            KsqlDbUrl = "http://localhost:8088",
+            Common = new CommonSection { BootstrapServers = "127.0.0.1:39092" },
+            SchemaRegistry = new Kafka.Ksql.Linq.Core.Configuration.SchemaRegistrySection { Url = "http://127.0.0.1:18081" },
+            KsqlDbUrl = "http://127.0.0.1:18088",
             Topics =
             {
                 ["deduprates"] = new Kafka.Ksql.Linq.Configuration.Messaging.TopicSection
@@ -110,12 +110,12 @@ public class BarDslExplainTests
     public async Task Tumbling_1m_5m_Live_Ohlc_Materialize_And_Verify()
     {
         // 事前クリーンアップ（依存順にDROP）
-        await PhysicalTestEnv.KsqlHelpers.TerminateAndDropBarArtifactsAsync("http://localhost:8088");
+        await PhysicalTestEnv.KsqlHelpers.TerminateAndDropBarArtifactsAsync("http://127.0.0.1:18088");
         await using var ctx = new TestContext();
         // 環境初期化（ksqlDBの起動確認）
-        await PhysicalTestEnv.KsqlHelpers.WaitForKsqlReadyAsync("http://localhost:8088", TimeSpan.FromSeconds(180), graceMs: 2000);
+        await PhysicalTestEnv.KsqlHelpers.WaitForKsqlReadyAsync("http://127.0.0.1:18088", TimeSpan.FromSeconds(180), graceMs: 2000);
         // 入力トピックを先に確実に用意（ksqlDBのDDLと競合しない）
-        using (var admin = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = "localhost:9092" }).Build())
+        using (var admin = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = "127.0.0.1:39092" }).Build())
         {
             try { await admin.CreateTopicsAsync(new[] { new TopicSpecification { Name = "deduprates", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
             await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "deduprates", 1, 1, TimeSpan.FromSeconds(10));
@@ -147,7 +147,7 @@ public class BarDslExplainTests
         // push起動はHTTP直叩きで統一（SDK差異を回避）
         async Task<int> QueryStreamCountHttpAsync(string sql, int limit, TimeSpan timeout)
         {
-            using var http = new HttpClient { BaseAddress = new Uri("http://localhost:8088") };
+            using var http = new HttpClient { BaseAddress = new Uri("http://127.0.0.1:18088") };
             var payload = new
             {
                 sql,
@@ -200,7 +200,7 @@ public class BarDslExplainTests
 
         async Task<int> WaitPullCountHttpAsync(string table, int min, TimeSpan timeout)
         {
-            using var http = new HttpClient { BaseAddress = new Uri("http://localhost:8088") };
+            using var http = new HttpClient { BaseAddress = new Uri("http://127.0.0.1:18088") };
             var deadline = DateTime.UtcNow + timeout;
             while (DateTime.UtcNow < deadline)
             {

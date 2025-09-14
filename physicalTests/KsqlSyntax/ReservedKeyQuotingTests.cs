@@ -19,9 +19,9 @@ public class ReservedKeyQuotingTests
     {
         var options = new KsqlDslOptions
         {
-            Common = new CommonSection { BootstrapServers = "localhost:9092" },
-            SchemaRegistry = new Kafka.Ksql.Linq.Core.Configuration.SchemaRegistrySection { Url = "http://localhost:8081" },
-            KsqlDbUrl = "http://localhost:8088"
+            Common = new CommonSection { BootstrapServers = "127.0.0.1:39092" },
+            SchemaRegistry = new Kafka.Ksql.Linq.Core.Configuration.SchemaRegistrySection { Url = "http://127.0.0.1:18081" },
+            KsqlDbUrl = "http://127.0.0.1:18088"
         };
         await PhysicalTestEnv.KsqlHelpers.WaitForKsqlReadyAsync(options.KsqlDbUrl!, TimeSpan.FromSeconds(120));
         return new SimpleContext(options);

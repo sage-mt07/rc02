@@ -37,5 +37,5 @@ public class KafkaAdminServiceIntegrationTests
 
 public static class EnvKafkaAdminServiceIntegrationTests
 {
-    internal const string KafkaBootstrapServers = "localhost:9092";
+    internal const string KafkaBootstrapServers = "127.0.0.1:39092";
 }

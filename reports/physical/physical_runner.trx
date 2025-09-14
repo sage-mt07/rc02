@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="95e98350-758d-4b40-91d4-dd2fe2cde4b2" name="@67515f9e3173 2025-09-14 00:05:44" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-09-14T00:05:44.6854742+00:00" queuing="2025-09-14T00:05:44.6854742+00:00" start="2025-09-14T00:05:15.2664449+00:00" finish="2025-09-14T00:05:44.6915134+00:00" />
+  <TestSettings name="default" id="a512ca17-a72c-4f11-adb2-021ef4f40ead">
+    <Deployment runDeploymentRoot="_67515f9e3173_2025-09-14_00_05_44" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="25b5313f-f099-4daf-90c9-1df1a617eeec" testId="d4f95360-fa20-03e1-5810-a5fd78838e0d" testName="Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket" computerName="67515f9e3173" duration="00:00:29.5840410" startTime="2025-09-14T00:05:44.5879491+00:00" endTime="2025-09-14T00:05:44.5879673+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="25b5313f-f099-4daf-90c9-1df1a617eeec">
+      <Output>
+        <ErrorInfo>
+          <Message>System.InvalidOperationException : Prev requires WindowStart() in Select to define the bucket column.</Message>
+          <StackTrace>   at Kafka.Ksql.Linq.Query.Analysis.DerivedTumblingPipeline.BuildDdlAndRegister(String baseName, KsqlQueryModel queryModel, EntityModel model, Role role, Func`2 resolveType) in /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/src/Query/Analysis/DerivedTumblingPipeline.cs:line 131
+   at Kafka.Ksql.Linq.Query.Analysis.DerivedTumblingPipeline.RunAsync(TumblingQao qao, EntityModel baseModel, KsqlQueryModel queryModel, Func`2 execute, Func`2 resolveType, MappingRegistry mapping, ConcurrentDictionary`2 registry, ILogger logger) in /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/src/Query/Analysis/DerivedTumblingPipeline.cs:line 52
+   at Kafka.Ksql.Linq.KsqlContext.EnsureQueryEntityDdlAsync(Type type, EntityModel model) in /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/src/KsqlContext.SchemaRegistration.cs:line 324
+   at Kafka.Ksql.Linq.KsqlContext.RegisterSchemasAndMaterializeAsync() in /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/src/KsqlContext.SchemaRegistration.cs:line 129
+   at Kafka.Ksql.Linq.KsqlContext.InitializeWithSchemaRegistration() in /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/src/KsqlContext.SchemaRegistration.cs:line 28
+   at Kafka.Ksql.Linq.KsqlContext.InitializeCore(ILoggerFactory loggerFactory) in /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/src/KsqlContext.cs:line 131
+   at Kafka.Ksql.Linq.KsqlContext..ctor(KsqlDslOptions options, ILoggerFactory loggerFactory) in /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/src/KsqlContext.cs:line 95
+   at Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.TestContext..ctor() in /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/physicalTests/OssSamples/TimeBucketImportTumblingTests.cs:line 49
+   at Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket() in /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/physicalTests/OssSamples/TimeBucketImportTumblingTests.cs:line 121
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket" storage="/src/physicaltests/bin/release/net8.0/kafka.ksql.linq.tests.integration.dll" id="d4f95360-fa20-03e1-5810-a5fd78838e0d">
+      <Execution id="25b5313f-f099-4daf-90c9-1df1a617eeec" />
+      <TestMethod codeBase="/src/physicalTests/bin/Release/net8.0/Kafka.Ksql.Linq.Tests.Integration.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests" name="Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="d4f95360-fa20-03e1-5810-a5fd78838e0d" executionId="25b5313f-f099-4daf-90c9-1df1a617eeec" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.6+bf9b858c26 (64-bit .NET 8.0.20)
+[xUnit.net 00:00:00.22]   Discovering: Kafka.Ksql.Linq.Tests.Integration
+[xUnit.net 00:00:00.28]   Discovered:  Kafka.Ksql.Linq.Tests.Integration
+[xUnit.net 00:00:00.29]   Starting:    Kafka.Ksql.Linq.Tests.Integration
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW TOPICS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      KSQL DDL (simple Tick): CREATE STREAM IF NOT EXISTS ticks (Broker VARCHAR KEY, Symbol VARCHAR KEY, TimestampUtc TIMESTAMP, Bid DECIMAL(18, 2)) WITH (KAFKA_TOPIC='ticks', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO', VALUE_AVRO_SCHEMA_FULL_NAME='kafka_ksql_linq_tests_integration.ticks_valueAvro', PARTITIONS=1, REPLICAS=1);
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=CREATE STREAM IF NOT EXISTS ticks (Broker VARCHAR KEY, Symbol VARCHAR KEY, TimestampUtc TIMESTAMP, Bid DECIMAL(18, 2)) W...
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED TICKS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=SHOW TOPICS;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      KSQL DDL (simple DlqEnvelope): CREATE STREAM IF NOT EXISTS dead_letter_queue (`Topic` VARCHAR KEY, `Partition` INT KEY, `Offset` BIGINT KEY, TimestampUtc VARCHAR, IngestedAtUtc VARCHAR, PayloadFormatKey VARCHAR, PayloadFormatValue VARCHAR, SchemaIdKey VARCHAR, SchemaIdValue VARCHAR, KeyIsNull BOOLEAN, ErrorType VARCHAR, ErrorMessageShort VARCHAR, StackTraceShort VARCHAR, ErrorFingerprint VARCHAR, ApplicationId VARCHAR, ConsumerGroup VARCHAR, Host VARCHAR, Headers MAP&lt;STRING, STRING&gt;) WITH (KAFKA_TOPIC='dead-letter-queue', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO', VALUE_AVRO_SCHEMA_FULL_NAME='kafka_ksql_linq_messaging.dead_letter_queue_valueAvro', PARTITIONS=1, REPLICAS=1);
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=CREATE STREAM IF NOT EXISTS dead_letter_queue (`Topic` VARCHAR KEY, `Partition` INT KEY, `Offset` BIGINT KEY, TimestampU...
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=DESCRIBE EXTENDED DEAD-LETTER-QUEUE;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      KSQL DDL (derived bar_1s_final_s): CREATE STREAM bar_1s_final_s WITH (KAFKA_TOPIC='bar_1s_final_s', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+      SELECT *
+      FROM ticks o
+      EMIT CHANGES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=CREATE STREAM bar_1s_final_s WITH (KAFKA_TOPIC='bar_1s_final_s', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS SELECT * FRO...
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      KSQL DDL (derived bar_1s_final): CREATE TABLE bar_1s_final WITH (KAFKA_TOPIC='bar_1s_final', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+      SELECT BROKER AS Broker, SYMBOL AS Symbol, WINDOWSTART AS BucketStart, EARLIEST_BY_OFFSET(Bid) AS Open, MAX(Bid) AS High, MIN(Bid) AS Low, LATEST_BY_OFFSET(Bid) AS Close
+      FROM bar_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)
+      GROUP BY BROKER, SYMBOL
+      EMIT FINAL;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=CREATE TABLE bar_1s_final WITH (KAFKA_TOPIC='bar_1s_final', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS SELECT BROKER AS ...
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      KSQL DDL (derived bar_hb_1s): CREATE TABLE bar_hb_1s WITH (KAFKA_TOPIC='bar_hb_1s', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+      SELECT BROKER AS Broker, SYMBOL AS Symbol, WINDOWSTART AS BucketStart, EARLIEST_BY_OFFSET(Bid) AS Open, MAX(Bid) AS High, MIN(Bid) AS Low, LATEST_BY_OFFSET(Bid) AS Close
+      FROM bar_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)
+      GROUP BY BROKER, SYMBOL
+      EMIT CHANGES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=CREATE TABLE bar_hb_1s WITH (KAFKA_TOPIC='bar_hb_1s', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS SELECT BROKER AS Broker...
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      KSQL DDL (derived bar_1m_live): CREATE TABLE bar_1m_live WITH (KAFKA_TOPIC='bar_1m_live', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+      SELECT BROKER AS Broker, SYMBOL AS Symbol, WINDOWSTART AS BucketStart, EARLIEST_BY_OFFSET(Bid) AS Open, MAX(Bid) AS High, MIN(Bid) AS Low, LATEST_BY_OFFSET(Bid) AS Close
+      FROM bar_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)
+      GROUP BY BROKER, SYMBOL
+      EMIT CHANGES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=CREATE TABLE bar_1m_live WITH (KAFKA_TOPIC='bar_1m_live', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS SELECT BROKER AS Br...
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      KSQL DDL (derived bar_hb_1m): CREATE TABLE bar_hb_1m WITH (KAFKA_TOPIC='bar_hb_1m', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+      SELECT BROKER AS Broker, SYMBOL AS Symbol, WINDOWSTART AS BucketStart, EARLIEST_BY_OFFSET(Bid) AS Open, MAX(Bid) AS High, MIN(Bid) AS Low, LATEST_BY_OFFSET(Bid) AS Close
+      FROM bar_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)
+      GROUP BY BROKER, SYMBOL
+      EMIT CHANGES;
+info: Kafka.Ksql.Linq.KsqlContext[0]
+      ksql execute: EXECUTE SQL=CREATE TABLE bar_hb_1m WITH (KAFKA_TOPIC='bar_hb_1m', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS SELECT BROKER AS Broker...
+fail: Kafka.Ksql.Linq.KsqlContext[0]
+      KsqlContext initialization failed: Prev requires WindowStart() in Select to define the bucket column. 
+      System.InvalidOperationException: Prev requires WindowStart() in Select to define the bucket column.
+         at Kafka.Ksql.Linq.Query.Analysis.DerivedTumblingPipeline.BuildDdlAndRegister(String baseName, KsqlQueryModel queryModel, EntityModel model, Role role, Func`2 resolveType) in /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/src/Query/Analysis/DerivedTumblingPipeline.cs:line 131
+         at Kafka.Ksql.Linq.Query.Analysis.DerivedTumblingPipeline.RunAsync(TumblingQao qao, EntityModel baseModel, KsqlQueryModel queryModel, Func`2 execute, Func`2 resolveType, MappingRegistry mapping, ConcurrentDictionary`2 registry, ILogger logger) in /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/src/Query/Analysis/DerivedTumblingPipeline.cs:line 52
+         at Kafka.Ksql.Linq.KsqlContext.EnsureQueryEntityDdlAsync(Type type, EntityModel model) in /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/src/KsqlContext.SchemaRegistration.cs:line 324
+         at Kafka.Ksql.Linq.KsqlContext.RegisterSchemasAndMaterializeAsync() in /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/src/KsqlContext.SchemaRegistration.cs:line 129
+         at Kafka.Ksql.Linq.KsqlContext.InitializeWithSchemaRegistration() in /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/src/KsqlContext.SchemaRegistration.cs:line 28
+         at Kafka.Ksql.Linq.KsqlContext.InitializeCore(ILoggerFactory loggerFactory) in /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/src/KsqlContext.cs:line 131
+[xUnit.net 00:00:29.92]       System.InvalidOperationException : Prev requires WindowStart() in Select to define the bucket column.
+[xUnit.net 00:00:29.92]       Stack Trace:
+[xUnit.net 00:00:29.92]         /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/src/Query/Analysis/DerivedTumblingPipeline.cs(131,0): at Kafka.Ksql.Linq.Query.Analysis.DerivedTumblingPipeline.BuildDdlAndRegister(String baseName, KsqlQueryModel queryModel, EntityModel model, Role role, Func`2 resolveType)
+[xUnit.net 00:00:29.92]         /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/src/Query/Analysis/DerivedTumblingPipeline.cs(52,0): at Kafka.Ksql.Linq.Query.Analysis.DerivedTumblingPipeline.RunAsync(TumblingQao qao, EntityModel baseModel, KsqlQueryModel queryModel, Func`2 execute, Func`2 resolveType, MappingRegistry mapping, ConcurrentDictionary`2 registry, ILogger logger)
+[xUnit.net 00:00:29.92]         /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/src/KsqlContext.SchemaRegistration.cs(324,0): at Kafka.Ksql.Linq.KsqlContext.EnsureQueryEntityDdlAsync(Type type, EntityModel model)
+[xUnit.net 00:00:29.92]         /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/src/KsqlContext.SchemaRegistration.cs(129,0): at Kafka.Ksql.Linq.KsqlContext.RegisterSchemasAndMaterializeAsync()
+[xUnit.net 00:00:29.92]         /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/src/KsqlContext.SchemaRegistration.cs(28,0): at Kafka.Ksql.Linq.KsqlContext.InitializeWithSchemaRegistration()
+[xUnit.net 00:00:29.92]         /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/src/KsqlContext.cs(131,0): at Kafka.Ksql.Linq.KsqlContext.InitializeCore(ILoggerFactory loggerFactory)
+[xUnit.net 00:00:29.92]         /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/src/KsqlContext.cs(95,0): at Kafka.Ksql.Linq.KsqlContext..ctor(KsqlDslOptions options, ILoggerFactory loggerFactory)
+[xUnit.net 00:00:29.92]         /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/physicalTests/OssSamples/TimeBucketImportTumblingTests.cs(49,0): at Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.TestContext..ctor()
+[xUnit.net 00:00:29.92]         /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/eb8e228799e721ab04ad1f104a6cbebe267b38ee13607859bc9cc999ba1edaa5/physicalTests/OssSamples/TimeBucketImportTumblingTests.cs(121,0): at Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket()
+[xUnit.net 00:00:29.92]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:29.93]   Finished:    Kafka.Ksql.Linq.Tests.Integration
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="67515f9e3173" outcome="Error" timestamp="2025-09-14T00:05:44.5858475+00:00">
+        <Text>[xUnit.net 00:00:29.92]     Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

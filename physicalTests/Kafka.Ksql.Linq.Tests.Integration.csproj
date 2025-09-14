@@ -21,6 +21,11 @@
     <ProjectReference Include="../src/Kafka.Ksql.Linq.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <!-- Exclude samples that rely on unavailable runtime stubs or bring in obj files via wildcard -->
+    <Compile Remove="OssSamples/BarChartTimeBucketTests.cs" />
+    <Compile Remove="Runners/**/obj/**/*.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="../tests/Common/CategoryAttribute.cs" Link="CategoryAttribute.cs" />
   </ItemGroup>
   <ItemGroup>

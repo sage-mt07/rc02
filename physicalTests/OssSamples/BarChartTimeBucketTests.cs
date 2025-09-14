@@ -45,9 +45,9 @@ public class BarChartTimeBucketTests
         private static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(b => b.AddConsole());
         public TestContext() : base(new KsqlDslOptions
         {
-            Common = new CommonSection { BootstrapServers = "localhost:9092" },
-            SchemaRegistry = new Kafka.Ksql.Linq.Core.Configuration.SchemaRegistrySection { Url = "http://localhost:8081" },
-            KsqlDbUrl = "http://localhost:8088"
+            Common = new CommonSection { BootstrapServers = "127.0.0.1:39092" },
+            SchemaRegistry = new Kafka.Ksql.Linq.Core.Configuration.SchemaRegistrySection { Url = "http://127.0.0.1:18081" },
+            KsqlDbUrl = "http://127.0.0.1:18088"
         }, _loggerFactory) { }
         public EventSet<Rate> Rates { get; set; } = null!;
         protected override void OnModelCreating(IModelBuilder modelBuilder)
@@ -71,7 +71,7 @@ public class BarChartTimeBucketTests
 
     private static async Task<List<object?[]>> QueryRowsAsync(string sql, TimeSpan timeout)
     {
-        using var http = new HttpClient { BaseAddress = new Uri("http://localhost:8088") };
+        using var http = new HttpClient { BaseAddress = new Uri("http://127.0.0.1:18088") };
         var payload = new { sql, properties = new Dictionary<string, object>() };
         using var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
         using var cts = new CancellationTokenSource(timeout);

@@ -79,7 +79,7 @@ public class RocksDbToListAsyncTests
 
 public static class EnvRocksDbTests
 {
-    internal const string SchemaRegistryUrl = "http://localhost:8081";
-    internal const string KafkaBootstrapServers = "localhost:9092";
+    internal const string SchemaRegistryUrl = "http://127.0.0.1:18081";
+    internal const string KafkaBootstrapServers = "127.0.0.1:39092";
 }
 

@@ -33,7 +33,7 @@ public class StreamizRocksDbTests
 
     private static async Task EnsureTopicAsync(string topic)
     {
-        using var admin = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = "localhost:9092" }).Build();
+        using var admin = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = "127.0.0.1:39092" }).Build();
         try
         {
             await admin.CreateTopicsAsync(new[] { new TopicSpecification { Name = topic, NumPartitions = 1, ReplicationFactor = 1 } });
@@ -77,7 +77,7 @@ public class StreamizRocksDbTests
 
     private static async Task ProduceWithRetryAsync<TKey, TValue>(string topic, TKey key, TValue value, CachedSchemaRegistryClient schemaRegistry, int retries = 3)
     {
-        var producerConfig = new ProducerConfig { BootstrapServers = "localhost:9092" };
+        var producerConfig = new ProducerConfig { BootstrapServers = "127.0.0.1:39092" };
         using var producer = new ProducerBuilder<TKey, TValue>(producerConfig)
             .SetKeySerializer(new AvroSerializer<TKey>(schemaRegistry))
             .SetValueSerializer(new AvroSerializer<TValue>(schemaRegistry))
@@ -125,8 +125,8 @@ public class StreamizRocksDbTests
         var config = new StreamConfig<SchemaAvroSerDes<TKey>, SchemaAvroSerDes<TValue>>
         {
             ApplicationId = applicationId,
-            BootstrapServers = "localhost:9092",
-            SchemaRegistryUrl = "http://localhost:8081",
+            BootstrapServers = "127.0.0.1:39092",
+            SchemaRegistryUrl = "http://127.0.0.1:18081",
             StateDir = stateDir,
             AutoOffsetReset = AutoOffsetReset.Earliest,
             Logger = loggerFactory
@@ -137,7 +137,7 @@ public class StreamizRocksDbTests
         {
             await StartWithRetryAsync(stream);
 
-            var schemaConfig = new SchemaRegistryConfig { Url = "http://localhost:8081" };
+            var schemaConfig = new SchemaRegistryConfig { Url = "http://127.0.0.1:18081" };
             using var schemaRegistry = new CachedSchemaRegistryClient(schemaConfig);
             await ProduceWithRetryAsync(topic, key, value, schemaRegistry);
 
@@ -179,7 +179,7 @@ public class StreamizRocksDbTests
         var config = new StreamConfig<StringSerDes, StringSerDes>
         {
             ApplicationId = "string-test-app",
-            BootstrapServers = "localhost:9092",
+            BootstrapServers = "127.0.0.1:39092",
             StateDir = stateDir,
             AutoOffsetReset = AutoOffsetReset.Earliest,
             Logger = loggerFactory
@@ -199,7 +199,7 @@ public class StreamizRocksDbTests
             stream.StateChanged -= OnStateChanged;
         }
 
-        var producerConfig = new ProducerConfig { BootstrapServers = "localhost:9092" };
+        var producerConfig = new ProducerConfig { BootstrapServers = "127.0.0.1:39092" };
         using (var producer = new ProducerBuilder<string, string>(producerConfig).Build())
         {
             await producer.ProduceAsync(topic, new Message<string, string> { Key = "k1", Value = "v1" });
@@ -228,7 +228,7 @@ public class StreamizRocksDbTests
         var config = new StreamConfig<ByteArraySerDes, ByteArraySerDes>
         {
             ApplicationId = "bytes-test-app",
-            BootstrapServers = "localhost:9092",
+            BootstrapServers = "127.0.0.1:39092",
             StateDir = stateDir,
             AutoOffsetReset = AutoOffsetReset.Earliest
         };
@@ -238,7 +238,7 @@ public class StreamizRocksDbTests
 
         var key = new byte[] { 0x01 };
         var value = new byte[] { 0x02, 0x03 };
-        var producerConfig = new ProducerConfig { BootstrapServers = "localhost:9092" };
+        var producerConfig = new ProducerConfig { BootstrapServers = "127.0.0.1:39092" };
         using (var producer = new ProducerBuilder<byte[], byte[]>(producerConfig).Build())
         {
             await producer.ProduceAsync(topic, new Message<byte[], byte[]> { Key = key, Value = value });
@@ -268,8 +268,8 @@ public class StreamizRocksDbTests
         var config = new StreamConfig<StringSerDes, SchemaAvroSerDes<User>>
         {
             ApplicationId = "avro-test-app",
-            BootstrapServers = "localhost:9092",
-            SchemaRegistryUrl = "http://localhost:8081",
+            BootstrapServers = "127.0.0.1:39092",
+            SchemaRegistryUrl = "http://127.0.0.1:18081",
             StateDir = stateDir,
             AutoOffsetReset = AutoOffsetReset.Earliest
         };
@@ -277,8 +277,8 @@ public class StreamizRocksDbTests
         var stream = new KafkaStream(builder.Build(), config);
         await StartWithRetryAsync(stream);
 
-        var producerConfig = new ProducerConfig { BootstrapServers = "localhost:9092" };
-        var schemaConfig = new SchemaRegistryConfig { Url = "http://localhost:8081" };
+        var producerConfig = new ProducerConfig { BootstrapServers = "127.0.0.1:39092" };
+        var schemaConfig = new SchemaRegistryConfig { Url = "http://127.0.0.1:18081" };
         using var schemaRegistry = new CachedSchemaRegistryClient(schemaConfig);
         using (var producer = new ProducerBuilder<string, User>(producerConfig)
             .SetKeySerializer(Serializers.Utf8)

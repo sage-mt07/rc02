@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="5f99e159-513f-4d35-acde-53177d877b7c" name="@sagesoho01 2025-09-14 04:07:59" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-09-14T04:07:59.6778464+09:00" queuing="2025-09-14T04:07:59.6778465+09:00" start="2025-09-14T04:07:48.1595331+09:00" finish="2025-09-14T04:07:59.6871370+09:00" />
+  <TestSettings name="default" id="a00c9b32-8622-4851-8f50-d40109a38e53">
+    <Deployment runDeploymentRoot="_sagesoho01_2025-09-14_04_07_59" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="b595c432-6a38-4dcb-a22a-3c47e804af05" testId="d4f95360-fa20-03e1-5810-a5fd78838e0d" testName="Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket" computerName="sagesoho01" duration="00:00:10.5630561" startTime="2025-09-14T04:07:59.5746248+09:00" endTime="2025-09-14T04:07:59.5746383+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b595c432-6a38-4dcb-a22a-3c47e804af05">
+      <Output>
+        <ErrorInfo>
+          <Message>System.Net.Http.HttpRequestException : [http://127.0.0.1:18081/] HttpRequestException: Connection refused (127.0.0.1:18081)</Message>
+          <StackTrace>   at Confluent.SchemaRegistry.RestService.ExecuteOnOneInstanceAsync(Func`1 createRequest)
+   at Confluent.SchemaRegistry.RestService.RequestAsync[T](String endPoint, HttpMethod method, Object[] jsonBody)
+   at Confluent.SchemaRegistry.RestService.GetLatestSchemaAsync(String subject)
+   at Confluent.SchemaRegistry.CachedSchemaRegistryClient.GetLatestSchemaAsync(String subject)
+   at Kafka.Ksql.Linq.SchemaRegistryTools.SchemaRegistryExtensions.RegisterSchemaIfNewAsync(ISchemaRegistryClient client, String subject, String schema) in C:\dev\rc02\src\SchemaRegistryTools\SchemaRegistryExtensions.cs:line 20
+   at Kafka.Ksql.Linq.KsqlContext.RegisterSchemasAndMaterializeAsync() in C:\dev\rc02\src\KsqlContext.SchemaRegistration.cs:line 101
+   at Kafka.Ksql.Linq.KsqlContext.InitializeWithSchemaRegistration() in C:\dev\rc02\src\KsqlContext.SchemaRegistration.cs:line 28
+   at Kafka.Ksql.Linq.KsqlContext.InitializeCore(ILoggerFactory loggerFactory) in C:\dev\rc02\src\KsqlContext.cs:line 131
+   at Kafka.Ksql.Linq.KsqlContext..ctor(KsqlDslOptions options, ILoggerFactory loggerFactory) in C:\dev\rc02\src\KsqlContext.cs:line 95
+   at Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.TestContext..ctor() in C:\dev\rc02\physicalTests\OssSamples\TimeBucketImportTumblingTests.cs:line 46
+   at Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket() in C:\dev\rc02\physicalTests\OssSamples\TimeBucketImportTumblingTests.cs:line 80
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket" storage="/mnt/wsl/docker-desktop-bind-mounts/ubuntu/e1ff079c4e34aba2bc886828879c18289c76670a88fd608e39229061c0528d59/physicaltests/bin/release/net8.0/kafka.ksql.linq.tests.integration.dll" id="d4f95360-fa20-03e1-5810-a5fd78838e0d">
+      <Execution id="b595c432-6a38-4dcb-a22a-3c47e804af05" />
+      <TestMethod codeBase="/mnt/wsl/docker-desktop-bind-mounts/Ubuntu/e1ff079c4e34aba2bc886828879c18289c76670a88fd608e39229061c0528d59/physicalTests/bin/Release/net8.0/Kafka.Ksql.Linq.Tests.Integration.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests" name="Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="d4f95360-fa20-03e1-5810-a5fd78838e0d" executionId="b595c432-6a38-4dcb-a22a-3c47e804af05" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.6+bf9b858c26 (64-bit .NET 8.0.19)
+[xUnit.net 00:00:00.22]   Discovering: Kafka.Ksql.Linq.Tests.Integration
+[xUnit.net 00:00:00.28]   Discovered:  Kafka.Ksql.Linq.Tests.Integration
+[xUnit.net 00:00:00.29]   Starting:    Kafka.Ksql.Linq.Tests.Integration
+[xUnit.net 00:00:10.90]       System.Net.Http.HttpRequestException : [http://127.0.0.1:18081/] HttpRequestException: Connection refused (127.0.0.1:18081)
+[xUnit.net 00:00:10.90]       Stack Trace:
+[xUnit.net 00:00:10.90]            at Confluent.SchemaRegistry.RestService.ExecuteOnOneInstanceAsync(Func`1 createRequest)
+[xUnit.net 00:00:10.90]            at Confluent.SchemaRegistry.RestService.RequestAsync[T](String endPoint, HttpMethod method, Object[] jsonBody)
+[xUnit.net 00:00:10.90]            at Confluent.SchemaRegistry.RestService.GetLatestSchemaAsync(String subject)
+[xUnit.net 00:00:10.90]            at Confluent.SchemaRegistry.CachedSchemaRegistryClient.GetLatestSchemaAsync(String subject)
+[xUnit.net 00:00:10.90]         C:\dev\rc02\src\SchemaRegistryTools\SchemaRegistryExtensions.cs(20,0): at Kafka.Ksql.Linq.SchemaRegistryTools.SchemaRegistryExtensions.RegisterSchemaIfNewAsync(ISchemaRegistryClient client, String subject, String schema)
+[xUnit.net 00:00:10.90]         C:\dev\rc02\src\KsqlContext.SchemaRegistration.cs(101,0): at Kafka.Ksql.Linq.KsqlContext.RegisterSchemasAndMaterializeAsync()
+[xUnit.net 00:00:10.90]         C:\dev\rc02\src\KsqlContext.SchemaRegistration.cs(28,0): at Kafka.Ksql.Linq.KsqlContext.InitializeWithSchemaRegistration()
+[xUnit.net 00:00:10.90]         C:\dev\rc02\src\KsqlContext.cs(131,0): at Kafka.Ksql.Linq.KsqlContext.InitializeCore(ILoggerFactory loggerFactory)
+[xUnit.net 00:00:10.90]         C:\dev\rc02\src\KsqlContext.cs(95,0): at Kafka.Ksql.Linq.KsqlContext..ctor(KsqlDslOptions options, ILoggerFactory loggerFactory)
+[xUnit.net 00:00:10.90]         C:\dev\rc02\physicalTests\OssSamples\TimeBucketImportTumblingTests.cs(46,0): at Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.TestContext..ctor()
+[xUnit.net 00:00:10.90]         C:\dev\rc02\physicalTests\OssSamples\TimeBucketImportTumblingTests.cs(80,0): at Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket()
+[xUnit.net 00:00:10.90]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:10.91]   Finished:    Kafka.Ksql.Linq.Tests.Integration
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="sagesoho01" outcome="Error" timestamp="2025-09-14T04:07:59.5735206+09:00">
+        <Text>[xUnit.net 00:00:10.90]     Kafka.Ksql.Linq.Tests.Integration.TimeBucketImportTumblingTests.Import_Ticks_Define_Tumbling_Query_Then_Extract_Bars_Via_TimeBucket [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

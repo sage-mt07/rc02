@@ -41,5 +41,5 @@ function Wait-Tcp($host, $port, $timeoutSec = 60){
 
 Write-Host "[up] waiting for Kafka(9092), SchemaRegistry(8081), ksqlDB(8088)"
 Wait-Tcp localhost 9092 120
-Wait-Http "http://localhost:8081/subjects" 120
-Wait-Http "http://localhost:8088/info" 120
+Wait-Http "http://127.0.0.1:18081/subjects" 120
+Wait-Http "http://127.0.0.1:18088/info" 120

@@ -36,6 +36,16 @@ public class KsqlGroupedQueryable<T, TKey> : IKsqlQueryable
         _stage = QueryBuildStage.Select;
         var visitor = new Kafka.Ksql.Linq.Query.Builders.AggregateDetectionVisitor();
         visitor.Visit(projection.Body);
+        // Detect WindowStart() projection to set bucket column name for downstream pipelines
+        var wsVisitor = new Kafka.Ksql.Linq.Query.Builders.WindowStartDetectionVisitor();
+        wsVisitor.Visit(projection.Body);
+        _model.BucketColumnName = wsVisitor.ColumnName;
+        return this;
+    }
+
+    public KsqlGroupedQueryable<T, TKey> WhenEmpty(Expression<Func<T, T, T>> filler)
+    {
+        _model.WhenEmptyFiller = filler;
         return this;
     }
 
