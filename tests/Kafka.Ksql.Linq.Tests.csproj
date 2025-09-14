@@ -6,6 +6,9 @@
     <IsPackable>false</IsPackable>
     <Nullable>enable</Nullable>
     <NoWarn>CS8618;CS8600</NoWarn>
+    <!-- Avoid duplicate assembly attributes when SDK and other sources both emit them -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
 
   <ItemGroup>

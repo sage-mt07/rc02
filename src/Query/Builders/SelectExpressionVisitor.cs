@@ -19,6 +19,9 @@ internal class SelectExpressionVisitor : ExpressionVisitor
     private readonly HashSet<string> _selectedGroupKeys = new();
     private readonly System.Collections.Generic.IDictionary<string, string>? _paramToSource;
     private readonly System.Collections.Generic.ISet<string>? _excludeAliases;
+    private bool _sawAggregate;
+    private bool _sawNonAggregate;
+    private bool _inGroupingContext;
 
     public SelectExpressionVisitor() { }
     public SelectExpressionVisitor(System.Collections.Generic.IDictionary<string, string> paramToSource)
@@ -38,6 +41,8 @@ internal class SelectExpressionVisitor : ExpressionVisitor
 
     protected override Expression VisitNew(NewExpression node)
     {
+        // Detect grouping context upfront to avoid false-positive mix checks
+        _inGroupingContext = _inGroupingContext || ContainsGroupingParameter(node);
         // When used with object initializers, the constructor is parameterless
         // and does not map DTO members. In such cases validation should occur
         // in VisitMemberInit instead of here to avoid false mismatches.
@@ -57,6 +62,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
             }
             else
             {
+                EnforceNoMixAggregateWithoutGroupBy(arg);
                 var columnExpression = ProcessProjectionArgument(arg);
                 var alias = GenerateUniqueAlias(memberName);
                 if (!string.Equals(columnExpression, alias, StringComparison.OrdinalIgnoreCase))
@@ -71,6 +77,8 @@ internal class SelectExpressionVisitor : ExpressionVisitor
 
     protected override Expression VisitMemberInit(MemberInitExpression node)
     {
+        // Detect grouping context upfront to avoid false-positive mix checks
+        _inGroupingContext = _inGroupingContext || ContainsGroupingParameter(node);
         ValidateGroupKeyDtoOrder(node);
         foreach (var binding in node.Bindings.OfType<MemberAssignment>())
         {
@@ -82,6 +90,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
             }
             else
             {
+                EnforceNoMixAggregateWithoutGroupBy(expr);
                 var columnExpression = ProcessProjectionArgument(expr);
                 var alias = GenerateUniqueAlias(memberName);
                 var needsAlias = !string.Equals(columnExpression, alias, StringComparison.OrdinalIgnoreCase)
@@ -97,6 +106,11 @@ internal class SelectExpressionVisitor : ExpressionVisitor
 
     protected override Expression VisitMember(MemberExpression node)
     {
+        // Track grouping context when rooted at IGrouping parameter
+        if (!_inGroupingContext && GetRootParameter(node) is ParameterExpression pe && IsIGroupingType(pe.Type))
+        {
+            _inGroupingContext = true;
+        }
         if (IsGroupKeyObject(node))
         {
             AddGroupKeyColumns();
@@ -165,6 +179,111 @@ internal class SelectExpressionVisitor : ExpressionVisitor
             UnaryExpression unary => ProcessExpression(unary.Operand),
             _ => ProcessExpression(arg)
         };
+    }
+
+    private static bool IsAggregateExpression(Expression expr)
+    {
+        if (expr is MethodCallExpression mc)
+        {
+            if (KsqlFunctionRegistry.IsAggregateFunction(mc.Method.Name)) return true;
+            // Inspect inner arguments in case aggregates are nested inside
+            foreach (var a in mc.Arguments)
+                if (IsAggregateExpression(a)) return true;
+            if (mc.Object != null && IsAggregateExpression(mc.Object)) return true;
+        }
+        else if (expr is UnaryExpression ue)
+        {
+            return IsAggregateExpression(ue.Operand);
+        }
+        else if (expr is BinaryExpression be)
+        {
+            return IsAggregateExpression(be.Left) || IsAggregateExpression(be.Right);
+        }
+        else if (expr is ConditionalExpression ce)
+        {
+            return IsAggregateExpression(ce.Test) || IsAggregateExpression(ce.IfTrue) || IsAggregateExpression(ce.IfFalse);
+        }
+        else if (expr is MemberInitExpression mi)
+        {
+            return mi.Bindings.OfType<MemberAssignment>().Any(b => IsAggregateExpression(b.Expression));
+        }
+        else if (expr is NewExpression ne)
+        {
+            return ne.Arguments.Any(IsAggregateExpression);
+        }
+        return false;
+    }
+
+    private void EnforceNoMixAggregateWithoutGroupBy(Expression expr)
+    {
+        // Allow mixing aggregate and non-aggregate when projecting from a grouping context
+        if (_inGroupingContext)
+            return;
+        var isAgg = IsAggregateExpression(expr);
+        if (isAgg)
+        {
+            if (_sawNonAggregate)
+                throw new InvalidOperationException("SELECT clause cannot mix aggregate functions with non-aggregate columns without GROUP BY");
+            _sawAggregate = true;
+        }
+        else
+        {
+            if (_sawAggregate)
+                throw new InvalidOperationException("SELECT clause cannot mix aggregate functions with non-aggregate columns without GROUP BY");
+            _sawNonAggregate = true;
+        }
+    }
+
+    private static bool IsIGroupingType(Type t)
+        => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IGrouping<,>);
+
+    private static ParameterExpression? GetRootParameter(MemberExpression me)
+    {
+        Expression? e = me.Expression;
+        while (e is MemberExpression m)
+            e = m.Expression;
+        return e as ParameterExpression;
+    }
+
+    private static bool ContainsGroupingParameter(Expression expr)
+    {
+        var found = false;
+        void Walk(Expression? e)
+        {
+            if (e == null || found) return;
+            switch (e)
+            {
+                case ParameterExpression pe:
+                    if (IsIGroupingType(pe.Type)) { found = true; return; }
+                    break;
+                case MemberExpression me:
+                    Walk(me.Expression);
+                    break;
+                case MethodCallExpression mc:
+                    if (mc.Object != null) Walk(mc.Object);
+                    foreach (var a in mc.Arguments) Walk(a);
+                    break;
+                case UnaryExpression ue:
+                    Walk(ue.Operand);
+                    break;
+                case BinaryExpression be:
+                    Walk(be.Left); Walk(be.Right);
+                    break;
+                case ConditionalExpression ce:
+                    Walk(ce.Test); Walk(ce.IfTrue); Walk(ce.IfFalse);
+                    break;
+                case NewExpression ne:
+                    foreach (var a in ne.Arguments) Walk(a);
+                    break;
+                case MemberInitExpression mi:
+                    Walk(mi.NewExpression);
+                    foreach (var b in mi.Bindings)
+                        if (b is MemberAssignment ma) Walk(ma.Expression);
+                    break;
+            }
+        }
+        Walk(expr);
+        return found;
     }
 
     /// <summary>
@@ -337,7 +456,9 @@ internal class SelectExpressionVisitor : ExpressionVisitor
             .Where(s => s.Length > 0)
             .Select(s =>
             {
-                var alias = s.Contains('.') ? s.Split('.').Last() : s;
+                // Derive a safe alias from the last identifier token in the expression
+                var m = System.Text.RegularExpressions.Regex.Match(s, @"([A-Za-z_][A-Za-z0-9_]*)\)?$");
+                var alias = m.Success ? m.Groups[1].Value : s;
                 return (s, alias);
             });
     }

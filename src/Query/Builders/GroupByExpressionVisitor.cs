@@ -11,11 +11,13 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
 {
     private readonly List<string> _keys = new();
     private readonly IDictionary<string, string>? _paramToSource;
+    private readonly bool _forcePrefixAll;
 
-    public GroupByExpressionVisitor() { }
-    public GroupByExpressionVisitor(IDictionary<string, string> paramToSource)
+    public GroupByExpressionVisitor(bool forcePrefixAll = false) { _forcePrefixAll = forcePrefixAll; }
+    public GroupByExpressionVisitor(IDictionary<string, string> paramToSource, bool forcePrefixAll = false)
     {
         _paramToSource = paramToSource;
+        _forcePrefixAll = forcePrefixAll;
     }
 
     public string GetResult()
@@ -144,7 +146,7 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
     /// </summary>
     private string GetMemberName(MemberExpression member)
     {
-        if (member.Member is PropertyInfo prop && prop.GetCustomAttribute<KsqlKeyAttribute>() != null)
+        if (member.Member is PropertyInfo prop)
         {
             Expression? expr = member;
             while (expr is MemberExpression m)
@@ -165,6 +167,13 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
             }
 
             var name = KsqlNameUtils.Sanitize(prop.Name).ToUpperInvariant();
+
+            // If force-all is disabled and the property is not a key, return bare name for compatibility
+            if (!_forcePrefixAll && prop.GetCustomAttribute<KsqlKeyAttribute>() == null)
+            {
+                return prop.Name;
+            }
+
             return $"{prefix}.{name}";
         }
 
@@ -338,7 +347,7 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
     {
         return expression switch
         {
-            MemberExpression member => member.Member.Name,
+            MemberExpression member => GetMemberName(member),
             UnaryExpression unary => ExtractColumnName(unary.Operand),
             _ => throw new InvalidOperationException($"Cannot extract column name from {expression.GetType().Name}")
         };

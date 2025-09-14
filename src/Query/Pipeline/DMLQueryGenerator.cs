@@ -478,7 +478,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
         {
             [KsqlBuilderType.Select] = new SelectClauseBuilder(),
             [KsqlBuilderType.Where] = new WhereClauseBuilder(),
-            [KsqlBuilderType.GroupBy] = new GroupByClauseBuilder(),
+            [KsqlBuilderType.GroupBy] = new GroupByClauseBuilder(forcePrefixAll: true),
             [KsqlBuilderType.Having] = new HavingClauseBuilder(),
             [KsqlBuilderType.Join] = new JoinClauseBuilder(),
             [KsqlBuilderType.OrderBy] = new OrderByClauseBuilder()

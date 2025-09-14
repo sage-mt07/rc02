@@ -46,8 +46,8 @@ public class KsqlCreateWindowedStatementBuilderTests
             .Build();
 
         var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.Build("bar_1m_live", model, "1m");
-        Assert.Contains("WINDOW TUMBLING (SIZE 1 MINUTES)", sql);
-        Assert.Contains("CREATE TABLE bar_1m_live", sql);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(sql, "WINDOW TUMBLING (SIZE 1 MINUTES)");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(sql, "CREATE TABLE bar_1m_live");
     }
 
     [Fact]
@@ -66,7 +66,11 @@ public class KsqlCreateWindowedStatementBuilderTests
             "1m",
             null,
             "deduprates_1s_final_s");
-        Assert.Contains("FROM deduprates_1s_final_s o WINDOW TUMBLING", sql);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.AssertOrderNormalized(
+            sql,
+            "FROM deduprates_1s_final_s",
+            "window tumbling"
+        );
     }
 
     [Fact]
@@ -86,8 +90,8 @@ public class KsqlCreateWindowedStatementBuilderTests
 
         Assert.True(map.ContainsKey("1m"));
         Assert.True(map.ContainsKey("5m"));
-        Assert.Contains("bar_1m_live", map["1m"]);
-        Assert.Contains("bar_5m_live", map["5m"]);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(map["1m"], "bar_1m_live");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(map["5m"], "bar_5m_live");
     }
 
     [Fact]
@@ -99,7 +103,7 @@ public class KsqlCreateWindowedStatementBuilderTests
             .Build();
 
         var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateStatementBuilder.Build("rates", model);
-        Assert.StartsWith("CREATE STREAM rates", sql);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.StartsWithNormalized(sql, "CREATE STREAM rates");
     }
 
     [Fact]
@@ -113,8 +117,8 @@ public class KsqlCreateWindowedStatementBuilderTests
             .Build();
 
         var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.Build("bar_1m", model, "1m");
-        Assert.StartsWith("CREATE TABLE bar_1m", sql);
-        Assert.Contains("WINDOW TUMBLING", sql);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.StartsWithNormalized(sql, "CREATE TABLE bar_1m");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(sql, "WINDOW TUMBLING");
     }
 
     [Fact]

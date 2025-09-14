@@ -1,50 +1,50 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TestRun id="04700aae-844f-404d-9de9-9ca3da66762f" name="@sagesoho01 2025-09-14 09:24:32" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
-  <Times creation="2025-09-14T09:24:32.6350770+09:00" queuing="2025-09-14T09:24:32.6350771+09:00" start="2025-09-14T09:24:31.0421829+09:00" finish="2025-09-14T09:24:32.6428093+09:00" />
-  <TestSettings name="default" id="bd242b14-4642-4cff-87b9-0b0386fd0a59">
-    <Deployment runDeploymentRoot="_sagesoho01_2025-09-14_09_24_32" />
+<TestRun id="b81de037-1de3-4adb-be8d-217533a68d27" name="@sagesoho01 2025-09-14 09:58:17" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-09-14T09:58:17.3063254+09:00" queuing="2025-09-14T09:58:17.3063254+09:00" start="2025-09-14T09:58:15.7424180+09:00" finish="2025-09-14T09:58:17.3123265+09:00" />
+  <TestSettings name="default" id="9a41f4c9-255a-41ba-9aee-597a43c5c498">
+    <Deployment runDeploymentRoot="_sagesoho01_2025-09-14_09_58_17" />
   </TestSettings>
   <Results>
-    <UnitTestResult executionId="499477c1-8eb7-499b-9950-9c7f814e2a8b" testId="d3545772-30bd-5de4-c319-251847be86ab" testName="TableCacheTests.EmptyFilter_EqualsAll" computerName="sagesoho01" duration="00:00:00.0053940" startTime="2025-09-14T09:24:32.4919476+09:00" endTime="2025-09-14T09:24:32.4919699+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="499477c1-8eb7-499b-9950-9c7f814e2a8b" />
-    <UnitTestResult executionId="94eb4801-c4c2-4103-bf12-e326d8df91a3" testId="4cc354fc-c4d6-fed6-e54c-1592e6abaf1a" testName="TableCacheTests.Filter_ThreeParts_Prefix" computerName="sagesoho01" duration="00:00:00.0004569" startTime="2025-09-14T09:24:32.4970147+09:00" endTime="2025-09-14T09:24:32.4970147+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="94eb4801-c4c2-4103-bf12-e326d8df91a3" />
-    <UnitTestResult executionId="f4ef6a62-b062-47ce-b503-d5f471ad93d4" testId="7c2bfe31-d442-1349-cbed-9e79b79f2a4c" testName="TableCacheTests.Filter_Broker_Prefix" computerName="sagesoho01" duration="00:00:00.0010854" startTime="2025-09-14T09:24:32.4969088+09:00" endTime="2025-09-14T09:24:32.4969091+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f4ef6a62-b062-47ce-b503-d5f471ad93d4" />
-    <UnitTestResult executionId="582839c6-ff87-4822-ab15-67351f1a4b03" testId="85851017-59e4-9068-43c1-f98ee2851199" testName="TableCacheTests.NoMatch_ReturnsEmpty" computerName="sagesoho01" duration="00:00:00.0005895" startTime="2025-09-14T09:24:32.4969916+09:00" endTime="2025-09-14T09:24:32.4969916+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="582839c6-ff87-4822-ab15-67351f1a4b03" />
-    <UnitTestResult executionId="274fe1fc-9462-4d3e-9742-6dac36ce5fd5" testId="6d949e02-b84a-ca41-bab3-e0b6751cc62f" testName="TableCacheTests.Filter_BrokerSymbol_Prefix" computerName="sagesoho01" duration="00:00:00.0008364" startTime="2025-09-14T09:24:32.4969611+09:00" endTime="2025-09-14T09:24:32.4969611+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="274fe1fc-9462-4d3e-9742-6dac36ce5fd5" />
-    <UnitTestResult executionId="35867e77-6597-4abf-bcd2-d7ad95401231" testId="37605ea7-7284-9622-6279-1014b524dade" testName="TableCacheTests.NoFilter_ReturnsAll" computerName="sagesoho01" duration="00:00:00.0015575" startTime="2025-09-14T09:24:32.4964084+09:00" endTime="2025-09-14T09:24:32.4964086+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="35867e77-6597-4abf-bcd2-d7ad95401231" />
+    <UnitTestResult executionId="a848ec7f-3a66-4c18-be8f-d2cf957166ed" testId="7c2bfe31-d442-1349-cbed-9e79b79f2a4c" testName="TableCacheTests.Filter_Broker_Prefix" computerName="sagesoho01" duration="00:00:00.0010933" startTime="2025-09-14T09:58:17.1645821+09:00" endTime="2025-09-14T09:58:17.1645822+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a848ec7f-3a66-4c18-be8f-d2cf957166ed" />
+    <UnitTestResult executionId="fcecac67-413d-4b97-80ff-5c0d0c4a4eb6" testId="37605ea7-7284-9622-6279-1014b524dade" testName="TableCacheTests.NoFilter_ReturnsAll" computerName="sagesoho01" duration="00:00:00.0017333" startTime="2025-09-14T09:58:17.1642911+09:00" endTime="2025-09-14T09:58:17.1642912+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fcecac67-413d-4b97-80ff-5c0d0c4a4eb6" />
+    <UnitTestResult executionId="46447377-d5e0-4b6b-b246-a740ce388641" testId="6d949e02-b84a-ca41-bab3-e0b6751cc62f" testName="TableCacheTests.Filter_BrokerSymbol_Prefix" computerName="sagesoho01" duration="00:00:00.0003761" startTime="2025-09-14T09:58:17.1646089+09:00" endTime="2025-09-14T09:58:17.1646089+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="46447377-d5e0-4b6b-b246-a740ce388641" />
+    <UnitTestResult executionId="4f996a24-af9c-4354-a7a0-93ec91878177" testId="d3545772-30bd-5de4-c319-251847be86ab" testName="TableCacheTests.EmptyFilter_EqualsAll" computerName="sagesoho01" duration="00:00:00.0054620" startTime="2025-09-14T09:58:17.1612044+09:00" endTime="2025-09-14T09:58:17.1612226+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4f996a24-af9c-4354-a7a0-93ec91878177" />
+    <UnitTestResult executionId="43ffec1f-11ac-4b46-9afe-6ac4700ea589" testId="4cc354fc-c4d6-fed6-e54c-1592e6abaf1a" testName="TableCacheTests.Filter_ThreeParts_Prefix" computerName="sagesoho01" duration="00:00:00.0005860" startTime="2025-09-14T09:58:17.1649420+09:00" endTime="2025-09-14T09:58:17.1649421+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="43ffec1f-11ac-4b46-9afe-6ac4700ea589" />
+    <UnitTestResult executionId="ccbb2deb-9ce0-4bac-8dc7-4db91af1e6e4" testId="85851017-59e4-9068-43c1-f98ee2851199" testName="TableCacheTests.NoMatch_ReturnsEmpty" computerName="sagesoho01" duration="00:00:00.0006728" startTime="2025-09-14T09:58:17.1646359+09:00" endTime="2025-09-14T09:58:17.1646359+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ccbb2deb-9ce0-4bac-8dc7-4db91af1e6e4" />
   </Results>
   <TestDefinitions>
     <UnitTest name="TableCacheTests.Filter_BrokerSymbol_Prefix" storage="/mnt/wsl/docker-desktop-bind-mounts/ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/kafka.ksql.linq.cache.tests/bin/release/net8.0/kafka.ksql.linq.cache.tests.dll" id="6d949e02-b84a-ca41-bab3-e0b6751cc62f">
-      <Execution id="274fe1fc-9462-4d3e-9742-6dac36ce5fd5" />
+      <Execution id="46447377-d5e0-4b6b-b246-a740ce388641" />
       <TestMethod codeBase="/mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/Kafka.Ksql.Linq.Cache.Tests/bin/Release/net8.0/Kafka.Ksql.Linq.Cache.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TableCacheTests" name="Filter_BrokerSymbol_Prefix" />
     </UnitTest>
     <UnitTest name="TableCacheTests.NoFilter_ReturnsAll" storage="/mnt/wsl/docker-desktop-bind-mounts/ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/kafka.ksql.linq.cache.tests/bin/release/net8.0/kafka.ksql.linq.cache.tests.dll" id="37605ea7-7284-9622-6279-1014b524dade">
-      <Execution id="35867e77-6597-4abf-bcd2-d7ad95401231" />
+      <Execution id="fcecac67-413d-4b97-80ff-5c0d0c4a4eb6" />
       <TestMethod codeBase="/mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/Kafka.Ksql.Linq.Cache.Tests/bin/Release/net8.0/Kafka.Ksql.Linq.Cache.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TableCacheTests" name="NoFilter_ReturnsAll" />
     </UnitTest>
     <UnitTest name="TableCacheTests.EmptyFilter_EqualsAll" storage="/mnt/wsl/docker-desktop-bind-mounts/ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/kafka.ksql.linq.cache.tests/bin/release/net8.0/kafka.ksql.linq.cache.tests.dll" id="d3545772-30bd-5de4-c319-251847be86ab">
-      <Execution id="499477c1-8eb7-499b-9950-9c7f814e2a8b" />
+      <Execution id="4f996a24-af9c-4354-a7a0-93ec91878177" />
       <TestMethod codeBase="/mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/Kafka.Ksql.Linq.Cache.Tests/bin/Release/net8.0/Kafka.Ksql.Linq.Cache.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TableCacheTests" name="EmptyFilter_EqualsAll" />
     </UnitTest>
     <UnitTest name="TableCacheTests.Filter_Broker_Prefix" storage="/mnt/wsl/docker-desktop-bind-mounts/ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/kafka.ksql.linq.cache.tests/bin/release/net8.0/kafka.ksql.linq.cache.tests.dll" id="7c2bfe31-d442-1349-cbed-9e79b79f2a4c">
-      <Execution id="f4ef6a62-b062-47ce-b503-d5f471ad93d4" />
+      <Execution id="a848ec7f-3a66-4c18-be8f-d2cf957166ed" />
       <TestMethod codeBase="/mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/Kafka.Ksql.Linq.Cache.Tests/bin/Release/net8.0/Kafka.Ksql.Linq.Cache.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TableCacheTests" name="Filter_Broker_Prefix" />
     </UnitTest>
     <UnitTest name="TableCacheTests.Filter_ThreeParts_Prefix" storage="/mnt/wsl/docker-desktop-bind-mounts/ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/kafka.ksql.linq.cache.tests/bin/release/net8.0/kafka.ksql.linq.cache.tests.dll" id="4cc354fc-c4d6-fed6-e54c-1592e6abaf1a">
-      <Execution id="94eb4801-c4c2-4103-bf12-e326d8df91a3" />
+      <Execution id="43ffec1f-11ac-4b46-9afe-6ac4700ea589" />
       <TestMethod codeBase="/mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/Kafka.Ksql.Linq.Cache.Tests/bin/Release/net8.0/Kafka.Ksql.Linq.Cache.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TableCacheTests" name="Filter_ThreeParts_Prefix" />
     </UnitTest>
     <UnitTest name="TableCacheTests.NoMatch_ReturnsEmpty" storage="/mnt/wsl/docker-desktop-bind-mounts/ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/kafka.ksql.linq.cache.tests/bin/release/net8.0/kafka.ksql.linq.cache.tests.dll" id="85851017-59e4-9068-43c1-f98ee2851199">
-      <Execution id="582839c6-ff87-4822-ab15-67351f1a4b03" />
+      <Execution id="ccbb2deb-9ce0-4bac-8dc7-4db91af1e6e4" />
       <TestMethod codeBase="/mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/Kafka.Ksql.Linq.Cache.Tests/bin/Release/net8.0/Kafka.Ksql.Linq.Cache.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TableCacheTests" name="NoMatch_ReturnsEmpty" />
     </UnitTest>
   </TestDefinitions>
   <TestEntries>
-    <TestEntry testId="d3545772-30bd-5de4-c319-251847be86ab" executionId="499477c1-8eb7-499b-9950-9c7f814e2a8b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
-    <TestEntry testId="4cc354fc-c4d6-fed6-e54c-1592e6abaf1a" executionId="94eb4801-c4c2-4103-bf12-e326d8df91a3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
-    <TestEntry testId="7c2bfe31-d442-1349-cbed-9e79b79f2a4c" executionId="f4ef6a62-b062-47ce-b503-d5f471ad93d4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
-    <TestEntry testId="85851017-59e4-9068-43c1-f98ee2851199" executionId="582839c6-ff87-4822-ab15-67351f1a4b03" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
-    <TestEntry testId="6d949e02-b84a-ca41-bab3-e0b6751cc62f" executionId="274fe1fc-9462-4d3e-9742-6dac36ce5fd5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
-    <TestEntry testId="37605ea7-7284-9622-6279-1014b524dade" executionId="35867e77-6597-4abf-bcd2-d7ad95401231" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7c2bfe31-d442-1349-cbed-9e79b79f2a4c" executionId="a848ec7f-3a66-4c18-be8f-d2cf957166ed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="37605ea7-7284-9622-6279-1014b524dade" executionId="fcecac67-413d-4b97-80ff-5c0d0c4a4eb6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6d949e02-b84a-ca41-bab3-e0b6751cc62f" executionId="46447377-d5e0-4b6b-b246-a740ce388641" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d3545772-30bd-5de4-c319-251847be86ab" executionId="4f996a24-af9c-4354-a7a0-93ec91878177" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4cc354fc-c4d6-fed6-e54c-1592e6abaf1a" executionId="43ffec1f-11ac-4b46-9afe-6ac4700ea589" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="85851017-59e4-9068-43c1-f98ee2851199" executionId="ccbb2deb-9ce0-4bac-8dc7-4db91af1e6e4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
   </TestEntries>
   <TestLists>
     <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
@@ -54,10 +54,10 @@
     <Counters total="6" executed="6" passed="6" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
     <Output>
       <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.4.5+1caef2f33e (64-bit .NET 8.0.19)
-[xUnit.net 00:00:00.80]   Discovering: Kafka.Ksql.Linq.Cache.Tests
-[xUnit.net 00:00:00.83]   Discovered:  Kafka.Ksql.Linq.Cache.Tests
-[xUnit.net 00:00:00.83]   Starting:    Kafka.Ksql.Linq.Cache.Tests
-[xUnit.net 00:00:00.89]   Finished:    Kafka.Ksql.Linq.Cache.Tests
+[xUnit.net 00:00:00.79]   Discovering: Kafka.Ksql.Linq.Cache.Tests
+[xUnit.net 00:00:00.82]   Discovered:  Kafka.Ksql.Linq.Cache.Tests
+[xUnit.net 00:00:00.82]   Starting:    Kafka.Ksql.Linq.Cache.Tests
+[xUnit.net 00:00:00.88]   Finished:    Kafka.Ksql.Linq.Cache.Tests
 </StdOut>
     </Output>
   </ResultSummary>

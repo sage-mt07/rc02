@@ -139,6 +139,7 @@ internal static class DerivedTumblingPipeline
             var keys = model.AdditionalSettings.TryGetValue("keys", out var kObj) ? (string[])kObj! : Array.Empty<string>();
             var projection = model.AdditionalSettings.TryGetValue("projection", out var pObj) ? (string[])pObj! : Array.Empty<string>();
             var bucketCol = inferredBucket ?? throw new InvalidOperationException("WhenEmpty/Fill requires WindowStart() in Select to define the bucket column.");
+            // Heartbeat は各足ごと（WhenEmpty時）に生成される前提
             var hbName = $"{baseName}_hb_{tf}";
             var liveName = $"{baseName}_{tf}_live";
             // Optionally include prev_1m when timeframe is 1m to enable previous-close fill
@@ -152,7 +153,8 @@ internal static class DerivedTumblingPipeline
             var keys = model.AdditionalSettings.TryGetValue("keys", out var kObj2) ? (string[])kObj2! : Array.Empty<string>();
             var projection2 = model.AdditionalSettings.TryGetValue("projection", out var pObj2) ? (string[])pObj2! : Array.Empty<string>();
             var bucketCol2 = inferredBucket ?? throw new InvalidOperationException("Prev requires WindowStart() in Select to define the bucket column.");
-            var hbName2 = $"{baseName}_hb_{tf}"; // tf should be 1m
+            // 1m の前回値結合は同じ足の HB を使用
+            var hbName2 = $"{baseName}_hb_{tf}"; // tf は 1m
             var liveName2 = $"{baseName}_{tf}_live";
             ddl = KsqlPrevStatementBuilder.Build(name, keys, projection2, bucketCol2, hbName2, liveName2, 1);
             if (!string.IsNullOrWhiteSpace(emit) && !ddl.Contains("EMIT ", StringComparison.OrdinalIgnoreCase))

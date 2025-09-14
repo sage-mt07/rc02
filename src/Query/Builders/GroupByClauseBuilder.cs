@@ -15,11 +15,21 @@ internal class GroupByClauseBuilder : BuilderBase
 {
     private static readonly AsyncLocal<string?> _lastBuiltKeys = new();
     private readonly System.Collections.Generic.IDictionary<string, string>? _paramToSource;
+    private readonly bool _forcePrefixAll;
 
     public GroupByClauseBuilder() { }
     public GroupByClauseBuilder(System.Collections.Generic.IDictionary<string, string> paramToSource)
     {
         _paramToSource = paramToSource;
+    }
+    public GroupByClauseBuilder(bool forcePrefixAll)
+    {
+        _forcePrefixAll = forcePrefixAll;
+    }
+    public GroupByClauseBuilder(System.Collections.Generic.IDictionary<string, string> paramToSource, bool forcePrefixAll)
+    {
+        _paramToSource = paramToSource;
+        _forcePrefixAll = forcePrefixAll;
     }
 
     internal static string? LastBuiltKeys
@@ -38,8 +48,8 @@ internal class GroupByClauseBuilder : BuilderBase
     protected override string BuildInternal(Expression expression)
     {
         var visitor = _paramToSource == null
-            ? new GroupByExpressionVisitor()
-            : new GroupByExpressionVisitor(_paramToSource);
+            ? new GroupByExpressionVisitor(forcePrefixAll: _forcePrefixAll)
+            : new GroupByExpressionVisitor(_paramToSource, _forcePrefixAll);
         visitor.Visit(expression);
 
         var result = visitor.GetResult();

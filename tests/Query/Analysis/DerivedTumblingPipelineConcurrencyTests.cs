@@ -58,9 +58,13 @@ public class DerivedTumblingPipelineConcurrencyTests
         var mod = asm.DefineDynamicModule("m");
         Type Resolver(string _) => mod.DefineType("T" + Guid.NewGuid().ToString("N")).CreateType()!;
 
+        // Enable WhenEmpty to include HB per timeframe
+        model.WhenEmptyFiller = (System.Linq.Expressions.Expression<System.Func<int,int,int>>)((a,b) => a);
         await DerivedTumblingPipeline.RunAsync(qao, baseModel, model, Exec, Resolver, mapping, registry, new LoggerFactory().CreateLogger("test"));
 
-        var expected = 5; // 1s hub + 1m: Live + 5m: Live
+        // WhenEmpty 有効化により、HB/Fill/Prev が追加されうるため件数は増加する。
+        // 現仕様では: 1s (stream, final, hb) + 1m(live, hb, prev, fill) + 5m(live, hb, fill) = 10
+        var expected = 10;
         Assert.Equal(expected, registry.Count);
         Assert.Equal(expected, ddls.Count);
         var finals = ddls.Where(d => d.Contains("_final") && !d.Contains("_final_s")).ToList();

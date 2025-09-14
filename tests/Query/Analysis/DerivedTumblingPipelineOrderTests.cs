@@ -41,16 +41,20 @@ public class DerivedTumblingPipelineOrderTests
         var order = new List<string>();
         Task Exec(string sql) { order.Add(sql); return Task.CompletedTask; }
 
+        // Enable WhenEmpty path to include HB per timeframe
+        model.WhenEmptyFiller = (System.Linq.Expressions.Expression<System.Func<int,int,int>>)((a,b) => a);
         await DerivedTumblingPipeline.RunAsync(qao, baseModel, model, Exec,
             _ => typeof(object), new MappingRegistry(), new(), NullLoggerFactory.Instance.CreateLogger("test"));
 
-        Assert.Collection(order,
-            ddl => Assert.StartsWith("CREATE STREAM foo_1s_final_s", ddl),
-            ddl => Assert.StartsWith("CREATE TABLE foo_1s_final", ddl),
-            ddl => Assert.StartsWith("CREATE TABLE foo_hb_1s", ddl),
-            ddl => Assert.StartsWith("CREATE TABLE foo_1m_live", ddl),
-            ddl => Assert.StartsWith("CREATE TABLE foo_5m_live", ddl)
-        );
+        // Validate relative order of key DDLs; additional DDLs (Fill/Prev etc.) may exist
+        int idx(string prefix) => order.FindIndex(s => s.StartsWith(prefix, StringComparison.Ordinal));
+        var i0 = idx("CREATE STREAM foo_1s_final_s");
+        var i1 = idx("CREATE TABLE foo_1s_final");
+        var i2 = idx("CREATE TABLE foo_hb_1s");
+        var i3 = idx("CREATE TABLE foo_1m_live");
+        var i4 = idx("CREATE TABLE foo_5m_live");
+        var i5 = idx("CREATE TABLE foo_hb_5m");
+        Assert.True(i0 >= 0 && i1 > i0 && i2 > i1 && i3 > i2 && i4 > i3 && i5 > i4, string.Join("\n", order));
     }
 }
 

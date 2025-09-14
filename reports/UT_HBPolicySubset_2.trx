@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="9cee7ba8-01d2-4ed1-ad46-4cef45289a0c" name="@sagesoho01 2025-09-14 10:13:44" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-09-14T10:13:44.8897130+09:00" queuing="2025-09-14T10:13:44.8897130+09:00" start="2025-09-14T10:13:43.0321903+09:00" finish="2025-09-14T10:13:44.8993285+09:00" />
+  <TestSettings name="default" id="3a129113-4b8c-44dc-9ad3-ae1bff56dc83">
+    <Deployment runDeploymentRoot="_sagesoho01_2025-09-14_10_13_44" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="00f77041-392f-49dc-b460-a9ccc74d2ca3" testId="ca0b5a60-c12c-7358-befc-7025159d5031" testName="Kafka.Ksql.Linq.Tests.Query.Analysis.DerivationPlannerTests.Plan_1m_Includes_Live_Hb" computerName="sagesoho01" duration="00:00:00.0082968" startTime="2025-09-14T10:13:44.6546823+09:00" endTime="2025-09-14T10:13:44.6546967+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="00f77041-392f-49dc-b460-a9ccc74d2ca3" />
+    <UnitTestResult executionId="325f7ca0-a586-4970-b49d-421c4b437216" testId="223d2f5b-17d6-73a1-1a46-511735a6d226" testName="Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineOrderTests.Emits_DDL_in_expected_order" computerName="sagesoho01" duration="00:00:00.0781736" startTime="2025-09-14T10:13:44.7476611+09:00" endTime="2025-09-14T10:13:44.7476613+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="325f7ca0-a586-4970-b49d-421c4b437216">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Collection() Failure
+Collection: ["CREATE STREAM foo_1s_final_s WITH (KAFKA_TOPIC='fo"..., "CREATE TABLE foo_1s_final WITH (KAFKA_TOPIC='foo_1"..., "CREATE TABLE foo_hb_1s WITH (KAFKA_TOPIC='foo_hb_1"..., "CREATE TABLE foo_1m_live WITH (KAFKA_TOPIC='foo_1m"..., "CREATE TABLE foo_hb_1m WITH (KAFKA_TOPIC='foo_hb_1"..., ...]
+Expected item count: 6
+Actual item count:   10</Message>
+          <StackTrace>   at Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineOrderTests.Emits_DDL_in_expected_order() in /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/Query/Analysis/DerivedTumblingPipelineOrderTests.cs:line 49
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="d679c08e-d302-45f1-9a08-16f8ac9caa6c" testId="02642506-86b5-622b-5ff5-41e600e8b06c" testName="Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineConcurrencyTests.RunAsync_registers_all_models_without_conflict" computerName="sagesoho01" duration="00:00:00.0835328" startTime="2025-09-14T10:13:44.7480379+09:00" endTime="2025-09-14T10:13:44.7480380+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d679c08e-d302-45f1-9a08-16f8ac9caa6c">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure
+Expected: 6
+Actual:   10</Message>
+          <StackTrace>   at Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineConcurrencyTests.RunAsync_registers_all_models_without_conflict() in /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/Query/Analysis/DerivedTumblingPipelineConcurrencyTests.cs:line 66
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineOrderTests.Emits_DDL_in_expected_order" storage="/mnt/wsl/docker-desktop-bind-mounts/ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/bin/release/net8.0/kafka.ksql.linq.tests.dll" id="223d2f5b-17d6-73a1-1a46-511735a6d226">
+      <Execution id="325f7ca0-a586-4970-b49d-421c4b437216" />
+      <TestMethod codeBase="/mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/bin/Release/net8.0/Kafka.Ksql.Linq.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineOrderTests" name="Emits_DDL_in_expected_order" />
+    </UnitTest>
+    <UnitTest name="Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineConcurrencyTests.RunAsync_registers_all_models_without_conflict" storage="/mnt/wsl/docker-desktop-bind-mounts/ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/bin/release/net8.0/kafka.ksql.linq.tests.dll" id="02642506-86b5-622b-5ff5-41e600e8b06c">
+      <Execution id="d679c08e-d302-45f1-9a08-16f8ac9caa6c" />
+      <TestMethod codeBase="/mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/bin/Release/net8.0/Kafka.Ksql.Linq.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineConcurrencyTests" name="RunAsync_registers_all_models_without_conflict" />
+    </UnitTest>
+    <UnitTest name="Kafka.Ksql.Linq.Tests.Query.Analysis.DerivationPlannerTests.Plan_1m_Includes_Live_Hb" storage="/mnt/wsl/docker-desktop-bind-mounts/ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/bin/release/net8.0/kafka.ksql.linq.tests.dll" id="ca0b5a60-c12c-7358-befc-7025159d5031">
+      <Execution id="00f77041-392f-49dc-b460-a9ccc74d2ca3" />
+      <TestMethod codeBase="/mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/bin/Release/net8.0/Kafka.Ksql.Linq.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Query.Analysis.DerivationPlannerTests" name="Plan_1m_Includes_Live_Hb" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="ca0b5a60-c12c-7358-befc-7025159d5031" executionId="00f77041-392f-49dc-b460-a9ccc74d2ca3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="223d2f5b-17d6-73a1-1a46-511735a6d226" executionId="325f7ca0-a586-4970-b49d-421c4b437216" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="02642506-86b5-622b-5ff5-41e600e8b06c" executionId="d679c08e-d302-45f1-9a08-16f8ac9caa6c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="3" executed="3" passed="1" failed="2" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.4.5+1caef2f33e (64-bit .NET 8.0.19)
+[xUnit.net 00:00:00.85]   Discovering: Kafka.Ksql.Linq.Tests
+[xUnit.net 00:00:00.96]   Discovered:  Kafka.Ksql.Linq.Tests
+[xUnit.net 00:00:00.97]   Starting:    Kafka.Ksql.Linq.Tests
+[xUnit.net 00:00:01.13]       Assert.Collection() Failure
+[xUnit.net 00:00:01.13]       Collection: ["CREATE STREAM foo_1s_final_s WITH (KAFKA_TOPIC='fo"..., "CREATE TABLE foo_1s_final WITH (KAFKA_TOPIC='foo_1"..., "CREATE TABLE foo_hb_1s WITH (KAFKA_TOPIC='foo_hb_1"..., "CREATE TABLE foo_1m_live WITH (KAFKA_TOPIC='foo_1m"..., "CREATE TABLE foo_hb_1m WITH (KAFKA_TOPIC='foo_hb_1"..., ...]
+[xUnit.net 00:00:01.13]       Expected item count: 6
+[xUnit.net 00:00:01.13]       Actual item count:   10
+[xUnit.net 00:00:01.13]       Stack Trace:
+[xUnit.net 00:00:01.13]         /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/Query/Analysis/DerivedTumblingPipelineOrderTests.cs(49,0): at Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineOrderTests.Emits_DDL_in_expected_order()
+[xUnit.net 00:00:01.13]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:01.13]       Assert.Equal() Failure
+[xUnit.net 00:00:01.13]       Expected: 6
+[xUnit.net 00:00:01.13]       Actual:   10
+[xUnit.net 00:00:01.13]       Stack Trace:
+[xUnit.net 00:00:01.13]         /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/Query/Analysis/DerivedTumblingPipelineConcurrencyTests.cs(66,0): at Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineConcurrencyTests.RunAsync_registers_all_models_without_conflict()
+[xUnit.net 00:00:01.13]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:01.13]   Finished:    Kafka.Ksql.Linq.Tests
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="sagesoho01" outcome="Error" timestamp="2025-09-14T10:13:44.7471753+09:00">
+        <Text>[xUnit.net 00:00:01.13]     Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineOrderTests.Emits_DDL_in_expected_order [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="sagesoho01" outcome="Error" timestamp="2025-09-14T10:13:44.7480164+09:00">
+        <Text>[xUnit.net 00:00:01.13]     Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineConcurrencyTests.RunAsync_registers_all_models_without_conflict [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

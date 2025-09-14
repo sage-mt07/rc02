@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="95be4da2-4eec-4c39-af2b-f191d318ead8" name="@sagesoho01 2025-09-14 10:17:41" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-09-14T10:17:41.2793719+09:00" queuing="2025-09-14T10:17:41.2793719+09:00" start="2025-09-14T10:17:39.4771841+09:00" finish="2025-09-14T10:17:41.2886717+09:00" />
+  <TestSettings name="default" id="317d9a0c-b732-4d9a-9828-2afb59bec2d3">
+    <Deployment runDeploymentRoot="_sagesoho01_2025-09-14_10_17_41" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="6d1f9997-16e6-44b6-866e-7e85c4d86bc7" testId="ca0b5a60-c12c-7358-befc-7025159d5031" testName="Kafka.Ksql.Linq.Tests.Query.Analysis.DerivationPlannerTests.Plan_1m_Includes_Live_Hb" computerName="sagesoho01" duration="00:00:00.0112146" startTime="2025-09-14T10:17:41.0461934+09:00" endTime="2025-09-14T10:17:41.0462070+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6d1f9997-16e6-44b6-866e-7e85c4d86bc7" />
+    <UnitTestResult executionId="77603629-3449-4ed8-95ba-5867e5b14f0d" testId="02642506-86b5-622b-5ff5-41e600e8b06c" testName="Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineConcurrencyTests.RunAsync_registers_all_models_without_conflict" computerName="sagesoho01" duration="00:00:00.0871910" startTime="2025-09-14T10:17:41.1197846+09:00" endTime="2025-09-14T10:17:41.1197847+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="77603629-3449-4ed8-95ba-5867e5b14f0d" />
+    <UnitTestResult executionId="abcf3cec-06c2-4e48-8f41-3f30d2a1d0e1" testId="223d2f5b-17d6-73a1-1a46-511735a6d226" testName="Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineOrderTests.Emits_DDL_in_expected_order" computerName="sagesoho01" duration="00:00:00.0762773" startTime="2025-09-14T10:17:41.1332914+09:00" endTime="2025-09-14T10:17:41.1332915+09:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="abcf3cec-06c2-4e48-8f41-3f30d2a1d0e1">
+      <Output>
+        <ErrorInfo>
+          <Message>CREATE STREAM foo_1s_final_s WITH (KAFKA_TOPIC='foo_1s_final_s', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+SELECT *
+FROM foo o
+EMIT CHANGES;
+CREATE TABLE foo_1s_final WITH (KAFKA_TOPIC='foo_1s_final', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+SELECT *
+FROM foo_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)
+EMIT FINAL;
+CREATE TABLE foo_hb_1s WITH (KAFKA_TOPIC='foo_hb_1s', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+SELECT *
+FROM foo_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)
+EMIT CHANGES;
+CREATE TABLE foo_1m_live WITH (KAFKA_TOPIC='foo_1m_live', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+SELECT *
+FROM foo_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)
+EMIT CHANGES;
+CREATE TABLE foo_hb_1m WITH (KAFKA_TOPIC='foo_hb_1m', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+SELECT *
+FROM foo_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)
+EMIT CHANGES;
+CREATE TABLE foo_1m_fill WITH (KAFKA_TOPIC='foo_1m_fill', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+SELECT h.KEY-&gt;ID AS Id, h.KEY-&gt;BUCKETSTART AS BucketStart, h.BucketStart AS BucketStart, COALESCE(l.KsqlTimeFrameClose, p.KsqlTimeFrameClose) AS KsqlTimeFrameClose
+FROM foo_hb_1m h LEFT JOIN foo_1m_live l ON h.KEY-&gt;ID = l.KEY-&gt;ID AND h.KEY-&gt;BUCKETSTART = l.KEY-&gt;BUCKETSTART AND h.BucketStart = l.BucketStart
+LEFT JOIN foo_prev_1m p ON h.KEY-&gt;ID = p.KEY-&gt;ID AND h.KEY-&gt;BUCKETSTART = p.KEY-&gt;BUCKETSTART AND h.BucketStart = p.BucketStart
+EMIT CHANGES;
+CREATE TABLE foo_prev_1m WITH (KAFKA_TOPIC='foo_prev_1m', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+SELECT h.KEY-&gt;ID AS Id, h.KEY-&gt;BUCKETSTART AS BucketStart, h.BucketStart AS BucketStart, l.KsqlTimeFrameClose AS KsqlTimeFrameClose
+FROM foo_hb_1m h LEFT JOIN foo_1m_live l ON h.KEY-&gt;ID = l.KEY-&gt;ID AND h.KEY-&gt;BUCKETSTART = l.KEY-&gt;BUCKETSTART AND l.BucketStart = TIMESTAMPADD(MINUTES, -1, h.BucketStart)
+EMIT CHANGES;
+CREATE TABLE foo_5m_live WITH (KAFKA_TOPIC='foo_5m_live', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+SELECT *
+FROM foo_1s_final_s o WINDOW TUMBLING (SIZE 5 MINUTES)
+EMIT CHANGES;
+CREATE TABLE foo_hb_5m WITH (KAFKA_TOPIC='foo_hb_5m', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+SELECT *
+FROM foo_1s_final_s o WINDOW TUMBLING (SIZE 5 MINUTES)
+EMIT CHANGES;
+CREATE TABLE foo_5m_fill WITH (KAFKA_TOPIC='foo_5m_fill', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+SELECT h.KEY-&gt;ID AS Id, h.KEY-&gt;BUCKETSTART AS BucketStart, h.BucketStart AS BucketStart, l.KsqlTimeFrameClose AS KsqlTimeFrameClose
+FROM foo_hb_5m h LEFT JOIN foo_5m_live l ON h.KEY-&gt;ID = l.KEY-&gt;ID AND h.KEY-&gt;BUCKETSTART = l.KEY-&gt;BUCKETSTART AND h.BucketStart = l.BucketStart
+EMIT CHANGES;
+Expected: True
+Actual:   False</Message>
+          <StackTrace>   at Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineOrderTests.Emits_DDL_in_expected_order() in /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/Query/Analysis/DerivedTumblingPipelineOrderTests.cs:line 57
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineOrderTests.Emits_DDL_in_expected_order" storage="/mnt/wsl/docker-desktop-bind-mounts/ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/bin/release/net8.0/kafka.ksql.linq.tests.dll" id="223d2f5b-17d6-73a1-1a46-511735a6d226">
+      <Execution id="abcf3cec-06c2-4e48-8f41-3f30d2a1d0e1" />
+      <TestMethod codeBase="/mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/bin/Release/net8.0/Kafka.Ksql.Linq.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineOrderTests" name="Emits_DDL_in_expected_order" />
+    </UnitTest>
+    <UnitTest name="Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineConcurrencyTests.RunAsync_registers_all_models_without_conflict" storage="/mnt/wsl/docker-desktop-bind-mounts/ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/bin/release/net8.0/kafka.ksql.linq.tests.dll" id="02642506-86b5-622b-5ff5-41e600e8b06c">
+      <Execution id="77603629-3449-4ed8-95ba-5867e5b14f0d" />
+      <TestMethod codeBase="/mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/bin/Release/net8.0/Kafka.Ksql.Linq.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineConcurrencyTests" name="RunAsync_registers_all_models_without_conflict" />
+    </UnitTest>
+    <UnitTest name="Kafka.Ksql.Linq.Tests.Query.Analysis.DerivationPlannerTests.Plan_1m_Includes_Live_Hb" storage="/mnt/wsl/docker-desktop-bind-mounts/ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/bin/release/net8.0/kafka.ksql.linq.tests.dll" id="ca0b5a60-c12c-7358-befc-7025159d5031">
+      <Execution id="6d1f9997-16e6-44b6-866e-7e85c4d86bc7" />
+      <TestMethod codeBase="/mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/bin/Release/net8.0/Kafka.Ksql.Linq.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Kafka.Ksql.Linq.Tests.Query.Analysis.DerivationPlannerTests" name="Plan_1m_Includes_Live_Hb" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="ca0b5a60-c12c-7358-befc-7025159d5031" executionId="6d1f9997-16e6-44b6-866e-7e85c4d86bc7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="02642506-86b5-622b-5ff5-41e600e8b06c" executionId="77603629-3449-4ed8-95ba-5867e5b14f0d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="223d2f5b-17d6-73a1-1a46-511735a6d226" executionId="abcf3cec-06c2-4e48-8f41-3f30d2a1d0e1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="3" executed="3" passed="2" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.4.5+1caef2f33e (64-bit .NET 8.0.19)
+[xUnit.net 00:00:00.85]   Discovering: Kafka.Ksql.Linq.Tests
+[xUnit.net 00:00:00.96]   Discovered:  Kafka.Ksql.Linq.Tests
+[xUnit.net 00:00:00.97]   Starting:    Kafka.Ksql.Linq.Tests
+[xUnit.net 00:00:01.12]       CREATE STREAM foo_1s_final_s WITH (KAFKA_TOPIC='foo_1s_final_s', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+[xUnit.net 00:00:01.12]       SELECT *
+[xUnit.net 00:00:01.12]       FROM foo o
+[xUnit.net 00:00:01.12]       EMIT CHANGES;
+[xUnit.net 00:00:01.12]       CREATE TABLE foo_1s_final WITH (KAFKA_TOPIC='foo_1s_final', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+[xUnit.net 00:00:01.12]       SELECT *
+[xUnit.net 00:00:01.12]       FROM foo_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)
+[xUnit.net 00:00:01.12]       EMIT FINAL;
+[xUnit.net 00:00:01.12]       CREATE TABLE foo_hb_1s WITH (KAFKA_TOPIC='foo_hb_1s', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+[xUnit.net 00:00:01.12]       SELECT *
+[xUnit.net 00:00:01.12]       FROM foo_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)
+[xUnit.net 00:00:01.12]       EMIT CHANGES;
+[xUnit.net 00:00:01.12]       CREATE TABLE foo_1m_live WITH (KAFKA_TOPIC='foo_1m_live', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+[xUnit.net 00:00:01.12]       SELECT *
+[xUnit.net 00:00:01.12]       FROM foo_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)
+[xUnit.net 00:00:01.12]       EMIT CHANGES;
+[xUnit.net 00:00:01.12]       CREATE TABLE foo_hb_1m WITH (KAFKA_TOPIC='foo_hb_1m', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+[xUnit.net 00:00:01.12]       SELECT *
+[xUnit.net 00:00:01.12]       FROM foo_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)
+[xUnit.net 00:00:01.12]       EMIT CHANGES;
+[xUnit.net 00:00:01.12]       CREATE TABLE foo_1m_fill WITH (KAFKA_TOPIC='foo_1m_fill', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+[xUnit.net 00:00:01.12]       SELECT h.KEY-&gt;ID AS Id, h.KEY-&gt;BUCKETSTART AS BucketStart, h.BucketStart AS BucketStart, COALESCE(l.KsqlTimeFrameClose, p.KsqlTimeFrameClose) AS KsqlTimeFrameClose
+[xUnit.net 00:00:01.12]       FROM foo_hb_1m h LEFT JOIN foo_1m_live l ON h.KEY-&gt;ID = l.KEY-&gt;ID AND h.KEY-&gt;BUCKETSTART = l.KEY-&gt;BUCKETSTART AND h.BucketStart = l.BucketStart
+[xUnit.net 00:00:01.12]       LEFT JOIN foo_prev_1m p ON h.KEY-&gt;ID = p.KEY-&gt;ID AND h.KEY-&gt;BUCKETSTART = p.KEY-&gt;BUCKETSTART AND h.BucketStart = p.BucketStart
+[xUnit.net 00:00:01.12]       EMIT CHANGES;
+[xUnit.net 00:00:01.12]       CREATE TABLE foo_prev_1m WITH (KAFKA_TOPIC='foo_prev_1m', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+[xUnit.net 00:00:01.12]       SELECT h.KEY-&gt;ID AS Id, h.KEY-&gt;BUCKETSTART AS BucketStart, h.BucketStart AS BucketStart, l.KsqlTimeFrameClose AS KsqlTimeFrameClose
+[xUnit.net 00:00:01.12]       FROM foo_hb_1m h LEFT JOIN foo_1m_live l ON h.KEY-&gt;ID = l.KEY-&gt;ID AND h.KEY-&gt;BUCKETSTART = l.KEY-&gt;BUCKETSTART AND l.BucketStart = TIMESTAMPADD(MINUTES, -1, h.BucketStart)
+[xUnit.net 00:00:01.12]       EMIT CHANGES;
+[xUnit.net 00:00:01.12]       CREATE TABLE foo_5m_live WITH (KAFKA_TOPIC='foo_5m_live', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+[xUnit.net 00:00:01.12]       SELECT *
+[xUnit.net 00:00:01.12]       FROM foo_1s_final_s o WINDOW TUMBLING (SIZE 5 MINUTES)
+[xUnit.net 00:00:01.12]       EMIT CHANGES;
+[xUnit.net 00:00:01.12]       CREATE TABLE foo_hb_5m WITH (KAFKA_TOPIC='foo_hb_5m', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+[xUnit.net 00:00:01.12]       SELECT *
+[xUnit.net 00:00:01.12]       FROM foo_1s_final_s o WINDOW TUMBLING (SIZE 5 MINUTES)
+[xUnit.net 00:00:01.12]       EMIT CHANGES;
+[xUnit.net 00:00:01.12]       CREATE TABLE foo_5m_fill WITH (KAFKA_TOPIC='foo_5m_fill', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS
+[xUnit.net 00:00:01.12]       SELECT h.KEY-&gt;ID AS Id, h.KEY-&gt;BUCKETSTART AS BucketStart, h.BucketStart AS BucketStart, l.KsqlTimeFrameClose AS KsqlTimeFrameClose
+[xUnit.net 00:00:01.12]       FROM foo_hb_5m h LEFT JOIN foo_5m_live l ON h.KEY-&gt;ID = l.KEY-&gt;ID AND h.KEY-&gt;BUCKETSTART = l.KEY-&gt;BUCKETSTART AND h.BucketStart = l.BucketStart
+[xUnit.net 00:00:01.12]       EMIT CHANGES;
+[xUnit.net 00:00:01.12]       Expected: True
+[xUnit.net 00:00:01.12]       Actual:   False
+[xUnit.net 00:00:01.12]       Stack Trace:
+[xUnit.net 00:00:01.12]         /mnt/wsl/docker-desktop-bind-mounts/Ubuntu/26713ee8003cb7bc282ce8244ea5001ccb92a1311fa1bee6e964f4a36321e42a/Ubuntu/de963e6efae39b1e8a1abcd3e4621d6fc830ee851b48bb5c2718ffd0134d54eb/tests/Query/Analysis/DerivedTumblingPipelineOrderTests.cs(57,0): at Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineOrderTests.Emits_DDL_in_expected_order()
+[xUnit.net 00:00:01.12]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:01.12]   Finished:    Kafka.Ksql.Linq.Tests
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="sagesoho01" outcome="Error" timestamp="2025-09-14T10:17:41.1316557+09:00">
+        <Text>[xUnit.net 00:00:01.12]     Kafka.Ksql.Linq.Tests.Query.Analysis.DerivedTumblingPipelineOrderTests.Emits_DDL_in_expected_order [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

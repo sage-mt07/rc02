@@ -46,7 +46,7 @@ public class DerivationPlannerTests
     public void Plan_1m_Includes_Live_Hb()
     {
         var model = new EntityModel { EntityType = typeof(Source) };
-        var entities = DerivationPlanner.Plan(Create(new Timeframe(1, "m")), model);
+        var entities = DerivationPlanner.Plan(Create(new Timeframe(1, "m")), model, whenEmpty: true);
         var final1s = Assert.Single(entities, e => e.Id == "bar_1s_final" && e.Role == Role.Final1s);
         var final1sStream = Assert.Single(entities, e => e.Id == "bar_1s_final_s" && e.Role == Role.Final1sStream);
         var live = Assert.Single(entities, e => e.Id == "bar_1m_live" && e.Role == Role.Live);
@@ -60,7 +60,7 @@ public class DerivationPlannerTests
     public void Plan_5m_Includes_1s_Hub()
     {
         var model = new EntityModel { EntityType = typeof(Source) };
-        var entities = DerivationPlanner.Plan(Create(new Timeframe(5, "m")), model);
+        var entities = DerivationPlanner.Plan(Create(new Timeframe(5, "m")), model, whenEmpty: true);
         var final1s = Assert.Single(entities, e => e.Id == "bar_1s_final" && e.Role == Role.Final1s);
         var final1sStream = Assert.Single(entities, e => e.Id == "bar_1s_final_s" && e.Role == Role.Final1sStream);
         var live5 = Assert.Single(entities, e => e.Id == "bar_5m_live" && e.Role == Role.Live);

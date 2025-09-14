@@ -25,7 +25,7 @@ public class DMLQueryGeneratorTests
     {
         var generator = new DMLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateSelectAll("s1", isPullQuery: false));
-        Assert.StartsWith("SELECT * FROM s1", query);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.StartsWithNormalized(query, "SELECT * FROM s1");
         File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
 
     }
@@ -36,7 +36,7 @@ public class DMLQueryGeneratorTests
         Expression<Func<TestEntity, bool>> expr = e => e.Id == 1;
         var generator = new DMLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateSelectWithCondition("s1", expr.Body, false));
-        Assert.StartsWith("SELECT * FROM s1 WHERE (Id = 1)", query);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.StartsWithNormalized(query, "SELECT * FROM s1 WHERE (Id = 1)");
         File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
     }
 
@@ -45,7 +45,7 @@ public class DMLQueryGeneratorTests
     {
         var generator = new DMLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateSelectAll("t_orders", true, true));
-        Assert.Equal("SELECT * FROM t_orders;", query);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EqualNormalized("SELECT * FROM t_orders;", query);
         File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
     }
 
@@ -55,7 +55,7 @@ public class DMLQueryGeneratorTests
         Expression<Func<TestEntity, bool>> expr = e => e.Id == 1;
         var generator = new DMLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateSelectWithCondition("t_orders", expr.Body, true, true));
-        Assert.Equal("SELECT * FROM t_orders WHERE (Id = 1);", query);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EqualNormalized("SELECT * FROM t_orders WHERE (Id = 1);", query);
         File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
     }
 
@@ -64,7 +64,7 @@ public class DMLQueryGeneratorTests
     {
         var generator = new DMLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateCountQuery("t1"));
-        Assert.Equal("SELECT COUNT(*) FROM t1;", query);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EqualNormalized("SELECT COUNT(*) FROM t1;", query);
         File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
     }
 
@@ -74,8 +74,8 @@ public class DMLQueryGeneratorTests
         Expression<Func<TestEntity, object>> expr = e => new { Sum = e.Id };
         var generator = new DMLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateAggregateQuery("t1", expr.Body));
-        Assert.Contains("FROM t1", query);
-        Assert.StartsWith("SELECT", query);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(query, "FROM t1");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.StartsWithNormalized(query, "SELECT");
         File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
     }
 
@@ -85,7 +85,7 @@ public class DMLQueryGeneratorTests
         Expression<Func<IGrouping<int, TestEntity>, object>> expr = g => new { Last = g.LatestByOffset(x => x.Id) };
         var generator = new DMLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateAggregateQuery("t1", expr.Body));
-        Assert.Equal("SELECT LATEST_BY_OFFSET(Id) AS Last FROM t1;", query);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EqualNormalized("SELECT LATEST_BY_OFFSET(Id) AS Last FROM t1;", query);
         File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
     }
 
@@ -95,7 +95,7 @@ public class DMLQueryGeneratorTests
         Expression<Func<IGrouping<int, TestEntity>, object>> expr = g => new { First = g.EarliestByOffset(x => x.Id) };
         var generator = new DMLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateAggregateQuery("t1", expr.Body));
-        Assert.Equal("SELECT EARLIEST_BY_OFFSET(Id) AS First FROM t1;", query);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EqualNormalized("SELECT EARLIEST_BY_OFFSET(Id) AS First FROM t1;", query);
         File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
     }
 
@@ -105,7 +105,7 @@ public class DMLQueryGeneratorTests
         Expression<Func<IGrouping<int, TestEntity>, object>> expr = g => new { Start = g.WindowStart() };
         var generator = new DMLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateAggregateQuery("t1", expr.Body));
-        Assert.Equal("SELECT WINDOWSTART AS Start FROM t1;", query);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EqualNormalized("SELECT WINDOWSTART AS Start FROM t1;", query);
         File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
     }
 
@@ -126,7 +126,7 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateLinqQuery("deduprate", expr.Expression, false));
 
-        Assert.Contains("GROUP BY deduprate.BROKER, deduprate.SYMBOL", query);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(query, "GROUP BY deduprate.BROKER, deduprate.SYMBOL");
     }
 
     [Fact]
@@ -143,14 +143,21 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateLinqQuery("s1", expr.Expression, false));
 
-        Assert.Contains("SELECT Type", query);
-        Assert.Contains("COUNT(*) AS Count", query);
-        Assert.Contains("FROM s1", query);
-        Assert.Contains("WHERE (IsActive = true)", query);
-        Assert.Contains("GROUP BY Type", query);
-        Assert.Contains("HAVING (COUNT(*) > 1)", query);
-        Assert.Contains("ORDER BY", query);
-        Assert.EndsWith(";", query);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(query, "SELECT test-topic.Type");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(query, "COUNT(*) AS Count");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(query, "FROM s1");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(query, "WHERE (IsActive = true)");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(query, "GROUP BY test-topic.Type");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(query, "HAVING (COUNT(*) > 1)");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(query, "ORDER BY");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EndsWithSemicolon(query);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.AssertOrderNormalized(
+            query,
+            "from s1",
+            "where",
+            "group by",
+            "having",
+            "order by");
         File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
     }
 
@@ -194,13 +201,18 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateLinqQuery("Orders", expr.Expression, false));
 
-        Assert.Contains("SELECT CustomerId", query);
-        Assert.Contains("COUNT(*) AS OrderCount", query);
-        Assert.Contains("SUM(Amount) AS TotalAmount", query);
-        Assert.Contains("FROM Orders", query);
-        Assert.Contains("GROUP BY CustomerId", query);
-        Assert.Contains("HAVING ((COUNT(*) > 10) AND (SUM(Amount) < 5000))", query);
-        Assert.EndsWith(";", query);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(query, "SELECT order.CustomerId");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(query, "COUNT(*) AS OrderCount");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(query, "SUM(Amount) AS TotalAmount");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(query, "FROM Orders");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(query, "GROUP BY order.CustomerId");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(query, "HAVING ((COUNT(*) > 10) AND (SUM(Amount) < 5000))");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EndsWithSemicolon(query);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.AssertOrderNormalized(
+            query,
+            "from orders",
+            "group by",
+            "having");
         File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
     }
 
@@ -224,12 +236,17 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var query = ExecuteInScope(() => generator.GenerateLinqQuery("Orders", expr.Expression, false));
 
-        Assert.Contains("JOIN", query);
-        Assert.Contains("GROUP BY CustomerId", query);
-        Assert.Contains("HAVING ((COUNT(*) > 2) AND (SUM(Amount) < 10000))", query);
-        Assert.Contains("COUNT(*) AS OrderCount", query);
-        Assert.Contains("SUM(Amount) AS TotalAmount", query);
-        Assert.EndsWith(";", query);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(query, "JOIN");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(query, "GROUP BY order.CustomerId");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(query, "HAVING ((COUNT(*) > 2) AND (SUM(Amount) < 10000))");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(query, "COUNT(*) AS OrderCount");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(query, "SUM(Amount) AS TotalAmount");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EndsWithSemicolon(query);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.AssertOrderNormalized(
+            query,
+            "join",
+            "group by",
+            "having");
         File.AppendAllText("generated_queries.txt", query + Environment.NewLine);
     }
 
@@ -255,13 +272,18 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var result = ExecuteInScope(() => generator.GenerateLinqQuery("joined", query.Expression, false));
 
-        Assert.Contains("JOIN", result);
-        Assert.Contains("GROUP BY", result);
-        Assert.Contains("HAVING", result);
-        Assert.Contains("COUNT(*)", result);
-        Assert.Contains("SUM(", result);
-        Assert.Contains("HAVING ((COUNT(*) > 2) AND (SUM(Amount) < 10000))", result);
-        Assert.EndsWith(";", result);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "JOIN");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "GROUP BY");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "HAVING");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "COUNT(*)");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "SUM(");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "HAVING ((COUNT(*) > 2) AND (SUM(Amount) < 10000))");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EndsWithSemicolon(result);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.AssertOrderNormalized(
+            result,
+            "join",
+            "group by",
+            "having");
         File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
@@ -285,15 +307,15 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var result = ExecuteInScope(() => generator.GenerateLinqQuery("multiagg", query.Expression, false));
 
-        Assert.Contains("GROUP BY", result);
-        Assert.Contains("HAVING", result);
-        Assert.Contains("AVG(", result);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "GROUP BY");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "HAVING");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "AVG(");
         Assert.DoesNotContain("MAX(", result);
-        Assert.Contains("COUNT(*)", result);
-        Assert.Contains("SUM(", result);
-        Assert.Contains("HAVING ((AVG(Amount) > 100) AND (SUM(Amount) < 1000))", result);
-        Assert.Contains("TotalSmall", result);
-        Assert.EndsWith(";", result);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "COUNT(*)");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "SUM(");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "HAVING ((AVG(Amount) > 100) AND (SUM(Amount) < 1000))");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "TotalSmall");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EndsWithSemicolon(result);
         File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
@@ -322,12 +344,17 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var result = ExecuteInScope(() => generator.GenerateLinqQuery("joined", query.Expression, false));
 
-        Assert.Contains("JOIN", result);
-        Assert.Contains("GROUP BY", result);
-        Assert.Contains("HAVING", result);
-        Assert.Contains("COUNT(", result);
-        Assert.Contains("SUM(", result);
-        Assert.EndsWith(";", result);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "JOIN");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "GROUP BY");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "HAVING");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "COUNT(");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "SUM(");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EndsWithSemicolon(result);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.AssertOrderNormalized(
+            result,
+            "join",
+            "group by",
+            "having");
         File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
@@ -349,12 +376,12 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var result = ExecuteInScope(() => generator.GenerateLinqQuery("orders", query.Expression, false));
 
-        Assert.Contains("GROUP BY", result);
-        Assert.Contains("HAVING", result);
-        Assert.Contains("CustomerId", result);
-        Assert.Contains("Region", result);
-        Assert.Contains("SUM", result);
-        Assert.EndsWith(";", result);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "GROUP BY");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "HAVING");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "CustomerId");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "Region");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "SUM");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EndsWithSemicolon(result);
         File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
@@ -375,10 +402,10 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var result = ExecuteInScope(() => generator.GenerateLinqQuery("orders", query.Expression, false));
 
-        Assert.Contains("GROUP BY", result);
-        Assert.Contains("CASE WHEN", result);
-        Assert.Contains("SUM", result);
-        Assert.Contains("HighPriorityTotal", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "GROUP BY");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "CASE WHEN");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "SUM");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "HighPriorityTotal");        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -398,9 +425,9 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var result = ExecuteInScope(() => generator.GenerateLinqQuery("orders", query.Expression, false));
 
-        Assert.Contains("GROUP BY", result);
-        Assert.Contains("AVG", result);
-        Assert.Contains("SUM", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "GROUP BY");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "AVG");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "SUM");        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -419,10 +446,10 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var result = ExecuteInScope(() => generator.GenerateLinqQuery("orders", query.Expression, false));
 
-        Assert.Contains("GROUP BY", result);
-        Assert.Contains("CustomerId", result);
-        Assert.Contains("Region", result);
-        Assert.Contains("SUM", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "GROUP BY");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "CustomerId");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "Region");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "SUM");        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -442,9 +469,9 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var result = ExecuteInScope(() => generator.GenerateLinqQuery("orders", query.Expression, false));
 
-        Assert.Contains("GROUP BY", result);
-        Assert.Contains("SUM", result);
-        Assert.Contains("ORDER BY", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "GROUP BY");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "SUM");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "ORDER BY");        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -464,10 +491,10 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var result = ExecuteInScope(() => generator.GenerateLinqQuery("orders", query.Expression, false));
 
-        Assert.Contains("GROUP BY", result);
-        Assert.Contains("SUM", result);
-        Assert.Contains("ORDER BY", result);
-        Assert.Contains("DESC", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "GROUP BY");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "SUM");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "ORDER BY");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "DESC");        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -489,11 +516,11 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var result = ExecuteInScope(() => generator.GenerateLinqQuery("orders", query.Expression, false));
 
-        Assert.Contains("GROUP BY", result);
-        Assert.Contains("ORDER BY", result);
-        Assert.Contains("CustomerId", result);
-        Assert.Contains("Total", result);
-        Assert.Contains("DESC", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "GROUP BY");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "ORDER BY");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "CustomerId");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "Total");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "DESC");        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -516,14 +543,14 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var result = ExecuteInScope(() => generator.GenerateLinqQuery("orders", query.Expression, false));
 
-        Assert.Contains("GROUP BY", result);
-        Assert.Contains("HAVING", result);
-        Assert.Contains("SUM", result);
-        Assert.Contains("COUNT", result);
-        Assert.Contains("AVG", result);
-        Assert.Contains("AND", result);
-        Assert.Contains("OR", result);
-        Assert.EndsWith(";", result);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "GROUP BY");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "HAVING");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "SUM");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "COUNT");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "AVG");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "AND");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "OR");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EndsWithSemicolon(result);
         File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
@@ -544,12 +571,12 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var result = ExecuteInScope(() => generator.GenerateLinqQuery("orders", query.Expression, false));
 
-        Assert.Contains("GROUP BY", result);
-        Assert.Contains("SUM", result);
-        Assert.Contains("CASE", result);
-        Assert.Contains("WHEN", result);
-        Assert.Contains("THEN", result);
-        Assert.Contains("ELSE", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "GROUP BY");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "SUM");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "CASE");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "WHEN");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "THEN");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "ELSE");        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -573,12 +600,12 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var result = ExecuteInScope(() => generator.GenerateLinqQuery("orders", query.Expression, false));
 
-        Assert.Contains("GROUP BY", result);
-        Assert.Contains("HAVING", result);
-        Assert.Contains("AND", result);
-        Assert.Contains("OR", result);
-        Assert.Contains("(", result);
-        Assert.Contains(")", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "GROUP BY");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "HAVING");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "AND");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "OR");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "(");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, ")");        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -599,10 +626,10 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var result = ExecuteInScope(() => generator.GenerateLinqQuery("orders", query.Expression, false));
 
-        Assert.Contains("GROUP BY CustomerId", result);
-        Assert.Contains("HAVING", result);
-        Assert.Contains("SUM", result);
-        Assert.Contains(" OR ", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "GROUP BY orderwithcount.CustomerId");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "HAVING");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "SUM");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, " OR ");        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -623,10 +650,10 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var result = ExecuteInScope(() => generator.GenerateLinqQuery("orders", query.Expression, false));
 
-        Assert.Contains("WHERE", result);
-        Assert.Contains("NOT IN", result);
-        Assert.Contains("'CN'", result);
-        Assert.Contains("'RU'", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "WHERE");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "NOT IN");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "'CN'");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "'RU'");        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     private class NullableOrder
@@ -658,9 +685,9 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var result = ExecuteInScope(() => generator.GenerateLinqQuery("orders", query.Expression, false));
 
-        Assert.Contains("WHERE", result);
-        Assert.Contains("IS NULL", result);
-        Assert.Contains("CustomerId", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "WHERE");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "IS NULL");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "CustomerId");        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -679,9 +706,9 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var result = ExecuteInScope(() => generator.GenerateLinqQuery("orders", query.Expression, false));
 
-        Assert.Contains("WHERE", result);
-        Assert.Contains("IS NOT NULL", result);
-        Assert.Contains("CustomerId", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "WHERE");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "IS NOT NULL");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "CustomerId");        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -701,9 +728,9 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var result = ExecuteInScope(() => generator.GenerateLinqQuery("orders", query.Expression, false));
 
-        Assert.Contains("WHERE CustomerId IS NOT NULL", result);
-        Assert.Contains("GROUP BY CustomerId", result);
-        Assert.Contains("SUM", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "WHERE CustomerId IS NOT NULL");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "GROUP BY nullablekeyorder.CustomerId");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "SUM");        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -723,10 +750,10 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var result = ExecuteInScope(() => generator.GenerateLinqQuery("orders", query.Expression, false));
 
-        Assert.Contains("GROUP BY", result);
-        Assert.Contains("UPPER", result);
-        Assert.Contains("HAVING", result);
-        Assert.Contains("SUM", result);        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "GROUP BY");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "UPPER");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "HAVING");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(result, "SUM");        File.AppendAllText("generated_queries.txt", result + Environment.NewLine);
     }
 
     [Fact]
@@ -806,6 +833,6 @@ public class DMLQueryGeneratorTests
         var generator = new DMLQueryGenerator();
         var ex = Assert.Throws<InvalidOperationException>(() =>
             ExecuteInScope(() => generator.GenerateLinqQuery("win", expr.Expression, false)));
-        Assert.Contains("Windowed query requires exactly one WindowStart() in projection.", ex.Message);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(ex.Message, "Windowed query requires exactly one WindowStart() in projection.");
     }
 }

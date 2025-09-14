@@ -63,6 +63,8 @@ internal static class DerivationPlanner
         qao.GracePerTimeframe.Clear();
         foreach (var kv in graceMap)
             qao.GracePerTimeframe[kv.Key] = kv.Value;
+        // HB は WhenEmpty 指定時のみ有効化
+        var enableHb = whenEmpty;
         var hub = $"{baseId}_1s_final_s";
         foreach (var tf in windows)
         {
@@ -99,19 +101,23 @@ internal static class DerivationPlanner
                 };
                 entities.Add(final1s);
 
-                var hb1s = new DerivedEntity
+                if (enableHb)
                 {
-                    Id = hbId,
-                    Role = Role.Hb,
-                    Timeframe = tf,
-                    KeyShape = keyShapes,
-                    ValueShape = Array.Empty<ColumnShape>(),
-                    InputHint = hub,
-                    BasedOnSpec = basedOn,
-                    WeekAnchor = qao.WeekAnchor,
-                    GraceSeconds = graceMap[tfStr]
-                };
-                entities.Add(hb1s);
+                    var hb1s = new DerivedEntity
+                    {
+                        Id = hbId,
+                        Role = Role.Hb,
+                        Timeframe = tf,
+                        KeyShape = keyShapes,
+                        ValueShape = Array.Empty<ColumnShape>(),
+                        InputHint = hub,
+                        BasedOnSpec = basedOn,
+                        WeekAnchor = qao.WeekAnchor,
+                        // HB は各足の grace を含めて終端を駆動
+                        GraceSeconds = graceMap[tfStr]
+                    };
+                    entities.Add(hb1s);
+                }
                 continue;
             }
 
@@ -130,19 +136,23 @@ internal static class DerivationPlanner
             };
             entities.Add(live);
 
-            var hb = new DerivedEntity
+            // WhenEmpty のときのみ、各足に対して HB を1つ生成する
+            if (enableHb)
             {
-                Id = hbId,
-                Role = Role.Hb,
-                Timeframe = tf,
-                KeyShape = keyShapes,
-                ValueShape = Array.Empty<ColumnShape>(),
-                InputHint = hub,
-                BasedOnSpec = basedOn,
-                WeekAnchor = qao.WeekAnchor,
-                GraceSeconds = graceMap[tfStr]
-            };
-            entities.Add(hb);
+                var hb = new DerivedEntity
+                {
+                    Id = hbId,
+                    Role = Role.Hb,
+                    Timeframe = tf,
+                    KeyShape = keyShapes,
+                    ValueShape = Array.Empty<ColumnShape>(),
+                    InputHint = hub,
+                    BasedOnSpec = basedOn,
+                    WeekAnchor = qao.WeekAnchor,
+                    GraceSeconds = graceMap[tfStr]
+                };
+                entities.Add(hb);
+            }
 
             if (whenEmpty)
             {
@@ -161,7 +171,8 @@ internal static class DerivationPlanner
                 entities.Add(fill);
             }
 
-            if (tf.Unit == "m" && tf.Value == 1)
+            // prev_1m is only necessary for WhenEmpty filler path
+            if (whenEmpty && tf.Unit == "m" && tf.Value == 1)
             {
                 var prev = new DerivedEntity
                 {
