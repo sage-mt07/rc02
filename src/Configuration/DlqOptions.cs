@@ -6,31 +6,31 @@ namespace Kafka.Ksql.Linq.Configuration;
 
 
 /// <summary>
-/// DLQ設定オプション
+/// DLQ configuration options
 /// </summary>
 public sealed class DlqOptions
 {
-    // 機能制御
+    // Feature control
     public bool Enabled { get; set; } = true;
     public bool EnableForDeserializationError { get; set; } = true;
     public bool EnableForHandlerError { get; set; } = true;
     public double SamplingRate { get; set; } = 1.0;
     public int MaxPerSecond { get; set; } = 1;
 
-    // 例外テキスト整形
+    // Exception text formatting
     public int ErrorMessageMaxLength { get; set; } = 1024;
     public int StackTraceMaxLength { get; set; } = 2048;
     public bool NormalizeStackTraceWhitespace { get; set; } = true;
 
-    // ヘッダ抽出
+    // Header extraction
     public string[] HeaderAllowList { get; set; } = Array.Empty<string>();
     public int HeaderValueMaxLength { get; set; } = 1024;
 
-    // 例外の除外/含め
+    // Exception exclusion/inclusion
     public string[] ExcludedExceptionTypes { get; set; } = new[] { "OperationCanceledException" };
     public string[] IncludedExceptionTypes { get; set; } = Array.Empty<string>();
 
-    // 由来情報
+    // Provenance information
     [DefaultValue("app")]
     public string ApplicationId { get; set; } = string.Empty;
     [DefaultValue("group")]
@@ -38,7 +38,7 @@ public sealed class DlqOptions
     public string Host { get; set; } = Environment.MachineName;
 
     /// <summary>
-    /// 共通DLQトピック名
+    /// Common DLQ topic name
     /// </summary>
     [DefaultValue("dead-letter-queue")]
     public string TopicName { get; set; } = string.Empty;
@@ -96,7 +96,7 @@ public sealed class DlqOptions
 }
 
 /// <summary>
-/// DLQメトリクス情報
+/// DLQ metrics information
 /// </summary>
 public class DlqMetrics
 {

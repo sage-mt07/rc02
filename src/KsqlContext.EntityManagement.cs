@@ -91,7 +91,7 @@ public abstract partial class KsqlContext
         if (method == null)
             throw new InvalidOperationException("Generic CreateEntitySet<T>(EntityModel) not found!");
 
-        // このあと
+        // After this
         var genericMethod = method.MakeGenericMethod(entityType);
         return genericMethod.Invoke(this, new object[] { entityModel })!;
     }

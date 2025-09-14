@@ -8,23 +8,23 @@ public class ErrorHandlingPolicy
     public int RetryCount { get; set; } = 3;
     public TimeSpan RetryInterval { get; set; } = TimeSpan.FromSeconds(1);
     /// <summary>
-    /// カスタムエラーハンドラー
+    /// Custom error handler
     /// </summary>
     public Func<ErrorContext, object, bool>? CustomHandler { get; set; }
 
     /// <summary>
-    /// リトライ条件チェック
+    /// Retry condition check
     /// </summary>
     public Predicate<Exception>? RetryCondition { get; set; }
 
 
     /// <summary>
-    /// エラー発生時の追加ログ情報
+    /// Additional log information on error
     /// </summary>
     public Func<ErrorContext, string>? AdditionalLogInfo { get; set; }
 
     /// <summary>
-    /// リトライ間隔の動的計算
+    /// Dynamic calculation of retry interval
     /// </summary>
     public Func<int, TimeSpan>? DynamicRetryInterval { get; set; }
     public static ErrorHandlingPolicy ExponentialBackoff(int maxRetries = 3, TimeSpan baseInterval = default)

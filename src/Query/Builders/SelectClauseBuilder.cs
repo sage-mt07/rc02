@@ -8,7 +8,7 @@ namespace Kafka.Ksql.Linq.Query.Builders;
 /// <summary>
 /// Builder for SELECT clause content.
 /// Rationale: separation-of-concerns; generate only clause content without keywords.
-/// 出力例: "col1, col2 AS alias" (SELECT除外)
+/// Example output: "col1, col2 AS alias" (excluding SELECT)
 /// </summary>
 internal class SelectClauseBuilder : BuilderBase
 {
@@ -29,7 +29,7 @@ internal class SelectClauseBuilder : BuilderBase
 
     protected override KsqlBuilderType[] GetRequiredBuilderTypes()
     {
-        return Array.Empty<KsqlBuilderType>(); // 他Builderに依存しない
+        return Array.Empty<KsqlBuilderType>(); // No dependency on other builders
     }
 
     protected override string BuildInternal(Expression expression)
@@ -43,7 +43,7 @@ internal class SelectClauseBuilder : BuilderBase
 
         var result = visitor.GetResult();
 
-        // 空の場合は * を返す
+        // Return * when empty
         return string.IsNullOrWhiteSpace(result) ? "*" : result;
     }
 
@@ -73,7 +73,7 @@ internal class SelectClauseBuilder : BuilderBase
 
         if (expression is MethodCallExpression)
         {
-            // 集約関数の混在チェック
+            // Check for mixing aggregate and non-aggregate functions
             if (ContainsAggregateFunction(expression) && ContainsNonAggregateColumns(expression))
             {
                 throw new InvalidOperationException(
@@ -83,7 +83,7 @@ internal class SelectClauseBuilder : BuilderBase
     }
 
     /// <summary>
-    /// 集約関数含有チェック
+    /// Check for presence of aggregate functions
     /// </summary>
     private static bool ContainsAggregateFunction(Expression expression)
     {
@@ -93,7 +93,7 @@ internal class SelectClauseBuilder : BuilderBase
     }
 
     /// <summary>
-    /// 非集約カラム含有チェック
+    /// Check for presence of non-aggregate columns
     /// </summary>
     private static bool ContainsNonAggregateColumns(Expression expression)
     {

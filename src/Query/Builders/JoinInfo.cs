@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Kafka.Ksql.Linq.Query.Builders;
 /// <summary>
-/// JOIN情報クラス
+/// JOIN information class
 /// </summary>
 internal class JoinInfo
 {

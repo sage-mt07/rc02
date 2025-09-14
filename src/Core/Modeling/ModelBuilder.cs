@@ -167,7 +167,7 @@ internal class ModelBuilder : IModelBuilder
             model.ReplicationFactor = topicAttr.ReplicationFactor;
         }
 
-        // 検証実行
+        // Perform validation
         model.ValidationResult = ValidateEntityModel(entityType, model);
 
         return model;
@@ -177,7 +177,7 @@ internal class ModelBuilder : IModelBuilder
     {
         var result = new ValidationResult { IsValid = true };
 
-        // エンティティ型の基本検証
+        // Basic validation of the entity type
         if (!entityType.IsClass || entityType.IsAbstract)
         {
             result.IsValid = false;
@@ -185,7 +185,7 @@ internal class ModelBuilder : IModelBuilder
         }
 
 
-        // プロパティの検証
+        // Validate properties
         foreach (var property in model.AllProperties)
         {
             var underlying = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
@@ -200,7 +200,7 @@ internal class ModelBuilder : IModelBuilder
             }
         }
 
-        // キープロパティの検証
+        // Validate key properties
         if (model.KeyProperties.Length == 0)
         {
             result.Warnings.Add($"Entity {entityType.Name} has no key properties, will be treated as Stream");

@@ -1,40 +1,40 @@
-# 進捗管理ガイド
+# Progress Management Guide
 
-## 記録ルール
-進捗・設計・課題は日付別・時系列で記録します。日時はOSから取得したJST時刻を用い、タイムゾーンを明記します。
+## Recording Rules
+Record progress, design decisions, and issues in chronological order. Obtain the current date and time from the OS in JST and include the time zone explicitly.
 
-### 保存場所
-作業報告は `docs/changes/` に `YYYYMMDD_progress.md` を日ごとに作成し、時系列で追記します。
+### Storage Location
+Store daily reports under `docs/changes/` as `YYYYMMDD_progress.md`, appending entries in chronological order.
 
-### 取得例
+### Examples for retrieving the current time
 - Windows: `echo %date% %time%`
 - Linux/Mac: `date '+%Y-%m-%d %H:%M:%S %Z'`
 - C#: `DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " JST"`
 - Python: `datetime.now(timezone(timedelta(hours=9))).strftime('%Y-%m-%d %H:%M:%S JST')`
 
-### フォーマット
-```markdown
-## YYYY-MM-DD HH:mm JST [担当名]
-進捗や議事要旨
-- 箇条書きで具体的な作業・判断・相談・次アクション
-- 関連ファイル・参照資料もあれば明記
-- 特記事項や背景も必要に応じて
+### Format
+```
+## YYYY-MM-DD HH:mm JST [owner]
+Summary of progress or meeting notes
+- Bullet list of specific tasks, decisions, questions, next actions
+- Include related files or references when available
+- Add special notes or background as needed
 ```
 
-### 記入例
-```markdown
+### Sample Entry
+```
 ## 2025-07-11 21:20 JST [naruse]
-EntityBuilder実装のPRを開始。削除対象の属性クラス棚卸し中。
-- KsqlTableAttribute, TopicAttribute など依存コード洗い出し進行
-- 削除対象の一覧と依存箇所マッピングを進行中
+Started PR for EntityBuilder implementation. Currently auditing attribute classes slated for removal.
+- Enumerating KsqlTableAttribute, TopicAttribute dependencies
+- Mapping list of types to remove and their usage
 ```
 
 ---
 
-## 運用補足・改定履歴
-2025-07-12 PM指示・codex案の採用
-- 進捗ログ（docs/changes/）運用の明確化
-- diff_log（docs/diff_log/）の記録ルール統一
-- features/{機能名}/ディレクトリの作業・管理ルール
-- ドキュメント・テストの同期運用
-- “わからない”即共有・証跡文化の強調
+## Operational Notes and Revision History
+Adopted PM directive and codex proposal on 2025-07-12
+- Clarified operation of progress logs (`docs/changes/`)
+- Unified recording rules for diff_log (`docs/diff_log/`)
+- Established rules for working under `features/{feature}` directories
+- Synchronized documents and tests
+- Emphasized culture of promptly sharing uncertainties with evidence

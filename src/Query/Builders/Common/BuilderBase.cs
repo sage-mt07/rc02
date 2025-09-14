@@ -128,7 +128,7 @@ internal abstract class BuilderBase : IKsqlBuilder
     }
 
     /// <summary>
-    /// 共通ヘルパー：MemberExpression安全抽出
+    /// Common helper: safely extract MemberExpression
     /// </summary>
     protected static MemberExpression? SafeExtractMember(Expression expression)
     {
@@ -136,7 +136,7 @@ internal abstract class BuilderBase : IKsqlBuilder
     }
 
     /// <summary>
-    /// 共通ヘルパー：Lambda Body安全抽出
+    /// Common helper: safely extract lambda body
     /// </summary>
     protected static Expression? SafeExtractLambdaBody(Expression expression)
     {
@@ -144,7 +144,7 @@ internal abstract class BuilderBase : IKsqlBuilder
     }
 
     /// <summary>
-    /// 共通ヘルパー：NULL安全文字列変換
+    /// Common helper: null-safe string conversion
     /// </summary>
     protected static string SafeToString(object? value)
     {
@@ -152,7 +152,7 @@ internal abstract class BuilderBase : IKsqlBuilder
     }
 
     /// <summary>
-    /// 共通ヘルパー：式木型チェック
+    /// Common helper: check expression type
     /// </summary>
     protected static bool IsExpressionType<T>(Expression expression) where T : Expression
     {
@@ -160,7 +160,7 @@ internal abstract class BuilderBase : IKsqlBuilder
     }
 
     /// <summary>
-    /// 共通ヘルパー：メソッド名抽出
+    /// Common helper: extract method name
     /// </summary>
     protected static string? ExtractMethodName(Expression expression)
     {
@@ -168,7 +168,7 @@ internal abstract class BuilderBase : IKsqlBuilder
     }
 
     /// <summary>
-    /// エラーメッセージ生成ヘルパー
+    /// Error message generation helper
     /// </summary>
     protected string CreateErrorMessage(string operation, Expression expression, Exception? innerException = null)
     {
@@ -185,7 +185,7 @@ internal abstract class BuilderBase : IKsqlBuilder
     }
 
     /// <summary>
-    /// デバッグ情報生成（開発時使用）
+    /// Generate debug information (used during development)
     /// </summary>
     protected virtual string GetDebugInfo(Expression expression)
     {
@@ -196,7 +196,7 @@ internal abstract class BuilderBase : IKsqlBuilder
     }
 
     /// <summary>
-    /// ToString実装（デバッグ用）
+    /// ToString implementation (for debugging)
     /// </summary>
     public override string ToString()
     {

@@ -3,7 +3,7 @@ using System;
 namespace Kafka.Ksql.Linq.Query.Builders.Common;
 
 /// <summary>
-/// ストリーム処理例外
+/// Stream processing exception
 /// </summary>
 internal class StreamProcessingException : Exception
 {

@@ -361,7 +361,7 @@ public abstract partial class KsqlContext : IKsqlContext
     public Core.Dlq.IDlqClient Dlq => _dlqClient;
 
     /// <summary>
-    /// エンティティ型からトピック名を取得します
+    /// Get the topic name from an entity type
     /// </summary>
     public string GetTopicName<T>()
     {

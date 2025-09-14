@@ -11,7 +11,7 @@ internal record QueryMetadata(
 {
     public int? GraceSeconds { get; init; }
     /// <summary>
-    /// プロパティ追加
+    /// Add property
     /// </summary>
     public QueryMetadata WithProperty(string key, object value)
     {
@@ -23,7 +23,7 @@ internal record QueryMetadata(
     }
 
     /// <summary>
-    /// プロパティ取得
+    /// Get property
     /// </summary>
     public T? GetProperty<T>(string key)
     {

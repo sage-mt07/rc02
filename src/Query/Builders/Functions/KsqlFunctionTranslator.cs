@@ -8,8 +8,8 @@ using System.Text;
 namespace Kafka.Ksql.Linq.Query.Builders.Functions;
 
 /// <summary>
-/// KSQL関数変換エンジン
-/// 設計理由：C#メソッド呼び出しをKSQL関数呼び出しに変換する中核エンジン
+/// KSQL function translation engine
+/// Design rationale: core engine converting C# method calls to KSQL function calls
 /// </summary>
 internal static class KsqlFunctionTranslator
 {
@@ -28,7 +28,7 @@ internal static class KsqlFunctionTranslator
     };
 
     /// <summary>
-    /// メソッド呼び出しをKSQL関数に変換
+    /// Convert method call to KSQL function
     /// </summary>
     public static string TranslateMethodCall(MethodCallExpression methodCall)
     {
@@ -42,7 +42,7 @@ internal static class KsqlFunctionTranslator
             return HandleUnknownMethod(methodCall);
         }
 
-        // 引数数検証
+        // Validate number of arguments
         var argCount = GetEffectiveArgumentCount(methodCall);
         if (!mapping.IsValidArgCount(argCount))
         {
@@ -52,18 +52,18 @@ internal static class KsqlFunctionTranslator
 
         ValidateTypeCompatibility(mapping.KsqlFunction, ExtractArgumentTypes(methodCall));
 
-        // 特殊処理が必要な場合
+        // When special handling is required
         if (mapping.RequiresSpecialHandling)
         {
             return HandleSpecialFunction(methodCall, mapping);
         }
 
-        // 通常の関数変換
+        // Standard function conversion
         return TranslateStandardFunction(methodCall, mapping);
     }
 
     /// <summary>
-    /// 標準関数変換
+    /// Standard function conversion
     /// </summary>
     private static string TranslateStandardFunction(MethodCallExpression methodCall, KsqlFunctionMapping mapping)
     {
@@ -72,7 +72,7 @@ internal static class KsqlFunctionTranslator
     }
 
     /// <summary>
-    /// 特殊関数処理
+    /// Special function handling
     /// </summary>
     private static string HandleSpecialFunction(MethodCallExpression methodCall, KsqlFunctionMapping mapping)
     {
@@ -90,7 +90,7 @@ internal static class KsqlFunctionTranslator
     }
 
     /// <summary>
-    /// ToString変換処理
+    /// ToString conversion handling
     /// </summary>
     private static string HandleToStringConversion(MethodCallExpression methodCall)
     {
@@ -105,7 +105,7 @@ internal static class KsqlFunctionTranslator
     }
 
     /// <summary>
-    /// Parse変換処理
+    /// Parse conversion handling
     /// </summary>
     private static string HandleParseConversion(MethodCallExpression methodCall)
     {
@@ -117,11 +117,11 @@ internal static class KsqlFunctionTranslator
     }
 
     /// <summary>
-    /// Convert変換処理
+    /// Convert conversion handling
     /// </summary>
     private static string HandleConvertConversion(MethodCallExpression methodCall)
     {
-        // Convert.ToXxx(value) パターン
+        // Pattern for Convert.ToXxx(value)
         if (methodCall.Method.DeclaringType == typeof(Convert))
         {
             var methodName = methodCall.Method.Name;
@@ -140,13 +140,13 @@ internal static class KsqlFunctionTranslator
             return $"CAST({args[0]} AS {ksqlType})";
         }
 
-        // 通常のConvert処理
+        // Standard Convert handling
         var arguments = ExtractArguments(methodCall);
         return $"CAST({arguments[0]} AS {arguments[1]})";
     }
 
     /// <summary>
-    /// Case式処理
+    /// Case expression handling
     /// </summary>
     private static string HandleCaseExpression(MethodCallExpression methodCall)
     {
@@ -158,7 +158,7 @@ internal static class KsqlFunctionTranslator
             result.Append($" WHEN {args[i]} THEN {args[i + 1]}");
         }
 
-        // ELSE節（奇数個の引数の場合）
+        // ELSE clause (when argument count is odd)
         if (args.Count % 2 == 1)
         {
             result.Append($" ELSE {args[args.Count - 1]}");
@@ -169,22 +169,22 @@ internal static class KsqlFunctionTranslator
     }
 
     /// <summary>
-    /// Count関数特殊処理
+    /// Special handling for Count function
     /// </summary>
     private static string HandleCountFunction(MethodCallExpression methodCall)
     {
         var args = ExtractArguments(methodCall);
 
-        // Count() - 引数なし
+        // Count() - no arguments
         if (args.Count == 0)
         {
             return "COUNT(*)";
         }
 
-        // Count(selector) - Lambda式
+        // Count(selector) - lambda expression
         if (args.Count == 1)
         {
-            // Lambda式の場合は引数を無視してCOUNT(*)
+            // For lambda expressions, ignore argument and use COUNT(*)
             if (methodCall.Arguments[0] is LambdaExpression)
             {
                 return "COUNT(*)";
@@ -193,22 +193,22 @@ internal static class KsqlFunctionTranslator
             return $"COUNT({args[0]})";
         }
 
-        // Count(source, predicate) - 条件付きカウント
+        // Count(source, predicate) - conditional count
         return $"COUNT({args[0]})";
     }
 
     /// <summary>
-    /// 不明メソッド処理
+    /// Handle unknown methods
     /// </summary>
     private static string HandleUnknownMethod(MethodCallExpression methodCall)
     {
         var methodName = methodCall.Method.Name;
         var args = ExtractArguments(methodCall);
 
-        // 共通パターン推測
+        // Infer common patterns
         if (methodName.StartsWith("To") && args.Count <= 1)
         {
-            // ToXxx系メソッドをCAST変換として処理
+            // Treat ToXxx methods as CAST conversions
             var targetType = InferTypeFromMethodName(methodName);
             var sourceArg = args.Count > 0 ? args[0] :
                            methodCall.Object != null ? TranslateExpression(methodCall.Object) : "NULL";
@@ -219,25 +219,25 @@ internal static class KsqlFunctionTranslator
     }
 
     /// <summary>
-    /// 引数抽出
+    /// Extract arguments
     /// </summary>
     private static List<string> ExtractArguments(MethodCallExpression methodCall)
     {
         var args = new List<string>();
 
-        // インスタンスメソッドの場合、Objectも引数として扱う
+        // Treat the object as an argument for instance methods
         if (methodCall.Object != null && !methodCall.Method.IsStatic)
         {
             args.Add(TranslateExpression(methodCall.Object));
         }
 
-        // 通常の引数
+        // Regular arguments
         foreach (var arg in methodCall.Arguments)
         {
             args.Add(TranslateExpression(arg));
         }
 
-        // 拡張メソッドは最初の引数がレシーバなので除外
+        // Exclude first argument for extension methods as it is the receiver
         if (methodCall.Method.IsStatic &&
             methodCall.Method.IsDefined(typeof(System.Runtime.CompilerServices.ExtensionAttribute), false) &&
             args.Count > 0)
@@ -249,19 +249,19 @@ internal static class KsqlFunctionTranslator
     }
 
     /// <summary>
-    /// 実効引数数取得
+    /// Get effective argument count
     /// </summary>
     private static int GetEffectiveArgumentCount(MethodCallExpression methodCall)
     {
         var count = methodCall.Arguments.Count;
 
-        // インスタンスメソッドの場合、Objectも1つの引数としてカウント
+        // Count the object as one argument for instance methods
         if (methodCall.Object != null && !methodCall.Method.IsStatic)
         {
             count++;
         }
 
-        // 拡張メソッドは第1引数がレシーバに相当するため引数から除外する
+        // For extension methods, exclude the first receiver argument
         if (methodCall.Method.IsStatic && methodCall.Method.IsDefined(typeof(System.Runtime.CompilerServices.ExtensionAttribute), false))
         {
             count--;
@@ -271,7 +271,7 @@ internal static class KsqlFunctionTranslator
     }
 
     /// <summary>
-    /// 式変換（再帰処理）
+    /// Expression conversion (recursive)
     /// </summary>
     private static string TranslateExpression(Expression expression)
     {
@@ -290,7 +290,7 @@ internal static class KsqlFunctionTranslator
     }
 
     /// <summary>
-    /// 条件式変換
+    /// Conditional expression conversion
     /// </summary>
     private static string TranslateConditionalExpression(ConditionalExpression conditional)
     {
@@ -303,7 +303,7 @@ internal static class KsqlFunctionTranslator
     }
 
     /// <summary>
-    /// 二項演算子変換
+    /// Binary operator conversion
     /// </summary>
     private static string GetOperator(ExpressionType nodeType)
     {
@@ -327,7 +327,7 @@ internal static class KsqlFunctionTranslator
     }
 
     /// <summary>
-    /// C#型からKSQL型へのマッピング
+    /// Mapping from C# types to KSQL types
     /// </summary>
     private static string MapToKsqlType(Type type)
     {
@@ -415,7 +415,7 @@ internal static class KsqlFunctionTranslator
     }
 
     /// <summary>
-    /// メソッド名から型推測
+    /// Infer type from method name
     /// </summary>
     private static string InferTypeFromMethodName(string methodName)
     {
@@ -441,7 +441,7 @@ internal static class KsqlFunctionTranslator
     }
 
     /// <summary>
-    /// デバッグ用：変換過程の情報出力
+    /// Debug: output information about translation process
     /// </summary>
     public static string GetTranslationDebugInfo(MethodCallExpression methodCall)
     {

@@ -9,13 +9,13 @@ using System.Linq.Expressions;
 namespace Kafka.Ksql.Linq.Query.Pipeline;
 
 /// <summary>
-/// JOINクエリ生成器（新規作成）
+/// JOIN query generator (newly created)
 /// Rationale: separation-of-concerns; specialized for 2-table JOIN and LEFT JOIN
 /// </summary>
 internal class JoinQueryGenerator : GeneratorBase
 {
     /// <summary>
-    /// コンストラクタ（Builder依存注入）
+    /// Constructor (builder dependency injection)
     /// </summary>
     public JoinQueryGenerator(IReadOnlyDictionary<KsqlBuilderType, IKsqlBuilder> builders)
         : base(builders)
@@ -23,7 +23,7 @@ internal class JoinQueryGenerator : GeneratorBase
     }
 
     /// <summary>
-    /// 簡易コンストラクタ（標準Builder使用）
+    /// Simplified constructor (uses standard builders)
     /// </summary>
     public JoinQueryGenerator() : this(CreateStandardBuilders())
     {
@@ -40,7 +40,7 @@ internal class JoinQueryGenerator : GeneratorBase
     }
 
     /// <summary>
-    /// 2テーブルJOINクエリ生成
+    /// Generate two-table JOIN query
     /// </summary>
     public string GenerateTwoTableJoin(
         string outerTable,
@@ -53,13 +53,13 @@ internal class JoinQueryGenerator : GeneratorBase
     {
         try
         {
-            // JOIN制限チェック
+            // Check join constraints
             ValidateJoinConstraints(outerTable, innerTable);
 
             var context = new QueryAssemblyContext($"{outerTable}_JOIN_{innerTable}", isPullQuery);
             var structure = CreateJoinStructure(outerTable, innerTable);
 
-            // JOIN条件構築
+            // Build JOIN condition
             var joinExpression = BuildJoinExpression(outerTable, innerTable, outerKeySelector, innerKeySelector, resultSelector);
             var joinContent = SafeCallBuilder(KsqlBuilderType.Join, joinExpression, "JOIN processing");
 
@@ -73,18 +73,18 @@ internal class JoinQueryGenerator : GeneratorBase
     }
 
     /// <summary>
-    /// LINQ JOIN式からクエリ生成
+    /// Generate query from LINQ JOIN expression
     /// </summary>
     public string GenerateFromLinqJoin(Expression joinExpression, bool isPullQuery = true)
     {
         try
         {
-            // JOIN制限の事前チェック
+            // Pre-check join constraints
             JoinLimitationEnforcer.ValidateJoinExpression(joinExpression);
 
             var context = new QueryAssemblyContext("LINQ_JOIN", isPullQuery);
 
-            // JoinBuilderに委譲（完全なクエリを生成）
+            // Delegate to JoinBuilder to generate the full query
             var joinQuery = SafeCallBuilder(KsqlBuilderType.Join, joinExpression, "LINQ JOIN processing");
 
             return ApplyQueryPostProcessing(joinQuery, context);
@@ -96,7 +96,7 @@ internal class JoinQueryGenerator : GeneratorBase
     }
 
     /// <summary>
-    /// LEFT JOINクエリ生成（KSQL対応範囲内）
+    /// Generate LEFT JOIN query (within KSQL capabilities)
     /// </summary>
     public string GenerateLeftJoin(
         string outerTable,
@@ -112,7 +112,7 @@ internal class JoinQueryGenerator : GeneratorBase
 
             var context = new QueryAssemblyContext($"{outerTable}_LEFT_JOIN_{innerTable}", isPullQuery);
 
-            // LEFT JOINの手動構築（KSQLの制限により）
+            // Manually build LEFT JOIN due to KSQL limitations
             var query = BuildLeftJoinQuery(outerTable, innerTable, outerKeySelector, innerKeySelector, resultSelector);
 
             return ApplyQueryPostProcessing(query, context);
@@ -124,7 +124,7 @@ internal class JoinQueryGenerator : GeneratorBase
     }
 
     /// <summary>
-    /// JOIN条件バリデーション
+    /// Validate join conditions
     /// </summary>
     private static void ValidateJoinConstraints(string outerTable, string innerTable)
     {
@@ -148,7 +148,7 @@ internal class JoinQueryGenerator : GeneratorBase
     }
 
     /// <summary>
-    /// JOIN式構築
+    /// Build join expression
     /// </summary>
     private Expression BuildJoinExpression(
         string outerTable,
@@ -157,7 +157,7 @@ internal class JoinQueryGenerator : GeneratorBase
         Expression innerKeySelector,
         Expression? resultSelector)
     {
-        // キーセレクタのラムダを抽出し、型情報を取得
+        // Extract key selector lambda and obtain type info
         var outerLambda = ExtractLambdaExpression(outerKeySelector)
             ?? throw new InvalidOperationException("Outer key selector must be a lambda expression");
         var innerLambda = ExtractLambdaExpression(innerKeySelector)
@@ -167,7 +167,7 @@ internal class JoinQueryGenerator : GeneratorBase
         var innerType = innerLambda.Parameters[0].Type;
         var keyType = outerLambda.Body.Type;
 
-        // IQueryable<> パラメータは型情報のみ利用
+        // For IQueryable<> parameters, use only type information
         var outerQueryable = Expression.Parameter(typeof(IQueryable<>).MakeGenericType(outerType), "outer");
         var innerQueryable = Expression.Parameter(typeof(IQueryable<>).MakeGenericType(innerType), "inner");
 
@@ -198,7 +198,7 @@ internal class JoinQueryGenerator : GeneratorBase
     }
 
     /// <summary>
-    /// Lambda式抽出
+    /// Extract lambda expression
     /// </summary>
     private static LambdaExpression? ExtractLambdaExpression(Expression expr)
     {
@@ -211,17 +211,17 @@ internal class JoinQueryGenerator : GeneratorBase
     }
 
     /// <summary>
-    /// デフォルトResultSelector作成
+    /// Create default ResultSelector
     /// </summary>
     private static Expression CreateDefaultResultSelector(ParameterExpression outerParam, ParameterExpression innerParam)
     {
-        // デフォルトは両テーブルの全カラムを返す
+        // Default returns all columns from both tables
         var newExpression = Expression.New(typeof(object).GetConstructors()[0]);
         return Expression.Lambda(newExpression, outerParam, innerParam);
     }
 
     /// <summary>
-    /// LEFT JOINクエリ構築
+    /// Construct LEFT JOIN query
     /// </summary>
     private string BuildLeftJoinQuery(
         string outerTable,
@@ -248,7 +248,7 @@ internal class JoinQueryGenerator : GeneratorBase
     }
 
     /// <summary>
-    /// キー抽出
+    /// Extract keys
     /// </summary>
     private List<string> ExtractKeys(Expression keySelector)
     {
@@ -278,7 +278,7 @@ internal class JoinQueryGenerator : GeneratorBase
     }
 
     /// <summary>
-    /// JOIN条件構築
+    /// Build join conditions
     /// </summary>
     private static string BuildJoinConditions(List<string> leftKeys, List<string> rightKeys, string leftAlias, string rightAlias)
     {
@@ -297,11 +297,11 @@ internal class JoinQueryGenerator : GeneratorBase
     }
 
     /// <summary>
-    /// ResultSelector処理
+    /// Process ResultSelector
     /// </summary>
     private string ProcessResultSelector(Expression resultSelector, params string[] tableAliases)
     {
-        // 簡略化：実際の実装ではSelectClauseBuilderを使用
+        // Simplification: actual implementation uses SelectClauseBuilder
         var lambdaBody = BuilderValidation.ExtractLambdaBody(resultSelector);
         if (lambdaBody != null)
         {
@@ -311,7 +311,7 @@ internal class JoinQueryGenerator : GeneratorBase
             }
             catch
             {
-                // フォールバック：全カラム返却
+                // Fallback: return all columns
                 return string.Join(", ", tableAliases.Select(alias => $"{alias}.*"));
             }
         }
@@ -320,7 +320,7 @@ internal class JoinQueryGenerator : GeneratorBase
     }
 
     /// <summary>
-    /// 標準Builder作成
+    /// Create standard builders
     /// </summary>
     private static IReadOnlyDictionary<KsqlBuilderType, IKsqlBuilder> CreateStandardBuilders()
     {
@@ -335,13 +335,13 @@ internal class JoinQueryGenerator : GeneratorBase
     }
 
     /// <summary>
-    /// 最適化ヒント適用
+    /// Apply optimization hints
     /// </summary>
     protected override string ApplyOptimizationHints(string query, QueryAssemblyContext context)
     {
         var optimizedQuery = query;
 
-        // JOIN固有の最適化ヒント
+        // Optimization hints specific to JOIN
         Console.WriteLine("[KSQL-LINQ HINT] Ensure joined tables are co-partitioned for optimal performance");
 
         if (query.Contains("LEFT JOIN"))

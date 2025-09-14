@@ -50,7 +50,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
         {
             ValidateGroupKeyDtoOrder(node);
         }
-        // 匿名型の射影処理
+        // Handle anonymous type projections
         for (int i = 0; i < node.Arguments.Count; i++)
         {
             var arg = node.Arguments[i];
@@ -117,7 +117,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
         }
         else
         {
-            // 単純なプロパティアクセス
+            // Simple property access
             var columnName = GetColumnName(node);
             _columns.Add(columnName);
         }
@@ -126,14 +126,14 @@ internal class SelectExpressionVisitor : ExpressionVisitor
 
     protected override Expression VisitParameter(ParameterExpression node)
     {
-        // SELECT * の場合
+        // For SELECT *
         _columns.Add("*");
         return node;
     }
 
     protected override Expression VisitMethodCall(MethodCallExpression node)
     {
-        // 関数呼び出しの処理
+        // Handle function calls
         var functionCall = KsqlFunctionTranslator.TranslateMethodCall(node);
         _columns.Add(functionCall);
         return node;
@@ -141,7 +141,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
 
     protected override Expression VisitBinary(BinaryExpression node)
     {
-        // 計算式の処理
+        // Handle arithmetic expressions
         var left = ProcessExpression(node.Left);
         var right = ProcessExpression(node.Right);
         var varoperator = GetOperator(node.NodeType);
@@ -153,7 +153,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
 
     protected override Expression VisitConditional(ConditionalExpression node)
     {
-        // CASE式の処理
+        // Handle CASE expressions
         BuilderValidation.ValidateConditionalTypes(node.IfTrue, node.IfFalse);
         var test = ProcessExpression(node.Test);
         var ifTrue = ProcessExpression(node.IfTrue);
@@ -165,7 +165,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 射影引数処理
+    /// Process projection argument
     /// </summary>
     private string ProcessProjectionArgument(Expression arg)
     {
@@ -287,7 +287,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 二項式処理
+    /// Process binary expression
     /// </summary>
     private string ProcessBinaryExpression(BinaryExpression binary)
     {
@@ -298,7 +298,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 条件式処理
+    /// Process conditional expression
     /// </summary>
     private string ProcessConditionalExpression(ConditionalExpression conditional)
     {
@@ -309,7 +309,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 汎用式処理
+    /// Process general expression
     /// </summary>
     private string ProcessExpression(Expression expression)
     {
@@ -325,11 +325,11 @@ internal class SelectExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// カラム名取得
+    /// Get column name
     /// </summary>
     private string GetColumnName(MemberExpression member)
     {
-        // プロパティアクセスチェーンを分解
+        // Break down property access chain
         var stack = new System.Collections.Generic.Stack<string>();
         Expression? expr = member;
         while (expr is MemberExpression me)
@@ -343,7 +343,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
 
         var path = stack.ToArray();
 
-        // g.Key.X パターンの処理
+        // Handle g.Key.X pattern
         if (path.Length > 0 && path[0] == "Key")
         {
             var prefix = GetKeyPrefix(pe);
@@ -361,7 +361,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
             return $"{prefix}.{name}";
         }
 
-        // 通常プロパティアクセス
+        // Regular property access
         for (int i = 0; i < path.Length; i++)
             path[i] = KsqlNameUtils.Sanitize(path[i]);
 
@@ -372,7 +372,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 一意エイリアス生成
+    /// Generate unique alias
     /// </summary>
     private string GenerateUniqueAlias(string baseName)
     {
@@ -390,7 +390,7 @@ internal class SelectExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 演算子変換
+    /// Convert operators
     /// </summary>
     private static string GetOperator(ExpressionType nodeType)
     {

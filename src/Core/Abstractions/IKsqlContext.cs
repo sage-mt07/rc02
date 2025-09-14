@@ -6,8 +6,8 @@ using System.Collections.Generic;
 namespace Kafka.Ksql.Linq.Core.Abstractions;
 
 /// <summary>
-/// KsqlContextの抽象定義
-/// DbContext風の統一インターフェース
+/// Abstract definition of KsqlContext
+/// Unified interface similar to DbContext
 /// </summary>
 public interface IKsqlContext : IDisposable, IAsyncDisposable
 {

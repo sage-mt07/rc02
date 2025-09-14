@@ -13,12 +13,12 @@ internal class HavingValidationVisitor : ExpressionVisitor
 
     protected override Expression VisitMember(MemberExpression node)
     {
-        // 集約関数内でないメンバーアクセスは、GROUP BYカラムである必要がある
-        // この実装では簡略化（実際にはGROUP BYカラムリストとの照合が必要）
+        // Member access outside aggregate functions must be a GROUP BY column
+        // Simplified here; actual implementation should check against the list of GROUP BY columns
         if (!_insideAggregateFunction && node.Expression is ParameterExpression)
         {
-            // ここで実際のGROUP BYカラムとの照合を行う（実装簡略化）
-            // 実際の実装では、GROUP BYで使用されたカラムのリストと照合
+            // This is where you'd match against actual GROUP BY columns (simplified)
+            // In a full implementation, compare with the list of columns used in GROUP BY
         }
 
         return base.VisitMember(node);
