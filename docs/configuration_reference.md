@@ -1,22 +1,21 @@
-## ⚙️ Kafka.Ksql.Linq appsettings.json 構成仕様
+## ⚙️ Kafka.Ksql.Linq appsettings.json Configuration Reference
 
-Kafka.Ksql.Linq では、`appsettings.json` を通じて柔軟なDSL設定が可能です。以下はその構成要素と意味です。
-標準的なデフォルト値は `examples/configuration/appsettings.json` にまとめられています。
+Kafka.Ksql.Linq uses `appsettings.json` for flexible DSL configuration. This document describes each section. Default values are collected in `examples/configuration/appsettings.json`.
 
 ---
 
-### 1 📐 基本構造
+### 1 📐 Basic structure
 
 ```json
 {
   "KsqlDsl": {
-    
-    "Common": { /* 共通設定 */ },
-    "Topics": { /* トピック別設定 */ },
-    "SchemaRegistry": { /* スキーマレジストリ設定 */ },
-    "TableCache": [ /* エンティティ／キャッシュ設定 */ ],
+
+    "Common": { /* global Kafka settings */ },
+    "Topics": { /* per-topic settings */ },
+    "SchemaRegistry": { /* schema registry settings */ },
+    "TableCache": [ /* entity cache settings */ ],
     "DlqTopicName": "dead-letter-queue",
-    "DlqOptions": { /* DLQ トピック設定 */ },
+    "DlqOptions": { /* DLQ topic settings */ },
     "DeserializationErrorPolicy": "Skip|Retry|DLQ",
     "ReadFromFinalTopicByDefault": false
   }
@@ -25,22 +24,22 @@ Kafka.Ksql.Linq では、`appsettings.json` を通じて柔軟なDSL設定が可
 
 ---
 
-### 🧱 1.1 Common（共通Kafka設定）
+### 🧱 1.1 Common (Kafka-wide settings)
 
-| 項目 | 説明 |
-|------|------|
-| `BootstrapServers` | Kafkaブローカーの接続先 |
-| `ClientId` | 接続クライアント識別子 |
-| `RequestTimeoutMs` | Kafka操作タイムアウト（ms） |
-| `MetadataMaxAgeMs` | メタデータの最大有効期間（ms） |
-| `SecurityProtocol` | `Plaintext` / `SaslPlaintext` など |
-| `SaslMechanism` | 認証方式（例：`Plain`, `ScramSha256`） |
-| `SaslUsername`, `SaslPassword` | SASL認証情報 |
-| `SslCaLocation` | CA証明書ファイルパス |
-| `SslCertificateLocation` | クライアント証明書ファイルパス |
-| `SslKeyLocation` | 秘密鍵ファイルパス |
-| `SslKeyPassword` | 秘密鍵パスワード |
-| `AdditionalProperties` | 追加Kafka設定（key-value） |
+| Key | Description |
+|-----|-------------|
+| `BootstrapServers` | Kafka broker endpoints |
+| `ClientId` | Client identifier |
+| `RequestTimeoutMs` | Operation timeout (ms) |
+| `MetadataMaxAgeMs` | Metadata maximum age (ms) |
+| `SecurityProtocol` | `Plaintext` / `SaslPlaintext` etc. |
+| `SaslMechanism` | e.g. `Plain`, `ScramSha256` |
+| `SaslUsername`, `SaslPassword` | SASL credentials |
+| `SslCaLocation` | CA certificate path |
+| `SslCertificateLocation` | Client certificate path |
+| `SslKeyLocation` | Private key path |
+| `SslKeyPassword` | Private key password |
+| `AdditionalProperties` | Extra Kafka properties (key-value) |
 
 ```json
 "Common": {
@@ -62,12 +61,9 @@ Kafka.Ksql.Linq では、`appsettings.json` を通じて柔軟なDSL設定が可
 
 ---
 
-### 📦 1.2 Topics（トピックごとの詳細設定）
+### 📦 1.2 Topics (detailed per-topic settings)
 
-Producer の設定は `Kafka.Ksql.Linq.Configuration.Messaging.ProducerSection`、
-Consumer の設定は `ConsumerSection` クラスにそれぞれマッピングされます。
-アプリ設定ファイルの項目名とクラスプロパティが 1 対 1 で対応するため、
-カスタム設定を追加する際はこれらのクラスを拡張してください。
+Producer settings map to `Kafka.Ksql.Linq.Configuration.Messaging.ProducerSection`, and consumer settings map to `ConsumerSection`. Appsetting keys correspond one-to-one with class properties; extend these classes to add custom options.
 
 ```json
 "Topics": {
@@ -110,42 +106,40 @@ Consumer の設定は `ConsumerSection` クラスにそれぞれマッピング�
 }
 ```
 
-| Producer設定 | 説明 |
-|------------------|------|
-| `Acks` | 書き込み応答の強度設定（例：`All`, `1`） |
-| `CompressionType` | 圧縮方式（`Snappy`, `Gzip`, `Lz4`など） |
-| `EnableIdempotence` | 冪等性設定（重複防止） |
-| `MaxInFlightRequestsPerConnection` | 同時送信要求上限 |
-| `LingerMs` | バッチ送信待機時間（ms） |
-| `BatchSize` | バッチ書き込み単位（byte） |
-| `DeliveryTimeoutMs` | 配信タイムアウト（ms） |
-| `RetryBackoffMs` | リトライ待機時間（ms） |
-| `Retries` | 最大リトライ回数 |
-| `BufferMemory` | 送信バッファサイズ（byte） |
-| `Partitioner` | パーティショナー指定 |
-| `AdditionalProperties` | 追加Producer設定 |
+| Producer setting | Description |
+|------------------|-------------|
+| `Acks` | Write acknowledgment strength (`All`, `1`, etc.) |
+| `CompressionType` | Compression method (`Snappy`, `Gzip`, `Lz4`, etc.) |
+| `EnableIdempotence` | Enables idempotent writes |
+| `MaxInFlightRequestsPerConnection` | Max concurrent requests |
+| `LingerMs` | Batch wait time (ms) |
+| `BatchSize` | Batch size (bytes) |
+| `DeliveryTimeoutMs` | Delivery timeout (ms) |
+| `RetryBackoffMs` | Retry backoff (ms) |
+| `Retries` | Max retry count |
+| `BufferMemory` | Buffer size (bytes) |
+| `Partitioner` | Partitioner class |
+| `AdditionalProperties` | Extra producer settings |
 
-| Consumer設定 | 説明 |
-|------------------|------|
-| `GroupId` | コンシューマグループID |
-| `AutoOffsetReset` | 既読位置制御 |
-| `EnableAutoCommit` | 自動コミット |
-| `AutoCommitIntervalMs` | 自動コミット間隔 |
-| `SessionTimeoutMs` | セッションタイムアウト |
-| `HeartbeatIntervalMs` | ハートビート間隔 |
-| `MaxPollIntervalMs` | 最大ポーリング間隔 |
-| `MaxPollRecords` | 1回の最大取得件数 |
-| `FetchMinBytes` | 最小フェッチバイト数 |
-| `FetchMaxWaitMs` | フェッチ待機最大時間 |
-| `FetchMaxBytes` | 最大フェッチバイト数 |
-| `PartitionAssignmentStrategy` | パーティション割当戦略 |
-| `IsolationLevel` | 読み取り隔離レベル |
+| Consumer setting | Description |
+|------------------|-------------|
+| `GroupId` | Consumer group ID |
+| `AutoOffsetReset` | Offset reset policy |
+| `EnableAutoCommit` | Auto commit flag |
+| `AutoCommitIntervalMs` | Auto commit interval |
+| `SessionTimeoutMs` | Session timeout |
+| `HeartbeatIntervalMs` | Heartbeat interval |
+| `MaxPollIntervalMs` | Max poll interval |
+| `MaxPollRecords` | Max records per poll |
+| `FetchMinBytes` | Minimum fetch bytes |
+| `FetchMaxWaitMs` | Max fetch wait (ms) |
+| `FetchMaxBytes` | Max fetch bytes |
+| `PartitionAssignmentStrategy` | Partition assignment strategy |
+| `IsolationLevel` | Read isolation level |
 
----
+#### 🆕 Dynamic topic configuration
 
-#### 🆕 動的トピックの設定
-
-実行時に生成されるトピック（例: `rate_1m_pair` や `rate_hb_1m` など）は、基底エンティティに付与された `[Topic]` 属性の `PartitionCount` と `ReplicationFactor` を継承します。`appsettings.json` の `Topics` セクションに完全な名前でエントリが存在する場合は、その設定が属性値より優先されます。
+Runtime-generated topics (e.g., `rate_1m_pair`, `rate_hb_1m`) inherit `PartitionCount` and `ReplicationFactor` from the `[Topic]` attribute on the base entity. If a complete name exists in `appsettings.json` under `Topics`, those settings override attribute values.
 
 ```json
 "Topics": {
@@ -164,11 +158,11 @@ Consumer の設定は `ConsumerSection` クラスにそれぞれマッピング�
 }
 ```
 
-上記例では、`rate_hb_1m` は `rate_1m` の属性値を継承しますが、エントリがあるため設定が上書きされます。
+In the example, `rate_hb_1m` inherits from `rate_1m` but is overridden by its entry.
 
 ---
 
-### 🏪 1.4 Entities（Table cache settings）
+### 🏪 1.4 Entities (table cache settings)
 
 ```json
 "Entities": [
@@ -182,23 +176,23 @@ Consumer の設定は `ConsumerSection` クラスにそれぞれマッピング�
 ]
 ```
 
-| 項目 | 説明 |
-|------|------|
-| `Entity` | 対象POCOクラス名 |
-| `SourceTopic` | 入力元となるKafkaトピック名 |
-| `EnableCache` | キャッシュ有効化（bool） |
-| `StoreName` | キャッシュ名（省略時はトピック名を基に自動生成） |
-| `BaseDirectory` | RocksDBディレクトリのルートパス |
+| Key | Description |
+|-----|-------------|
+| `Entity` | Target POCO class name |
+| `SourceTopic` | Source Kafka topic |
+| `EnableCache` | Enable caching (bool) |
+| `StoreName` | Cache name (defaults to topic-based name) |
+| `BaseDirectory` | Root directory for RocksDB |
 
 ---
 
 ### 🛡️ 1.5 Validation
 
-- Validation mode is always Strict. The configuration key has been removed.
+- Validation mode is always Strict; the configuration key has been removed.
 
 ---
 
-### 💌 1.6 DLQ 設定
+### 💌 1.6 DLQ settings
 
 ```json
 "DlqTopicName": "dead-letter-queue",
@@ -213,40 +207,40 @@ Consumer の設定は `ConsumerSection` クラスにそれぞれマッピング�
 }
 ```
 
-未指定の場合、`DlqTopicName` は `dead-letter-queue` が使用されます。
+If unspecified, `DlqTopicName` defaults to `dead-letter-queue`.
 
-| 項目 | 説明 |
-|------|------|
-| `DlqTopicName` | DLQ用トピック名 |
-| `RetentionMs` | メッセージ保持時間(ms) |
-| `NumPartitions` | パーティション数 |
-| `ReplicationFactor` | レプリケーション係数 |
-| `EnableAutoCreation` | 自動作成を行うか |
-| `AdditionalConfigs` | 追加トピック設定 |
-
----
-
-### 🧩 DSL記述とappsettingsの対応関係
-
-| Kafka設定項目             | DSLでの指定                          | appsettings.jsonキー                         | 補足説明 |
-|----------------------------|--------------------------------------|---------------------------------------------|--------|
-| Bootstrap Servers          | なし                                 | `Kafka:BootstrapServers`                   | Kafka接続先クラスタ |
-| Schema Registry URL       | なし                                 | `KsqlDsl:SchemaRegistry:Url`              | POCOスキーマ自動登録時に使用 |
-| ksqlDB URL                | なし                                 | `KsqlDsl:KsqlDbUrl`                       | ksqlDB RESTエンドポイント |
-| Auto Offset Reset | `.WithAutoOffsetReset(...)` | `Kafka:Consumers.<name>.AutoOffsetReset` | トピックごとの既読位置制御（複数可） | 通常は `earliest` or `latest` |
-| GroupId | `.WithGroupId(...)` | `Kafka:Consumers.<name>.GroupId` | コンシューマグループID（複数可） | コンシューマグループID |
-| トピック名                 | `[KsqlTopic("orders")]`             | `KsqlDsl:Topics.orders` で上書き可         | 属性またはFluent APIで指定 |
-| パーティション数           | `[KsqlTopic("orders", PartitionCount = 12)]` | `KsqlDsl:Topics.orders.NumPartitions` 等    | DSLと設定の併用可能 |
-| Replication Factor        | なし（構成ファイルで指定）          | `KsqlDsl:Topics.orders.ReplicationFactor`  | Kafkaクラスタ構成に依存 |
-| DLQ構成                    | `.OnError(ErrorAction.DLQ)`          | `KsqlDsl:DlqTopicName`, `DlqOptions` | DLQの有効化、保持期間指定など |
+| Key | Description |
+|------|-------------|
+| `DlqTopicName` | DLQ topic name |
+| `RetentionMs` | Message retention (ms) |
+| `NumPartitions` | Partition count |
+| `ReplicationFactor` | Replication factor |
+| `EnableAutoCreation` | Automatically create topic |
+| `AdditionalConfigs` | Extra topic configs |
 
 ---
 
-### 📦 2. 実装例との対応（MyKsqlContext & Order & OrderCount）
+### 🧩 Mapping DSL to appsettings
+
+| Kafka setting item        | DSL specification                       | appsettings.json key                         | Notes |
+|---------------------------|-----------------------------------------|----------------------------------------------|-------|
+| Bootstrap Servers         | —                                       | `Kafka:BootstrapServers`                     | Kafka cluster |
+| Schema Registry URL       | —                                       | `KsqlDsl:SchemaRegistry:Url`                 | Used when auto-registering POCO schemas |
+| ksqlDB URL                | —                                       | `KsqlDsl:KsqlDbUrl`                          | ksqlDB REST endpoint |
+| Auto Offset Reset         | `.WithAutoOffsetReset(...)`             | `Kafka:Consumers.<name>.AutoOffsetReset`     | Typically `earliest` or `latest` |
+| GroupId                   | `.WithGroupId(...)`                     | `Kafka:Consumers.<name>.GroupId`             | Consumer group ID |
+| Topic name                | `[KsqlTopic("orders")]`                 | Overridable via `KsqlDsl:Topics.orders`      | Specify via attribute or Fluent API |
+| Partition count           | `[KsqlTopic("orders", PartitionCount=12)]` | `KsqlDsl:Topics.orders.NumPartitions`     | DSL and config both usable |
+| Replication factor        | — (set in config)                       | `KsqlDsl:Topics.orders.ReplicationFactor`    | Depends on Kafka cluster |
+| DLQ configuration         | `.OnError(ErrorAction.DLQ)`             | `KsqlDsl:DlqTopicName`, `DlqOptions`         | Enable DLQ, retention etc. |
+
+---
+
+### 📦 2. Implementation example (MyKsqlContext & Order & OrderCount)
 
 ```csharp
 public class Order
-{ 
+{
     public string ProductId { get; set; }
     public decimal Amount { get; set; }
 }
@@ -254,16 +248,15 @@ public class Order
 public class MyKsqlContext : KsqlContext
 {
     protected override void OnModelCreating(KsqlModelBuilder modelBuilder)
-{
-    modelBuilder.Entity<Order>()
-        .WithGroupId("orders-consumer")
-        .WithAutoOffsetReset(AutoOffsetReset.Earliest);
+    {
+        modelBuilder.Entity<Order>()
+            .WithGroupId("orders-consumer")
+            .WithAutoOffsetReset(AutoOffsetReset.Earliest);
 
-    modelBuilder.Entity<OrderCount>()
-        .WithGroupId("order-counts-consumer")
-        .WithAutoOffsetReset(AutoOffsetReset.Latest)
-        .UseFinalTopic();
-});
+        modelBuilder.Entity<OrderCount>()
+            .WithGroupId("order-counts-consumer")
+            .WithAutoOffsetReset(AutoOffsetReset.Latest)
+            .UseFinalTopic();
     }
 }
 ```
@@ -276,4 +269,8 @@ public class MyKsqlContext : KsqlContext
       "orders-consumer": {
         "GroupId": "orders-consumer",
         "AutoOffsetReset": "earliest"
-      },
+      }
+    }
+  }
+}
+```

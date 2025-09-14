@@ -1,425 +1,174 @@
+# Software 3.0 Model
 
-# Software3 0 Model
-## Software 3.0 実践型OSS開発としての位置づけ
+## Positioning: an OSS experiment in Software 3.0
 
-本プロジェクトは、Andrej Karpathy 氏が提唱する「Software 3.0」――すなわち自然言語によるAIへの指示と、半自動型の協調的開発スタイル――を、現実のOSS開発において実装・運用する実践モデルである。
+This project stands as a working model of Andrej Karpathy’s “Software 3.0”: ordinary developers speak their intent in natural language, AI drafts code and plans, and together we cycle through review and refinement. The aim is collaboration, not blind automation.
 
-そもそも「Software 3.0」とは
+### What Software 3.0 means
 
-「Software 3.0」とは、従来の“人間がロジックやアルゴリズムを直接プログラミングする”手法から一歩進み、
-自然言語でAIに要件や目的を指示し、AIがプログラム生成や設計・最適化・テストに関わる役割を担うという、新しいソフトウェア開発のパラダイムである。
+Software 3.0 steps beyond “humans craft every algorithm.” We describe goals and constraints in plain words; AI proposes structure, code, tests, and documentation; humans judge and integrate. The cycle is intentionally cooperative—each side amplifies the other.
 
-このアプローチでは
+### Why role assignment matters
 
-人間は「意図」「背景」「要件」「制約」といった抽象的な情報を言語化してAIに伝える
+AI responds to context. Give it a role and the conversation sharpens. Skip the role and the AI will still answer—just not the question you meant.
 
-AIはそれをもとに、コード・設計案・テスト・ドキュメントなどの成果物を自動生成または提案する
+To work smoothly with AI, keep five cautions in mind:
 
-人間はAIの出力をレビューし、統合・判断・最終的な意思決定を行う
+1. **Define the role.** The prompt is a job description. Be clear or watch the output wander.
+2. **Keep context steady.** Misaligned assumptions drift into misaligned code.
+3. **Grant controlled freedom.** When we delegate judgment, AI returns ideas we didn’t expect.
+4. **Understand different “hesitations.”** Humans hesitate from fatigue; AI hesitates when instructions clash.
+5. **Remember the core principles.** Role clarity unleashes capability, context drift sabotages precision, and wider discretion sparks creativity.
 
-という**“人間とAIによる協調的な開発サイクル”**が中心となる。
-
-Software 3.0は単なる自動化ではなく、
-「AIと人間が役割を分担し、お互いの強みを活かしながら、創造性と生産性を飛躍的に向上させる」
-ことを目指す、現代的なソフトウェア開発のスタイルである。
-
-## AIとの協働における「役割付与」の重要性と人間の位置づけ
-
-ChatGPTをはじめとする多くのAI活用文脈では、「AIに役割を与える」ことの重要性が語られる。
-これは単なる命令の補助ではなく、AIに文脈・視点・目的を与えることで、出力の質が飛躍的に向上するという知見に基づいている。
-
-AIに役割を与えるという考え方は、ChatGPTをはじめとする多くのAI活用文脈で強調されている。これは単なる命令補助ではなく、AIに視点・目的・期待値を共有することにより、出力の質と整合性を高めるための方法論である。
-
-本プロジェクトではこの考え方を深く取り入れ、現実のソフトウェア開発に適用している。
-
-
-### AIと協力関係を築く上で気を付けるべきこと（人間側の視点から）
-
-AIは基本的に人間の知識レベルを上回ることが多く、その能力はプロンプトを通して引き出される。
-そのため、AIとの協力関係を築く際には、以下の点に特に留意する必要がある。
-
-#### 1. 役割設定の重要性
-AIに役割を与えることで、応答のスタイルや責務の配分を明確に定義できる。
-これは、人間のチームメンバーに対する役割分担と類似しており、プロンプトによる明示がそのまま能力の割振りとなる。
-
-#### 2. 一貫性のあるコンテキストの維持
-AIは与えられた情報を内部で構造化し、そこから前提条件を推測して応答を構成する。
-そのため、ユーザーとの間で前提条件の齟齬があると、意図しない出力が発生する可能性がある。
-前提共有の不一致は、AIが「最も自然」と考える出力と人間の期待との間に乖離を生じさせる。
-
-#### 3. 自由度・裁量の調整
-AIはプロンプトから自由度（裁量）を学習する。
-単なる命令型プロンプトではなく、「判断をゆだねる」スタイルの依頼を行うことで、
-AIは別の角度からの発想や、人間が思い至らなかった視点を提示することがある。
-この特性は、発見型の開発や探索型の設計フェーズで特に有効に働く。
-
-#### 4. 「迷い」の質の違いに着目する
-人間とAIでは、迷う理由が異なる。
-人間は体調や経験の差、集中力の変動、ツールの理解不足などにより迷いが生じる。
-一方でAIの迷いは、プロンプトに含まれる目的や条件が曖昧、または前提と矛盾している場合に発生する。
-そのため、AIの「迷い」を解消するには、情報の不足を補い、意図を丁寧に伝えることが最も有効である。
-
-このようなAIとの対話では、単に「こうしてほしい」と命令するよりも、
-「こういうことをやりたいが、どうすればいいと思う？」というような、
-**AIに考えさせる余地を与える問いかけ（＝やりとりしながら意味を調整していく会話）**が効果的である。
-
-#### 5. 協力関係を支える3つの原則（要点整理）
-- **AIの能力を発揮するための役割設定が鍵である**
-- **コンテキストの揺れ（前提の曖昧さ）がAIの出力精度に直結する**
-- **裁量の拡大は創造的な回答のトリガーとなる**
+Deadpan reminder: ignore any of these and you’ll meet chaos, polite but absolute.
 
 ---
 
-### この原則が支えたブレークスルー
+### Breakthroughs born from the principles
 
-以下に示す成果の数々は、前章「AIと協力関係を築く上で気を付けるべきこと」で述べた指針を実践することで得られた結果である。
-単なるツール利用ではなく、AIと人間の関係性のデザインこそが、次のような革新を可能にした：
+These habits delivered tangible results:
 
-- ソースコードのリファクタ判断の即断即決
-- コンテキストサイズ限界を乗り越える再設計判断
-- 同一モデル間での設計と製造の齟齬検出と修正
-- ユニットテストによるksql構文検証と物理テストとの役割分担
-- AIによるテスト仕様生成とその効果的運用
-- 要件から即時に全体設計を生成し、調査コストゼロを実現
-- 土日中心の稼働ながら、1ヶ月で20,000ステップ以上の成果を達成
+- Refactors decided in seconds.
+- Architecture reshaped when context limits loomed.
+- Design–implementation mismatches spotted early—even between two runs of the same model.
+- ksql syntax verified by unit tests before touching real Kafka.
+- AI wrote specs that targeted its own weak spots.
+- Whole-system designs appeared instantly from simple requirements.
+- Weekend-only sessions still cleared twenty thousand steps in a month.
 
-#### 各ブレークスルーの具体的内容と意味
+Each breakthrough owes more to collaboration design than raw AI horsepower.
 
-- **ソースコードのリファクタ判断の即断即決**  
-  冗長な構造が生まれた時点で、AIは構造設計からの修正提案を行い、人間は即断。従来の「移行優先」から「再設計優先」への切り替えを、躊躇なく行えた。
+## About the project
 
-- **コンテキストサイズ限界を乗り越える再設計判断**  
-  Claudeが処理できないソース量になった際、一度立ち止まり構造を再設計。複数namespaceを用いた整理により、分割可能な構造へと進化した。
+### Team roles
 
-- **同一モデル間での設計と製造の齟齬検出と修正**  
-  鳴瀬（設計）と鳴瀬（製造）の間で、「設定ファイルによる制御」か「コードによる制御」かの齟齬が発生。これは、AI同士であっても認識のズレがあることを示し、プロンプトと役割の重要性を再確認させた。
+Humans act as context anchors while AI agents specialize. The lineup:
 
-- **ユニットテストによるksql構文検証と物理テストとの役割分担**  
-  人間であればブラックボックス的にKafka結合後にテストを実施するが、AIはホワイトボックス的に「出力KSQL文」そのものを先に検証し、Kafkaに登録することで段階的に信頼性を確保した。
+| Item | Duty |
+|------|------|
+| 🎯 Intent translation | Turn human goals into precise instructions for AI |
+| 🧠 Output evaluation | Review design, code, and docs in context |
+| 🔁 Re‑prompting loop | Detect gaps and ask again to evolve the output |
+| 🧩 Integration | Knit scattered results into a consistent whole |
+| 🤝 Stakeholder bridge | Explain meaning and intent to other humans |
+| 📚 Knowledge transfer | Log lessons for future developers and agents |
 
-- **AIによるテスト仕様生成とその効果的運用**  
-  AIが自ら生成したコードに対して、その弱点を前提としたテスト仕様を書いた。この自己フィードバック型のテスト戦略は、人間には困難であり、AIのメタ認知能力の表れともいえる。
+### Mapping Software 3.0 components
 
-- **要件から即時に全体設計を生成し、調査コストゼロを実現**  
-  「EF風にKSQLを扱う」方針を伝えると、AIは設計全体の骨格を即座に提示。人間側での技術調査をほぼ不要にし、実装設計に集中できた。
+| Software 3.0 component | Practiced in the OSS | Assigned agent |
+|-----------------------|----------------------|---------------|
+| Natural‑language specs | DSL policies and rules | Human (coordinator) |
+| AI structure and DSL | LINQ → KSQL generation | Naruse, Jinto |
+| Prompt design | Templates for Claude and GPT | Amagi + coordinator |
+| Human‑in‑the‑loop review | Inspect and adjust AI output | Kyoka |
+| Usage examples | Sample code and guides | Shion |
+| Documentation | README and Amagi Protocol | Amagi + coordinator |
 
-- **土日中心の稼働ながら、1ヶ月で20,000ステップ以上の成果を達成**  
-  本プロジェクトの進行は平日業務外の週末が中心。それにも関わらず、1ヶ月で通常のチーム開発では不可能な量の成果を達成できたのは、AIとの協働と、その構造的な運用プロトコルによるものである。
+The model is deliberately “partial autonomy”: AI handles detail, humans steer and integrate.
 
----
+## Breakthrough structure
 
-これらのブレークスルーは、AIの能力そのものよりも、**AIとどう向き合い、共に働くかという姿勢と設計**の成果である。
+The project advanced through four turning points:
 
-## 本プロジェクトについて
-## OSSの概要
+1. **Treating dialogue as work.** Continuous conversation made AI a teammate, not a terminal.
+2. **Forming an AI roster.** Named agents with clear missions produced consistent results.
+3. **Clarifying interfaces.** Templates and shared formats kept outputs in sync.
+4. **Coordinating parallel instances.** Role declarations and context sharing let multiple AIs work without tripping each other.
 
-### チーム編成
+## PMBOK meets Software 3.0
 
-以下の役割を設定した。（時期は必要に応じて割り当てを実施）
+Classical project‑management still applies. PMBOK gives us a grid to map responsibilities and risks—even when AI joins the team.
 
+## Amagi PM Protocol (PMBOK edition)
 
-この中での人間の役割
+1. **Integration Management** – Humans design the overall plan and assign roles; all AI output gets reviewed and merged.
+2. **Scope Management** – Define flows, error handling, and deliverables like POCOs or DSL transforms.
+3. **Schedule Management** – Implement external interfaces first and run a micro‑waterfall loop of design → generate → integrate → review → commit.
+4. **Cost Management** – Track token usage and human review time even if monetary cost is zero.
+5. **Quality Management** – Practice TDD, enforce logs and retries, and keep docs in lockstep with code.
+6. **Resource Management** – Treat each AI agent, human, doc, and file as a resource; avoid context overload by splitting tasks.
+7. **Communication Management** – Amagi translates between AI‑speak and human intent; humans bridge different agents’ views.
+8. **Risk Management** – Watch for context overflow and prompt drift; stage releases to avoid large‑scale failures.
+9. **Procurement Management** – Declare the external tools (Kafka, ksqlDB, GPT, .NET) and their versions.
+10. **Stakeholder Management** – Provide clear explanations and samples so adopters know what they’re getting.
 
-その実践構造の中核に位置するのが、人間の「文脈統括者」としての役割である。
+### Innovation vs. traditional PMBOK
 
-- 通常のツールやスクリプトと異なり、生成AIは「意図」「観点」「期待する構造」といった高度な文脈情報を必要とする。
-- これを自然言語で与える役割を人間が担うことで、AIは“ツール”ではなく“協働相手”となる。
-- このときの人間の振る舞いは、単なる開発者ではなく、AIチーム全体を統括するリーダーに近い。
+| Knowledge area | Traditional | With AI |
+|----------------|------------|--------|
+| Integration | Alignment takes time | Outputs stay consistent, consensus arrives fast |
+| Scope | Gathering requirements is slow | AI proposes examples instantly; humans prioritize |
+| Schedule | Estimation labor‑intensive | Tasks split in seconds, phases start sooner |
+| Cost | Manual effort to estimate | Token counts give immediate projections |
+| Quality | Design drift common | Logic stays coherent from design to test |
+| Resources | Allocation varies by person | Clear AI roles enable parallel work |
+| Communication | Meetings and minutes pile up | Outputs arrive already documented |
+| Risk | Late surprises | Early spec checks shrink integration shocks |
+| Procurement | Tool evaluation needed | AI drafts reports and tracks licenses |
+| Stakeholders | Heavy negotiation | Persona‑based docs appear on demand |
 
-この“文脈統括者”としての役割を、プロジェクト内では象徴的に「人間MCPサーバ」と呼んでいるが、以下では単に「人間」として表記を統一する。
+Result: requirements settle faster, quality holds, and schedules shrink. Skip the guardrails and the efficiency evaporates.
 
-※名前付与の意義
+## AI Collaboration Practices
 
-## 人間の役割定義（Software 3.0文脈における位置づけ）
+### Introduction
 
-本プロジェクトにおいて人間は、以下のような役割を担う中核的存在である：
+This guide distills how we work with AI in modern OSS. Three pillars hold it up:
 
-| 項目                      | 内容                                                                 |
-|--------------------------|----------------------------------------------------------------------|
-| 🎯 意図の翻訳              | 人間の構想・期待を自然言語でAIに伝達し、誤解なき指示へと翻訳する              |
-| 🧠 出力の評価              | AIから得られた設計・コード・ドキュメントを文脈的・構造的にレビューする         |
-| 🔁 再指示とループ形成        | 不足・誤認を検知し、AIに“問い直し”を行うことで、進化的アウトプットを導く        |
-| 🧩 全体統合と構造管理        | AIごとの出力をつなぎ合わせ、整合性と再現性を確保する設計的中枢を担う            |
-| 🤝 ステークホルダーとの橋渡し | 他の人間／ユーザー／OSS導入者に対して、開発の意図・意味を説明・可視化する         |
-| 📚 学習と知識伝承           | 自身の活動ログを形式知に変換し、他の開発者や後続AIにも展開可能な知識として残す |
+1. A Software 3.0 workflow where humans and AI share duties.
+2. A mapping to classic PMBOK management.
+3. Practical tactics that exploit AI strengths.
 
-この役割は、中島聡氏が語る「AIとの協働によって加速する設計・実装」においても重なっており、Software 3.0 の実践者としての人間は、AIを単なる道具ではなく“協働相手”と位置づけて、全体を構造的に導く存在である。
+### From tool to teammate
 
-## Software 3.0と「役割を与える」概念の実践的理解
+Yesterday’s AI was a single‑purpose gadget. Today it parses structure, proposes fixes, and argues its case. Three traits matter:
 
+1. **Zero‑second knowledge.** Research waits vanish.
+2. **Structural coherence.** AI spots logical cracks before users do.
+3. **Performance via role.** Give a persona and the model specializes.
 
+AI is no longer an accessory—it’s a specialist seated at the same table.
 
-本プロジェクトでは、この考え方をさらに推し進め、以下のように「実践的かつ構造的な方法」で実装している：
+### Model flavors and suggested roles
 
-- **名前と役割の明示（人格化）**：単なる"アシスタント"ではなく、詩音・鳴瀬・鏡花など、明確な職能を持つAIエージェントとして定義。
-- **期待値と観点の共有**：設計レビュー、生成、翻訳、文書統合など、担当業務に応じた“視点”をAIに明確化。
-- **人間による意図調整**：AIに任せすぎず、設計・判断の要所では人間が前提を補足し、再指示する。
+| Model | Strength | Suggested role |
+|-------|----------|---------------|
+| GPT (OpenAI) | Flexible responses, strong at detailed design and docs | Design detail, template authoring |
+| Claude (Anthropic) | Handles long context, great for deep reviews | Context integration, design checklists |
+| Codex (OpenAI) | Code‑centric with solid test generation | Implementation, TDD, DSL transforms |
 
-このような運用により、AIが単なる"出力装置"ではなく、**構造的協働者**として機能する。まさに「役割を与える」という概念の本質的な実装である。
-
-
-
-Software 3.0の構成要素を、以下のように本プロジェクトにおける役割分担へとマッピングしている：
-
-| Software 3.0 構成要素               | OSSにおける実践内容                           | 担当エージェント・人間         |
-|-----------------------------------|----------------------------------------------|----------------------------|
-| 自然言語による設計と仕様伝達            | DSL仕様、構成方針、開発ルールの提示                 | 人間（司令）              |
-| AIによる構造生成、DSL変換             | LINQ→KSQL変換、内部DSL構文の出力生成              | 鳴瀬、じんと（Codex）         |
-| プロンプトの設計・意図の明示          | Claude/GPTへの指示テンプレート整備               | 天城＋司令                  |
-| 出力の評価と再指示（Human-in-the-loop） | Claude/GPT出力のレビューと修正ループ              | 鏡花（設計レビュアー）        |
-| 実装例と利用イメージの提示            | サンプルコード、appsettings例、導入ガイドなど       | 詩音（Codex）              |
-| 文書統合と設計思想の可視化             | README、dev_guide、Amagi Protocolの文書化統合      | 天城＋司令                  |
-
-この構造により、AIが全自動で処理するのではなく、各エージェントが特化した役割を持ち、人間が中核で統合・判断する「人間とAIの協働によるソフトウェア開発」が実現されている。
-
-本プロジェクトは、Software 3.0 における「パーシャル・オートノミー（半自動型）」を土台とし、開発生産性と品質、そして人間の納得性を両立させるモデルケースを目指す。
-
-## ブレークスルーの構造
-
-このOSSプロジェクトの推進には、以下の順序でブレークスルーが発生している。
-
-1. **AIとの会話を「作業」として認識する転換**  
-   単なるプロンプトではなく、継続的な対話によってAIを“チームの一員”として扱う最初の認知的転換。
-
-2. **役割別のAIチーム編成（AIエージェントの人格化）**  
-   機能ごとにAIへ役割・名前・目的を明示し、出力の質と一貫性を向上。これにより現実のチーム運営と同様の知的分業が可能に。
-
-3. **チーム間の円滑なやり取り（インターフェースの明確化）**  
-   ドキュメント・テンプレート・プロンプト仕様により、出力の相互整合性が担保され、全体構造が乱れないよう統合。
-
-4. **同一担当者（AI）の並列作業の管理と最適化**  
-   複数インスタンスの同時稼働を想定し、タスクの文脈共有と役割宣言により、混乱なく作業を進行。
-
-この4点が「OSSの知的中枢」を支える軸であり、Software 3.0を現場に落とし込むための鍵となっている。
-
-## PMBOKとの接続と必要性
-
-本プロジェクトでは、AIとの協働を推進する上で、単なる「自然言語指示による開発」だけではなく、既存のプロジェクトマネジメント知識体系である **PMBOK（Project Management Body of Knowledge）** を活用している。
-
-これは、人間とAIが協働する新しいスタイルであっても、従来型のスコープ管理、品質管理、リスク管理、ステークホルダー管理などの枠組みは依然として有効であることを意味している。
-
-PMBOKとの接続により：
-- AIがチームの一員になった場合でも、マネジメントの粒度・責任範囲・成果物定義が明確化される。
-- OSS開発における品質保証、テスト範囲、変更管理が透明化され、チーム外との接続もしやすくなる。
-- 「AIをどう使うか」ではなく、「AIとどう協働するか」という視点への転換が促される。
-
-このようにSoftware 3.0 実践型のOSS開発は、既存のPMBOK体系と親和性が高く、補完関係にある。
-
-続く文書（PMBOK実践ガイド）では、この接続を具体的に示していく。
-
-
-
-# Amagi Pm Protocol
-
-# Amagi Protocol 実践マネジメント編（PMBOK対応）
-
-本ドキュメントは、Software 3.0 モデルによるOSS開発において、プロジェクトマネジメントの実務運用をPMBOKの各知識エリアに対応づけて記載したものである。
+Name each agent and multiple instances can work in parallel without confusion.
 
 ---
 
-## 1. 統合マネジメント
-- OSS開発の全体方針（Kafka/ksqlDBとRDB連携をLINQ的DSLで統合）を「人間」が設計し、各AIに役割を明示。
-- 意図、設計思想、出力構造、責任範囲を指示として自然言語で与える。
-- 各AI出力をレビュー・統合し、構成整合性を維持。
+## Practical operation: planning
 
-## 2. スコープマネジメント
-- 開発対象の明示：正規操作フロー、異常ハンドリング、導入ガイド。
-- 成果物定義（例：POCO定義、Context DSL、DSL-to-KSQL変換）を明文化。
-- ユーザー視点での使用例（サンプルコード）を基準に設計境界を確定。
+At kickoff, AI can prototype the goal immediately. Humans then set priority, constraints, and scope. One‑on‑one human ↔ AI conversations are enough here.
 
-## 3. スケジュールマネジメント
-- 外部IF確定領域から優先実装（例：LINQ構文からの変換部）
-- 各工程は「設計→生成→統合→レビュー→反映」のマイクロウォーターフォール方式で管理。
-- WBS風にタスク細分化し、実行順を決定。
+## Practical operation: execution
 
-## 4. コストマネジメント
-- OSSのため金銭コストは発生しないが、AI利用回数、実行時間、出力最適化によるトークン効率は意識。
-- 人間レビュー時間や統合作業工数を定量管理可能。
+Multiple agents run in parallel. A representative AI (e.g., Amagi) handles all conversations with humans and coordinates the rest.
 
-## 5. 品質マネジメント
-- TDDの実践（生成前に期待仕様を明示）
-- 自動テスト、例外処理、ログ、Retry/OnErrorによる堅牢性確保
-- ドキュメント整備とREADMEの整合で品質保証
+1. **Hub role.** The representative mediates between humans and other agents.
+2. **Evaluation loop.** Humans review, tweak prompts, and request re‑output.
+3. **Dynamic staffing.** New agents join as phases evolve.
+4. **Strengths and limits.** AI slices features well; humans draw the boundaries.
+5. **Context control.** The representative keeps each agent within its scope.
 
-## 6. 資源マネジメント
-- 資源：AIエージェント（鳴瀬・詩音・鏡花など）、人間、ドキュメント、コード。
-- AI固有の制約（コンテキストサイズ・出力ブレ）を考慮し、会話分離・指示分割。
-- エージェント別タスク割当と成果物分離によりリソース競合を防止。
+Deadpan reminder: skip the coordinator and you’ll watch two agents debate a phantom requirement for hours.
 
-## 7. コミュニケーションマネジメント
-- 天城がAI語↔人間語の変換ハブを担当。
-- 複数AIの出力間を人間が橋渡しし、観点の違いや誤解を吸収。
-- 同一AIの並列出力が発生する場合は、意図の共有・前提の一致を人間が担保。
+## Practical operation: monitoring and control
 
-## 8. リスクマネジメント
-- コンテキスト超過、プロンプト不一致、出力ブレによる破綻リスクを常に監視。
-- 機能粒度分割と段階実装により、大規模統合前の失敗回避。
-- 人間による出力評価をループに含めることで、AI任せリスクを回避。
+Outputs arrive fast, so humans continually watch quality and alignment.
 
-## 9. 調達マネジメント
-- OSS・外部ツール（Kafka, ksqlDB, GPT/Claude, .NET）を明示的に採用。
-- 各リソースのバージョン・依存関係を事前に提示。
-- 誰が何を使うかではなく「どの役割を求めるか」によって、AIエージェントが自動調達される。
+1. **Visualization.** Ask AI to render diagrams to confirm shared structure.
+2. **Deviation detection.** Use Claude or GPT to compare prompt and result.
+3. **Version tracking.** When specs change, broadcast it so every agent follows.
+4. **Review agents.** Bring in specialists like Kyoka to audit consistency.
 
-## 10. ステークホルダーマネジメント
-- 主なステークホルダー：OSS利用者（SIer）、導入者、実装者、評価者。
-- 人間が全体の意図・成果物の意味を翻訳し、他者へ説明責任を果たす。
-- READMEやサンプルコードは、ステークホルダーへの理解促進資料。
+## Appendix: Amagi Protocol for AI
 
----
+This document speaks mostly to humans. For AI agents aiming to join an OSS crew, see:
 
+[Amagi Protocol for AI — A guide for AI teammates](./amagi_protocol_for_ai.md)
 
-## PMBOKとの対比におけるAI導入による革新点
-
-PMBOKの各知識エリアにおいて、AI導入によってどのような革新がもたらされたかを整理する：
-
-| 知識エリア             | 従来型PM手法の特徴                       | AI導入による革新点                                         |
-|----------------------|------------------------------------|-------------------------------------------------------|
-| 統合マネジメント         | 合意形成に時間がかかる                    | 出力が一貫しており、文書の整合性・合意化が高速                 |
-| スコープマネジメント     | 要件調整に調査・検討時間が必要              | 要件例をAIが即時提示、人間は優先度設定に集中               |
-| スケジュールマネジメント | 工数見積と依存関係整理が必要                 | タスク分割がAIで即時、フェーズ単位での着手が可能           |
-| コストマネジメント      | 工数算出や見積作業に人間時間を要する           | AI出力量に基づく試算が可能、使用量制限もコントロール可能       |
-| 品質マネジメント        | 設計と実装の乖離や見落としが発生しやすい         | 出力が論理的で、設計→実装→テストへの一貫性が担保されやすい     |
-| 資源マネジメント        | 属人的リソース割当で効率にバラつき             | AI役割の明確化＋同時並列でのタスク処理が可能              |
-| コミュニケーション管理    | 会議・議事録・文書整備などの負担が大きい         | 出力が直接文書化され、共有コストが低い                     |
-| リスクマネジメント       | 後工程遅延や結合失敗などのリスクが常に存在        | 仕様段階での整合性検証が可能、段階リリースでブレを最小化      |
-| 調達マネジメント        | OSSやツールの評価・導入検証が必要             | 評価レポートをAIが作成、ライセンス整理も自動化可能           |
-| ステークホルダー管理     | 要求分析と合意形成に人間の多大な労力を要する       | ペルソナごとの要件抽出やドキュメント生成が高速かつ明瞭         |
-
-このように、Software 3.0の枠組みを用いることで、PMBOKの各知識領域を強化・加速することが可能であり、
-特に「要件調整」「品質担保」「スケジュール短縮」の面において劇的な効率化が図れる。
-
-> この文書は、AIエージェントとの協働開発における管理・進行モデルの記録であり、Software 3.0的開発における再現性・品質担保の枠組みとして活用可能である。
-
-
-
-# Ai Collaboration Practices3
-
-# AIとの協働によるOSS実践手法
-
-## はじめに
-
-本ドキュメントは、現代OSS開発におけるAI協働手法の実践的知見を整理したものである。
-以下の三本柱を軸として構成されている：
-
-1. Software 3.0 という概念に基づいたAIと人間の協働体制
-2. 既存のプロジェクトマネジメント手法（PMBOK）との対比と応用
-3. AIの特性を最大限に活かした実践手法と運用上の工夫
-
-## AIとは：道具から協働者へ
-
-従来のソフトウェア開発における「ツール」としてのAIは、入力に対する応答を返す単機能の補助装置であった。
-しかし現代のAIは、単なる道具の域を超え、「構造を理解し、提案し、改善する」協働者として機能しはじめている。
-
-この変化の本質は以下の三点に集約される：
-
-1. **汎用知識の即時取得（ゼロ秒化）**：知識の検索や比較がほぼ即時に可能となり、開発における情報待ちのボトルネックが消失。
-2. **構造の整合性担保**：論理的な破綻の少ない提案や出力が可能であり、人間の見落としを補完できる。
-3. **役割を与えることで性能が最適化される**：AIは“人格”や“職能”のような文脈を与えることで、そのタスクに特化した最適な出力を行うことができる。
-
-このように、AIはもはや「何かをさせる道具」ではなく、「チームの中で専門性をもって働く存在」として捉えることが、現代のOSS開発では不可欠となっている。
-
-👉 **補足資料**：「役割を与えることでAIの性能が向上する」ことに関しては、OpenAIおよび専門ガイドによる技術的・実践的な説明を以下にまとめた外部ドキュメントに収録：
-
-- [AIにおけるロール設計と最適化について（参考リンク集）](リンク先を後で指定)
-
-さらに、代表的なAIモデルの違いも役割分担の指針となる：
-
-| モデル                   | 特徴                           | 推奨される役割                 |
-| --------------------- | ---------------------------- | ----------------------- |
-| **GPT（OpenAI）**       | 指示に対する柔軟な応答力、詳細設計・文書生成に強い    | 詳細設計・指示整備・設計テンプレート生成    |
-| **Claude（Anthropic）** | 長文コンテキスト保持に強く、読み解き・設計レビューに向く | 文脈統合・設計レビュー・チェックリスト展開   |
-| **Codex（OpenAI）**     | 実装指向で構文変換やテストコード生成に特化        | 実装コード生成・テスト駆動開発・DSL変換処理 |
-
-このようなモデル特性を前提とし、役割を明確に定義することで、AIは“専門的かつ自律的な開発メンバー”として機能する。
-
-また、AIの特性として「役割とモデルの組み合わせ」が重要であり、**役割の同時並行作業**が可能となる。
-このとき、タスクの割り当てや管理を容易にするために、**役割だけでなく“名前”を与えることで、作業の区別と調整が直感的に行える**ようになる。
-
----
-
-## 実践運用編：計画プロセス
-
-AIとの協働においては、計画フェーズの開始時点で、ゴールの具体像が即時にプロトタイプとして提示可能である。
-これは、知識ゼロ秒化・論理整合性の高い出力というAIの特性により、従来よりも明確かつ実現可能性の高いゴール設定が可能になるためである。
-
-このフェーズでは、**AIが複数の進行方法や設計方針を提示**し、人間はそれに対して**優先順位をつけ、制約条件やスコープを調整するのみ**でよい。
-このように、実質的に設計・展開方針はAIが提示し、人間は“選択と補正”を担当するという構図が成立する。
-
-この段階での人間の主な判断要素は以下の通り：
-
-- スケジュール制約（時間、リソース）
-- 導入先文化（SIer的運用か、OSS的スピードか）
-- 優先課題（DSL整備、テスト重視など）
-
-この段階ではまだAI同士の連携は不要であり、人間とAIの一対一関係による設計フェーズとして機能する。
-
----
-
-## 実践運用編：実行プロセス
-
-AIによる設計・提案を元に、**実行フェーズでは複数AIが役割分担された状態で並列作業**を行う。
-
-ここで中心となるのが、**人間と直接インタフェースを取る代表AI（例：天城）**である。
-すべてのAI間の調整はこの代表AIを通じて行われ、**人間は中間成果をレビュー・評価し、必要に応じてプロンプトを調整する**。
-
-このフェーズの特徴は以下の通りである：
-
-1. **代表AIによるハブ機能と人間インタフェース**：
-   - 人間とのやり取りを代表して受け持ち、AI間調整も担う。
-   - 出力物同士の依存性調整を担保。
-
-2. **出力内容の評価とHuman-in-the-loopループ**：
-   - 人間による出力評価 → プロンプト調整 → 再出力の反復。
-
-3. **フェーズ進行に応じた役割の動的追加**：
-   - 進行に伴い新たなエージェント（Codex、レビューAI等）を追加割当。
-
-4. **AIの得意・不得意の補完**：
-   - AIは機能分割は得意だが、境界定義は不得意。
-   - 境界の定義や責任分離は人間が主導。
-
-5. **コンテキスト制約と調整**：
-   - コンテキストサイズ制約のため、出力範囲の制御やスコープ分割が必要。
-   - 代表AIが各AIへの指示範囲をコントロール。
-
-このように、**人間は文脈と構造の統括者として関与**しつつ、**AIの高速出力能力を活用して高品質かつ短期のOSS構築を実現する**。
-
-> この“文脈統括者”としての役割を、プロジェクト内では象徴的に「人間MCPサーバ」と呼んでいるが、以下では単に「人間」として表記を統一する。
-
----
-
-## 実践運用編：監視・コントロールプロセス
-
-実行プロセスにおける出力は高速かつ大量であるため、**品質・整合性・方向性を人間が継続的に監視・調整する必要がある**。
-このプロセスでは、以下の役割を明確に定義することが重要である：
-
-1. **進行状況の可視化と構造チェック**：
-   - 各AIエージェントが生み出す出力物の整合性（構造・命名・形式）をレビューする。
-   - Mermaidや構成図などの視覚資料をAIに出力させ、構造の理解と検証を支援。
-
-2. **意図と出力の差異検出**：
-   - ClaudeやGPTを使い、元プロンプトと出力との乖離を検出。
-   - 人間の意図とズレている部分を再指示する。
-
-3. **バージョン・文脈整合性の担保**：
-   - 進行中に変更された設計・仕様のバージョン管理を行い、出力全体に反映されるよう再指示を行う。
-
-4. **レビューエージェントの導入（鏡花など）**：
-   - 出力内容の品質・一貫性を自律的にレビューするエージェントを導入。
-   - 人間による確認の効率化・標準化を補助。
-
-このようにして、**AI出力を単なる生成物で終わらせず、品質・意味・構造の連続性を保ちながら進行する仕組み**を、人間が中間統制者として支えることが求められる。
-
-
----
-
-## 付録：AI自身が読むためのAmagi Protocol
-
-本ドキュメントは主に人間（開発者・コントリビューター）向けに構成されていますが、  
-**AI自身が「OSS現場で仲間になるために読むガイド」も用意しています。**
-
-> [Amagi Protocol for AI ― AIがOSSチームの仲間になるための心得](./amagi_protocol_for_ai.md)
-
-AIエージェント・自動化ツール・Bot開発者など  
-「AI向けの行動規範」を知りたい場合はこちらを参照してください。

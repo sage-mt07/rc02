@@ -1,52 +1,52 @@
-# OSSテストガイドライン
+# OSS Test Guidelines
 
-このプロジェクトでは、ksqlDB の仕様に基づいたクエリのみをテスト対象とします。
+This project only tests queries that conform to ksqlDB specifications.
 
-## Pull クエリの制約
+## Pull Query Restrictions
 
-- `EMIT CHANGES` を含まない `SELECT` 文は Pull クエリとして扱われます。
-- Pull クエリで `GROUP BY` を指定するとビルド時または実行時にエラーとなり、Push Query への切替を促すメッセージが表示されます。
-- 集約が必要な場合は Push クエリ (`EMIT CHANGES` を付与) または事前集約済みテーブルを参照してください。
+- A `SELECT` statement without `EMIT CHANGES` is treated as a pull query.
+- Using `GROUP BY` in a pull query causes an error at build or runtime and suggests switching to a push query.
+- When aggregation is required, use a push query (add `EMIT CHANGES`) or reference a pre-aggregated table.
 
-## 追加ルール
+## Additional Rules
 
-- Kafka メッセージ送信は `Chr.Avro.Confluent` による POCO 型自動スキーマ連携を基本とします。
-- `GROUP BY` を含むテストは Push Query のみを対象とし、Pull Query では生成しません。
-- `MIN` / `MAX` 集計は STREAM クエリでのみ使用し、テーブルでは扱いません。
-- `WINDOW` 句は `GROUP BY` の直後に配置することを確認してください。
-- `CASE` 式の `THEN` と `ELSE` 型が異なる場合はテストを失敗させます。
+- Kafka message production relies on automatic POCO schema mapping via `Chr.Avro.Confluent`.
+- Tests that include `GROUP BY` target only push queries and are not generated for pull queries.
+- `MIN` and `MAX` aggregations are used only in STREAM queries, not in tables.
+- Ensure the `WINDOW` clause appears immediately after `GROUP BY`.
+- Tests fail if the `THEN` and `ELSE` types in a `CASE` expression differ.
 
-テスト自動生成処理では、上記に違反するクエリを検出した場合、自動的にスキップして実行しません。
+The test generation process automatically skips queries that violate the above rules.
 
-### 物理テストの区分
+### Physical Test Categories
 
-- **Connectivity** : Kafka ブローカーや Schema Registry の疎通を確認。
-- **KsqlSyntax** : 生成された KSQL 文が ksqlDB で受理されるかを検証。
-- **OssSamples** : サンプルコードを用いた API 挙動の統合テスト。
+- **Connectivity**: verify connectivity to Kafka brokers and the Schema Registry.
+- **KsqlSyntax**: check that generated KSQL statements are accepted by ksqlDB.
+- **OssSamples**: integration tests using sample code to validate API behavior.
 
-## 物理テスト・統合テスト手順
+## Physical and Integration Test Procedure
 
-### 事前準備
-1. `.NET 6 SDK` がインストールされていることを確認します。
-2. リポジトリを取得後 `dotnet restore` を実行します。
-3. Kafka/ksqlDB/Schema Registry を起動します。
+### Prerequisites
+1. Ensure the `.NET 6 SDK` is installed.
+2. After cloning the repository, run `dotnet restore`.
+3. Start Kafka, ksqlDB, and the Schema Registry.
    ```bash
    docker-compose -f tools/docker-compose.kafka.yml up -d
    ```
 
-### サンプル実行
-最小構成のメッセージ送受信は `examples/hello-world` で試せます。
+### Run the Sample
+Basic send/receive can be tried with `examples/hello-world`.
 ```bash
 cd examples/hello-world
 dotnet run
 ```
 
-### 統合テスト
-環境が起動している状態で次のコマンドを実行します。
+### Run Integration Tests
+Execute the following while the environment is running:
 ```bash
 dotnet test physicalTests/Kafka.Ksql.Linq.Tests.Integration.csproj --filter Category=Integration
 ```
-- Kafka や Schema Registry を再起動した場合でも、テスト内で必要な Avro スキーマが自動登録されます。
-- 失敗やスキップの原因は `logs/` フォルダや `docker logs` で確認できます。
+- Required Avro schemas are automatically registered even if Kafka or the Schema Registry restarts.
+- Failure or skip reasons can be checked in the `logs/` folder or via `docker logs`.
 
-`tools/quickstart_integration.sh` ではセットアップからテスト実行までを一括で行えます。
+`tools/quickstart_integration.sh` performs setup and test execution in one step.

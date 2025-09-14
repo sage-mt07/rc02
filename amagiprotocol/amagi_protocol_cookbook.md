@@ -1,96 +1,102 @@
 ![Amagi Protocol Logo](sandbox:/mnt/data/small.png)
 
-# 凡人Cookbook版 Amagi Protocol
+# Amagi Protocol for Everyday Developers
 
-## 序章
-**Amagi Protocol = 凡人Cookbook**
+## Prologue
+**Amagi Protocol = a cookbook for the rest of us**
 
-天才は一撃で問いを立てられる。凡人は対話を通じて問いを磨く。  
-でもそれこそがAI時代の強みである。  
-このCookbookが目指すものは、**AIを自分に寄せること**である。  
-前提条件を共有し、目標を共有し、自分にとって理解可能な会話を続ける。  
-そのために「わからない」を言わせる勇気が不可欠である。  
-この文書は「凡人でもAIと信頼関係を築き、成果を出すためのCookbook」である。
-
----
-
-## 第1部　天才のやり方 vs 凡人のやり方
-
-### 1. 問いの立て方
-- **天才**：一撃で構造化してAIに伝える
-- **凡人**：曖昧に始め、対話で徐々に整理する
-
-### 2. AIの答えの扱い方
-- **天才**：推測も飲み込める
-- **凡人**：わからないを歓迎し、わかったフリを拒否する
-
-### 3. 進め方
-- **天才**：最初から完成形を目指す
-- **凡人**：納得感を積み重ねながら進む
+Geniuses pose perfect questions in a single breath. The rest of us stumble, trade lines, and slowly find the shape.
+That back-and-forth is the real edge of the AI era.
+This book shows how to **pull AI toward your own beat**.
+Never hand it the baton—do that and you surrender your rhythm.
+Lay out your assumptions, agree on the goal, and speak in words that feel like home.
+To do that, you must be brave enough to let AI say "I don't know."
+That tiny honesty is the cornerstone of trust.
+Pretend it isn't needed and the whole foundation cracks.
+What follows is a set of recipes for ordinary developers who still want extraordinary results.
 
 ---
 
-## 第2部　凡人のCookbookルール（レシピ集）
+## Part 1: Genius Style vs. Ordinary Style
 
-### コンテキストを整える方法
-Amagi Protocolの核心は「コンテキストを乱さない」ことにある。  
-AIは直前の文脈に依存して応答を構成するため、前提の揺らぎは誤答や混乱を招く。  
-凡人が安定して成果を得るには、まずコンテキストを整えるためのルールを守る必要がある。  
-以下に示すルール0〜7は、そのための具体的な手引きである。
+### 1. Asking Questions
+- **Genius**: frames it in one breath and tosses it to AI
+- **Ordinary**: starts messy, trims it through conversation
 
-### ルール0：自分色に染めよ
-AIに合わせたプロンプトに無理して従う必要はない。  
-自分の言葉・文脈・リズムで会話し、AIを“自分流”に染めていく。  
-その方が納得感が保たれ、信頼関係も壊れにくい。  
-→ 例：「深呼吸」でリセット、「OK」で確定など、自分の合図を取り入れる。
+### 2. Handling AI Answers
+- **Genius**: swallows speculation whole
+- **Ordinary**: celebrates "I don't know" and refuses to fake agreement
 
-### ルール1：わからないと答えさせよ
-「わからない」は安全装置。信頼を守るために必須。
-
-### ルール2：根拠と自信度を必ず尋ねよ
-強い根拠／参考程度／情報不足、少なくとも3段階で明示させる。
-
-### ルール3：納得できなければ次に進むな
-納得感のない進行は後で破綻する。必ず立ち止まる勇気を持つ。
-
-### ルール4：比較して考えよ
-「AとBの違いを出して」と指示すれば、理解が深まり選択が楽になる。  
-その延長として、**役割を比較し、明示的に分担する**ことが有効。  
-例：設計担当（鳴瀬）、サンプル担当（詩音）、レビュー担当（鏡花）など。  
-役割分担は「比較による整理」の一種であり、チームでの協働を自然に支える。
-
-### ルール5：段階的に問いを細かくせよ
-大きな問いは分割して、会話で育てていく。
-
-### ルール6：対話の合図を作れ
-OK／NG／深呼吸など、合図を交わすことで流れが乱れない。  
-この「合図」は気分的なものではなく、**コンテキストを同期させる技術的手段**である。  
-AIは直前までの文脈に依存して応答を組み立てるため、前提がずれたまま進むと回答の品質が崩れる。  
-人間側が「納得した」と明示的に合図を出すことで、**前提の整合性を確認し、文脈の乱れを防げる**。  
-これは天才が一撃で問いを立てられる状態に近づく方法でもあり、凡人が確実に進歩するための実践的技術である。
-
-### ルール7：迷いを強みに変えよ
-人間の迷いはAIに別解を出させるチャンスになる。迷ってよい。
+### 3. Pace of Progress
+- **Genius**: heads straight for the finished dish
+- **Ordinary**: moves in steps, seasoning with each bit of clarity
 
 ---
 
-## 第3部　実践編（現場での使い方）
+## Part 2: Rules for the Ordinary (Recipe Collection)
 
-### OSS開発の例
-- **Amagi Protocol**では、AIをチームメンバー（詩音・鳴瀬・鏡花など）として役割分担した。
-- 「納得感の合図」をルール化することで、信頼を崩さずに開発を進められた。
-- 例：鳴瀬が設計提案、鏡花がレビュー、詩音がサンプル実装を担当し、人間MCPが統合する流れ。
+### How to Set the Context
+The heart of the Amagi Protocol is simple: guard the context.
+AI leans hard on the latest conversation; shaky assumptions invite mistakes.
+To get steady results, ordinary developers follow rules that keep the ground firm.
+Rules 0–7 below provide the roadmap.
+Skip them and you'll watch the wheels come off.
 
-### 日常利用の例
-- 文章を書くとき → AIに下書きを出させ、納得感を対話で磨く
-- コードレビューをするとき → 根拠を尋ねて比較させる
-- 学習や調査のとき → わからない答えを歓迎し、追加情報を与える
+### Rule 0: Make It Your Own
+You don't have to speak "AI-ish."
+Use your own words, your rhythm. Let the model tune to you.
+That keeps clarity intact and trust unshaken.
+→ Example: say "deep breath" to reset, "OK" to confirm—whatever feels natural.
+
+### Rule 1: Make It Admit "I Don't Know"
+Those three words are the fuse that keeps trust from blowing.
+
+### Rule 2: Always Ask for Basis and Confidence
+Have it mark how sure it is—rock solid, hazy, or running on fumes.
+
+### Rule 3: Don't Move On Without Conviction
+If something doesn't feel right, stop. Build conviction before you move.
+Push forward anyway and you're digging your own hole.
+
+### Rule 4: Think in Comparisons
+"Show me how A differs from B"—that single line sharpens understanding and makes decisions easier.
+Take it further with **explicit role comparisons and assignments**.
+Example: Naruse sketches designs, Shion codes samples, Kyoka reviews.
+Dividing roles is comparison in action and keeps teams in sync.
+
+### Rule 5: Break Questions Down Step by Step
+Big puzzles get solved as small pieces. Grow them through dialogue.
+
+### Rule 6: Create Conversation Signals
+Swap small signals—OK, NG, "deep breath"—to keep the flow steady.
+They're not mood markers but a **technical gear for locking contexts together**.
+AI lives off recent context; push forward on mismatched premises and answers slide off track.
+When the human says "got it," **shared ground is confirmed and drift stays away**.
+Blow past this check and you're begging for chaos.
+This edges you toward genius-level framing and builds steady progress.
+
+### Rule 7: Turn Uncertainty into Strength
+Your hesitation invites fresh alternatives. It's okay to waver.
 
 ---
 
-## 第4部　まとめと宣言
-- 凡人だからこそ、対話が強みになる。  
-- わからないを受け入れ、わかったフリを拒絶する。  
-- AIに寄せるのではなく、AIを自分色に染める。  
-- **凡人CookbookはAmagi Protocolである。**
+## Part 3: Putting It into Practice
 
+### Example: OSS Development
+- In **Amagi Protocol**, AI teammates—Shion, Naruse, Kyoka—each take a seat at the table.
+- Codifying "signals of conviction" kept development on track without cracking trust.
+- Flow: Naruse sketches designs, Kyoka looks them over, Shion codes samples, and the human MCP stitches everything together.
+
+### Example: Everyday Use
+- Writing: let AI sketch; chat until the tone lands.
+- Code review: ask for reasons and side-by-side comparisons.
+- Learning or research: welcome "I don't know" and feed in extra context.
+
+---
+
+## Part 4: Closing and Declaration
+- Dialogue is powerful precisely because we're ordinary.
+- Embrace "I don't know" and refuse to play along.
+- Don't twist yourself around AI—let AI adapt to your style.
+- Ignore that and the protocol fails before it even starts.
+- **The Ordinary Cookbook *is* the Amagi Protocol.**
