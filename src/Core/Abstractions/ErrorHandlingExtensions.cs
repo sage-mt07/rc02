@@ -5,7 +5,7 @@ namespace Kafka.Ksql.Linq.Core.Abstractions;
 public static class ErrorHandlingExtensions
 {
     /// <summary>
-    /// カスタムエラーハンドラー設定
+    /// Configure a custom error handler
     /// </summary>
     public static EventSet<T> OnError<T>(this EventSet<T> eventSet,
         Func<ErrorContext, T, bool> customHandler) where T : class
@@ -19,11 +19,11 @@ public static class ErrorHandlingExtensions
             {
                 return customHandler(errorContext, typedMessage);
             }
-            return false; // 型不一致時はスキップ
+            return false; // Skip when the type doesn't match
         };
         var policy = new ErrorHandlingPolicy
         {
-            Action = ErrorAction.Skip, // カスタムハンドラー使用時はSkip
+            Action = ErrorAction.Skip, // Skip when using a custom handler
             CustomHandler = wrappedHandler
         };
 
@@ -31,7 +31,7 @@ public static class ErrorHandlingExtensions
     }
 
     /// <summary>
-    /// 条件付きリトライ設定
+    /// Configure conditional retry
     /// </summary>
     public static EventSet<T> WithRetryWhen<T>(this EventSet<T> eventSet,
         Predicate<Exception> retryCondition,

@@ -5,34 +5,34 @@ namespace Kafka.Ksql.Linq.Core.Abstractions;
 public interface IErrorSink
 {
     /// <summary>
-    /// エラーレコードを処理（DLQ送信等）
+    /// Process error records (e.g., send to DLQ)
     /// </summary>
-    /// <param name="errorContext">エラーコンテキスト情報</param>
-    /// <param name="messageContext">Kafkaメッセージコンテキスト</param>
-    /// <returns>処理完了タスク</returns>
+    /// <param name="errorContext">Error context information</param>
+    /// <param name="messageContext">Kafka message context</param>
+    /// <returns>Task representing completion</returns>
     Task HandleErrorAsync(ErrorContext errorContext, KafkaMessageContext messageContext);
 
     /// <summary>
-    /// エラーレコードを処理（オーバーロード - メッセージコンテキストなし）
+    /// Process error records (overload without message context)
     /// </summary>
-    /// <param name="errorContext">エラーコンテキスト情報</param>
-    /// <returns>処理完了タスク</returns>
+    /// <param name="errorContext">Error context information</param>
+    /// <returns>Task representing completion</returns>
     Task HandleErrorAsync(ErrorContext errorContext);
 
     /// <summary>
-    /// エラーシンクの初期化
+    /// Initialize the error sink
     /// </summary>
-    /// <returns>初期化完了タスク</returns>
+    /// <returns>Task representing initialization completion</returns>
     Task InitializeAsync();
 
     /// <summary>
-    /// エラーシンクのクリーンアップ
+    /// Clean up the error sink
     /// </summary>
-    /// <returns>クリーンアップ完了タスク</returns>
+    /// <returns>Task representing cleanup completion</returns>
     Task CleanupAsync();
 
     /// <summary>
-    /// エラーシンクが利用可能かどうか
+    /// Whether the error sink is available
     /// </summary>
     bool IsAvailable { get; }
 }

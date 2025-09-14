@@ -10,7 +10,7 @@ internal record QueryAssemblyContext(
     bool IsTableQuery = false)
 {
     /// <summary>
-    /// デフォルトコンストラクタ
+    /// Default constructor
     /// </summary>
     public QueryAssemblyContext(string baseObjectName, QueryExecutionMode executionMode, bool isTableQuery = false)
         : this(baseObjectName, executionMode, executionMode == QueryExecutionMode.PullQuery, new Dictionary<string, object>(), isTableQuery)
@@ -18,7 +18,7 @@ internal record QueryAssemblyContext(
     }
 
     /// <summary>
-    /// シンプルコンストラクタ
+    /// Simple constructor
     /// </summary>
     public QueryAssemblyContext(string baseObjectName, bool isPullQuery = true, bool isTableQuery = false)
         : this(baseObjectName, isPullQuery ? QueryExecutionMode.PullQuery : QueryExecutionMode.PushQuery, isPullQuery, new Dictionary<string, object>(), isTableQuery)
@@ -26,7 +26,7 @@ internal record QueryAssemblyContext(
     }
 
     /// <summary>
-    /// メタデータ追加
+    /// Add metadata
     /// </summary>
     public QueryAssemblyContext WithMetadata(string key, object value)
     {
@@ -35,7 +35,7 @@ internal record QueryAssemblyContext(
     }
 
     /// <summary>
-    /// 実行モード変更
+    /// Change execution mode
     /// </summary>
     public QueryAssemblyContext WithExecutionMode(QueryExecutionMode mode)
     {
@@ -47,7 +47,7 @@ internal record QueryAssemblyContext(
     }
 
     /// <summary>
-    /// ベースオブジェクト変更
+    /// Change base object
     /// </summary>
     public QueryAssemblyContext WithBaseObject(string baseObjectName)
     {
@@ -55,7 +55,7 @@ internal record QueryAssemblyContext(
     }
 
     /// <summary>
-    /// TABLEクエリフラグ設定
+    /// Set TABLE query flag
     /// </summary>
     public QueryAssemblyContext WithTableQuery(bool isTable)
     {
@@ -63,7 +63,7 @@ internal record QueryAssemblyContext(
     }
 
     /// <summary>
-    /// メタデータ取得（型安全）
+    /// Get metadata (type-safe)
     /// </summary>
     public T? GetMetadata<T>(string key)
     {
@@ -75,7 +75,7 @@ internal record QueryAssemblyContext(
     }
 
     /// <summary>
-    /// メタデータ存在チェック
+    /// Check for metadata presence
     /// </summary>
     public bool HasMetadata(string key)
     {
@@ -83,7 +83,7 @@ internal record QueryAssemblyContext(
     }
 
     /// <summary>
-    /// 文脈情報の複製
+    /// Clone context information
     /// </summary>
     public QueryAssemblyContext Copy()
     {
@@ -91,7 +91,7 @@ internal record QueryAssemblyContext(
     }
 
     /// <summary>
-    /// デバッグ情報文字列
+    /// Debug information string
     /// </summary>
     public string GetDebugInfo()
     {

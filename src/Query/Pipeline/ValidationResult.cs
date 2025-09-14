@@ -9,12 +9,12 @@ namespace Kafka.Ksql.Linq.Query.Pipeline;
 internal record ValidationResult(bool IsValid, List<string> Errors)
 {
     /// <summary>
-    /// 成功結果
+    /// Success result
     /// </summary>
     public static ValidationResult Success => new(true, new List<string>());
 
     /// <summary>
-    /// 失敗結果作成
+    /// Create failure result
     /// </summary>
     public static ValidationResult Failure(params string[] errors)
     {
@@ -22,7 +22,7 @@ internal record ValidationResult(bool IsValid, List<string> Errors)
     }
 
     /// <summary>
-    /// エラーメッセージ結合
+    /// Combine error messages
     /// </summary>
     public string GetErrorMessage()
     {

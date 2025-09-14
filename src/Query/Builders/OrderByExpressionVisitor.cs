@@ -35,7 +35,7 @@ internal class OrderByExpressionVisitor : ExpressionVisitor
                 break;
 
             default:
-                // 他のメソッド呼び出しは再帰的に処理
+                // Process other method calls recursively
                 base.VisitMethodCall(node);
                 break;
         }
@@ -44,17 +44,17 @@ internal class OrderByExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// OrderBy/OrderByDescending 処理
+    /// Handle OrderBy/OrderByDescending
     /// </summary>
     private void ProcessOrderByCall(MethodCallExpression node, string direction)
     {
-        // 前のメソッドチェーンを先に処理
+        // Process previous method chain first
         if (node.Object != null)
         {
             Visit(node.Object);
         }
 
-        // 現在のOrderBy処理
+        // Process the current OrderBy
         if (node.Arguments.Count >= 2)
         {
             var keySelector = ExtractLambdaExpression(node.Arguments[1]);
@@ -67,17 +67,17 @@ internal class OrderByExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// ThenBy/ThenByDescending 処理
+    /// Handle ThenBy/ThenByDescending
     /// </summary>
     private void ProcessThenByCall(MethodCallExpression node, string direction)
     {
-        // 前のメソッドチェーンを先に処理
+        // Process previous method chain first
         if (node.Object != null)
         {
             Visit(node.Object);
         }
 
-        // 現在のThenBy処理
+        // Process the current ThenBy
         if (node.Arguments.Count >= 2)
         {
             var keySelector = ExtractLambdaExpression(node.Arguments[1]);
@@ -90,7 +90,7 @@ internal class OrderByExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// Lambda式抽出
+    /// Extract lambda expression
     /// </summary>
     private static LambdaExpression? ExtractLambdaExpression(Expression expr)
     {
@@ -103,7 +103,7 @@ internal class OrderByExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// カラム名抽出
+    /// Extract column name
     /// </summary>
     private string ExtractColumnName(Expression expr)
     {
@@ -117,35 +117,35 @@ internal class OrderByExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// メンバー名取得
+    /// Get member name
     /// </summary>
     private static string GetMemberName(MemberExpression member)
     {
-        // ネストしたプロパティの場合は最下位のプロパティ名を使用
+        // Use the deepest property name for nested properties
         return member.Member.Name;
     }
 
     /// <summary>
-    /// ORDER BY関数処理
+    /// Handle ORDER BY functions
     /// </summary>
     private string ProcessOrderByFunction(MethodCallExpression methodCall)
     {
         var methodName = methodCall.Method.Name;
 
-        // ORDER BYで許可される関数は限定的
+        // Only a limited set of functions is allowed in ORDER BY
         return methodName switch
         {
-            // ウィンドウ関数
+            // Window functions
             "RowTime" => "ROWTIME",
 
-            // 文字列関数（部分的）
+            // String functions (partial)
             "ToUpper" => ProcessSimpleFunction("UPPER", methodCall),
             "ToLower" => ProcessSimpleFunction("LOWER", methodCall),
 
-            // 数値関数（部分的）
+            // Numeric functions (partial)
             "Abs" => ProcessSimpleFunction("ABS", methodCall),
 
-            // 日付関数（部分的）
+            // Date functions (partial)
             "Year" => ProcessSimpleFunction("YEAR", methodCall),
             "Month" => ProcessSimpleFunction("MONTH", methodCall),
             "Day" => ProcessSimpleFunction("DAY", methodCall),
@@ -155,7 +155,7 @@ internal class OrderByExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 単純関数処理
+    /// Handle simple functions
     /// </summary>
     private string ProcessSimpleFunction(string ksqlFunction, MethodCallExpression methodCall)
     {

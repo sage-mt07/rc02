@@ -5,14 +5,14 @@ using System.Linq;
 namespace Kafka.Ksql.Linq.Query.Builders.Functions;
 
 /// <summary>
-/// KSQL関数レジストリ
-/// 設計理由：C#メソッド名からKSQL関数への包括的マッピング管理
+/// KSQL function registry
+/// Design rationale: comprehensive mapping from C# method names to KSQL functions
 /// </summary>
 internal static class KsqlFunctionRegistry
 {
     private static readonly Dictionary<string, KsqlFunctionMapping> _functionMappings = new()
     {
-        // 文字列関数（完全対応）
+        // String functions (fully supported)
         ["ToUpper"] = new("UPPER", 1),
         ["ToLower"] = new("LOWER", 1),
         ["Substring"] = new("SUBSTRING", 2, 3),
@@ -28,7 +28,7 @@ internal static class KsqlFunctionRegistry
         ["PadLeft"] = new("LPAD", 2, 3),
         ["PadRight"] = new("RPAD", 2, 3),
 
-        // 数値関数（完全対応）
+        // Numeric functions (fully supported)
         ["Abs"] = new("ABS", 1),
         ["Round"] = new("ROUND", 1, 2),
         ["Floor"] = new("FLOOR", 1),
@@ -43,7 +43,7 @@ internal static class KsqlFunctionRegistry
         ["Log10"] = new("LOG10", 1),
         ["Exp"] = new("EXP", 1),
 
-        // 日付関数（完全対応）
+        // Date functions (fully supported)
         ["AddDays"] = new("DATEADD('day', {1}, {0})", 2, "DATEADD('day', {1}, {0})"),
         ["AddHours"] = new("DATEADD('hour', {1}, {0})", 2, "DATEADD('hour', {1}, {0})"),
         ["AddMinutes"] = new("DATEADD('minute', {1}, {0})", 2, "DATEADD('minute', {1}, {0})"),
@@ -59,7 +59,7 @@ internal static class KsqlFunctionRegistry
         ["DayOfYear"] = new("DAY_OF_YEAR", 1),
         ["WeekOfYear"] = new("WEEK_OF_YEAR", 1),
 
-        // 集約関数（完全対応）
+        // Aggregate functions (fully supported)
         ["Sum"] = new("SUM", 1),
         ["Count"] = new("COUNT", 0, 1, true),
         ["Max"] = new("MAX", 1),
@@ -74,7 +74,7 @@ internal static class KsqlFunctionRegistry
         ["TopK"] = new("TOPK", 2),
         ["TopKDistinct"] = new("TOPKDISTINCT", 2),
 
-        // 配列関数（完全対応）
+        // Array functions (fully supported)
         ["ArrayLength"] = new("ARRAY_LENGTH", 1),
         ["ArrayContains"] = new("ARRAY_CONTAINS", 2),
         ["ArraySlice"] = new("ARRAY_SLICE", 3),
@@ -87,7 +87,7 @@ internal static class KsqlFunctionRegistry
         ["ArrayMax"] = new("ARRAY_MAX", 1),
         ["ArrayMin"] = new("ARRAY_MIN", 1),
 
-        // JSON関数（完全対応）
+        // JSON functions (fully supported)
         ["JsonExtractString"] = new("JSON_EXTRACT_STRING", 2),
         ["JsonArrayLength"] = new("JSON_ARRAY_LENGTH", 1),
         ["JsonKeys"] = new("JSON_KEYS", 1),
@@ -95,7 +95,7 @@ internal static class KsqlFunctionRegistry
         ["JsonConcat"] = new("JSON_CONCAT", 2, int.MaxValue),
         ["JsonRecords"] = new("JSON_RECORDS", 1),
 
-        // 型変換関数（完全対応）
+        // Type conversion functions (fully supported)
         ["ToString"] = new("CAST({0} AS VARCHAR)", 1, true, "CAST({0} AS VARCHAR)"),
         ["Parse"] = new("PARSE_{TYPE}", 1, true),
         ["Convert"] = new("CAST({0} AS {TYPE})", 1, true),
@@ -104,23 +104,23 @@ internal static class KsqlFunctionRegistry
         ["ToDouble"] = new("CAST({0} AS DOUBLE)", 1, "CAST({0} AS DOUBLE)"),
         ["ToDecimal"] = new("CAST({0} AS DECIMAL)", 1, "CAST({0} AS DECIMAL)"),
 
-        // 条件関数
+        // Conditional functions
         ["Case"] = new("CASE", 2, int.MaxValue, true),
         ["Coalesce"] = new("COALESCE", 1, int.MaxValue),
         ["IfNull"] = new("IFNULL", 2),
         ["NullIf"] = new("NULLIF", 2),
 
-        // URL関数
+        // URL functions
         ["UrlExtractHost"] = new("URL_EXTRACT_HOST", 1),
         ["UrlExtractPath"] = new("URL_EXTRACT_PATH", 1),
         ["UrlExtractQuery"] = new("URL_EXTRACT_QUERY", 1),
         ["UrlExtractProtocol"] = new("URL_EXTRACT_PROTOCOL", 1),
 
-        // GEO関数
+        // GEO functions
         ["GeoDistance"] = new("GEO_DISTANCE", 4),
         ["AsGeoJson"] = new("AS_GEOJSON", 2),
 
-        // 暗号化関数
+        // Encryption functions
         ["Md5"] = new("MD5", 1),
         ["Sha1"] = new("SHA1", 1),
         ["Sha256"] = new("SHA256", 1),
@@ -131,7 +131,7 @@ internal static class KsqlFunctionRegistry
     };
 
     /// <summary>
-    /// 関数マッピング取得
+    /// Retrieve function mapping
     /// </summary>
     public static KsqlFunctionMapping? GetMapping(string methodName)
     {
@@ -139,7 +139,7 @@ internal static class KsqlFunctionRegistry
     }
 
     /// <summary>
-    /// 関数存在チェック
+    /// Check if function exists
     /// </summary>
     public static bool HasMapping(string methodName)
     {
@@ -147,7 +147,7 @@ internal static class KsqlFunctionRegistry
     }
 
     /// <summary>
-    /// 全マッピング取得
+    /// Get all mappings
     /// </summary>
     public static IReadOnlyDictionary<string, KsqlFunctionMapping> GetAllMappings()
     {
@@ -155,7 +155,7 @@ internal static class KsqlFunctionRegistry
     }
 
     /// <summary>
-    /// 関数カテゴリ別取得
+    /// Get mappings by function category
     /// </summary>
     public static Dictionary<string, List<string>> GetFunctionsByCategory()
     {
@@ -177,7 +177,7 @@ internal static class KsqlFunctionRegistry
     }
 
     /// <summary>
-    /// 特殊処理が必要な関数のリスト
+    /// List of functions requiring special handling
     /// </summary>
     public static HashSet<string> GetSpecialHandlingFunctions()
     {
@@ -188,7 +188,7 @@ internal static class KsqlFunctionRegistry
     }
 
     /// <summary>
-    /// 集約関数判定
+    /// Determine whether a function is an aggregate
     /// </summary>
     public static bool IsAggregateFunction(string methodName)
     {
@@ -197,7 +197,7 @@ internal static class KsqlFunctionRegistry
     }
 
     /// <summary>
-    /// メソッド名からKSQL型を推測
+    /// Infer KSQL type from method name
     /// </summary>
     public static string InferTypeFromMethodName(string methodName)
     {
@@ -223,7 +223,7 @@ internal static class KsqlFunctionRegistry
     }
 
     /// <summary>
-    /// カスタムマッピング追加（拡張性のため）
+    /// Add custom mapping (for extensibility)
     /// </summary>
     public static void RegisterCustomMapping(string methodName, KsqlFunctionMapping mapping)
     {
@@ -231,7 +231,7 @@ internal static class KsqlFunctionRegistry
     }
 
     /// <summary>
-    /// デバッグ用：全関数一覧出力
+    /// Debug: output all function mappings
     /// </summary>
     public static string GetDebugInfo()
     {

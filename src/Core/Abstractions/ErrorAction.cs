@@ -3,17 +3,17 @@ namespace Kafka.Ksql.Linq.Core.Abstractions;
 public enum ErrorAction
 {
     /// <summary>
-    /// エラーレコードをスキップして処理継続
+    /// Skip the error record and continue processing
     /// </summary>
     Skip,
 
     /// <summary>
-    /// 指定回数リトライ
+    /// Retry the specified number of times
     /// </summary>
     Retry,
 
     /// <summary>
-    /// Dead Letter Queueに送信
+    /// Send to the Dead Letter Queue
     /// </summary>
     DLQ
 }

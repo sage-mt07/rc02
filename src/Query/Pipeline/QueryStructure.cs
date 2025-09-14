@@ -143,7 +143,7 @@ internal record QueryStructure(
             errors.Add("Target object is required");
         }
 
-        // クエリ型別検証
+        // Validation based on query type
         switch (QueryType)
         {
             case "SELECT":
@@ -155,19 +155,19 @@ internal record QueryStructure(
                 break;
         }
 
-        // 句順序検証
+        // Validate clause order
         ValidateClauseOrder(errors);
 
         return new ValidationResult(errors.Count == 0, errors);
     }
 
     /// <summary>
-    /// SELECT構造検証
+    /// Validate SELECT structure
     /// </summary>
     private void ValidateSelectStructure(List<string> errors)
     {
-        // SELECTクエリは必須句なし（SELECT *がデフォルト）
-        // ただし、GROUP BYがある場合は集約が必要
+        // SELECT queries have no required clauses (SELECT * by default)
+        // However, aggregation is required when GROUP BY is present
         if (HasClause(QueryClauseType.GroupBy) && !HasClause(QueryClauseType.Select))
         {
             errors.Add("GROUP BY requires explicit SELECT clause with aggregations");
@@ -175,7 +175,7 @@ internal record QueryStructure(
     }
 
     /// <summary>
-    /// CREATE AS構造検証
+    /// Validate CREATE AS structure
     /// </summary>
     private void ValidateCreateAsStructure(List<string> errors)
     {
@@ -184,16 +184,16 @@ internal record QueryStructure(
             errors.Add("CREATE AS requires base object in metadata");
         }
 
-        // CREATE TABLEはGROUP BYまたはウィンドウが推奨
+        // For CREATE TABLE, GROUP BY or windowing is recommended
         if (QueryType == "CREATE_TABLE_AS" &&
             !HasClause(QueryClauseType.GroupBy))
         {
-            // 警告レベル（エラーではない）
+            // Warning level (not an error)
         }
     }
 
     /// <summary>
-    /// 句順序検証
+    /// Validate clause order
     /// </summary>
     private void ValidateClauseOrder(List<string> errors)
     {

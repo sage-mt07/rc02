@@ -7,14 +7,14 @@ using System.Linq;
 namespace Kafka.Ksql.Linq.Query.Pipeline;
 
 /// <summary>
-/// Generator基底クラス
+/// Generator base class
 /// Rationale: unified implementation base for the Generator layer under separation-of-concerns.
 /// Hard constraints: require builder DI, separate context analysis and syntax assembly, full KSQL output responsibility, unified error handling.
 /// </summary>
 internal abstract class GeneratorBase
 {
     /// <summary>
-    /// 注入されたBuilderインスタンス（読み取り専用）
+    /// Injected builder instances (read-only)
     /// </summary>
     protected readonly IReadOnlyDictionary<KsqlBuilderType, IKsqlBuilder> Builders;
 
@@ -32,7 +32,7 @@ internal abstract class GeneratorBase
     /// </summary>
     protected virtual void ValidateRequiredBuilders()
     {
-        // 基底クラスでは最低限のBuilderのみチェック
+        // Base class checks only minimal builders
         var requiredBuilders = GetRequiredBuilderTypes();
 
         foreach (var builderType in requiredBuilders)
@@ -65,7 +65,7 @@ internal abstract class GeneratorBase
     }
 
     /// <summary>
-    /// Builder存在チェック
+    /// Check if builder exists
     /// </summary>
     protected bool HasBuilder(KsqlBuilderType type)
     {
@@ -73,7 +73,7 @@ internal abstract class GeneratorBase
     }
 
     /// <summary>
-    /// クエリ組み立て（統一エントリーポイント）
+    /// Assemble query (unified entry point)
     /// </summary>
     protected static string AssembleQuery(params QueryPart[] parts)
     {
@@ -82,7 +82,7 @@ internal abstract class GeneratorBase
             throw new ArgumentException("Query parts cannot be null or empty");
         }
 
-        // 有効な部品のみフィルタリング
+        // Filter only valid parts
         var validParts = parts
             .Where(p => p != null && p.IsValidOrOptional)
             .OrderBy(p => p.Order)
@@ -122,12 +122,12 @@ internal abstract class GeneratorBase
                 $"Generated query does not start with valid KSQL command: {query}");
         }
 
-        // バランスチェック（括弧等）
+        // Balance check (parentheses etc.)
         ValidateQueryBalance(query);
     }
 
     /// <summary>
-    /// 有効なKSQLクエリ開始判定
+    /// Validate start of KSQL query
     /// </summary>
     private static bool IsValidKsqlQueryStart(string upperQuery)
     {
@@ -202,7 +202,7 @@ internal abstract class GeneratorBase
 
         var parts = new List<QueryPart>();
 
-        // クエリタイプに応じたプレフィックス
+        // Prefix based on query type
         parts.Add(CreateQueryPrefix(structure));
 
         // Add clauses in order
@@ -218,7 +218,7 @@ internal abstract class GeneratorBase
     }
 
     /// <summary>
-    /// クエリプレフィックス作成
+    /// Create query prefix
     /// </summary>
     private static QueryPart CreateQueryPrefix(QueryStructure structure)
     {
@@ -251,7 +251,7 @@ internal abstract class GeneratorBase
     }
 
     /// <summary>
-    /// C# 型から KSQL 型へのマッピング
+    /// Map C# types to KSQL types
     /// </summary>
     protected static string MapToKSqlType(Type type)
     {
@@ -284,7 +284,7 @@ internal abstract class GeneratorBase
     }
 
     /// <summary>
-    /// エラーハンドリング統一メソッド
+    /// Unified error-handling method
     /// </summary>
     protected string HandleGenerationError(string operation, System.Exception exception, string? context = null)
     {
@@ -297,7 +297,7 @@ internal abstract class GeneratorBase
 
         errorMessage += $": {exception.Message}";
 
-        // 開発環境でのデバッグ情報追加
+        // Add debug information in development environment
         if (IsDebugMode())
         {
             errorMessage += $"\nStack Trace: {exception.StackTrace}";
@@ -323,7 +323,7 @@ internal abstract class GeneratorBase
     }
 
     /// <summary>
-    /// 条件付きBuilder呼び出し
+    /// Conditional builder invocation
     /// </summary>
     protected string? TryCallBuilder(KsqlBuilderType builderType, System.Linq.Expressions.Expression? expression)
     {
@@ -345,7 +345,7 @@ internal abstract class GeneratorBase
     }
 
     /// <summary>
-    /// デバッグモード判定
+    /// Determine debug mode
     /// </summary>
     private static bool IsDebugMode()
     {
@@ -357,7 +357,7 @@ internal abstract class GeneratorBase
     }
 
     /// <summary>
-    /// Generator情報取得（デバッグ用）
+    /// Retrieve generator info (for debugging)
     /// </summary>
     protected virtual string GetGeneratorInfo()
     {
@@ -366,24 +366,24 @@ internal abstract class GeneratorBase
     }
 
     /// <summary>
-    /// 共通後処理（EMIT CHANGES等）
+    /// Common post-processing (e.g., EMIT CHANGES)
     /// </summary>
     protected string ApplyQueryPostProcessing(string baseQuery, QueryAssemblyContext context)
     {
         var query = baseQuery.Trim();
         var upper = query.ToUpper();
 
-        // Pull Query や TABLE クエリで GROUP BY が指定された場合はエラー
+        // Error if GROUP BY is specified in Pull or TABLE queries
         if (upper.Contains("GROUP BY") && (context.IsPullQuery || context.IsTableQuery))
         {
             throw new InvalidOperationException(
                 "GROUP BY is not supported in pull or table queries. Use a push query with EMIT CHANGES instead.");
         }
 
-        // TABLEクエリでは常にPull Query扱いとし、EMIT CHANGESを付与しない
+        // Treat TABLE queries as pull queries and do not append EMIT CHANGES
         if (!context.IsTableQuery)
         {
-            // GROUP BYを含む場合は常にPush QueryとしてEMIT CHANGESを付与
+            // When GROUP BY is present, always treat as a push query and append EMIT CHANGES
             if (upper.Contains("GROUP BY") && !upper.Contains("EMIT CHANGES"))
             {
                 query += " EMIT CHANGES";
@@ -394,7 +394,7 @@ internal abstract class GeneratorBase
             }
         }
 
-        // メタデータに応じた追加処理
+        // Additional processing based on metadata
         if (context.HasMetadata("WITH_OPTIONS"))
         {
             var withOptions = context.GetMetadata<string>("WITH_OPTIONS");
@@ -413,16 +413,16 @@ internal abstract class GeneratorBase
     }
 
     /// <summary>
-    /// クエリ最適化ヒント適用
+    /// Apply query optimization hints
     /// </summary>
     protected virtual string ApplyOptimizationHints(string query, QueryAssemblyContext context)
     {
-        // 基底クラスでは何もしない（派生クラスで実装）
+        // No operation in base class (implemented in derived classes)
         return query;
     }
 
     /// <summary>
-    /// ToString実装（デバッグ用）
+    /// ToString implementation (for debugging)
     /// </summary>
     public override string ToString()
     {

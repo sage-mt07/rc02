@@ -8,7 +8,7 @@ namespace Kafka.Ksql.Linq.Query.Builders;
 /// <summary>
 /// Builder for HAVING clause content.
 /// Rationale: separation-of-concerns; generate only aggregate condition content without keywords.
-/// 出力例: "SUM(amount) > 100 AND COUNT(*) > 5" (HAVING除外)
+/// Example output: "SUM(amount) > 100 AND COUNT(*) > 5" (excluding HAVING)
 /// </summary>
 internal class HavingClauseBuilder : BuilderBase
 {
@@ -16,7 +16,7 @@ internal class HavingClauseBuilder : BuilderBase
 
     protected override KsqlBuilderType[] GetRequiredBuilderTypes()
     {
-        return Array.Empty<KsqlBuilderType>(); // 他Builderに依存しない
+        return Array.Empty<KsqlBuilderType>(); // No dependency on other builders
     }
 
     protected override string BuildInternal(Expression expression)

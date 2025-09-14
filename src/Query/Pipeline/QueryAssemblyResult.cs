@@ -11,7 +11,7 @@ internal record QueryAssemblyResult(
     bool IsValid)
 {
     /// <summary>
-    /// 成功結果作成
+    /// Create success result
     /// </summary>
     public static QueryAssemblyResult Success(string query, QueryAssemblyContext context, List<QueryPart> parts)
     {
@@ -19,7 +19,7 @@ internal record QueryAssemblyResult(
     }
 
     /// <summary>
-    /// 失敗結果作成
+    /// Create failure result
     /// </summary>
     public static QueryAssemblyResult Failure(string error, QueryAssemblyContext context)
     {
@@ -27,7 +27,7 @@ internal record QueryAssemblyResult(
     }
 
     /// <summary>
-    /// 組み立て統計情報
+    /// Assembly statistics information
     /// </summary>
     public QueryAssemblyStats GetStats()
     {

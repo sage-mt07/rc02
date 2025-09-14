@@ -24,7 +24,7 @@ internal class JoinExpressionVisitor : ExpressionVisitor
                 var joinInfo = ProcessJoinCall(node);
                 _joins.Add(joinInfo);
 
-                // 2テーブル制限チェック
+                // Check two-table limit
                 if (_joins.Count > JoinLimitationEnforcer.MaxJoinTables - 1) // -1 because base table counts as 1
                 {
                     throw new InvalidOperationException(
@@ -43,7 +43,7 @@ internal class JoinExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// JOIN呼び出し処理
+    /// Handle JOIN invocation
     /// </summary>
     private JoinInfo ProcessJoinCall(MethodCallExpression joinCall)
     {
@@ -70,11 +70,11 @@ internal class JoinExpressionVisitor : ExpressionVisitor
             throw new InvalidOperationException("JOIN keys mismatch or empty");
         }
 
-        // 型情報抽出
+        // Extract type information
         var outerType = ExtractTypeFromArgument(joinCall.Arguments[0]);
         var innerType = ExtractTypeFromArgument(joinCall.Arguments[1]);
 
-        // JOIN制約検証
+        // Validate JOIN constraints
         JoinLimitationEnforcer.ValidateJoinConstraints(outerType, innerType, outerKeySelector, innerKeySelector);
 
         return new JoinInfo
@@ -90,11 +90,11 @@ internal class JoinExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// JOIN クエリ構築
+    /// Build JOIN query
     /// </summary>
     private string BuildJoinQuery(JoinInfo joinInfo)
     {
-        // JOIN条件構築
+        // Build JOIN condition
         var conditions = new List<string>();
         for (int i = 0; i < joinInfo.OuterKeys.Count; i++)
         {
@@ -103,7 +103,7 @@ internal class JoinExpressionVisitor : ExpressionVisitor
 
         var joinCondition = string.Join(" AND ", conditions);
 
-        // プロジェクション構築
+        // Build projection
         string selectClause;
         if (joinInfo.Projections.Count > 0)
         {
@@ -111,17 +111,17 @@ internal class JoinExpressionVisitor : ExpressionVisitor
         }
         else
         {
-            // デフォルト：両テーブルの全カラム
+            // Default: all columns from both tables
             selectClause = $"{joinInfo.OuterAlias}.*, {joinInfo.InnerAlias}.*";
         }
 
-        // 完全なJOINクエリ
+        // Complete JOIN query
         return $"SELECT {selectClause} FROM {joinInfo.OuterType} {joinInfo.OuterAlias} " +
                $"JOIN {joinInfo.InnerType} {joinInfo.InnerAlias} ON {joinCondition}";
     }
 
     /// <summary>
-    /// JOINキー抽出
+    /// Extract JOIN keys
     /// </summary>
     private List<string> ExtractJoinKeys(Expression? expr)
     {
@@ -133,7 +133,7 @@ internal class JoinExpressionVisitor : ExpressionVisitor
         switch (expr)
         {
             case NewExpression newExpr:
-                // 複合キー（匿名型）
+                // Composite key (anonymous type)
                 foreach (var arg in newExpr.Arguments)
                 {
                     var member = ExtractMemberExpression(arg);
@@ -145,12 +145,12 @@ internal class JoinExpressionVisitor : ExpressionVisitor
                 break;
 
             case MemberExpression memberExpr:
-                // 単一キー
+                // Single key
                 keys.Add(memberExpr.Member.Name);
                 break;
 
             case UnaryExpression unaryExpr:
-                // 型変換等をスキップ
+                // Skip type conversions, etc.
                 return ExtractJoinKeys(unaryExpr.Operand);
         }
 
@@ -158,7 +158,7 @@ internal class JoinExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// プロジェクション抽出
+    /// Extract projection
     /// </summary>
     private List<string> ExtractProjection(Expression? expr)
     {
@@ -188,7 +188,7 @@ internal class JoinExpressionVisitor : ExpressionVisitor
                 }
                 else
                 {
-                    // 複雑な式の場合はそのまま使用
+                    // Use as-is for complex expressions
                     projections.Add($"{ProcessComplexExpression(arg)} AS {memberName}");
                 }
             }
@@ -198,7 +198,7 @@ internal class JoinExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// テーブルプレフィックス抽出
+    /// Extract table prefix
     /// </summary>
     private string ExtractTablePrefix(MemberExpression memberExpr)
     {
@@ -216,7 +216,7 @@ internal class JoinExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 複雑な式処理
+    /// Handle complex expressions
     /// </summary>
     private string ProcessComplexExpression(Expression expr)
     {
@@ -230,7 +230,7 @@ internal class JoinExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 演算子変換
+    /// Convert operators
     /// </summary>
     private static string GetOperator(ExpressionType nodeType)
     {
@@ -247,7 +247,7 @@ internal class JoinExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// Lambda式抽出
+    /// Extract lambda expression
     /// </summary>
     private static LambdaExpression? ExtractLambdaExpression(Expression expr)
     {
@@ -260,7 +260,7 @@ internal class JoinExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// MemberExpression抽出
+    /// Extract MemberExpression
     /// </summary>
     private static MemberExpression? ExtractMemberExpression(Expression expr)
     {
@@ -273,11 +273,11 @@ internal class JoinExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 引数から型抽出
+    /// Extract type from argument
     /// </summary>
     private static Type ExtractTypeFromArgument(Expression arg)
     {
-        // IEnumerable<T>からT型を抽出
+        // Extract T from IEnumerable<T>
         var type = arg.Type;
         if (type.IsGenericType)
         {

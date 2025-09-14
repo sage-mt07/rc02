@@ -11,13 +11,13 @@ using System.Linq.Expressions;
 namespace Kafka.Ksql.Linq.Query.Pipeline;
 
 /// <summary>
-/// DDLクエリ生成器（新Builder使用版）
+/// DDL query generator (new builder version)
 /// Rationale: separation-of-concerns; generate CREATE STREAM/TABLE via integrated builders
 /// </summary>
 internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
 {
     /// <summary>
-    /// コンストラクタ（Builder依存注入）
+    /// Constructor (builder dependency injection)
     /// </summary>
     public DDLQueryGenerator(IReadOnlyDictionary<KsqlBuilderType, IKsqlBuilder> builders)
         : base(builders)
@@ -25,7 +25,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
     }
 
     /// <summary>
-    /// 簡易コンストラクタ（標準Builder使用）
+    /// Simplified constructor (uses standard builders)
     /// </summary>
     public DDLQueryGenerator() : this(CreateStandardBuilders())
     {
@@ -44,7 +44,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
     private static string SanitizeName(string name) => name.Replace("-", "_");
 
     /// <summary>
-    /// CREATE STREAM文生成
+    /// Generate CREATE STREAM statement
     /// </summary>
     public string GenerateCreateStream(IDdlSchemaProvider provider)
     {
@@ -83,7 +83,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
     }
 
     /// <summary>
-    /// CREATE TABLE文生成
+    /// Generate CREATE TABLE statement
     /// </summary>
     public string GenerateCreateTable(IDdlSchemaProvider provider)
     {
@@ -121,7 +121,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
         }
     }
     /// <summary>
-    /// CREATE STREAM AS文生成
+    /// Generate CREATE STREAM AS statement
     /// </summary>
     public string GenerateCreateStreamAs(string streamName, string baseObject, Expression linqExpression)
     {
@@ -144,7 +144,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
     }
 
     /// <summary>
-    /// CREATE TABLE AS文生成
+    /// Generate CREATE TABLE AS statement
     /// </summary>
     public string GenerateCreateTableAs(string tableName, string baseObject, Expression linqExpression)
     {
@@ -167,7 +167,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
     }
 
     /// <summary>
-    /// カラム定義生成
+    /// Generate column definitions
     /// </summary>
     private string GenerateColumnDefinitions(DdlSchemaDefinition schema, bool isStream)
     {
@@ -236,7 +236,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
     }
 
     /// <summary>
-    /// LINQ式処理
+    /// Process LINQ expression
     /// </summary>
     private QueryStructure ProcessLinqExpression(QueryStructure structure, Expression linqExpression, QueryAssemblyContext context)
     {
@@ -259,7 +259,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
     }
 
     /// <summary>
-    /// メソッド呼び出し処理
+    /// Process method call
     /// </summary>
     private QueryStructure ProcessMethodCall(QueryStructure structure, MethodCallExpression methodCall, QueryAssemblyContext context)
     {
@@ -273,12 +273,12 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
             "Join" => ProcessJoinMethod(structure, methodCall),
             "Having" => ProcessHavingMethod(structure, methodCall),
             "OrderBy" or "OrderByDescending" or "ThenBy" or "ThenByDescending" => ProcessOrderByMethod(structure, methodCall),
-            _ => structure // 未対応メソッドは無視
+            _ => structure // Ignore unsupported methods
         };
     }
 
     /// <summary>
-    /// SELECT メソッド処理
+    /// Handle SELECT method
     /// </summary>
     private QueryStructure ProcessSelectMethod(QueryStructure structure, MethodCallExpression methodCall)
     {
@@ -297,7 +297,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
     }
 
     /// <summary>
-    /// WHERE メソッド処理
+    /// Handle WHERE method
     /// </summary>
     private QueryStructure ProcessWhereMethod(QueryStructure structure, MethodCallExpression methodCall)
     {
@@ -316,7 +316,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
     }
 
     /// <summary>
-    /// GROUP BY メソッド処理
+    /// Handle GROUP BY method
     /// </summary>
     private QueryStructure ProcessGroupByMethod(QueryStructure structure, MethodCallExpression methodCall)
     {
@@ -336,7 +336,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
 
 
     /// <summary>
-    /// HAVING メソッド処理
+    /// Handle HAVING method
     /// </summary>
     private QueryStructure ProcessHavingMethod(QueryStructure structure, MethodCallExpression methodCall)
     {
@@ -355,7 +355,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
     }
 
     /// <summary>
-    /// ORDER BY メソッド処理
+    /// Handle ORDER BY method
     /// </summary>
     private QueryStructure ProcessOrderByMethod(QueryStructure structure, MethodCallExpression methodCall)
     {
@@ -370,7 +370,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
     }
 
     /// <summary>
-    /// JOIN メソッド処理 (単純内部JOINのみ対応)
+    /// Handle JOIN method (supports simple inner JOIN only)
     /// </summary>
     private QueryStructure ProcessJoinMethod(QueryStructure structure, MethodCallExpression methodCall)
     {
@@ -391,7 +391,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
     }
 
     /// <summary>
-    /// LINQ式解析
+    /// Analyze LINQ expression
     /// </summary>
     private ExpressionAnalysisResult AnalyzeLinqExpression(Expression expression)
     {
@@ -429,7 +429,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
     }
 
     /// <summary>
-    /// Lambda Body抽出
+    /// Extract lambda body
     /// </summary>
     private static Expression? ExtractLambdaBody(Expression expression)
     {
@@ -437,7 +437,7 @@ internal class DDLQueryGenerator : GeneratorBase, IDDLQueryGenerator
     }
 
     /// <summary>
-    /// 標準Builder作成
+    /// Create standard builders
     /// </summary>
     private static IReadOnlyDictionary<KsqlBuilderType, IKsqlBuilder> CreateStandardBuilders()
     {

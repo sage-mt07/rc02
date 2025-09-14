@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 
 namespace Kafka.Ksql.Linq.Query.Builders;
 /// <summary>
-/// ORDER BYカラム数カウントVisitor
+/// Visitor counting ORDER BY columns
 /// </summary>
 internal class OrderByColumnCountVisitor : ExpressionVisitor
 {
@@ -12,7 +12,7 @@ internal class OrderByColumnCountVisitor : ExpressionVisitor
     {
         var methodName = node.Method.Name;
 
-        // ORDER BY系メソッドの場合はカウント増加
+        // Increment count when encountering ORDER BY-related methods
         if (methodName is "OrderBy" or "OrderByDescending" or "ThenBy" or "ThenByDescending")
         {
             ColumnCount++;

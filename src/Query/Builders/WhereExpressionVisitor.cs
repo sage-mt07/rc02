@@ -28,21 +28,21 @@ internal class WhereExpressionVisitor : ExpressionVisitor
 
     protected override Expression VisitBinary(BinaryExpression node)
     {
-        // NULL比較の特別処理
+        // Special handling for NULL comparisons
         if (IsNullComparison(node))
         {
             _result = HandleNullComparison(node);
             return node;
         }
 
-        // 複合キー比較の処理
+        // Handle composite key comparisons
         if (IsCompositeKeyComparison(node))
         {
             _result = HandleCompositeKeyComparison(node);
             return node;
         }
 
-        // 通常の二項演算処理
+        // Handle standard binary operations
         var left = ProcessExpression(node.Left);
         var right = ProcessExpression(node.Right);
         var varoperator = GetSqlOperator(node.NodeType);
@@ -61,7 +61,7 @@ internal class WhereExpressionVisitor : ExpressionVisitor
 
             case ExpressionType.Convert:
             case ExpressionType.ConvertChecked:
-                // 型変換は内側の式を処理
+                // For type conversions, process the inner expression
                 Visit(node.Operand);
                 break;
 
@@ -75,7 +75,7 @@ internal class WhereExpressionVisitor : ExpressionVisitor
 
     protected override Expression VisitMember(MemberExpression node)
     {
-        // プロパティアクセスの処理
+        // Handle property access
         _result = HandleMemberAccess(node);
         return node;
     }
@@ -88,13 +88,13 @@ internal class WhereExpressionVisitor : ExpressionVisitor
 
     protected override Expression VisitMethodCall(MethodCallExpression node)
     {
-        // メソッド呼び出しの処理
+        // Handle method calls
         _result = HandleMethodCall(node);
         return node;
     }
 
     /// <summary>
-    /// NULL比較判定
+    /// Detect NULL comparisons
     /// </summary>
     private static bool IsNullComparison(BinaryExpression node)
     {
@@ -103,7 +103,7 @@ internal class WhereExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// NULL定数判定
+    /// Detect NULL constants
     /// </summary>
     private static bool IsNullConstant(Expression expr)
     {
@@ -111,7 +111,7 @@ internal class WhereExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 複合キー比較判定
+    /// Detect composite key comparisons
     /// </summary>
     private static bool IsCompositeKeyComparison(BinaryExpression node)
     {
@@ -121,7 +121,7 @@ internal class WhereExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// NULL比較処理
+    /// Handle NULL comparisons
     /// </summary>
     private string HandleNullComparison(BinaryExpression node)
     {
@@ -133,7 +133,7 @@ internal class WhereExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 複合キー比較処理
+    /// Handle composite key comparisons
     /// </summary>
     private string HandleCompositeKeyComparison(BinaryExpression node)
     {
@@ -158,11 +158,11 @@ internal class WhereExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// NOT式処理
+    /// Handle NOT expressions
     /// </summary>
     private string HandleNotExpression(UnaryExpression node)
     {
-        // Nullable<bool>の.Value アクセス処理
+        // Handle Nullable<bool>.Value access
         if (node.Operand is MemberExpression member &&
             member.Member.Name == "Value" &&
             member.Expression is MemberExpression innerMember &&
@@ -172,7 +172,7 @@ internal class WhereExpressionVisitor : ExpressionVisitor
             return $"({memberName} = false)";
         }
 
-        // 通常のboolean否定
+        // Regular boolean negation
         if (node.Operand is MemberExpression regularMember &&
             (regularMember.Type == typeof(bool) || regularMember.Type == typeof(bool?)))
         {
@@ -180,23 +180,23 @@ internal class WhereExpressionVisitor : ExpressionVisitor
             return $"({memberName} = false)";
         }
 
-        // IEnumerable.Contains の否定
+        // Negation of IEnumerable.Contains
         if (node.Operand is MethodCallExpression method && IsEnumerableContains(method))
         {
             return BuildInExpression(method, negated: true);
         }
 
-        // 複雑な式の否定
+        // Negation of complex expressions
         var operand = ProcessExpression(node.Operand);
         return $"NOT ({operand})";
     }
 
     /// <summary>
-    /// メンバーアクセス処理
+    /// Handle member access
     /// </summary>
     private string HandleMemberAccess(MemberExpression node)
     {
-        // Nullable<bool>の.Value アクセス
+        // Accessing Nullable<bool>.Value
         if (node.Member.Name == "Value" &&
             node.Expression is MemberExpression innerMember &&
             innerMember.Type == typeof(bool?))
@@ -205,7 +205,7 @@ internal class WhereExpressionVisitor : ExpressionVisitor
             return $"({memberName} = true)";
         }
 
-        // HasValue プロパティアクセス
+        // Accessing HasValue property
         if (node.Member.Name == "HasValue" &&
             node.Expression != null &&
             Nullable.GetUnderlyingType(node.Expression.Type) != null)
@@ -214,10 +214,10 @@ internal class WhereExpressionVisitor : ExpressionVisitor
             return $"{memberName} IS NOT NULL";
         }
 
-        // 通常のプロパティアクセス
+        // Regular property access
         var finalMemberName = GetMemberName(node);
 
-        // bool型プロパティは明示的に = true
+        // Explicitly compare bool properties with = true
         if (node.Type == typeof(bool) || node.Type == typeof(bool?))
         {
             return $"({finalMemberName} = true)";
@@ -227,13 +227,13 @@ internal class WhereExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// メソッド呼び出し処理
+    /// Handle method calls
     /// </summary>
     private string HandleMethodCall(MethodCallExpression node)
     {
         var methodName = node.Method.Name;
 
-        // 文字列メソッドの特別処理
+        // Special handling for string methods
         switch (methodName)
         {
             case "Contains":
@@ -243,13 +243,13 @@ internal class WhereExpressionVisitor : ExpressionVisitor
             case "EndsWith":
                 return HandleEndsWithMethod(node);
             default:
-                // 一般的な関数変換
+                // General function translation
                 return KsqlFunctionTranslator.TranslateMethodCall(node);
         }
     }
 
     /// <summary>
-    /// Contains メソッド処理
+    /// Handle Contains method
     /// </summary>
     private string HandleContainsMethod(MethodCallExpression node)
     {
@@ -271,7 +271,7 @@ internal class WhereExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// StartsWith メソッド処理
+    /// Handle StartsWith method
     /// </summary>
     private string HandleStartsWithMethod(MethodCallExpression node)
     {
@@ -286,7 +286,7 @@ internal class WhereExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// EndsWith メソッド処理
+    /// Handle EndsWith method
     /// </summary>
     private string HandleEndsWithMethod(MethodCallExpression node)
     {
@@ -321,7 +321,7 @@ internal class WhereExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// IEnumerable.Contains 判定
+    /// Determine IEnumerable.Contains
     /// </summary>
     private static bool IsEnumerableContains(MethodCallExpression node)
     {
@@ -343,7 +343,7 @@ internal class WhereExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 式を評価して IEnumerable を取得
+    /// Evaluate expression to obtain IEnumerable
     /// </summary>
     private static IEnumerable? EvaluateEnumerable(Expression expr)
     {
@@ -366,7 +366,7 @@ internal class WhereExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 汎用式処理
+    /// Handle general expressions
     /// </summary>
     private string ProcessExpression(Expression expression)
     {
@@ -382,7 +382,7 @@ internal class WhereExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 二項式処理
+    /// Handle binary expressions
     /// </summary>
     private string ProcessBinaryExpression(BinaryExpression binary)
     {
@@ -393,11 +393,11 @@ internal class WhereExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// メンバー名取得
+    /// Get member name
     /// </summary>
     private string GetMemberName(MemberExpression member)
     {
-        // ルートパラメーターを特定してエイリアスを付与
+        // Identify root parameter and apply alias
         System.Linq.Expressions.Expression? e = member;
         while (e is MemberExpression me)
             e = me.Expression;
@@ -409,7 +409,7 @@ internal class WhereExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// SQL演算子変換
+    /// Convert SQL operators
     /// </summary>
     private static string GetSqlOperator(ExpressionType nodeType)
     {

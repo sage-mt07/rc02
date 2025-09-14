@@ -1,7 +1,7 @@
 namespace Kafka.Ksql.Linq.Query.Pipeline;
 
 /// <summary>
-/// クエリ句タイプ列挙
+/// Enumeration of query clause types
 /// </summary>
 internal enum QueryClauseType
 {
