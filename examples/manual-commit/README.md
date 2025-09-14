@@ -23,7 +23,8 @@ Call `context.Orders.Commit(entity)` after successful processing to record the o
 
 ## Design Document References
 
-- [手動コミット操作](../../docs/manual_commit.md)
-- [POCO属性設計](../../docs/oss_design_combined.md#3-poco属性ベースdsl設計ルール（fluent-apiの排除方針）)
-- [スキーマ初期化](../../docs/oss_design_combined.md#4-スキーマ構築と初期化手順（onmodelcreating）)
-\nSee the manual commit API in [api_reference.md](../../docs/api_reference.md).
+- [Manual commit operation](../../docs/manual_commit.md)
+- [POCO attribute design](../../docs/oss_design_combined.md#3-poco-attribute-based-dsl-design-rules-fluent-api-elimination-policy)
+- [Schema initialization](../../docs/oss_design_combined.md#4-schema-building-and-initialization-procedures-onmodelcreating)
+
+See the manual commit API in [api_reference.md](../../docs/api_reference.md).

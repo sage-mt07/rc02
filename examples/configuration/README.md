@@ -1,27 +1,27 @@
-﻿# Configuration（設定サンプル）
+# Configuration (sample)
 
-目的: appsettings.json と Builder 設定の最小構成を把握する。
+Purpose: grasp the minimal setup for appsettings.json and Builder configuration.
 
-## これでできること
-- Kafka/Schema Registry/ksqlDB の接続設定
-- Topic/Consumer/Producer の基本プロパティ
-- DSL/Builder でのオプション適用
+## What this covers
+- Connection settings for Kafka/Schema Registry/ksqlDB
+- Basic properties for Topic/Consumer/Producer
+- Applying options via DSL/Builder
 
-## 前提
+## Prerequisites
 - .NET 8 SDK
-- ローカルの Kafka/Schema Registry/ksqlDB（`docker-compose -f tools/docker-compose.kafka.yml up -d`）
+- Local Kafka/Schema Registry/ksqlDB (`docker-compose -f tools/docker-compose.kafka.yml up -d`)
 
-## 実行
+## Run
 ```
 cd examples/configuration
-# 必要に応じて appsettings.json を編集
-# dotnet run など、各プロジェクト手順に従ってください
+# edit appsettings.json if needed
+# follow project instructions such as `dotnet run`
 ```
 
-## 関連サンプル
-- `examples/configuration-mapping`：マッピング設定の拡張
-- `examples/schema-attributes`：`[KsqlKey]` / `[KsqlDecimal]` / `[KsqlTimestamp]`
+## Related samples
+- `examples/configuration-mapping`: extended mapping settings
+- `examples/schema-attributes`: `[KsqlKey]` / `[KsqlDecimal]` / `[KsqlTimestamp]`
 
-## 参考
-- 関数/型対応表：`docs/ksql-function-type-mapping.md`
-- SQLServer→ksqlDB ガイド：`docs/sqlserver-to-kafka-guide.md`
+## References
+- Function/type mapping: `docs/ksql-function-type-mapping.md`
+- SQLServer → ksqlDB guide: `docs/sqlserver-to-kafka-guide.md`

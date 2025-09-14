@@ -1,24 +1,24 @@
-# Windowing（統合）
+# Windowing (unified)
 
-目的: TUMBLING/HOPPING/SESSION の基礎に加え、
-- ライブ集計（Push, EMIT CHANGES）
-- 1分→5分ロールアップ
-を一箇所で確認できるよう統合しました。
+Purpose: gather the basics of TUMBLING, HOPPING, and SESSION windows alongside:
+- Live aggregation (Push, EMIT CHANGES)
+- 1-minute → 5-minute roll-ups
+so ordinary developers can see everything in one place.
 
-統合対象
-- 旧 `examples/tumbling-live-consumer`
-- 旧 `examples/rollup-1m-5m-verify`
+Unified from
+- former `examples/tumbling-live-consumer`
+- former `examples/rollup-1m-5m-verify`
 
-前提
+Prerequisites
 - .NET 8 / Docker
-- Kafka + Schema Registry + ksqlDB を起動（`docker-compose -f tools/docker-compose.kafka.yml up -d`）
+- Start Kafka + Schema Registry + ksqlDB (`docker-compose -f tools/docker-compose.kafka.yml up -d`)
 
-手順（最小）
-1) OnModelCreating で時間窓と集計を定義（参考: `docs/onmodelcreating_samples.md#7-時間窓（tumbling-1分push）`）
-2) サンプルデータを投入（任意の Producer で OK。`examples/basic-produce-consume` でも可）
-3) Push クエリ（EMIT CHANGES）でライブ結果を確認
-4) 1分集計の上に 5分ロールアップを定義し、値の整合を確認
+Minimal steps
+1) Define windows and aggregates in OnModelCreating (see `docs/onmodelcreating_samples.md#7-time-window-tumbling-1min-push`).
+2) Feed sample data (any Producer is fine, `examples/basic-produce-consume` works).
+3) Use a Push query (EMIT CHANGES) to watch live results.
+4) Layer a 5-minute roll-up on top of the 1-minute aggregation and confirm the numbers align.
 
-補足
-- Streams/Tables と Pull/Push の概念図は `docs/sqlserver-to-kafka-guide.md` を参照
-- ksqlDB の関数/型対応: `docs/ksql-function-type-mapping.md`
+Notes
+- For diagrams of Streams/Tables and Pull/Push, see `docs/sqlserver-to-kafka-guide.md`.
+- ksqlDB function/type mapping: `docs/ksql-function-type-mapping.md`

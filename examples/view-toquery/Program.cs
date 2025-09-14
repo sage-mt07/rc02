@@ -39,7 +39,7 @@ public class ViewContext : KsqlContext
     public EventSet<OrderSummary> Summaries { get; set; }
     protected override void OnModelCreating(IModelBuilder b)
     {
-        // ToQuery 定義はそのまま
+        // Keep the ToQuery definition as is
         b.Entity<Order>();
         b.Entity<Customer>();
         b.Entity<OrderSummary>().ToQuery(q => q

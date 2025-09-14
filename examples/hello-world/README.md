@@ -24,8 +24,8 @@ stream is ready using `WaitForEntityReadyAsync`, and then consumes it with
 
 ## Design Document References
 
-- [POCO構造と属性の説明](../../docs/oss_design_combined.md#3-poco属性ベースdsl設計ルール（fluent-apiの排除方針）)
-- [スキーマ登録の説明](../../docs/oss_design_combined.md#4-スキーマ構築と初期化手順onmodelcreating)
-- [送信操作](../../docs/oss_design_combined.md#5-プロデュース操作)
-- [受信操作](../../docs/oss_design_combined.md#6-コンシューム操作、（リトライ、エラー、dlq、commitの誤解）)
-- [ログ設定](../../docs/oss_design_combined.md#8ロギングとクエリ可視化)
+- [POCO structure and attributes](../../docs/oss_design_combined.md#3-poco-attribute-based-dsl-design-rules-fluent-api-elimination-policy)
+- [Schema registration](../../docs/oss_design_combined.md#4-schema-building-and-initialization-procedures-onmodelcreating)
+- [Produce operations](../../docs/oss_design_combined.md#5-produce-operations)
+- [Consume operations](../../docs/oss_design_combined.md#6-consume-operations-retry-error-dlq-commit-misconceptions)
+- [Logging and query visibility](../../docs/oss_design_combined.md#8-logging-and-query-visibility)

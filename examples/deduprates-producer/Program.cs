@@ -15,7 +15,7 @@ public class ProducerContext : KsqlContext
 
     protected override void OnModelCreating(IModelBuilder b)
     {
-        // Stream/Topic は POCO 側の属性で指定する
+        // Stream/Topic is specified by attributes on the POCO side
     }
 }
 

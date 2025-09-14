@@ -4,8 +4,8 @@ This sample pairs a simple producer and consumer using **Kafka.Ksql.Linq**.
 `Program.cs` registers `BasicMessage` with `[Topic]` and demonstrates
 sending a record then retrieving it with `ForEachAsync`.
 
-For an inline walkthrough, see the minimal example in the project root `README.md`.
-section *3. POCO属性ベースDSL設計ルール*.
+For an inline walkthrough, see the minimal example in the project root `README.md`,
+section *3. POCO attribute-based DSL design rules*.
 
 ## Prerequisites
 - .NET 8 SDK

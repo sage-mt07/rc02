@@ -1,5 +1,5 @@
 # DEPRECATED
 
-このサンプルは `examples/query-basics` に統合されます。
-View/ToQuery は `examples/query-basics` を参照してください。
+This sample is merged into `examples/query-basics`.
+Refer to `examples/query-basics` for View/ToQuery.
 

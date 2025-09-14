@@ -1,9 +1,9 @@
 # query-basics (consolidated)
 
-クエリDSLの基本（フィルタ、View/ToQuery）を併載します。
-従来の以下を統合対象とします。
+This brings together the basics of the query DSL—filters and View/ToQuery.
+We are consolidating the following legacy samples:
 - `examples/query-filter`
 - `examples/view-toquery`
 
-現時点では従来プロジェクトを参照してください（コードは順次こちらへ移行します）。
+For now, refer to the legacy projects; code will migrate here over time.
 

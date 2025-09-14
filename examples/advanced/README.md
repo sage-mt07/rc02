@@ -1,6 +1,6 @@
 # advanced
 
-高度なサンプルやOSS検証用のサンプルを集約します。
+This folder gathers advanced samples and OSS verification exercises.
 
 - `examples/daily-comparison`
 - `examples/oss-bars-verify`

@@ -24,6 +24,6 @@ The default `appsettings.json` is tuned for debugging with `LogLevel:Debug`.
 
 ## Design Document Reference
 
-- [ロギングとクエリ可視化](../../docs/oss_design_combined.md#8ロギングとクエリ可視化)
+- [Logging and query visibility](../../docs/oss_design_combined.md#8-logging-and-query-visibility)
 
 This sample corresponds to [docs_configuration_reference.md](../../docs/docs_configuration_reference.md).

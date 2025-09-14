@@ -1,5 +1,5 @@
 # DEPRECATED
 
-このサンプルは `examples/query-basics` に統合されます。
-フィルタと View/ToQuery の両方を `examples/query-basics` に集約します。
+This sample is merged into `examples/query-basics`.
+Both filter and View/ToQuery examples now live in `examples/query-basics`.
 
