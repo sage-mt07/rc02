@@ -1,0 +1,1 @@
+- Translated `amagiprotocol/amagi_protocol_full.md` into English and archived the Japanese original under `amagiprotocol/ja`.

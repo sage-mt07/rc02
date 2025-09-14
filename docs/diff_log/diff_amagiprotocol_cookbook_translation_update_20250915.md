@@ -1,0 +1,1 @@
+- refined English translation of amagiprotocol/amagi_protocol_cookbook.md for rhythm and natural tone
