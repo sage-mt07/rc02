@@ -1,5 +1,5 @@
 # DEPRECATED
 
-このサンプルは `examples/error-handling` に統合されます。
-Retry/OnError/DLQ は単一サンプルで切替できる構成に移行します。
+This sample is merged into `examples/error-handling`.
+Retry/OnError/DLQ are moving to a unified sample that lets you switch modes.
 

@@ -1,9 +1,9 @@
 # error-handling (consolidated)
 
-Retry/OnError/DLQ を単一のサンプルで切替できる形に統合します。
-従来の以下を統合対象とします。
+This will unify Retry, OnError, and DLQ into a single sample that lets you switch between them.
+The former targets for consolidation are:
 - `examples/error-handling`
 - `examples/error-handling-dlq`
 
-現時点では従来プロジェクトを参照してください（コードは順次こちらへ移行します）。
+For now, refer to the legacy projects; code will migrate here over time.
 

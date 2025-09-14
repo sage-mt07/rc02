@@ -1,11 +1,11 @@
 # basics (consolidated)
 
-このサンプルは最小の送受信を示します。従来の以下を統合します。
+This sample shows the minimal produce/consume pattern and consolidates:
 - `examples/basic-produce-consume`
 - `examples/hello-world`
 
-現時点では従来プロジェクトを参照してください（コードは順次こちらへ移行します）。
+For now, refer to the legacy projects; code will migrate here over time.
 
-実行例（従来）
+Legacy run example
 - `dotnet run --project examples/basic-produce-consume`
 

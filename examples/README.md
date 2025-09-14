@@ -1,9 +1,9 @@
-﻿# Examples（統合ガイド）
+# Examples (Unified Guide)
 
-- まずは `examples/index.md` の「共通前提」「実行方法（共通）」を参照してください。
-- 目的別のサンプルは `examples/index.md` から辿れます。
+- Start with `examples/index.md` for "Shared Prerequisites" and "How to Run".
+- Then follow the category links from `examples/index.md`.
 
-クイック手順: 
+Quick start:
 ```
 docker-compose -f tools/docker-compose.kafka.yml up -d
 cd examples/basic-produce-consume
