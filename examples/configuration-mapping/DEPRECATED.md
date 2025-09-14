@@ -1,5 +1,5 @@
 # DEPRECATED
 
-このサンプルは `examples/configuration` に統合されます。
-appsettings と Builder/属性の最小例は `examples/configuration` を参照してください。
+This sample is being folded into `examples/configuration`.
+For the minimal appsettings and Builder/attribute example, see `examples/configuration`.
 

@@ -25,7 +25,7 @@ public class HelloKafkaContext : KsqlContext
     public EventSet<HelloMessage> HelloMessages { get; set; } = null!;
     protected override void OnModelCreating(IModelBuilder modelBuilder)
     {
-        // 最小のエンティティ登録（Topic/Schema は属性から解決）
+        // Minimal entity registration (Topic/Schema resolved from attributes)
         modelBuilder.Entity<HelloMessage>();
     }
 }
