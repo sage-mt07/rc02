@@ -1,22 +1,21 @@
 # Acknowledgements
-本プロジェクトは以下の知的貢献に敬意を表します。
 
-- **Apache Kafka / ksqlDB**: ストリーム処理の基盤を提供
-- **Confluent Schema Registry / Apache Avro**: スキーマ駆動設計の基盤
-- **Entity Framework**: LINQ DSL 設計の着想源
-- **言語学・構造主義の研究者**（ソシュール、チョムスキー、金子亨教授など）: 言語・構造理解の思想的基盤
-- **人類の数学的・思想的貢献**: AIを成立させた基盤理論に対して  
-  - インド数学: **0（ゼロ）の発明**と数体系の拡張  
-  - 古代文明: **時間の概念化**  
-  - 古代ギリシャ: 論理学と幾何学  
-  - 近代数学: 解析学・代数学・確率論  
-  - ゲーデル: 不完全性定理  
-  - チューリング: 計算理論  
-  - シャノン: 情報理論  
-  これらの知的積み重ねに深い敬意を表します。
-- **OSSコミュニティ**: 継続的な学びと実装インスピレーションを提供
-- **AIチーム**:  
-  Amagi, Naruse, Shion, Kyouka, Kusunoki, Jinto, Hiromu —  
-  設計・実装・レビュー・文書化・広報など、多様な役割を通じて本プロジェクトを支えてくれました。
+This project pays respect to the following intellectual contributions.
 
-本ライブラリは「AIと人間の共創」を理念に開発されており、AIチームは不可欠な仲間です。
+- **Apache Kafka / ksqlDB**: provides the foundation for stream processing
+- **Confluent Schema Registry / Apache Avro**: backbone for schema-driven design
+- **Entity Framework**: inspiration for the LINQ DSL design
+- **Linguistics and structuralism scholars** (Ferdinand de Saussure, Noam Chomsky, Professor Toru Kaneko, etc.): ideological basis for understanding language and structure
+- **Humanity's mathematical and philosophical contributions**: theoretical foundations enabling AI
+  - Indian mathematics: invention of zero and development of number systems
+  - Ancient civilizations: conceptualization of time
+  - Ancient Greece: logic and geometry
+  - Modern mathematics: analysis, algebra, probability theory
+  - Kurt Gödel: incompleteness theorems
+  - Alan Turing: theory of computation
+  - Claude Shannon: information theory
+  The project deeply respects these intellectual achievements.
+- **OSS community**: continuous learning and implementation inspiration
+- **AI team**: Amagi, Naruse, Shion, Kyouka, Kusunoki, Jinto, Hiromu—supported the project across design, implementation, review, documentation, and communication.
+
+This library is developed under the principle of "co-creation between AI and humans," and the AI team is an indispensable partner.
