@@ -50,7 +50,7 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
 
     protected override Expression VisitUnary(UnaryExpression node)
     {
-        // 型変換の処理（Convert等）
+        // Handle type conversions (e.g., Convert)
         if (node.NodeType == ExpressionType.Convert || node.NodeType == ExpressionType.ConvertChecked)
         {
             return Visit(node.Operand);
@@ -140,7 +140,7 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// メンバー名取得
+    /// Get member name
     /// </summary>
     private string GetMemberName(MemberExpression member)
     {
@@ -168,28 +168,28 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
             return $"{prefix}.{name}";
         }
 
-        // ネストしたプロパティの場合は最下位のプロパティ名を使用
+        // Use the deepest property name for nested properties
         return member.Member.Name;
     }
 
     /// <summary>
-    /// GROUP BYで許可された関数判定
+    /// Determine allowed functions in GROUP BY
     /// </summary>
     private static bool IsAllowedGroupByFunction(string methodName)
     {
         var allowedFunctions = new[]
         {
-            // 日付関数
+            // Date functions
             "Year", "Month", "Day", "Hour", "Minute", "Second",
             "DayOfWeek", "DayOfYear", "WeekOfYear",
             
-            // 文字列関数（部分）
+            // String functions (subset)
             "Substring", "Left", "Right", "ToUpper", "ToLower", "Upper", "Lower",
             
-            // 数値関数（部分）
+            // Numeric functions (subset)
             "Floor", "Ceiling", "Round",
             
-            // 型変換
+            // Type conversion
             "ToString", "Cast"
         };
 
@@ -197,7 +197,7 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// GROUP BY関数処理
+    /// Process GROUP BY functions
     /// </summary>
     private string ProcessGroupByFunction(MethodCallExpression methodCall)
     {
@@ -205,7 +205,7 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
 
         return methodName switch
         {
-            // 日付関数
+            // Date functions
             "Year" => ProcessDateFunction("YEAR", methodCall),
             "Month" => ProcessDateFunction("MONTH", methodCall),
             "Day" => ProcessDateFunction("DAY", methodCall),
@@ -216,7 +216,7 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
             "DayOfYear" => ProcessDateFunction("DAY_OF_YEAR", methodCall),
             "WeekOfYear" => ProcessDateFunction("WEEK_OF_YEAR", methodCall),
 
-            // 文字列関数
+            // String functions
             "Substring" => ProcessSubstringFunction(methodCall),
             "Left" => ProcessLeftFunction(methodCall),
             "Right" => ProcessRightFunction(methodCall),
@@ -225,12 +225,12 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
             "Upper" => ProcessSimpleFunction("UPPER", methodCall),
             "Lower" => ProcessSimpleFunction("LOWER", methodCall),
 
-            // 数値関数
+            // Numeric functions
             "Floor" => ProcessSimpleFunction("FLOOR", methodCall),
             "Ceiling" => ProcessSimpleFunction("CEIL", methodCall),
             "Round" => ProcessRoundFunction(methodCall),
 
-            // 型変換
+            // Type conversion
             "ToString" => ProcessToStringFunction(methodCall),
 
             _ => throw new InvalidOperationException($"Unsupported GROUP BY function: {methodName}")
@@ -238,7 +238,7 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 日付関数処理
+    /// Handle date functions
     /// </summary>
     private string ProcessDateFunction(string ksqlFunction, MethodCallExpression methodCall)
     {
@@ -248,7 +248,7 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 単純関数処理
+    /// Handle simple functions
     /// </summary>
     private string ProcessSimpleFunction(string ksqlFunction, MethodCallExpression methodCall)
     {
@@ -258,7 +258,7 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// SUBSTRING関数処理
+    /// Handle SUBSTRING function
     /// </summary>
     private string ProcessSubstringFunction(MethodCallExpression methodCall)
     {
@@ -283,7 +283,7 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// LEFT関数処理
+    /// Handle LEFT function
     /// </summary>
     private string ProcessLeftFunction(MethodCallExpression methodCall)
     {
@@ -294,7 +294,7 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// RIGHT関数処理
+    /// Handle RIGHT function
     /// </summary>
     private string ProcessRightFunction(MethodCallExpression methodCall)
     {
@@ -305,7 +305,7 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// ROUND関数処理
+    /// Handle ROUND function
     /// </summary>
     private string ProcessRoundFunction(MethodCallExpression methodCall)
     {
@@ -322,7 +322,7 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// ToString関数処理
+    /// Handle ToString function
     /// </summary>
     private string ProcessToStringFunction(MethodCallExpression methodCall)
     {
@@ -332,7 +332,7 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// カラム名抽出
+    /// Extract column name
     /// </summary>
     private string ExtractColumnName(Expression expression)
     {
@@ -345,7 +345,7 @@ internal class GroupByExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 定数値抽出
+    /// Extract constant value
     /// </summary>
     private string ExtractConstantValue(Expression expression)
     {

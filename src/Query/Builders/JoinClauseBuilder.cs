@@ -8,7 +8,7 @@ namespace Kafka.Ksql.Linq.Query.Builders;
 /// <summary>
 /// Builder for JOIN clauses (limited to 3 tables).
 /// Rationale: separation-of-concerns; outputs a complete JOIN statement including keywords.
-/// 出力例: "JOIN table2 t2 ON t1.key = t2.key"
+/// Example output: "JOIN table2 t2 ON t1.key = t2.key"
 /// </summary>
 internal class JoinClauseBuilder : BuilderBase
 {
@@ -16,12 +16,12 @@ internal class JoinClauseBuilder : BuilderBase
 
     protected override KsqlBuilderType[] GetRequiredBuilderTypes()
     {
-        return Array.Empty<KsqlBuilderType>(); // 他Builderに依存しない
+        return Array.Empty<KsqlBuilderType>(); // No dependency on other builders
     }
 
     protected override string BuildInternal(Expression expression)
     {
-        // JOIN制限の事前チェック
+        // Pre-check join limitations
         JoinLimitationEnforcer.ValidateJoinExpression(expression);
 
         var visitor = new JoinExpressionVisitor();
@@ -55,7 +55,7 @@ internal class JoinClauseBuilder : BuilderBase
             throw new InvalidOperationException("Expression does not contain a valid JOIN operation");
         }
 
-        // JOIN引数数チェック（outer, inner, outerKeySelector, innerKeySelector, resultSelector）
+        // Check number of JOIN arguments (outer, inner, outerKeySelector, innerKeySelector, resultSelector)
         if (joinCall.Arguments.Count < 4)
         {
             throw new InvalidOperationException(
@@ -64,11 +64,11 @@ internal class JoinClauseBuilder : BuilderBase
     }
 
     /// <summary>
-    /// JOIN型バリデーション
+    /// Validate JOIN types
     /// </summary>
     private static void ValidateJoinTypes(Expression expression)
     {
-        // JoinLimitationEnforcer で既にチェック済みだが、追加チェック
+        // Additional check even though JoinLimitationEnforcer already validated
         var joinCall = FindJoinCall(expression);
         if (joinCall?.Method.Name != "Join")
         {
@@ -78,7 +78,7 @@ internal class JoinClauseBuilder : BuilderBase
     }
 
     /// <summary>
-    /// JOIN呼び出し検索
+    /// Find JOIN call
     /// </summary>
     private static MethodCallExpression? FindJoinCall(Expression expr)
     {

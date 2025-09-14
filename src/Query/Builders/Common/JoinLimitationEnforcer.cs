@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 namespace Kafka.Ksql.Linq.Query.Builders.Common;
 
 /// <summary>
-/// JOIN制限強制クラス
+/// Class enforcing JOIN limitations
 /// Rationale: strictly enforce the two-table limitation in stream processing.
 /// </summary>
 internal static class JoinLimitationEnforcer
@@ -47,7 +47,7 @@ internal static class JoinLimitationEnforcer
     }
 
     /// <summary>
-    /// JOIN数のカウント
+    /// Count number of JOINs
     /// </summary>
     private static int CountJoins(Expression expression)
     {
@@ -57,7 +57,7 @@ internal static class JoinLimitationEnforcer
     }
 
     /// <summary>
-    /// サポートされていないJOINパターンの検出
+    /// Detect unsupported JOIN patterns
     /// </summary>
     private static List<string> DetectUnsupportedJoinPatterns(Expression expression)
     {
@@ -75,7 +75,7 @@ internal static class JoinLimitationEnforcer
         Expression outerKeySelector,
         Expression innerKeySelector)
     {
-        // キー型一致性チェック
+        // Check key type consistency
         var outerKeyType = ExtractKeyType(outerKeySelector);
         var innerKeyType = ExtractKeyType(innerKeySelector);
 
@@ -86,7 +86,7 @@ internal static class JoinLimitationEnforcer
                 $"Ensure both tables are partitioned by the same key type for optimal performance.");
         }
 
-        // パーティション推奨警告
+        // Partitioning recommendation warning
         ValidatePartitioningRecommendations(outerType, innerType);
     }
 
@@ -95,20 +95,20 @@ internal static class JoinLimitationEnforcer
     /// </summary>
     private static void ValidatePartitioningRecommendations(Type outerType, Type innerType)
     {
-        // 実装簡略化版（実際の環境では詳細なパーティション情報が必要）
+        // Simplified implementation (real environments require detailed partition info)
         var outerTopicName = GetTopicName(outerType);
         var innerTopicName = GetTopicName(innerType);
 
         if (outerTopicName != null && innerTopicName != null)
         {
-            // パーティション数やキー分散の警告
-            // 本来はメタデータストアから情報取得
+            // Warning about partition count and key distribution
+            // Normally fetch information from metadata store
             ConsoleWarningIfNeeded(outerTopicName, innerTopicName);
         }
     }
 
     /// <summary>
-    /// キー型抽出
+    /// Extract key type
     /// </summary>
     private static Type? ExtractKeyType(Expression keySelector)
     {
@@ -121,7 +121,7 @@ internal static class JoinLimitationEnforcer
     }
 
     /// <summary>
-    /// トピック名取得
+    /// Get topic name
     /// </summary>
     private static string? GetTopicName(Type entityType)
     {
@@ -129,17 +129,17 @@ internal static class JoinLimitationEnforcer
     }
 
     /// <summary>
-    /// パフォーマンス警告
+    /// Performance warning
     /// </summary>
     private static void ConsoleWarningIfNeeded(string outerTopic, string innerTopic)
     {
-        // 開発環境での警告出力（本番では適切なロギングフレームワーク使用）
+        // Output warning in development (use proper logging in production)
         Console.WriteLine($"[KSQL-LINQ WARNING] JOIN performance optimization: " +
             $"Ensure topics '{outerTopic}' and '{innerTopic}' have same partition count and key distribution.");
     }
 
     /// <summary>
-    /// JOINカウンター用Visitor
+    /// Visitor for counting JOINs
     /// </summary>
     private class JoinCountVisitor : ExpressionVisitor
     {
@@ -151,7 +151,7 @@ internal static class JoinLimitationEnforcer
             {
                 JoinCount++;
 
-                // ネストしたJOINもカウント
+                // Count nested JOINs as well
                 if (node.Object != null)
                     Visit(node.Object);
 
@@ -166,7 +166,7 @@ internal static class JoinLimitationEnforcer
     }
 
     /// <summary>
-    /// サポートされていないJOINパターン検出用Visitor
+    /// Visitor for detecting unsupported JOIN patterns
     /// </summary>
     private class UnsupportedJoinPatternVisitor : ExpressionVisitor
     {
@@ -176,7 +176,7 @@ internal static class JoinLimitationEnforcer
         {
             var methodName = node.Method.Name;
 
-            // LINQ Join以外のJOIN系メソッド検出
+            // Detect JOIN-related methods other than LINQ Join
             switch (methodName)
             {
                 case "GroupJoin":

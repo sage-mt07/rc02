@@ -3,11 +3,11 @@
     <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>Kafka.Ksql.Linq</RootNamespace>
     <AssemblyName>Kafka.Ksql.Linq</AssemblyName>
-    <!-- ✅ Nullable Reference Types を有効化 -->
+    <!-- ✅ Enable nullable reference types -->
     <Nullable>enable</Nullable>
-    <!-- ✅ 警告をエラーとして扱う (開発時品質向上) -->
+    <!-- ✅ Treat warnings as errors (improves development quality) -->
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <!-- ✅ Nullable警告は警告のまま (段階的移行のため) -->
+    <!-- ✅ Keep nullable warnings as warnings (for phased migration) -->
     <WarningsNotAsErrors>CS8600;CS8601;CS8602;CS8603;CS8618;CS8619;CS8620;CS8625</WarningsNotAsErrors>
     <PackageId>Kafka.Ksql.Linq</PackageId>
     <Version>1.0.0</Version>

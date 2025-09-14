@@ -10,13 +10,13 @@ using System.Linq.Expressions;
 namespace Kafka.Ksql.Linq.Query.Pipeline;
 
 /// <summary>
-/// DMLクエリ生成器（新Builder使用版）
+/// DML query generator (new builder version)
 /// Rationale: separation-of-concerns; generate SELECT via integrated builders
 /// </summary>
 internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
 {
     /// <summary>
-    /// コンストラクタ（Builder依存注入）
+    /// Constructor (builder dependency injection)
     /// </summary>
     public DMLQueryGenerator(IReadOnlyDictionary<KsqlBuilderType, IKsqlBuilder> builders)
         : base(builders)
@@ -24,7 +24,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// 簡易コンストラクタ（標準Builder使用）
+    /// Simplified constructor (uses standard builders)
     /// </summary>
     public DMLQueryGenerator() : this(CreateStandardBuilders())
     {
@@ -40,7 +40,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// SELECT * クエリ生成
+    /// Generate SELECT * query
     /// </summary>
     public string GenerateSelectAll(string objectName, bool isPullQuery = true, bool isTableQuery = false)
     {
@@ -60,7 +60,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// 条件付きSELECTクエリ生成
+    /// Generate conditional SELECT query
     /// </summary>
     public string GenerateSelectWithCondition(string objectName, Expression whereExpression, bool isPullQuery = true, bool isTableQuery = false)
     {
@@ -85,7 +85,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// COUNTクエリ生成
+    /// Generate COUNT query
     /// </summary>
     public string GenerateCountQuery(string objectName)
     {
@@ -96,7 +96,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
             var structure = CreateCountStructure(objectName);
 
             var query = AssembleStructuredQuery(structure);
-            return ApplyQueryPostProcessing(query, context); // COUNTクエリも後処理でセミコロン等を付与
+            return ApplyQueryPostProcessing(query, context); // Post-processing also appends semicolons to COUNT queries
         }
         catch (System.Exception ex)
         {
@@ -105,7 +105,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// 集約クエリ生成
+    /// Generate aggregate query
     /// </summary>
     public string GenerateAggregateQuery(string objectName, Expression aggregateExpression)
     {
@@ -115,11 +115,11 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
             var context = new QueryAssemblyContext(objectName, true); // Aggregates default to pull query
             var structure = CreateSelectStructure(objectName);
 
-            // 集約式処理
+            // Handle aggregate expressions
             var selectContent = SafeCallBuilder(KsqlBuilderType.Select, aggregateExpression, "aggregate expression processing");
             var selectClause = QueryClause.Required(QueryClauseType.Select, selectContent, aggregateExpression);
 
-            // デフォルトのSELECT *を置き換え
+            // Replace default SELECT *
             structure = structure.RemoveClause(QueryClauseType.Select);
             structure = structure.AddClause(selectClause);
 
@@ -133,7 +133,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// 複雑なLINQクエリ生成
+    /// Generate complex LINQ query
     /// </summary>
     public string GenerateLinqQuery(string objectName, Expression linqExpression, bool isPullQuery = false, bool isTableQuery = false)
     {
@@ -184,7 +184,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// LINQ式処理
+    /// Process LINQ expression
     /// </summary>
     private QueryStructure ProcessLinqExpression(QueryStructure structure, Expression linqExpression, QueryAssemblyContext context)
     {
@@ -200,7 +200,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// メソッド呼び出し処理
+    /// Process method call
     /// </summary>
     private QueryStructure ProcessMethodCall(QueryStructure structure, MethodCallExpression methodCall, QueryAssemblyContext context)
     {
@@ -216,12 +216,12 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
             "OrderBy" or "OrderByDescending" or "ThenBy" or "ThenByDescending" => ProcessOrderByMethod(structure, methodCall),
             "Take" => ProcessTakeMethod(structure, methodCall),
             "Skip" => ProcessSkipMethod(structure, methodCall),
-            _ => structure // 未対応メソッドは無視
+            _ => structure // Ignore unsupported methods
         };
     }
 
     /// <summary>
-    /// SELECT メソッド処理
+    /// Handle SELECT method
     /// </summary>
     private QueryStructure ProcessSelectMethod(QueryStructure structure, MethodCallExpression methodCall)
     {
@@ -243,7 +243,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// WHERE メソッド処理
+    /// Handle WHERE method
     /// </summary>
     private QueryStructure ProcessWhereMethod(QueryStructure structure, MethodCallExpression methodCall)
     {
@@ -299,7 +299,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// GROUP BY メソッド処理
+    /// Handle GROUP BY method
     /// </summary>
     private QueryStructure ProcessGroupByMethod(QueryStructure structure, MethodCallExpression methodCall)
     {
@@ -318,7 +318,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// HAVING メソッド処理
+    /// Handle HAVING method
     /// </summary>
     private QueryStructure ProcessHavingMethod(QueryStructure structure, MethodCallExpression methodCall)
     {
@@ -338,7 +338,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
 
 
     /// <summary>
-    /// ORDER BY メソッド処理
+    /// Handle ORDER BY method
     /// </summary>
     private QueryStructure ProcessOrderByMethod(QueryStructure structure, MethodCallExpression methodCall)
     {
@@ -371,7 +371,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// SKIP メソッド処理（KSQL未対応のため警告）
+    /// Handle SKIP method (warn since KSQL doesn't support it)
     /// </summary>
     private QueryStructure ProcessSkipMethod(QueryStructure structure, MethodCallExpression methodCall)
     {
@@ -380,7 +380,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// JOIN メソッド処理 (単純内部JOINのみ対応)
+    /// Handle JOIN method (supports simple inner JOIN only)
     /// </summary>
     private QueryStructure ProcessJoinMethod(QueryStructure structure, MethodCallExpression methodCall)
     {
@@ -401,7 +401,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// LINQ式解析
+    /// Analyze LINQ expression
     /// </summary>
     private ExpressionAnalysisResult AnalyzeLinqExpression(Expression expression)
     {
@@ -439,7 +439,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// Lambda Body抽出
+    /// Extract lambda body
     /// </summary>
     private static Expression? ExtractLambdaBody(Expression expression)
     {
@@ -447,7 +447,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// 定数値抽出
+    /// Extract constant value
     /// </summary>
     private static string ExtractConstantValue(Expression expression)
     {
@@ -460,7 +460,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// 式に集約関数が含まれるか判定
+    /// Check if expression contains aggregate functions
     /// </summary>
     private static bool HasAggregateFunction(Expression expression)
     {
@@ -470,7 +470,7 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// 標準Builder作成
+    /// Create standard builders
     /// </summary>
     private static IReadOnlyDictionary<KsqlBuilderType, IKsqlBuilder> CreateStandardBuilders()
     {
@@ -486,26 +486,26 @@ internal class DMLQueryGenerator : GeneratorBase, IDMLQueryGenerator
     }
 
     /// <summary>
-    /// 最適化ヒント適用
+    /// Apply optimization hints
     /// </summary>
     protected override string ApplyOptimizationHints(string query, QueryAssemblyContext context)
     {
         var optimizedQuery = query;
 
-        // Pull Queryの最適化
+        // Optimization for pull queries
         if (context.IsPullQuery)
         {
-            // Pull Queryには適切なインデックスヒント
+            // Index hint for pull queries
             if (query.Contains("WHERE") && !query.Contains("LIMIT"))
             {
                 Console.WriteLine("[KSQL-LINQ HINT] Consider adding LIMIT clause for Pull Query performance");
             }
         }
 
-        // Push Queryの最適化
+        // Optimization for push queries
         if (!context.IsPullQuery)
         {
-            // ストリーミングクエリのパフォーマンスヒント
+            // Performance hint for streaming queries
             if (query.Contains("ORDER BY"))
             {
                 Console.WriteLine("[KSQL-LINQ WARNING] ORDER BY in Push Queries may impact performance. Consider using windowing.");

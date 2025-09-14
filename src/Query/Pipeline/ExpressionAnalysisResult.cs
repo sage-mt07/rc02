@@ -8,7 +8,7 @@ using Kafka.Ksql.Linq.Core.Attributes;
 namespace Kafka.Ksql.Linq.Query.Pipeline;
 
 /// <summary>
-/// 式解析結果（簡略版）
+/// Expression analysis result (simplified)
 /// </summary>
 internal class ExpressionAnalysisResult
 {

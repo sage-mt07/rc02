@@ -105,7 +105,7 @@ internal static class KsqlContextCacheExtensions
         };
     }
 
-    // ks.Store(...).All() を型安全に閉じた列挙関数にする
+    // Wrap ks.Store(...).All() in a type-safe enumerator function
     private static Lazy<Func<IEnumerable<(object key, object val)>>> CreateEnumeratorLazyGeneric(
         Type keyType, Type valueType, KafkaStream ks, string storeName)
     {

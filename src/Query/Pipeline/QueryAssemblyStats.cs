@@ -9,7 +9,7 @@ internal record QueryAssemblyStats(
     DateTime AssemblyTime)
 {
     /// <summary>
-    /// 統計サマリー
+    /// Statistics summary
     /// </summary>
     public string GetSummary()
     {

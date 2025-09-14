@@ -20,24 +20,24 @@ internal class CircuitBreakerHandler
     {
         var now = DateTime.UtcNow;
 
-        // 回路がオープン状態で回復時間が経過した場合、ハーフオープンに
+        // If the circuit is open and the recovery interval has elapsed, go half-open
         if (_isOpen && now - _lastFailureTime > _recoveryInterval)
         {
             _isOpen = false;
             _failureCount = 0;
         }
 
-        // 回路がオープン状態の場合、処理をスキップ
+        // Skip processing when the circuit is open
         if (_isOpen)
         {
             return false; // Skip processing
         }
 
-        // 失敗カウントを増加
+        // Increment failure count
         _failureCount++;
         _lastFailureTime = now;
 
-        // 閾値を超えた場合、回路をオープンに
+        // Open the circuit when the threshold is exceeded
         if (_failureCount >= _failureThreshold)
         {
             _isOpen = true;

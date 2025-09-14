@@ -31,21 +31,21 @@ internal class HavingExpressionVisitor : ExpressionVisitor
     {
         var methodName = node.Method.Name;
 
-        // 集約関数の処理
+        // Handle aggregate functions
         if (KsqlFunctionRegistry.IsAggregateFunction(methodName))
         {
             _result = ProcessAggregateFunction(node);
             return node;
         }
 
-        // その他の関数
+        // Other functions
         _result = KsqlFunctionTranslator.TranslateMethodCall(node);
         return node;
     }
 
     protected override Expression VisitMember(MemberExpression node)
     {
-        // GROUP BYカラムの参照
+        // Referencing GROUP BY columns
         _result = node.Member.Name;
         return node;
     }
@@ -79,47 +79,47 @@ internal class HavingExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 集約関数処理
+    /// Handle aggregate functions
     /// </summary>
     private string ProcessAggregateFunction(MethodCallExpression methodCall)
     {
         var methodName = methodCall.Method.Name;
         var ksqlFunction = TransformAggregateMethodName(methodName);
 
-        // Count関数の特別処理
+        // Special handling for Count function
         if (methodName == "Count")
         {
             return ProcessCountFunction(methodCall, ksqlFunction);
         }
 
-        // その他の集約関数
+        // Other aggregate functions
         return ProcessStandardAggregateFunction(methodCall, ksqlFunction);
     }
 
     /// <summary>
-    /// Count関数処理
+    /// Handle Count function
     /// </summary>
     private string ProcessCountFunction(MethodCallExpression methodCall, string ksqlFunction)
     {
-        // Count() - 引数なし
+        // Count() - no arguments
         if (methodCall.Arguments.Count == 0)
         {
             return "COUNT(*)";
         }
 
-        // Count(selector) - Lambda式の場合
+        // Count(selector) - when using a lambda
         if (methodCall.Arguments.Count == 1 && methodCall.Arguments[0] is LambdaExpression)
         {
             return "COUNT(*)";
         }
 
-        // Count(source) - ソース指定
+        // Count(source) - specifying source
         if (methodCall.Arguments.Count == 1)
         {
             return "COUNT(*)";
         }
 
-        // Count(source, predicate) - 条件付きカウント（KSQL未対応）
+        // Count(source, predicate) - conditional count (not supported in KSQL)
         if (methodCall.Arguments.Count == 2)
         {
             throw new InvalidOperationException(
@@ -130,18 +130,18 @@ internal class HavingExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 標準集約関数処理
+    /// Handle standard aggregate functions
     /// </summary>
     private string ProcessStandardAggregateFunction(MethodCallExpression methodCall, string ksqlFunction)
     {
-        // インスタンスメソッドの場合（g.Sum(x => x.Amount)）
+        // For instance methods (g.Sum(x => x.Amount))
         if (methodCall.Arguments.Count == 1 && methodCall.Arguments[0] is LambdaExpression lambda)
         {
             var columnName = ExtractColumnFromLambda(lambda);
             return $"{ksqlFunction}({columnName})";
         }
 
-        // 静的メソッドの場合（extension method）
+        // For static methods (extension method)
         if (methodCall.Method.IsStatic && methodCall.Arguments.Count >= 2)
         {
             var staticLambda = ExtractLambda(methodCall.Arguments[1]);
@@ -152,18 +152,18 @@ internal class HavingExpressionVisitor : ExpressionVisitor
             }
         }
 
-        // オブジェクトメソッドの場合
+        // For object methods
         if (methodCall.Object is MemberExpression objMember)
         {
             return $"{ksqlFunction}({objMember.Member.Name})";
         }
 
-        // フォールバック
+        // Fallback
         return $"{ksqlFunction}(*)";
     }
 
     /// <summary>
-    /// Lambda式からカラム名抽出
+    /// Extract column name from lambda
     /// </summary>
     private string ExtractColumnFromLambda(LambdaExpression lambda)
     {
@@ -176,7 +176,7 @@ internal class HavingExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// Lambda式抽出
+    /// Extract lambda expression
     /// </summary>
     private static LambdaExpression? ExtractLambda(Expression expr)
     {
@@ -189,7 +189,7 @@ internal class HavingExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 集約メソッド名変換
+    /// Convert aggregate method name
     /// </summary>
     private static string TransformAggregateMethodName(string methodName)
     {
@@ -206,7 +206,7 @@ internal class HavingExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 汎用式処理
+    /// Handle general expressions
     /// </summary>
     private string ProcessExpression(Expression expression)
     {
@@ -224,7 +224,7 @@ internal class HavingExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 二項式処理
+    /// Handle binary expressions
     /// </summary>
     private string ProcessBinaryExpression(BinaryExpression binary)
     {
@@ -235,7 +235,7 @@ internal class HavingExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// 単項式処理
+    /// Handle unary expressions
     /// </summary>
     private string ProcessUnaryExpression(UnaryExpression unary)
     {
@@ -248,7 +248,7 @@ internal class HavingExpressionVisitor : ExpressionVisitor
     }
 
     /// <summary>
-    /// SQL演算子変換
+    /// Convert SQL operators
     /// </summary>
     private static string GetSqlOperator(ExpressionType nodeType)
     {

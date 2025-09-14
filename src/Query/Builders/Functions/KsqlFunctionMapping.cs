@@ -3,8 +3,8 @@ using System;
 namespace Kafka.Ksql.Linq.Query.Builders.Functions;
 
 /// <summary>
-/// KSQL関数マッピング定義
-/// 設計理由：C#メソッド → KSQL関数の変換規則を定義
+/// KSQL function mapping definition
+/// Design rationale: defines conversion rules from C# methods to KSQL functions
 /// </summary>
 internal record KsqlFunctionMapping(
     string KsqlFunction,
@@ -14,7 +14,7 @@ internal record KsqlFunctionMapping(
     string? CustomTemplate = null)
 {
     /// <summary>
-    /// 固定引数数のコンストラクター
+    /// Constructor with fixed argument count
     /// </summary>
     public KsqlFunctionMapping(string ksqlFunction, int exactArgs)
         : this(ksqlFunction, exactArgs, exactArgs)
@@ -22,14 +22,14 @@ internal record KsqlFunctionMapping(
     }
 
     /// <summary>
-    /// カスタムテンプレート付きコンストラクター
+    /// Constructor with custom template
     /// </summary>
     public KsqlFunctionMapping(string ksqlFunction, int minArgs, int maxArgs, string customTemplate)
         : this(ksqlFunction, minArgs, maxArgs, false, customTemplate)
     {
     }
     /// <summary>
-    /// カスタムテンプレート付きコンストラクター（固定引数数）
+    /// Constructor with custom template (fixed argument count)
     /// </summary>
     public KsqlFunctionMapping(string ksqlFunction, int exactArgs, string customTemplate)
         : this(ksqlFunction, exactArgs, exactArgs, false, customTemplate)
@@ -37,7 +37,7 @@ internal record KsqlFunctionMapping(
     }
 
     /// <summary>
-    /// 特殊処理フラグ付きコンストラクター（固定引数数）
+    /// Constructor with special-handling flag (fixed argument count)
     /// </summary>
     public KsqlFunctionMapping(string ksqlFunction, int exactArgs, bool requiresSpecialHandling)
         : this(ksqlFunction, exactArgs, exactArgs, requiresSpecialHandling)
@@ -45,14 +45,14 @@ internal record KsqlFunctionMapping(
     }
 
     /// <summary>
-    /// 特殊処理フラグ + カスタムテンプレート付きコンストラクター（固定引数数）
+    /// Constructor with special-handling flag and custom template (fixed argument count)
     /// </summary>
     public KsqlFunctionMapping(string ksqlFunction, int exactArgs, bool requiresSpecialHandling, string? customTemplate)
         : this(ksqlFunction, exactArgs, exactArgs, requiresSpecialHandling, customTemplate)
     {
     }
     /// <summary>
-    /// 引数数バリデーション
+    /// Validate argument count
     /// </summary>
     public bool IsValidArgCount(int argCount)
     {
@@ -60,12 +60,12 @@ internal record KsqlFunctionMapping(
     }
 
     /// <summary>
-    /// テンプレート適用可能性チェック
+    /// Check template applicability
     /// </summary>
     public bool HasCustomTemplate => !string.IsNullOrEmpty(CustomTemplate);
 
     /// <summary>
-    /// 標準的な関数呼び出し形式生成
+    /// Generate standard function invocation format
     /// </summary>
     public string GenerateStandardCall(params string[] args)
     {
@@ -83,7 +83,7 @@ internal record KsqlFunctionMapping(
     }
 
     /// <summary>
-    /// カスタムテンプレート適用
+    /// Apply custom template
     /// </summary>
     private string ApplyCustomTemplate(string[] args)
     {

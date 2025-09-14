@@ -9,7 +9,7 @@ namespace Kafka.Ksql.Linq.Query.Builders;
 /// <summary>
 /// Builder for ORDER BY clause content.
 /// Rationale: separation-of-concerns; generate only sorting content without keywords.
-/// 出力例: "col1 ASC, col2 DESC" (ORDER BY除外)
+/// Example output: "col1 ASC, col2 DESC" (excluding ORDER BY)
 /// </summary>
 internal class OrderByClauseBuilder : BuilderBase
 {
@@ -17,7 +17,7 @@ internal class OrderByClauseBuilder : BuilderBase
 
     protected override KsqlBuilderType[] GetRequiredBuilderTypes()
     {
-        return Array.Empty<KsqlBuilderType>(); // 他Builderに依存しない
+        return Array.Empty<KsqlBuilderType>(); // No dependency on other builders
     }
 
     protected override string BuildInternal(Expression expression)
@@ -43,11 +43,11 @@ internal class OrderByClauseBuilder : BuilderBase
     }
 
     /// <summary>
-    /// ORDER BY制限チェック
+    /// Check ORDER BY restrictions
     /// </summary>
     private static void ValidateOrderByLimitations(Expression expression)
     {
-        // KSQLでのORDER BY制限
+        // ORDER BY restrictions in KSQL
         Console.WriteLine("[KSQL-LINQ INFO] ORDER BY in KSQL is limited to Pull Queries and specific scenarios. " +
                          "Push Queries (streaming) do not guarantee order due to distributed processing.");
 
@@ -65,14 +65,14 @@ internal class OrderByClauseBuilder : BuilderBase
     }
 
     /// <summary>
-    /// ORDER BYカラム数制限チェック
+    /// Check ORDER BY column count limits
     /// </summary>
     private static void ValidateOrderByColumns(Expression expression)
     {
         var visitor = new OrderByColumnCountVisitor();
         visitor.Visit(expression);
 
-        const int maxColumns = 5; // KSQL推奨制限
+        const int maxColumns = 5; // recommended limit in KSQL
         if (visitor.ColumnCount > maxColumns)
         {
             throw new InvalidOperationException(
@@ -82,7 +82,7 @@ internal class OrderByClauseBuilder : BuilderBase
     }
 
     /// <summary>
-    /// ORDER BYで使用されるキーセレクタを抽出
+    /// Extract key selectors used in ORDER BY
     /// </summary>
     private static IEnumerable<LambdaExpression> ExtractKeySelectors(Expression expression)
     {

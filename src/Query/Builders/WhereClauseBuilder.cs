@@ -8,7 +8,7 @@ namespace Kafka.Ksql.Linq.Query.Builders;
 /// <summary>
 /// Builder for WHERE clause content.
 /// Rationale: separation-of-concerns; generate only predicate content without keywords.
-/// 出力例: "condition1 AND condition2" (WHERE除外)
+/// Example output: "condition1 AND condition2" (excluding WHERE)
 /// </summary>
 internal class WhereClauseBuilder : BuilderBase
 {
@@ -23,7 +23,7 @@ internal class WhereClauseBuilder : BuilderBase
 
     protected override KsqlBuilderType[] GetRequiredBuilderTypes()
     {
-        return Array.Empty<KsqlBuilderType>(); // 他Builderに依存しない
+        return Array.Empty<KsqlBuilderType>(); // No dependency on other builders
     }
 
     protected override string BuildInternal(Expression expression)
@@ -60,7 +60,7 @@ internal class WhereClauseBuilder : BuilderBase
     /// </summary>
     private static void ValidateNoSelectStatements(Expression expression)
     {
-        // 基本的なサブクエリパターンの検出
+        // Detect basic subquery patterns
         var expressionString = expression.ToString().ToUpper();
         if (expressionString.Contains("SELECT"))
         {
@@ -70,7 +70,7 @@ internal class WhereClauseBuilder : BuilderBase
     }
 
     /// <summary>
-    /// 条件のみ構築（WHERE プレフィックスなし）
+    /// Build only conditions (without WHERE prefix)
     /// </summary>
     public string BuildCondition(Expression expression)
     {

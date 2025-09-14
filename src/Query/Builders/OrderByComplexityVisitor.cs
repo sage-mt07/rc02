@@ -9,14 +9,14 @@ internal class OrderByComplexityVisitor : ExpressionVisitor
 
     protected override Expression VisitBinary(BinaryExpression node)
     {
-        // 二項演算は複雑な式とみなす
+        // Treat binary expressions as complex
         HasComplexExpressions = true;
         return base.VisitBinary(node);
     }
 
     protected override Expression VisitConditional(ConditionalExpression node)
     {
-        // 条件式は複雑な式とみなす
+        // Treat conditional expressions as complex
         HasComplexExpressions = true;
         return base.VisitConditional(node);
     }
@@ -25,7 +25,7 @@ internal class OrderByComplexityVisitor : ExpressionVisitor
     {
         var methodName = node.Method.Name;
 
-        // 許可された関数以外は複雑とみなす
+        // Treat non-allowed functions as complex
         var allowedMethods = new[]
         {
             "OrderBy", "OrderByDescending", "ThenBy", "ThenByDescending",

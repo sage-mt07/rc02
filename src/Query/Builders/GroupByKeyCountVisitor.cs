@@ -13,7 +13,7 @@ internal class GroupByKeyCountVisitor : ExpressionVisitor
 
     protected override Expression VisitMember(MemberExpression node)
     {
-        // NewExpression内でない単独のMemberは1つのキー
+        // A single Member outside of a NewExpression counts as one key
         if (KeyCount == 0)
         {
             KeyCount = 1;

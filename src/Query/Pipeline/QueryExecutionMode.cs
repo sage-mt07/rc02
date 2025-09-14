@@ -1,6 +1,6 @@
 namespace Kafka.Ksql.Linq.Query.Pipeline;
 /// <summary>
-/// クエリ実行モード
+/// Query execution mode
 /// Rationale: distinguish Pull queries (one-shot) from Push queries (streaming)
 /// </summary>
 public enum QueryExecutionMode
@@ -10,12 +10,12 @@ public enum QueryExecutionMode
     /// </summary>
     Unspecified,
     /// <summary>
-    /// Pull Query - 一回限りのクエリ実行
+    /// Pull Query - executes once
     /// </summary>
     PullQuery,
 
     /// <summary>
-    /// Push Query - 継続的なストリーミングクエリ
+    /// Push Query - continuous streaming query
     /// </summary>
     PushQuery
 }

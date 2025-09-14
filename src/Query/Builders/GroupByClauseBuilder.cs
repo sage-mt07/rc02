@@ -9,7 +9,7 @@ namespace Kafka.Ksql.Linq.Query.Builders;
 /// <summary>
 /// Builder for GROUP BY clause content.
 /// Rationale: separation-of-concerns; generate only grouping key content without keywords.
-/// 出力例: "col1, col2" (GROUP BY除外)
+/// Example output: "col1, col2" (excluding GROUP BY)
 /// </summary>
 internal class GroupByClauseBuilder : BuilderBase
 {
@@ -32,7 +32,7 @@ internal class GroupByClauseBuilder : BuilderBase
 
     protected override KsqlBuilderType[] GetRequiredBuilderTypes()
     {
-        return Array.Empty<KsqlBuilderType>(); // 他Builderに依存しない
+        return Array.Empty<KsqlBuilderType>(); // No dependency on other builders
     }
 
     protected override string BuildInternal(Expression expression)
@@ -76,14 +76,14 @@ internal class GroupByClauseBuilder : BuilderBase
     }
 
     /// <summary>
-    /// GROUP BYキー数制限チェック
+    /// Check limit on number of GROUP BY keys
     /// </summary>
     private static void ValidateGroupByKeyCount(Expression expression)
     {
         var visitor = new GroupByKeyCountVisitor();
         visitor.Visit(expression);
 
-        const int maxKeys = 10; // KSQL推奨制限
+        const int maxKeys = 10; // recommended limit in KSQL
         if (visitor.KeyCount > maxKeys)
         {
             throw new InvalidOperationException(

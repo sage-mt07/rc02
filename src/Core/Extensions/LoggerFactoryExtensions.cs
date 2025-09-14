@@ -13,9 +13,9 @@ public static class LoggerFactoryExtensions
     /// <summary>
     /// Create a type-safe logger from ILoggerFactory; returns NullLogger if null
     /// </summary>
-    /// <typeparam name="T">ロガーのカテゴリ型</typeparam>
-    /// <param name="loggerFactory">ロガーファクトリ（null許可）</param>
-    /// <returns>ILogger&lt;T&gt; または NullLogger&lt;T&gt;.Instance</returns>
+    /// <typeparam name="T">Logger category type</typeparam>
+    /// <param name="loggerFactory">Logger factory (nullable)</param>
+    /// <returns>ILogger&lt;T&gt; or NullLogger&lt;T&gt;.Instance</returns>
     public static ILogger<T> CreateLoggerOrNull<T>(this ILoggerFactory? loggerFactory)
     {
         return loggerFactory?.CreateLogger<T>() ?? NullLogger<T>.Instance;
@@ -24,9 +24,9 @@ public static class LoggerFactoryExtensions
     /// <summary>
     /// Create a logger by category name
     /// </summary>
-    /// <param name="loggerFactory">ロガーファクトリ（null許可）</param>
-    /// <param name="categoryName">カテゴリ名</param>
-    /// <returns>ILogger または NullLogger.Instance</returns>
+    /// <param name="loggerFactory">Logger factory (nullable)</param>
+    /// <param name="categoryName">Category name</param>
+    /// <returns>ILogger or NullLogger.Instance</returns>
     public static ILogger CreateLoggerOrNull(this ILoggerFactory? loggerFactory, string categoryName)
     {
         return loggerFactory?.CreateLogger(categoryName) ?? NullLogger.Instance;
@@ -35,9 +35,9 @@ public static class LoggerFactoryExtensions
     /// <summary>
     /// Create a logger by Type category
     /// </summary>
-    /// <param name="loggerFactory">ロガーファクトリ（null許可）</param>
-    /// <param name="type">カテゴリのType</param>
-    /// <returns>ILogger または NullLogger.Instance</returns>
+    /// <param name="loggerFactory">Logger factory (nullable)</param>
+    /// <param name="type">Category Type</param>
+    /// <returns>ILogger or NullLogger.Instance</returns>
     public static ILogger CreateLoggerOrNull(this ILoggerFactory? loggerFactory, Type type)
     {
         return loggerFactory?.CreateLogger(type) ?? NullLogger.Instance;
@@ -46,12 +46,12 @@ public static class LoggerFactoryExtensions
     /// <summary>
     /// Debug logging with backward compatibility (generic)
     /// </summary>
-    /// <typeparam name="T">ロガーのカテゴリ型</typeparam>
-    /// <param name="logger">ロガー</param>
-    /// <param name="loggerFactory">ロガーファクトリ（null許可）</param>
-    /// <param name="enableLegacyLogging">レガシーログ有効フラグ</param>
-    /// <param name="message">メッセージテンプレート</param>
-    /// <param name="args">引数</param>
+    /// <typeparam name="T">Logger category type</typeparam>
+    /// <param name="logger">Logger</param>
+    /// <param name="loggerFactory">Logger factory (nullable)</param>
+    /// <param name="enableLegacyLogging">Flag enabling legacy logging</param>
+    /// <param name="message">Message template</param>
+    /// <param name="args">Arguments</param>
     public static void LogDebugWithLegacySupport<T>(this ILogger<T> logger,
         ILoggerFactory? loggerFactory, bool enableLegacyLogging,
         string message, params object[] args)
@@ -71,11 +71,11 @@ public static class LoggerFactoryExtensions
     /// <summary>
     /// Debug logging with backward compatibility (non-generic)
     /// </summary>
-    /// <param name="logger">ロガー</param>
-    /// <param name="loggerFactory">ロガーファクトリ（null許可）</param>
-    /// <param name="enableLegacyLogging">レガシーログ有効フラグ</param>
-    /// <param name="message">メッセージテンプレート</param>
-    /// <param name="args">引数</param>
+    /// <param name="logger">Logger</param>
+    /// <param name="loggerFactory">Logger factory (nullable)</param>
+    /// <param name="enableLegacyLogging">Flag enabling legacy logging</param>
+    /// <param name="message">Message template</param>
+    /// <param name="args">Arguments</param>
     public static void LogDebugWithLegacySupport(this ILogger logger,
         ILoggerFactory? loggerFactory, bool enableLegacyLogging,
         string message, params object[] args)
@@ -95,12 +95,12 @@ public static class LoggerFactoryExtensions
     /// <summary>
     /// Information logging with backward compatibility (generic)
     /// </summary>
-    /// <typeparam name="T">ロガーのカテゴリ型</typeparam>
-    /// <param name="logger">ロガー</param>
-    /// <param name="loggerFactory">ロガーファクトリ（null許可）</param>
-    /// <param name="enableLegacyLogging">レガシーログ有効フラグ</param>
-    /// <param name="message">メッセージテンプレート</param>
-    /// <param name="args">引数</param>
+    /// <typeparam name="T">Logger category type</typeparam>
+    /// <param name="logger">Logger</param>
+    /// <param name="loggerFactory">Logger factory (nullable)</param>
+    /// <param name="enableLegacyLogging">Flag enabling legacy logging</param>
+    /// <param name="message">Message template</param>
+    /// <param name="args">Arguments</param>
     public static void LogInformationWithLegacySupport<T>(this ILogger<T> logger,
         ILoggerFactory? loggerFactory, bool enableLegacyLogging,
         string message, params object[] args)
@@ -118,12 +118,12 @@ public static class LoggerFactoryExtensions
     /// <summary>
     /// Warning logging with backward compatibility (generic)
     /// </summary>
-    /// <typeparam name="T">ロガーのカテゴリ型</typeparam>
-    /// <param name="logger">ロガー</param>
-    /// <param name="loggerFactory">ロガーファクトリ（null許可）</param>
-    /// <param name="enableLegacyLogging">レガシーログ有効フラグ</param>
-    /// <param name="message">メッセージテンプレート</param>
-    /// <param name="args">引数</param>
+    /// <typeparam name="T">Logger category type</typeparam>
+    /// <param name="logger">Logger</param>
+    /// <param name="loggerFactory">Logger factory (nullable)</param>
+    /// <param name="enableLegacyLogging">Flag enabling legacy logging</param>
+    /// <param name="message">Message template</param>
+    /// <param name="args">Arguments</param>
     public static void LogWarningWithLegacySupport<T>(this ILogger<T> logger,
         ILoggerFactory? loggerFactory, bool enableLegacyLogging,
         string message, params object[] args)
@@ -141,13 +141,13 @@ public static class LoggerFactoryExtensions
     /// <summary>
     /// Error logging with backward compatibility (generic)
     /// </summary>
-    /// <typeparam name="T">ロガーのカテゴリ型</typeparam>
-    /// <param name="logger">ロガー</param>
-    /// <param name="exception">例外</param>
-    /// <param name="loggerFactory">ロガーファクトリ（null許可）</param>
-    /// <param name="enableLegacyLogging">レガシーログ有効フラグ</param>
-    /// <param name="message">メッセージテンプレート</param>
-    /// <param name="args">引数</param>
+    /// <typeparam name="T">Logger category type</typeparam>
+    /// <param name="logger">Logger</param>
+    /// <param name="exception">Exception</param>
+    /// <param name="loggerFactory">Logger factory (nullable)</param>
+    /// <param name="enableLegacyLogging">Flag enabling legacy logging</param>
+    /// <param name="message">Message template</param>
+    /// <param name="args">Arguments</param>
     public static void LogErrorWithLegacySupport<T>(this ILogger<T> logger,
         Exception exception, ILoggerFactory? loggerFactory, bool enableLegacyLogging,
         string message, params object[] args)

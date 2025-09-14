@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace Kafka.Ksql.Linq.Query.Builders;
 /// <summary>
-/// 集約関数検出Visitor
+/// Visitor for detecting aggregate functions
 /// </summary>
 internal class AggregateDetectionVisitor : ExpressionVisitor
 {

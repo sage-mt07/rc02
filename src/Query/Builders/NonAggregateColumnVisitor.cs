@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace Kafka.Ksql.Linq.Query.Builders;
 /// <summary>
-/// 非集約カラム検出Visitor
+/// Visitor for detecting non-aggregate columns
 /// </summary>
 internal class NonAggregateColumnVisitor : ExpressionVisitor
 {

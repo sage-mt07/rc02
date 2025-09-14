@@ -5,13 +5,13 @@ using System.Linq.Expressions;
 namespace Kafka.Ksql.Linq.Query.Builders.Common;
 
 /// <summary>
-/// Builder共通バリデーション
+/// Common builder validation
 /// Rationale: provide unified validation logic across all builder classes.
 /// </summary>
 internal static class BuilderValidation
 {
     /// <summary>
-    /// 式木の基本バリデーション
+    /// Basic validation for expression trees
     /// </summary>
     public static void ValidateExpression(Expression expression)
     {
@@ -25,7 +25,7 @@ internal static class BuilderValidation
     }
 
     /// <summary>
-    /// 式木の深度チェック（スタックオーバーフロー防止）
+    /// Check expression tree depth (prevent stack overflow)
     /// </summary>
     private static void ValidateExpressionDepth(Expression expression, int maxDepth, int currentDepth = 0)
     {
@@ -72,7 +72,7 @@ internal static class BuilderValidation
     }
 
     /// <summary>
-    /// 式木の複雑度チェック
+    /// Check expression tree complexity
     /// </summary>
     private static void ValidateExpressionComplexity(Expression expression)
     {
@@ -88,7 +88,7 @@ internal static class BuilderValidation
     }
 
     /// <summary>
-    /// 式木のノード数カウント
+    /// Count nodes in expression tree
     /// </summary>
     private static int CountNodes(Expression expression)
     {
@@ -125,7 +125,7 @@ internal static class BuilderValidation
     }
 
     /// <summary>
-    /// 引数数バリデーション
+    /// Validate argument count
     /// </summary>
     public static void ValidateArgumentCount(string methodName, int actualCount, int expectedMin, int expectedMax = int.MaxValue)
     {
@@ -162,7 +162,7 @@ internal static class BuilderValidation
     }
 
     /// <summary>
-    /// ネストした集約関数の使用禁止チェック
+    /// Check for forbidden nested aggregate functions
     /// </summary>
     public static void ValidateNoNestedAggregates(Expression expression)
     {
@@ -176,7 +176,7 @@ internal static class BuilderValidation
     }
 
     /// <summary>
-    /// 集約関数のネスト検出用Visitor
+    /// Visitor detecting nested aggregate functions
     /// </summary>
     private class NestedAggregateDetectionVisitor : ExpressionVisitor
     {
@@ -206,7 +206,7 @@ internal static class BuilderValidation
     }
 
     /// <summary>
-    /// ノードカウンター用Visitor
+    /// Visitor for counting nodes
     /// </summary>
     private class NodeCountVisitor : ExpressionVisitor
     {
