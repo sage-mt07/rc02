@@ -24,8 +24,4 @@ stream is ready using `WaitForEntityReadyAsync`, and then consumes it with
 
 ## Design Document References
 
-- [POCO structure and attributes](../../docs/oss_design_combined.md#3-poco-attribute-based-dsl-design-rules-fluent-api-elimination-policy)
-- [Schema registration](../../docs/oss_design_combined.md#4-schema-building-and-initialization-procedures-onmodelcreating)
-- [Produce operations](../../docs/oss_design_combined.md#5-produce-operations)
-- [Consume operations](../../docs/oss_design_combined.md#6-consume-operations-retry-error-dlq-commit-misconceptions)
-- [Logging and query visibility](../../docs/oss_design_combined.md#8-logging-and-query-visibility)
+- [Kafka.Ksql.Linq user guide](../../docs/kafka_ksql_linq_user_guide.md)

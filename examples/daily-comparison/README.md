@@ -2,7 +2,7 @@
 
 This example demonstrates a simple rate ingestion and daily aggregation using **Kafka.Ksql.Linq** only.
 All settings including logging and Schema Registry configuration are read from
-`appsettings.json` following `docs/docs_configuration_reference.md`.
+`appsettings.json` following `../../docs/configuration_reference.md`.
 `MyKsqlContext.FromAppSettings()` builds the context directly from this file.
 Bar and window definitions (1, 5, 60 minute bars and daily bars) are declared in `KafkaKsqlContext.OnModelCreating`.
 
