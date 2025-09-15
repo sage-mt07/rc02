@@ -23,5 +23,5 @@ cd examples/configuration
 - `examples/schema-attributes`: `[KsqlKey]` / `[KsqlDecimal]` / `[KsqlTimestamp]`
 
 ## References
-- Function/type mapping: `docs/ksql-function-type-mapping.md`
-- SQLServer → ksqlDB guide: `docs/sqlserver-to-kafka-guide.md`
+- Function/type mapping: `../../docs/ksql-function-type-mapping.md`
+- SQLServer → ksqlDB guide: `../../docs/sqlserver-to-kafka-guide.md`

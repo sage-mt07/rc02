@@ -5,7 +5,7 @@ and `.WithRetry(3)`. Records that fail processing are forwarded to the configure
 Dead Letter Queue after retries.
 
 This sample maps to
-[docs_advanced_rules.md](../../docs/docs_advanced_rules.md) section about
+[advanced_rules.md](../../docs/advanced_rules.md) section about
 `OnError` and retry strategies.
 
 ## Prerequisites

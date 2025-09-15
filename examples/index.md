@@ -55,6 +55,6 @@ dotnet run --project examples/basic-produce-consume
 ---
 
 ## Reference Docs (click to open)
-- OnModelCreating samples: `docs/onmodelcreating_samples.md`
-- Function/type mapping: `docs/ksql-function-type-mapping.md`
-- SQLServer → ksqlDB guide: `docs/sqlserver-to-kafka-guide.md`
+- OnModelCreating samples: `../docs/onmodelcreating_samples.md`
+- Function/type mapping: `../docs/ksql-function-type-mapping.md`
+- SQLServer → ksqlDB guide: `../docs/sqlserver-to-kafka-guide.md`

@@ -23,8 +23,5 @@ Call `context.Orders.Commit(entity)` after successful processing to record the o
 
 ## Design Document References
 
-- [Manual commit operation](../../docs/manual_commit.md)
-- [POCO attribute design](../../docs/oss_design_combined.md#3-poco-attribute-based-dsl-design-rules-fluent-api-elimination-policy)
-- [Schema initialization](../../docs/oss_design_combined.md#4-schema-building-and-initialization-procedures-onmodelcreating)
-
-See the manual commit API in [api_reference.md](../../docs/api_reference.md).
+- [Kafka.Ksql.Linq user guide](../../docs/kafka_ksql_linq_user_guide.md)
+- [API reference](../../docs/api_reference.md)

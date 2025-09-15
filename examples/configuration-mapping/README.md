@@ -24,6 +24,5 @@ The default `appsettings.json` is tuned for debugging with `LogLevel:Debug`.
 
 ## Design Document Reference
 
-- [Logging and query visibility](../../docs/oss_design_combined.md#8-logging-and-query-visibility)
-
-This sample corresponds to [docs_configuration_reference.md](../../docs/docs_configuration_reference.md).
+- [Kafka.Ksql.Linq user guide](../../docs/kafka_ksql_linq_user_guide.md)
+- [configuration_reference.md](../../docs/configuration_reference.md)
