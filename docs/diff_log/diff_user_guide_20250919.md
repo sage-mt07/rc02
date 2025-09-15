@@ -1,0 +1,1 @@
+- Docs: replace Set-based BasicMessage access with EventSet properties

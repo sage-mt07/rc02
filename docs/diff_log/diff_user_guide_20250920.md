@@ -1,0 +1,1 @@
+- Added HourlyCount table POCO example and corresponding KSQL DDL for tumbling-window aggregation

@@ -1,0 +1,1 @@
+- add KSQL translation snippet for OrderSummary join example in user guide

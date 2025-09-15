@@ -1,0 +1,3 @@
+- remove local table cache section and show ToListAsync for snapshot reads
+- demonstrate DLQ processing via ctx.Dlq.ForEachAsync and OnError(ErrorAction.DLQ)
+- document overriding producer/consumer/topic settings via appsettings.json

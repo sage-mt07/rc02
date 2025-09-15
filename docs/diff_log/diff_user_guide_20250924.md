@@ -1,0 +1,3 @@
+- add manual commit example with Commit()
+- drop unsupported serializer and middleware sections
+- trim checklist to focus on entity registration and key flows

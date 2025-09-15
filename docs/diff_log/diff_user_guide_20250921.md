@@ -1,0 +1,1 @@
+- Add primary key to HourlyCount example and provide its CREATE TABLE DDL
