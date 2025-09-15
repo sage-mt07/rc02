@@ -111,4 +111,4 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       SCHEMA_REGISTRY_URL: http://schema-registry:8081
       KSQLDB_URL: http://ksqldb-server:8088
-    entrypoint: ["/bin/sh", "-lc", "set -e; echo waiting for services...; for i in $(seq 1 60); do if curl -fsS http://schema-registry:8081/subjects >/dev/null 2>&1 && curl -fsS http://ksqldb-server:8088/info >/dev/null 2>&1; then break; fi; sleep 2; done; dotnet test -c Release --no-build --no-restore physicalTests/Kafka.Ksql.Linq.Tests.Integration.csproj --filter FullyQualifiedName~TimeBucketImportTumblingTests --logger 'trx;LogFileName=physical_runner.trx' --results-directory /src/reports/physical" ]
+    entrypoint: ["/bin/sh", "-lc", "set -e; echo waiting for services...; for i in $(seq 1 60); do if curl -fsS http://schema-registry:8081/subjects >/dev/null 2>&1 && curl -fsS http://ksqldb-server:8088/info >/dev/null 2>&1; then break; fi; sleep 2; done; dotnet test -c Release physicalTests/Kafka.Ksql.Linq.Tests.Integration.csproj --filter FullyQualifiedName~TimeBucketImportTumblingTests --logger 'trx;LogFileName=physical_runner.trx' --results-directory /src/reports/physical" ]

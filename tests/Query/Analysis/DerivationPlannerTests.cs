@@ -22,7 +22,6 @@ public class DerivationPlannerTests
         public double Open { get; set; }
         public double High { get; set; }
         public double Low { get; set; }
-        [KsqlTimeFrameClose]
         public double KsqlTimeFrameClose { get; set; }
     }
 

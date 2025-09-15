@@ -39,7 +39,7 @@ public class BarScheduleExplainTests
         public double Open { get; set; }
         public double High { get; set; }
         public double Low { get; set; }
-        [KsqlTimeFrameClose] public double KsqlTimeFrameClose { get; set; }
+        public double KsqlTimeFrameClose { get; set; }
     }
 
     private class Bar1wkLive
@@ -50,7 +50,7 @@ public class BarScheduleExplainTests
         public double Open { get; set; }
         public double High { get; set; }
         public double Low { get; set; }
-        [KsqlTimeFrameClose] public double KsqlTimeFrameClose { get; set; }
+        public double KsqlTimeFrameClose { get; set; }
     }
 
     private sealed class TestContext : KsqlContext

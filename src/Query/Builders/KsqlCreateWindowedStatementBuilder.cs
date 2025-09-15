@@ -21,7 +21,33 @@ internal static class KsqlCreateWindowedStatementBuilder
         if (!string.IsNullOrWhiteSpace(emitOverride))
             baseSql = baseSql.Replace("EMIT CHANGES", emitOverride);
         if (!string.IsNullOrWhiteSpace(inputOverride))
+        {
             baseSql = OverrideFrom(baseSql, inputOverride);
+            // ハブSTREAM入力（*_1s_final_s）の場合、ユーザーが定義した投影メンバー名（AS 別名）を
+            // そのまま再集約の引数として参照する（列名の固定は行わない）。
+            if (inputOverride.EndsWith("_1s_final_s", StringComparison.OrdinalIgnoreCase))
+            {
+                // 抽出: FROM ... <alias>
+                var fromAliasMatch = System.Text.RegularExpressions.Regex.Match(
+                    baseSql,
+                    @"\bFROM\s+[A-Za-z_][\w]*\s+([A-Za-z_][\w]*)",
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                var alias = fromAliasMatch.Success ? fromAliasMatch.Groups[1].Value : "o";
+
+                // 関数引数の読み替え: <FUNC>(...) AS <AliasName> → <FUNC>(alias.AliasName)
+                baseSql = System.Text.RegularExpressions.Regex.Replace(
+                    baseSql,
+                    @"\b(EARLIEST_BY_OFFSET|LATEST_BY_OFFSET|MAX|MIN)\s*\(([^)]*)\)\s+AS\s+([A-Za-z_][A-Za-z0-9_]*)",
+                    m =>
+                    {
+                        var func = m.Groups[1].Value;
+                        var member = m.Groups[3].Value; // AS の別名（= DTO メンバー名）
+                        var memberRef = $"{alias}.{member.ToUpperInvariant()}";
+                        return $"{func}({memberRef}) AS {member}";
+                    },
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Singleline);
+            }
+        }
         var window = FormatWindow(timeframe);
         // Optional GRACE insertion using simple heuristic: if model has AdditionalSettings[graceSeconds] on adapted entity, caller should pre-embed.
         var sql = InjectWindowAfterFrom(baseSql, window);

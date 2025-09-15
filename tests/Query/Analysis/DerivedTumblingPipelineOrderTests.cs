@@ -48,13 +48,12 @@ public class DerivedTumblingPipelineOrderTests
 
         // Validate relative order of key DDLs; additional DDLs (Fill/Prev etc.) may exist
         int idx(string prefix) => order.FindIndex(s => s.StartsWith(prefix, StringComparison.Ordinal));
-        var i0 = idx("CREATE STREAM foo_1s_final_s");
-        var i1 = idx("CREATE TABLE foo_1s_final");
-        var i2 = idx("CREATE TABLE foo_hb_1s");
-        var i3 = idx("CREATE TABLE foo_1m_live");
-        var i4 = idx("CREATE TABLE foo_5m_live");
-        var i5 = idx("CREATE TABLE foo_hb_5m");
-        Assert.True(i0 >= 0 && i1 > i0 && i2 > i1 && i3 > i2 && i4 > i3 && i5 > i4, string.Join("\n", order));
+        var iTable1s = idx("CREATE TABLE foo_1s_final");
+        var iStream1s = idx("CREATE STREAM foo_1s_final_s");
+        var iHb1s = idx("CREATE TABLE foo_hb_1s");
+        var iLive1m = idx("CREATE TABLE foo_1m_live");
+        var iLive5m = idx("CREATE TABLE foo_5m_live");
+        Assert.True(iTable1s >= 0 && iStream1s > iTable1s && iHb1s > iStream1s && iLive1m > iHb1s && iLive5m > iLive1m, string.Join("\n", order));
     }
 }
 

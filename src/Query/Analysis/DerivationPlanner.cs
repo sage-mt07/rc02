@@ -22,16 +22,6 @@ internal static class DerivationPlanner
         var valueShapes = qao.PocoShape.ToArray();
 
         var basedOn = qao.BasedOn;
-        if (string.IsNullOrEmpty(basedOn.CloseProp))
-        {
-            var close = model.EntityType
-                .GetProperties()
-                .FirstOrDefault(p => p.GetCustomAttribute<KsqlTimeFrameCloseAttribute>() != null);
-            if (close != null)
-            {
-                basedOn = basedOn with { CloseProp = close.Name };
-            }
-        }
 
         var topicAttr = model.EntityType.GetCustomAttribute<KsqlTopicAttribute>();
         var baseId = (topicAttr?.Name ?? model.TopicName ?? model.EntityType.Name).ToLowerInvariant();
@@ -72,7 +62,7 @@ internal static class DerivationPlanner
             var hbId = $"{baseId}_hb_{tfStr}";
             if (tf.Unit == "s" && tf.Value == 1)
             {
-                // Dependency order per docs: create TABLE first, then STREAM referencing it
+                // ksqlDB requires the backing topic to exist; create TABLE first, then STREAM referencing it.
                 var final1s = new DerivedEntity
                 {
                     Id = $"{baseId}_1s_final",

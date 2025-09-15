@@ -34,7 +34,46 @@ internal static class DerivedTumblingPipeline
         var baseName = (baseAttr?.Name ?? baseModel.TopicName ?? baseModel.EntityType.Name).ToLowerInvariant();
         var entities = PlanDerivedEntities(qao, baseModel, queryModel.WhenEmptyFiller != null);
         var models = AdaptModels(entities);
-        foreach (var m in models)
+        // Ensure deterministic and dependency-safe ordering:
+        // - Create 1s TABLE before the hub STREAM to ensure topic exists
+        // - Then other roles ordered by role priority and timeframe ascending
+        static int RolePriority(Role role) => role switch
+        {
+            Role.Final1s => 0,
+            Role.Final1sStream => 1,
+            Role.Hb => 2,
+            Role.Prev1m => 3,
+            Role.Live => 4,
+            Role.Fill => 5,
+            Role.Final => 6,
+            _ => 9
+        };
+        static int TimeframeToSeconds(string tf)
+        {
+            if (string.IsNullOrWhiteSpace(tf)) return int.MaxValue;
+            if (tf.EndsWith("mo", StringComparison.OrdinalIgnoreCase)) return 30 * 24 * 60 * 60 * int.Parse(tf[..^2]);
+            if (tf.EndsWith("wk", StringComparison.OrdinalIgnoreCase)) return 7 * 24 * 60 * 60 * int.Parse(tf[..^2]);
+            var unit = char.ToLowerInvariant(tf[^1]);
+            if (!int.TryParse(tf[..^1], out var v)) v = 0;
+            return unit switch
+            {
+                's' => v,
+                'm' => v * 60,
+                'h' => v * 3600,
+                'd' => v * 86400,
+                _ => int.MaxValue
+            };
+        }
+        var pass1 = models.Where(m => (m.AdditionalSettings.TryGetValue("id", out var id1) ? id1?.ToString() : string.Empty)?.EndsWith("_1s_final", StringComparison.OrdinalIgnoreCase) == true).ToList();
+        var pass2 = models.Where(m => (m.AdditionalSettings.TryGetValue("id", out var id2) ? id2?.ToString() : string.Empty)?.EndsWith("_1s_final_s", StringComparison.OrdinalIgnoreCase) == true).ToList();
+        var rest = models.Except(pass1).Except(pass2)
+            .Select(m => (Model: m, Role: Enum.Parse<Role>((string)m.AdditionalSettings["role"]), Tf: (string)m.AdditionalSettings["timeframe"]))
+            .OrderBy(x => RolePriority(x.Role))
+            .ThenBy(x => TimeframeToSeconds(x.Tf))
+            .Select(x => x.Model)
+            .ToList();
+        var executionOrder = pass1.Concat(pass2).Concat(rest);
+        foreach (var m in executionOrder)
         {
             var role = Enum.Parse<Role>((string)m.AdditionalSettings["role"]);
             var tf = (string)m.AdditionalSettings["timeframe"];
@@ -85,6 +124,9 @@ internal static class DerivedTumblingPipeline
             qm.SelectProjection = BuildInputProjection(inputType);
         }
         var tf = (string)model.AdditionalSettings["timeframe"];
+        // If aggregating from hub stream, we must re-aggregate over hub columns (Open/High/Low/Close).
+        // Expression tree rewriting cannot safely change delegate types; perform SELECT-clause textual adjustment.
+        var needHubRewrite = role == Role.Live && !string.IsNullOrWhiteSpace(inputOverride) && inputOverride.EndsWith("_1s_final_s", StringComparison.OrdinalIgnoreCase);
         // Infer bucket column name when not present on the query model (e.g., tests building models directly)
         static string? InferBucketColumnName(KsqlQueryModel m, EntityModel em)
         {
@@ -172,37 +214,29 @@ internal static class DerivedTumblingPipeline
                 cols.Add($"{n} {Map(valTypes[i])}");
             }
             var colList = string.Join(", ", cols);
-            ddl = $"CREATE STREAM IF NOT EXISTS {name} ({colList}) WITH (KAFKA_TOPIC='{table1s}', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO');";
+            // Include PARTITIONS/REPLICAS so the KAFKA_TOPIC is created if missing (first run ordering tolerance)
+            ddl = $"CREATE STREAM {name} ({colList}) WITH (KAFKA_TOPIC='{table1s}', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO', PARTITIONS=1, REPLICAS=1);";
         }
         else
         {
             // Generate windowed CTAS/CSAS. Keep key path style default for streams (alias-qualified o.KEYCOLS)
             ddl = KsqlCreateWindowedStatementBuilder.Build(name, qm, tf, emit, inputOverride, options: null);
-            // If sourcing from the 1s hub stream, remap aggregate arguments from BID to per-second OHLC columns
-            if (!string.IsNullOrWhiteSpace(inputOverride) && inputOverride!.EndsWith("_1s_final_s", StringComparison.OrdinalIgnoreCase))
+            if (needHubRewrite || ddl.IndexOf("_1S_FINAL_S", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                // Normalize spacing for easier replacement
-                string ReplaceAggArg(string sql, string pattern, string replacement)
-                {
-                    return System.Text.RegularExpressions.Regex.Replace(
-                        sql,
-                        pattern,
-                        replacement,
-                        System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.CultureInvariant);
-                }
-                // Map aggregates: open=earliest(Open), high=max(High), low=min(Low), close=latest(KsqlTimeFrameClose)
-                ddl = ReplaceAggArg(ddl, @"EARLIEST_BY_OFFSET\(\s*(?:O\.)?BID\s*\)", "EARLIEST_BY_OFFSET(O.OPEN)");
-                ddl = ReplaceAggArg(ddl, @"MAX\(\s*(?:O\.)?BID\s*\)", "MAX(O.HIGH)");
-                ddl = ReplaceAggArg(ddl, @"MIN\(\s*(?:O\.)?BID\s*\)", "MIN(O.LOW)");
-                ddl = ReplaceAggArg(ddl, @"LATEST_BY_OFFSET\(\s*(?:O\.)?BID\s*\)", "LATEST_BY_OFFSET(O.KSQLTIMEFRAMECLOSE)");
+                // Hub入力に対して非ハブ列（例: 生列や撤去済みの別名）を参照している疑い。
+                // ここで自動補正は行わず、明示的にエラーとして通知する。
+                throw new InvalidOperationException(
+                    "Invalid projection for hub input: aggregate arguments must reference the user-defined projection aliases (e.g., AS members). " +
+                    "Rewrite your Select to produce the desired member names, which will be re-aggregated from the 1s hub. " +
+                    "This pipeline does not fallback-rewrite SELECT arguments.\nGenerated DDL:\n" + ddl);
             }
-            // Inject GRACE PERIOD for Live windows to tolerate startup/lateness
+            // ユーザーの ToQuery で宣言した SelectProjection は尊重する（ここで書き換えない）。
+            // Inject GRACE PERIOD for Live windows based on the model-provided graceSeconds
             if (role == Role.Live)
             {
                 var grace = 0;
                 if (model.AdditionalSettings.TryGetValue("graceSeconds", out var gObj) && gObj is int g)
                     grace = g;
-                if (grace < 600) grace = 600; // default 10 minutes for tests
                 if (grace > 0 && ddl.IndexOf("GRACE", StringComparison.OrdinalIgnoreCase) < 0)
                 {
                     ddl = System.Text.RegularExpressions.Regex.Replace(
@@ -227,4 +261,6 @@ internal static class DerivedTumblingPipeline
         var p = Expression.Parameter(inputType, "x");
         return Expression.Lambda(p, p);
     }
+
+    // Note: HubAggregationRewriter (expression-tree) was removed in favor of safe SELECT-clause adjustment above.
 }

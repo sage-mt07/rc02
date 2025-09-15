@@ -23,7 +23,7 @@ namespace Kafka.Ksql.Linq.Tests.Integration;
 /// </summary>
 public class TimeBucketImportTumblingTests
 {
-    [KsqlTopic("ticks")]
+    [KsqlTopic("ticks_tbimp")]
     private class Tick
     {
         [KsqlKey(1)] public string Broker { get; set; } = string.Empty;
@@ -32,6 +32,7 @@ public class TimeBucketImportTumblingTests
         public decimal Bid { get; set; }
     }
 
+    [KsqlTopic("bar_tbimp")]
     private class Bar
     {
         [KsqlKey(1)] public string Broker { get; set; } = string.Empty;
@@ -126,8 +127,8 @@ public class TimeBucketImportTumblingTests
         // Pre-create source and DLQ topics
         using (var admin = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = brokers }).Build())
         {
-            try { await admin.CreateTopicsAsync(new[] { new TopicSpecification { Name = "ticks", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
-            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "ticks", 1, 1, TimeSpan.FromSeconds(60));
+            try { await admin.CreateTopicsAsync(new[] { new TopicSpecification { Name = "ticks_tbimp", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
+            await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "ticks_tbimp", 1, 1, TimeSpan.FromSeconds(60));
             try { await admin.CreateTopicsAsync(new[] { new TopicSpecification { Name = "dead-letter-queue", NumPartitions = 1, ReplicationFactor = 1 } }); } catch { }
             await PhysicalTestEnv.TopicHelpers.WaitForTopicReady(admin, "dead-letter-queue", 1, 1, TimeSpan.FromSeconds(60));
         }
@@ -167,8 +168,10 @@ public class TimeBucketImportTumblingTests
             return count;
         }
 
-        var wait1mTask = QueryStreamCountHttpAsync("bar_1m_live", 1, TimeSpan.FromSeconds(180));
-        var wait5mTask = QueryStreamCountHttpAsync("bar_5m_live", 1, TimeSpan.FromSeconds(180));
+        var live1m = "bar_tbimp_1m_live";
+        var live5m = "bar_tbimp_5m_live";
+        var wait1mTask = QueryStreamCountHttpAsync(live1m, 1, TimeSpan.FromSeconds(180));
+        var wait5mTask = QueryStreamCountHttpAsync(live5m, 1, TimeSpan.FromSeconds(180));
 
         // Import a continuous sequence of ticks (~2 minutes) to ensure materialization
         var bids = new decimal[] { 100m, 110m, 95m, 105m, 120m, 115m, 112m, 118m };
@@ -184,12 +187,12 @@ public class TimeBucketImportTumblingTests
         await WaitTablesReadyAsync(new Uri(ksqlUrl), TimeSpan.FromSeconds(180));
         // Wait until 1m/5m tables produce rows (ksqlDB table path)
         var rowsTable1m = await QueryRowsAsync(
-            $"SELECT Broker, Symbol, BucketStart, Open, High, Low, Close FROM bar_1m_live WHERE Broker='{broker}' AND Symbol='{symbol}' LIMIT 10;",
-            new Uri("http://127.0.0.1:18088"),
+            $"SELECT Broker, Symbol, BucketStart, Open, High, Low, Close FROM {live1m} WHERE Broker='{broker}' AND Symbol='{symbol}' LIMIT 10;",
+            new Uri(ksqlUrl),
             TimeSpan.FromSeconds(15));
         var rowsTable5m = await QueryRowsAsync(
-            $"SELECT Broker, Symbol, BucketStart, Open, High, Low, Close FROM bar_5m_live WHERE Broker='{broker}' AND Symbol='{symbol}' LIMIT 10;",
-            new Uri("http://127.0.0.1:18088"),
+            $"SELECT Broker, Symbol, BucketStart, Open, High, Low, Close FROM {live5m} WHERE Broker='{broker}' AND Symbol='{symbol}' LIMIT 10;",
+            new Uri(ksqlUrl),
             TimeSpan.FromSeconds(15));
         // Ensure push observers saw rows as well (materialization complete)
         _ = await wait1mTask; _ = await wait5mTask;
@@ -207,45 +210,95 @@ public class TimeBucketImportTumblingTests
     private static async Task<System.Collections.Generic.List<object?[]>> QueryRowsAsync(string sql, Uri baseUrl, TimeSpan timeout)
     {
         using var http = new HttpClient { BaseAddress = baseUrl };
-        var payload = new { sql, properties = new System.Collections.Generic.Dictionary<string, object>() };
+        // ksqlDB REST: /query expects body key "sql" (not "ksql").
+        var payload = new { sql = sql, properties = new System.Collections.Generic.Dictionary<string, object>() };
         using var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
         using var cts = new CancellationTokenSource(timeout);
         using var resp = await http.PostAsync("/query", content, cts.Token);
-        resp.EnsureSuccessStatusCode();
-        var body = await resp.Content.ReadAsStringAsync(cts.Token);
         var rows = new System.Collections.Generic.List<object?[]>();
-        try
+        if (resp.IsSuccessStatusCode)
         {
-            using var doc = System.Text.Json.JsonDocument.Parse(body);
-            if (doc.RootElement.ValueKind == System.Text.Json.JsonValueKind.Array)
+            var body = await resp.Content.ReadAsStringAsync(cts.Token);
+            try
             {
-                foreach (var el in doc.RootElement.EnumerateArray())
+                using var doc = System.Text.Json.JsonDocument.Parse(body);
+                if (doc.RootElement.ValueKind == System.Text.Json.JsonValueKind.Array)
                 {
-                    if (el.ValueKind == System.Text.Json.JsonValueKind.Object && el.TryGetProperty("row", out var rowEl))
+                    foreach (var el in doc.RootElement.EnumerateArray())
                     {
-                        if (rowEl.TryGetProperty("columns", out var cols) && cols.ValueKind == System.Text.Json.JsonValueKind.Array)
+                        if (el.ValueKind == System.Text.Json.JsonValueKind.Object && el.TryGetProperty("row", out var rowEl))
                         {
-                            var arr = new object?[cols.GetArrayLength()];
-                            int idx = 0;
-                            foreach (var c in cols.EnumerateArray())
+                            if (rowEl.TryGetProperty("columns", out var cols) && cols.ValueKind == System.Text.Json.JsonValueKind.Array)
                             {
-                                arr[idx++] = c.ValueKind switch
+                                var arr = new object?[cols.GetArrayLength()];
+                                int idx = 0;
+                                foreach (var c in cols.EnumerateArray())
                                 {
-                                    System.Text.Json.JsonValueKind.Number => c.TryGetInt64(out var l) ? l : c.GetDouble(),
-                                    System.Text.Json.JsonValueKind.String => c.GetString(),
-                                    System.Text.Json.JsonValueKind.True => true,
-                                    System.Text.Json.JsonValueKind.False => false,
-                                    System.Text.Json.JsonValueKind.Null => null,
-                                    _ => c.ToString()
-                                };
+                                    arr[idx++] = c.ValueKind switch
+                                    {
+                                        System.Text.Json.JsonValueKind.Number => c.TryGetInt64(out var l) ? l : c.GetDouble(),
+                                        System.Text.Json.JsonValueKind.String => c.GetString(),
+                                        System.Text.Json.JsonValueKind.True => true,
+                                        System.Text.Json.JsonValueKind.False => false,
+                                        System.Text.Json.JsonValueKind.Null => null,
+                                        _ => c.ToString()
+                                    };
+                                }
+                                rows.Add(arr);
                             }
-                            rows.Add(arr);
                         }
                     }
                 }
             }
+            catch { }
+            return rows;
         }
-        catch { }
+        // Fallback to push query (streaming) when pull fails
+        var sqlPush = sql.Trim();
+        if (sqlPush.EndsWith(";", StringComparison.Ordinal)) sqlPush = sqlPush[..^1];
+        // remove existing LIMIT clause if present to avoid double LIMIT
+        sqlPush = System.Text.RegularExpressions.Regex.Replace(sqlPush, @"\s+LIMIT\s+\d+\s*$", string.Empty, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        sqlPush += " EMIT CHANGES LIMIT 10;";
+        // ksqlDB REST: /query-stream expects body key "sql" (not "ksql").
+        var payload2 = new { sql = sqlPush, properties = new System.Collections.Generic.Dictionary<string, object>() };
+        using var content2 = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload2), System.Text.Encoding.UTF8, "application/json");
+        using var req = new HttpRequestMessage(HttpMethod.Post, "/query-stream") { Content = content2 };
+        using var resp2 = await http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, cts.Token);
+        resp2.EnsureSuccessStatusCode();
+        await using var stream = await resp2.Content.ReadAsStreamAsync(cts.Token);
+        using var reader = new System.IO.StreamReader(stream, System.Text.Encoding.UTF8);
+        while (!reader.EndOfStream && !cts.IsCancellationRequested)
+        {
+            var line = await reader.ReadLineAsync();
+            if (string.IsNullOrWhiteSpace(line)) continue;
+            if (line.IndexOf("\"row\"", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                try
+                {
+                    using var j = System.Text.Json.JsonDocument.Parse(line);
+                    if (j.RootElement.TryGetProperty("row", out var rEl) && rEl.TryGetProperty("columns", out var cols) && cols.ValueKind == System.Text.Json.JsonValueKind.Array)
+                    {
+                        var arr = new object?[cols.GetArrayLength()];
+                        int idx = 0;
+                        foreach (var c in cols.EnumerateArray())
+                        {
+                            arr[idx++] = c.ValueKind switch
+                            {
+                                System.Text.Json.JsonValueKind.Number => c.TryGetInt64(out var l) ? l : c.GetDouble(),
+                                System.Text.Json.JsonValueKind.String => c.GetString(),
+                                System.Text.Json.JsonValueKind.True => true,
+                                System.Text.Json.JsonValueKind.False => false,
+                                System.Text.Json.JsonValueKind.Null => null,
+                                _ => c.ToString()
+                            };
+                        }
+                        rows.Add(arr);
+                        if (rows.Count >= 1) break;
+                    }
+                }
+                catch { }
+            }
+        }
         return rows;
     }
 
@@ -253,28 +306,26 @@ public class TimeBucketImportTumblingTests
     {
         using var http = new HttpClient { BaseAddress = baseUrl };
         var deadline = DateTime.UtcNow + timeout;
-        var sqls = new[]
-        {
-            "SELECT * FROM bar_1m_live LIMIT 0;",
-            "SELECT * FROM bar_5m_live LIMIT 0;"
-        };
+        var names = new[] { "BAR_TBIMP_1M_LIVE", "BAR_TBIMP_5M_LIVE" };
         while (DateTime.UtcNow < deadline)
         {
             var allOk = true;
-            foreach (var s in sqls)
+            foreach (var name in names)
             {
-                var payload = new { sql = s, properties = new System.Collections.Generic.Dictionary<string, object>() };
+                var payload = new { ksql = $"DESCRIBE {name};", streamsProperties = new System.Collections.Generic.Dictionary<string, object>() };
                 using var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
                 try
                 {
-                    using var resp = await http.PostAsync("/query", content);
-                    if (!resp.IsSuccessStatusCode) { allOk = false; break; }
+                    using var resp = await http.PostAsync("/ksql", content);
+                    var body = await resp.Content.ReadAsStringAsync();
+                    if (!resp.IsSuccessStatusCode || body.IndexOf("\"statement_error\"", StringComparison.OrdinalIgnoreCase) >= 0)
+                    { allOk = false; break; }
                 }
                 catch { allOk = false; break; }
             }
             if (allOk) return;
             await Task.Delay(1000);
         }
-        throw new TimeoutException("bar_1m_live/bar_5m_live not ready within timeout");
+        throw new TimeoutException("bar_tbimp_1m_live/bar_tbimp_5m_live not ready within timeout");
     }
 }
