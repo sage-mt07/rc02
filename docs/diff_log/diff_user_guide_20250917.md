@@ -1,0 +1,1 @@
+- corrected BasicMessage DDL stream name to BASICMESSAGE and added schema namespace via VALUE_AVRO_SCHEMA_FULL_NAME
