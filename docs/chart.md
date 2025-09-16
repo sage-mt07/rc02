@@ -133,9 +133,87 @@ flowchart TB
 
 
 
-``` 
+```
+
+### 1.1 1秒足最終TABLEと上位足DDL（UT確認用）
+
+- 1秒最終TABLEでは `WINDOWSTART` を `BucketStart` として投影し、`GROUP BY` にも含めて確定足を作る。
+- 上位の1分・5分TABLEは、このTABLEのチェンジログを素のSTREAMとして読み、同じく `WINDOWSTART` を `GROUP BY` に含める。
+- ユニットテストは以下のDDLパターンが生成されることを確認し、1分以上の窓で時刻列を漏らさない。
+- CREATE TABLE 時は Schema Registry に登録した `VALUE_AVRO_SCHEMA_FULL_NAME` を WITH 句に設定する。
+
+```sql
+-- 1) 1s 最終 TABLE（集計＆正規化）
+CREATE TABLE BAR_1S_FINAL WITH (
+  KAFKA_TOPIC='bar_1s_final',   -- 明示推奨
+  VALUE_FORMAT='AVRO',
+  VALUE_AVRO_SCHEMA_FULL_NAME='kafka_ksql_linq_bars.bar_1s_final_valueAvro', -- SR登録名と一致させる
+  PARTITIONS=3,                 -- 想定スループットで調整
+  REPLICAS=1
+) AS
+SELECT
+  Broker,
+  Symbol,
+  WINDOWSTART AS BucketStart,
+  MIN(Bid) AS Low,
+  MAX(Bid) AS High,
+  LATEST_BY_OFFSET(FirstBid) AS Open,
+  LATEST_BY_OFFSET(LastBid)  AS Close
+FROM TICKS
+WINDOW TUMBLING (SIZE 1 SECOND)
+GROUP BY Broker, Symbol, WINDOWSTART;
+
+-- 2) TABLE の変更ログに素でかぶせた中間 STREAM
+CREATE STREAM BAR_1S_FINAL_S (
+  Broker STRING KEY,
+  Symbol STRING KEY,
+  BucketStart TIMESTAMP,
+  Open DECIMAL(18,6),
+  High DECIMAL(18,6),
+  Low  DECIMAL(18,6),
+  Close DECIMAL(18,6)
+) WITH (
+  KAFKA_TOPIC='bar_1s_final',
+  VALUE_FORMAT='AVRO'
+);
+
+-- 3) 下流（例：1m/5m）
+CREATE TABLE BAR_1M_LIVE WITH (
+  VALUE_FORMAT='AVRO',
+  VALUE_AVRO_SCHEMA_FULL_NAME='kafka_ksql_linq_bars.bar_1m_live_valueAvro' -- SR登録名と一致させる
+) AS
+SELECT
+  Broker,
+  Symbol,
+  WINDOWSTART AS BucketStart,
+  MIN(Low)  AS Low,
+  MAX(High) AS High,
+  EARLIEST_BY_OFFSET(Open) AS Open,
+  LATEST_BY_OFFSET(Close)  AS Close
+FROM BAR_1S_FINAL_S
+WINDOW TUMBLING (SIZE 1 MINUTE)
+GROUP BY Broker, Symbol, WINDOWSTART;
+
+CREATE TABLE BAR_5M_LIVE WITH (
+  VALUE_FORMAT='AVRO',
+  VALUE_AVRO_SCHEMA_FULL_NAME='kafka_ksql_linq_bars.bar_5m_live_valueAvro' -- SR登録名と一致させる
+) AS
+SELECT
+  Broker,
+  Symbol,
+  WINDOWSTART AS BucketStart,
+  MIN(Low)  AS Low,
+  MAX(High) AS High,
+  EARLIEST_BY_OFFSET(Open) AS Open,
+  LATEST_BY_OFFSET(Close)  AS Close
+FROM BAR_1S_FINAL_S
+WINDOW TUMBLING (SIZE 5 MINUTES)
+GROUP BY Broker, Symbol, WINDOWSTART;
+```
+
 
 ## 2. 処理の詳細（ここから深掘り）
+
 
 ### 2.1 TimeFrame と dayKey（営業日の境界）
 ```csharp
@@ -223,6 +301,7 @@ q.From<DedupRateRecord>()
 - 前方一致フィルタは「NUL 区切りの文字列キー」で実現します。
 - 伝達時間の目安は、通常 50〜200ms、起動直後は 0.5〜3 秒です（環境依存）。
 - Stream ソースは `ToListAsync()` 非対応です（Push 購読を使用します）。
+- Consumer→RocksDB 連携では `MappingRegistry.GetMapping()` が返す `KeyValueTypeMapping` を使って `SchemaAvroSerDes` を構成し、`AvroValueSchema` に保持された `VALUE_AVRO_SCHEMA_FULL_NAME` をそのまま再利用します。これにより DDL と同じ値スキーマ名のまま RocksDB を読み書きできます。【F:src/Cache/Extensions/KsqlContextCacheExtensions.cs†L39-L74】【F:src/Mapping/KeyValueTypeMapping.cs†L15-L36】
 
 ---
 

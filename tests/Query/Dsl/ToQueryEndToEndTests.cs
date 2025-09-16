@@ -16,6 +16,8 @@ namespace Kafka.Ksql.Linq.Tests.Query.Dsl;
 
 public class ToQueryEndToEndTests
 {
+    private const string SchemaNamespace = "kafka_ksql_linq_tests_query_dsl";
+
     [KsqlTopic("deduprates")]
     private class DeDupRate
     {
@@ -145,12 +147,16 @@ public class ToQueryEndToEndTests
             })
         );
 
+        var rate1sFinalSchema = $"{SchemaNamespace}.rate_1s_final_valueAvro";
+        var rate1sStreamSchema = $"{SchemaNamespace}.rate_1s_final_s_valueAvro";
+        var rate1mLiveSchema = $"{SchemaNamespace}.rate_1m_live_valueAvro";
+
         var tableSql = KsqlCreateWindowedStatementBuilder.Build(
             "rate_1s_final",
             model.QueryModel!,
             "1s",
             "EMIT FINAL",
-            "deduprates_1s_final_s");
+            valueSchemaFullName: rate1sFinalSchema);
 
         var streamModel = model.QueryModel!.Clone();
         streamModel.Windows.Clear();
@@ -160,14 +166,24 @@ public class ToQueryEndToEndTests
             "rate_1s_final_s",
             streamModel,
             null,
-            null,
+            rate1sStreamSchema,
             _ => "rate_1s_final");
 
-        const string expectedTable = "CREATE TABLE rate_1s_final WITH (KAFKA_TOPIC='rate_1s_final', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS\nSELECT BROKER AS Broker, SYMBOL AS Symbol, WINDOWSTART AS BucketStart, EARLIEST_BY_OFFSET(Bid) AS Open, MAX(Bid) AS High, MIN(Bid) AS Low, LATEST_BY_OFFSET(Bid) AS Close\nFROM deduprates_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)\nGROUP BY BROKER, SYMBOL\nEMIT FINAL;";
-        const string expectedStream = "CREATE STREAM rate_1s_final_s WITH (KAFKA_TOPIC='rate_1s_final_s', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS\nSELECT *\nFROM rate_1s_final o\nEMIT CHANGES;";
+        var liveSql = KsqlCreateWindowedStatementBuilder.Build(
+            "rate_1m_live",
+            model.QueryModel!,
+            "1m",
+            null,
+            "rate_1s_final_s",
+            valueSchemaFullName: rate1mLiveSchema);
+
+        var expectedTable = $"CREATE TABLE rate_1s_final WITH (KAFKA_TOPIC='rate_1s_final', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO', VALUE_AVRO_SCHEMA_FULL_NAME='{rate1sFinalSchema}') AS\nSELECT o.BROKER AS Broker, o.SYMBOL AS Symbol, WINDOWSTART AS BucketStart, EARLIEST_BY_OFFSET(Bid) AS Open, MAX(Bid) AS High, MIN(Bid) AS Low, LATEST_BY_OFFSET(Bid) AS Close\nFROM DEDUPRATES o WINDOW TUMBLING (SIZE 1 SECONDS)\nGROUP BY o.BROKER, o.SYMBOL\nEMIT FINAL;";
+        var expectedStream = $"CREATE STREAM rate_1s_final_s WITH (KAFKA_TOPIC='rate_1s_final_s', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO', VALUE_AVRO_SCHEMA_FULL_NAME='{rate1sStreamSchema}') AS\nSELECT *\nFROM rate_1s_final o\nEMIT CHANGES;";
+        var expectedLive = $"CREATE TABLE rate_1m_live WITH (KAFKA_TOPIC='rate_1m_live', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO', VALUE_AVRO_SCHEMA_FULL_NAME='{rate1mLiveSchema}') AS\nSELECT o.BROKER AS Broker, o.SYMBOL AS Symbol, WINDOWSTART AS BucketStart, EARLIEST_BY_OFFSET(o.OPEN) AS Open, MAX(o.HIGH) AS High, MIN(o.LOW) AS Low, LATEST_BY_OFFSET(o.CLOSE) AS Close\nFROM rate_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)\nGROUP BY o.BROKER, o.SYMBOL, o.BUCKETSTART\nEMIT CHANGES;";
 
         Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EqualNormalized(expectedTable, tableSql);
         Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EqualNormalized(expectedStream, streamSql);
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EqualNormalized(expectedLive, liveSql);
     }
 
     [Fact]
@@ -204,12 +220,15 @@ public class ToQueryEndToEndTests
             })
         );
 
+        var statsTableSchema = $"{SchemaNamespace}.bidstats_1s_final_valueAvro";
+        var statsStreamSchema = $"{SchemaNamespace}.bidstats_1s_final_s_valueAvro";
+
         var tableSql = KsqlCreateWindowedStatementBuilder.Build(
             "bidstats_1s_final",
             model.QueryModel!,
             "1s",
             "EMIT FINAL",
-            "deduprates_1s_final_s");
+            valueSchemaFullName: statsTableSchema);
 
         var streamModel = model.QueryModel!.Clone();
         streamModel.Windows.Clear();
@@ -219,11 +238,11 @@ public class ToQueryEndToEndTests
             "bidstats_1s_final_s",
             streamModel,
             null,
-            null,
+            statsStreamSchema,
             _ => "bidstats_1s_final");
 
-        const string expectedTable = "CREATE TABLE bidstats_1s_final WITH (KAFKA_TOPIC='bidstats_1s_final', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS\nSELECT BROKER AS Broker, SYMBOL AS Symbol, WINDOWSTART AS BucketStart, COUNT(*) AS Count, AVG(Bid) AS Avg\nFROM deduprates_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)\nGROUP BY BROKER, SYMBOL\nEMIT FINAL;";
-        const string expectedStream = "CREATE STREAM bidstats_1s_final_s WITH (KAFKA_TOPIC='bidstats_1s_final_s', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS\nSELECT *\nFROM bidstats_1s_final o\nEMIT CHANGES;";
+        var expectedTable = $"CREATE TABLE bidstats_1s_final WITH (KAFKA_TOPIC='bidstats_1s_final', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO', VALUE_AVRO_SCHEMA_FULL_NAME='{statsTableSchema}') AS\nSELECT o.BROKER AS Broker, o.SYMBOL AS Symbol, WINDOWSTART AS BucketStart, COUNT(*) AS Count, AVG(Bid) AS Avg\nFROM DEDUPRATES o WINDOW TUMBLING (SIZE 1 SECONDS)\nGROUP BY o.BROKER, o.SYMBOL\nEMIT FINAL;";
+        var expectedStream = $"CREATE STREAM bidstats_1s_final_s WITH (KAFKA_TOPIC='bidstats_1s_final_s', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO', VALUE_AVRO_SCHEMA_FULL_NAME='{statsStreamSchema}') AS\nSELECT *\nFROM bidstats_1s_final o\nEMIT CHANGES;";
 
         Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EqualNormalized(expectedTable, tableSql);
         Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EqualNormalized(expectedStream, streamSql);
@@ -264,12 +283,15 @@ public class ToQueryEndToEndTests
             })
         );
 
+        var singleTableSchema = $"{SchemaNamespace}.rate_broker_1s_final_valueAvro";
+        var singleStreamSchema = $"{SchemaNamespace}.rate_broker_1s_final_s_valueAvro";
+
         var tableSql = KsqlCreateWindowedStatementBuilder.Build(
             "rate_broker_1s_final",
             model.QueryModel!,
             "1s",
             "EMIT FINAL",
-            "deduprates_1s_final_s");
+            valueSchemaFullName: singleTableSchema);
 
         var streamModel = model.QueryModel!.Clone();
         streamModel.Windows.Clear();
@@ -279,11 +301,11 @@ public class ToQueryEndToEndTests
             "rate_broker_1s_final_s",
             streamModel,
             null,
-            null,
+            singleStreamSchema,
             _ => "rate_broker_1s_final");
 
-        const string expectedTable = "CREATE TABLE rate_broker_1s_final WITH (KAFKA_TOPIC='rate_broker_1s_final', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS\nSELECT BROKER AS BROKER, WINDOWSTART AS BucketStart, EARLIEST_BY_OFFSET(Bid) AS Open, MAX(Bid) AS High, MIN(Bid) AS Low, LATEST_BY_OFFSET(Bid) AS Close\nFROM deduprates_1s_final_s o WINDOW TUMBLING (SIZE 1 MINUTES)\nGROUP BY BROKER\nEMIT FINAL;";
-        const string expectedStream = "CREATE STREAM rate_broker_1s_final_s WITH (KAFKA_TOPIC='rate_broker_1s_final_s', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO') AS\nSELECT *\nFROM rate_broker_1s_final o\nEMIT CHANGES;";
+        var expectedTable = $"CREATE TABLE rate_broker_1s_final WITH (KAFKA_TOPIC='rate_broker_1s_final', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO', VALUE_AVRO_SCHEMA_FULL_NAME='{singleTableSchema}') AS\nSELECT o.BROKER AS BROKER, WINDOWSTART AS BucketStart, EARLIEST_BY_OFFSET(Bid) AS Open, MAX(Bid) AS High, MIN(Bid) AS Low, LATEST_BY_OFFSET(Bid) AS Close\nFROM DEDUPRATES o WINDOW TUMBLING (SIZE 1 SECONDS)\nGROUP BY o.BROKER\nEMIT FINAL;";
+        var expectedStream = $"CREATE STREAM rate_broker_1s_final_s WITH (KAFKA_TOPIC='rate_broker_1s_final_s', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO', VALUE_AVRO_SCHEMA_FULL_NAME='{singleStreamSchema}') AS\nSELECT *\nFROM rate_broker_1s_final o\nEMIT CHANGES;";
 
         Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EqualNormalized(expectedTable, tableSql);
         Kafka.Ksql.Linq.Tests.Utils.SqlAssert.EqualNormalized(expectedStream, streamSql);
