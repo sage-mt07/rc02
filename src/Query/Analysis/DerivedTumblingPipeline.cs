@@ -15,6 +15,7 @@ using System.Reflection;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace Kafka.Ksql.Linq.Query.Analysis;
 
@@ -164,6 +165,7 @@ internal static class DerivedTumblingPipeline
             _ => $"{baseName}_{tf}"
         };
         string ddl;
+        var valueSchemaFullName = DetermineValueSchemaFullName(model, name);
         if (role == Role.Fill)
         {
             // Experimental: Build Fill DDL by driving from HB and left-joining live.
@@ -177,6 +179,7 @@ internal static class DerivedTumblingPipeline
             // Optionally include prev_1m when timeframe is 1m to enable previous-close fill
             string? prevName = tf.Equals("1m", StringComparison.OrdinalIgnoreCase) ? $"{baseName}_prev_1m" : null;
             ddl = KsqlFillStatementBuilder.Build(name, keys, projection, bucketCol, hbName, liveName, prevName);
+            ddl = AppendValueSchemaFullName(ddl, valueSchemaFullName);
             if (!string.IsNullOrWhiteSpace(emit) && !ddl.Contains("EMIT ", StringComparison.OrdinalIgnoreCase))
                 ddl = ddl.Replace(";", $" {emit};");
         }
@@ -189,6 +192,7 @@ internal static class DerivedTumblingPipeline
             var hbName2 = $"{baseName}_hb_{tf}"; // tf は 1m
             var liveName2 = $"{baseName}_{tf}_live";
             ddl = KsqlPrevStatementBuilder.Build(name, keys, projection2, bucketCol2, hbName2, liveName2, 1);
+            ddl = AppendValueSchemaFullName(ddl, valueSchemaFullName);
             if (!string.IsNullOrWhiteSpace(emit) && !ddl.Contains("EMIT ", StringComparison.OrdinalIgnoreCase))
                 ddl = ddl.Replace(";", $" {emit};");
         }
@@ -216,11 +220,13 @@ internal static class DerivedTumblingPipeline
             var colList = string.Join(", ", cols);
             // Include PARTITIONS/REPLICAS so the KAFKA_TOPIC is created if missing (first run ordering tolerance)
             ddl = $"CREATE STREAM {name} ({colList}) WITH (KAFKA_TOPIC='{table1s}', KEY_FORMAT='AVRO', VALUE_FORMAT='AVRO', PARTITIONS=1, REPLICAS=1);";
+            ddl = AppendValueSchemaFullName(ddl, valueSchemaFullName);
         }
         else
         {
             // Generate windowed CTAS/CSAS. Keep key path style default for streams (alias-qualified o.KEYCOLS)
-            ddl = KsqlCreateWindowedStatementBuilder.Build(name, qm, tf, emit, inputOverride, options: null);
+            ddl = KsqlCreateWindowedStatementBuilder.Build(name, qm, tf, emit, inputOverride, options: null, valueSchemaFullName: valueSchemaFullName);
+            ddl = AppendValueSchemaFullName(ddl, valueSchemaFullName);
             if (needHubRewrite || ddl.IndexOf("_1S_FINAL_S", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 // Hub入力に対して非ハブ列（例: 生列や撤去済みの別名）を参照している疑い。
@@ -253,6 +259,42 @@ internal static class DerivedTumblingPipeline
         model.SetStreamTableType(qm.DetermineType());
         var ns = model.AdditionalSettings.TryGetValue("namespace", out var nsObj) ? nsObj?.ToString() : null;
         return (ddl, dt, ns);
+
+        static string? DetermineValueSchemaFullName(EntityModel em, string derivedName)
+        {
+            if (!string.IsNullOrWhiteSpace(em.ValueSchemaFullName))
+                return em.ValueSchemaFullName;
+            if (em.AdditionalSettings.TryGetValue("namespace", out var nsObj) && nsObj is string ns && !string.IsNullOrWhiteSpace(ns))
+            {
+                var sanitizedNs = SanitizeForAvro(ns);
+                var sanitizedName = SanitizeForAvro(derivedName);
+                return $"{sanitizedNs}.{sanitizedName}_valueAvro";
+            }
+            return null;
+        }
+
+        static string AppendValueSchemaFullName(string ddlText, string? schema)
+        {
+            if (string.IsNullOrWhiteSpace(schema))
+                return ddlText;
+            if (ddlText.IndexOf("VALUE_AVRO_SCHEMA_FULL_NAME", StringComparison.OrdinalIgnoreCase) >= 0)
+                return ddlText;
+            var regex = new Regex("VALUE_FORMAT='AVRO'", RegexOptions.IgnoreCase);
+            return regex.Replace(ddlText, $"VALUE_FORMAT='AVRO', VALUE_AVRO_SCHEMA_FULL_NAME='{schema}'", 1);
+        }
+
+        static string SanitizeForAvro(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return "_";
+            var lowered = value.ToLowerInvariant();
+            var sanitized = Regex.Replace(lowered, "[^a-z0-9_]", "_");
+            if (sanitized.Length == 0)
+                sanitized = "_";
+            if (!Regex.IsMatch(sanitized[0].ToString(), "[a-z_]"))
+                sanitized = "_" + sanitized;
+            return sanitized;
+        }
     }
 
     private static LambdaExpression BuildInputProjection(Type inputType)

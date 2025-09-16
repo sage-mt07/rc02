@@ -2,6 +2,7 @@ using Kafka.Ksql.Linq.Core.Attributes;
 using Kafka.Ksql.Linq.Query.Dsl;
 using Kafka.Ksql.Linq.Query.Abstractions;
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using Xunit;
 
@@ -45,9 +46,14 @@ public class KsqlCreateWindowedStatementBuilderTests
             .Select(g => new { g.Key.Broker, g.Key.Symbol, BucketStart = g.WindowStart(), Open = g.EarliestByOffset(x => x.Bid) })
             .Build();
 
-        var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.Build("bar_1m_live", model, "1m");
+        var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.Build(
+            "bar_1m_live",
+            model,
+            "1m",
+            valueSchemaFullName: "ns.bar_1m_live_valueAvro");
         Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(sql, "WINDOW TUMBLING (SIZE 1 MINUTES)");
         Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(sql, "CREATE TABLE bar_1m_live");
+        Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(sql, "VALUE_AVRO_SCHEMA_FULL_NAME='ns.bar_1m_live_valueAvro'");
     }
 
     [Fact]
@@ -65,7 +71,8 @@ public class KsqlCreateWindowedStatementBuilderTests
             model,
             "1m",
             null,
-            "deduprates_1s_final_s");
+            "deduprates_1s_final_s",
+            valueSchemaFullName: "ns.bar_1m_live_valueAvro");
         Kafka.Ksql.Linq.Tests.Utils.SqlAssert.AssertOrderNormalized(
             sql,
             "FROM deduprates_1s_final_s",
@@ -116,9 +123,29 @@ public class KsqlCreateWindowedStatementBuilderTests
             .Select(g => new { g.Key.Broker, g.Key.Symbol, BucketStart = g.WindowStart(), Open = g.EarliestByOffset(x => x.Bid) })
             .Build();
 
-        var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.Build("bar_1m", model, "1m");
+        var sql = Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.Build(
+            "bar_1m",
+            model,
+            "1m",
+            valueSchemaFullName: "ns.bar_1m_valueAvro");
         Kafka.Ksql.Linq.Tests.Utils.SqlAssert.StartsWithNormalized(sql, "CREATE TABLE bar_1m");
         Kafka.Ksql.Linq.Tests.Utils.SqlAssert.ContainsNormalized(sql, "WINDOW TUMBLING");
+    }
+
+    [Fact]
+    public void Build_MinuteWindow_WithoutBucketColumn_Throws()
+    {
+        var model = new KsqlQueryRoot()
+            .From<Rate>()
+            .Tumbling(r => r.Timestamp, new Windows { Minutes = new[] { 1 } })
+            .GroupBy(r => new { r.Broker, r.Symbol })
+            .Select(g => new { g.Key.Broker, g.Key.Symbol, Open = g.Min(x => x.Bid) })
+            .Build();
+
+        Assert.Null(model.BucketColumnName);
+        var ex = Assert.Throws<InvalidOperationException>(() =>
+            Kafka.Ksql.Linq.Query.Builders.KsqlCreateWindowedStatementBuilder.Build("bar_1m", model, "1m"));
+        Assert.Contains("WindowStart()", ex.Message);
     }
 
     [Fact]

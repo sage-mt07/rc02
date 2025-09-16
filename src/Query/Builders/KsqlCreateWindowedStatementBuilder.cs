@@ -12,12 +12,19 @@ namespace Kafka.Ksql.Linq.Query.Builders;
 /// </summary>
 internal static class KsqlCreateWindowedStatementBuilder
 {
-    public static string Build(string name, KsqlQueryModel model, string timeframe, string? emitOverride = null, string? inputOverride = null, RenderOptions? options = null)
+    public static string Build(
+        string name,
+        KsqlQueryModel model,
+        string timeframe,
+        string? emitOverride = null,
+        string? inputOverride = null,
+        RenderOptions? options = null,
+        string? valueSchemaFullName = null)
     {
         if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("name required", nameof(name));
         if (model is null) throw new ArgumentNullException(nameof(model));
         if (string.IsNullOrWhiteSpace(timeframe)) throw new ArgumentException("timeframe required", nameof(timeframe));
-        var baseSql = KsqlCreateStatementBuilder.Build(name, model, options: options);
+        var baseSql = KsqlCreateStatementBuilder.Build(name, model, null, valueSchemaFullName, null, options);
         if (!string.IsNullOrWhiteSpace(emitOverride))
             baseSql = baseSql.Replace("EMIT CHANGES", emitOverride);
         if (!string.IsNullOrWhiteSpace(inputOverride))
@@ -51,7 +58,7 @@ internal static class KsqlCreateWindowedStatementBuilder
         var window = FormatWindow(timeframe);
         // Optional GRACE insertion using simple heuristic: if model has AdditionalSettings[graceSeconds] on adapted entity, caller should pre-embed.
         var sql = InjectWindowAfterFrom(baseSql, window);
-        return sql;
+        return EnsureWindowStartGrouped(sql, timeframe, model.BucketColumnName);
     }
 
     public static Dictionary<string, string> BuildAll(string namePrefix, KsqlQueryModel model, Func<string, string> nameFormatter)
@@ -107,5 +114,60 @@ internal static class KsqlCreateWindowedStatementBuilder
             var alias = m.Groups[2].Value;
             return $"FROM {m.Groups[1].Value}{alias} {windowClause}";
         }, 1);
+    }
+
+    private static string EnsureWindowStartGrouped(string sql, string timeframe, string? bucketColumnName)
+    {
+        if (string.IsNullOrWhiteSpace(sql)) return sql;
+        if (ParseTimeframeSeconds(timeframe) < 60) return sql;
+        if (string.IsNullOrWhiteSpace(bucketColumnName))
+            throw new InvalidOperationException("WindowStart() must be projected for minute-or-longer tumbling windows.");
+
+        var aliasMatch = new Regex(@"\bFROM\s+[A-Za-z_][\w]*\s+([A-Za-z_][\w]*)", RegexOptions.IgnoreCase)
+            .Match(sql);
+        var alias = aliasMatch.Success ? aliasMatch.Groups[1].Value : null;
+        var bucketUpper = bucketColumnName.ToUpperInvariant();
+        var qualified = string.IsNullOrWhiteSpace(alias)
+            ? bucketUpper
+            : $"{alias}.{bucketUpper}";
+
+        var pattern = new Regex(@"(GROUP\s+BY\s+)([^\n;]+)", RegexOptions.IgnoreCase);
+        return pattern.Replace(sql, m =>
+        {
+            var clause = m.Groups[2].Value;
+            if (clause.IndexOf(bucketUpper, StringComparison.OrdinalIgnoreCase) >= 0)
+                return m.Value;
+            if (!string.Equals(qualified, bucketUpper, StringComparison.OrdinalIgnoreCase) &&
+                clause.IndexOf(qualified, StringComparison.OrdinalIgnoreCase) >= 0)
+                return m.Value;
+
+            var trimmed = clause.TrimEnd();
+            var separator = trimmed.EndsWith(",", StringComparison.Ordinal) ? " " : ", ";
+            return m.Groups[1].Value + trimmed + separator + qualified;
+        }, 1);
+    }
+
+    private static int ParseTimeframeSeconds(string timeframe)
+    {
+        if (string.IsNullOrWhiteSpace(timeframe)) return 0;
+        timeframe = timeframe.Trim();
+
+        if (timeframe.EndsWith("mo", StringComparison.OrdinalIgnoreCase) && int.TryParse(timeframe[..^2], out var months))
+            return months * 30 * 24 * 60 * 60;
+        if (timeframe.EndsWith("wk", StringComparison.OrdinalIgnoreCase) && int.TryParse(timeframe[..^2], out var weeks))
+            return weeks * 7 * 24 * 60 * 60;
+
+        var unit = char.ToLowerInvariant(timeframe[^1]);
+        if (!int.TryParse(timeframe[..^1], out var value))
+            return 0;
+
+        return unit switch
+        {
+            's' => value,
+            'm' => value * 60,
+            'h' => value * 3600,
+            'd' => value * 86400,
+            _ => 0
+        };
     }
 }
